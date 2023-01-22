@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.arassec.artivact</groupId>
+        <artifactId>artivact</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>vault-standalone</artifactId>
+    <packaging>jar</packaging>
+
+    <name>vault-standalone</name>
+    <description>The artivact-vault application to manage virtual artifacts.</description>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>com.arassec.artivact</groupId>
+            <artifactId>vault-spring-boot-starter</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <finalName>artivact-vault-${project.version}</finalName>
+    </build>
+
+</project>
