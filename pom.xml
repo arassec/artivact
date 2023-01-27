@@ -53,7 +53,7 @@
         <maven.compiler.release>17</maven.compiler.release>
 
         <nodejs.version>v18.12.1</nodejs.version>
-        <javafx.version>18.0.2</javafx.version>
+        <javafx.version>19.0.2.1</javafx.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -190,14 +190,14 @@
             <dependency>
                 <groupId>com.fazecast</groupId>
                 <artifactId>jSerialComm</artifactId>
-                <version>2.9.2</version>
+                <version>2.9.3</version>
             </dependency>
 
             <!-- Vault-Backend -->
             <dependency>
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-ui</artifactId>
-                <version>1.6.9</version>
+                <version>1.6.14</version>
             </dependency>
 
             <dependency>
