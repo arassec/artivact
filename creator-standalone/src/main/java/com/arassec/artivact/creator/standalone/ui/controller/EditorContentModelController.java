@@ -98,13 +98,13 @@ public class EditorContentModelController extends EditorContentBaseController {
         Pane preview;
 
         if ("blend".equals(fileEnding) || "blend1".equals(fileEnding)) {
-            preview = createRawPreview(projectService.getActiveArtivact().getProjectRoot().resolve("project-setup/Utils/blender-logo.png"),
+            preview = createRawPreview(projectService.getActiveArtivact().getProjectRoot().resolve("Utils/blender-logo.png"),
                     false, false);
         } else if ("glb".equals(fileEnding) || "gltf".equals(fileEnding)) {
-            preview = createRawPreview(projectService.getActiveArtivact().getProjectRoot().resolve("project-setup/Utils/gltf-logo.png"),
+            preview = createRawPreview(projectService.getActiveArtivact().getProjectRoot().resolve("Utils/gltf-logo.png"),
                     false, false);
         } else {
-            preview = createRawPreview(projectService.getActiveArtivact().getProjectRoot().resolve("project-setup/Utils/fallback-image.png"),
+            preview = createRawPreview(projectService.getActiveArtivact().getProjectRoot().resolve("Utils/fallback-image.png"),
                     false, false);
         }
 

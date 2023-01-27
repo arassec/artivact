@@ -15,8 +15,7 @@ It can be used to perform the following tasks:
 
 - Automatically capture images via camera and artivact-turntable as input for model generation
 - Automatically remove backgrounds from captured images using [rembg](https://github.com/danielgatis/rembg)
-- Generate 3D models using photogrammetry for single objects or in batch
-  with [Meshroom](https://github.com/alicevision/Meshroom)
+- Generate 3D models using photogrammetry with [Meshroom](https://github.com/alicevision/Meshroom) or [Metashape](https://www.agisoft.com/)
 - Open generated 3D models in [Blender3D](https://www.blender.org/) to manually finalize them
 
 ### Configuration
@@ -37,7 +36,7 @@ adapter.implementation.camera.executable=
 adapter.implementation.background=fallback
 adapter.implementation.background.executable=
 
-# possible values: 'Meshroom'
+# possible values: 'Meshroom', 'Metashape'
 adapter.implementation.model-creator=fallback
 adapter.implementation.model-creator.executable=
 

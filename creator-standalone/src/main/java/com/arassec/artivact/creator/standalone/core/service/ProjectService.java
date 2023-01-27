@@ -12,9 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -53,6 +51,15 @@ public class ProjectService {
         fileHelper.createDirIfRequired(projectRoot.resolve("Data"));
         fileHelper.createDirIfRequired(projectRoot.resolve("Temp"));
         fileHelper.copyClasspathResource(Path.of("project-setup"), projectRoot);
+        try {
+            Path metashapeWorkflowFile = projectRoot.resolve("Utils/Metashape/artivact-metashape-workflow.xml");
+            String metashapeWorkflow = Files.readString(metashapeWorkflowFile);
+            metashapeWorkflow = metashapeWorkflow.replace("##EXPORT_PATH##",
+                    projectRoot.resolve("Temp/metashape-export/metashape-export.obj").toAbsolutePath().toString());
+            Files.writeString(metashapeWorkflowFile, metashapeWorkflow, StandardOpenOption.WRITE);
+        } catch (IOException e) {
+            throw new ArtivactCreatorException("Could not update project!", e);
+        }
     }
 
     public void initializeActiveArtivact(String artivactId) {

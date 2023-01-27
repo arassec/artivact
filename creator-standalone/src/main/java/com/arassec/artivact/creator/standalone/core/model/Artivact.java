@@ -44,7 +44,7 @@ public class Artivact {
 
     private static final String CAMERA_PI_DIR = "CameraPi";
 
-    private static final String FALLBACK_IMAGE = "project-setup/Utils/fallback-image.png";
+    private static final String FALLBACK_IMAGE = "Utils/fallback-image.png";
 
     private String id;
 

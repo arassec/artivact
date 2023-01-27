@@ -31,7 +31,7 @@ public class MeshroomModelCreatorAdapter implements ModelCreatorAdapter {
 
     public static final List<String> PIPELINES = List.of(DEFAULT_PIPELINE, "meshroom-200k-2.mg", "meshroom-default.mg");
 
-    private static final String MESHROOM_DIR = "project-setup/Utils/Meshroom";
+    private static final String MESHROOM_DIR = "/Utils/Meshroom";
 
     private static final String MESHROOM_CACHE_DIR = "MeshroomCache";
 

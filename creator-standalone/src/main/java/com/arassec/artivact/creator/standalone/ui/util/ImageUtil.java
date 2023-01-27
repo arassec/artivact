@@ -31,7 +31,7 @@ public final class ImageUtil {
     }
 
     private static Background getBackground(Path projectRoot, int size) {
-        try (var fileInputStream = new FileInputStream(projectRoot.resolve("project-setup/Utils/checkerboard.png").toFile())) {
+        try (var fileInputStream = new FileInputStream(projectRoot.resolve("Utils/checkerboard.png").toFile())) {
             var backgroundimage = new BackgroundImage(new Image(fileInputStream),
                     BackgroundRepeat.NO_REPEAT,
                     BackgroundRepeat.NO_REPEAT,

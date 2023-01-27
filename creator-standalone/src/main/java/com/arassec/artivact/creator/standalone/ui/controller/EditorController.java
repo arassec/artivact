@@ -318,18 +318,21 @@ public class EditorController implements ApplicationEventPublisherAware, Applica
     }
 
     public void createModel() {
-        ChoiceDialog<String> pipelineDialog = new ChoiceDialog<>(modelService.getDefaultPipeline(), modelService.getPipelines());
-        pipelineDialog.initModality(Modality.APPLICATION_MODAL);
-        pipelineDialog.setGraphic(null);
-        pipelineDialog.initOwner(editorTreePane.getScene().getWindow());
-        pipelineDialog.setTitle(messageSource.getMessage("editor.dialog.create-model.title", null, Locale.getDefault()));
-        pipelineDialog.setHeaderText(messageSource.getMessage("editor.dialog.create-model.header", null, Locale.getDefault()));
-        pipelineDialog.setContentText(messageSource.getMessage("editor.dialog.create-model.content", null, Locale.getDefault()));
+        String pipelineInput = null;
+        List<String> pipelines = modelService.getPipelines();
+        if (!pipelines.isEmpty()) {
+            ChoiceDialog<String> pipelineDialog = new ChoiceDialog<>(modelService.getDefaultPipeline(), pipelines);
+            pipelineDialog.initModality(Modality.APPLICATION_MODAL);
+            pipelineDialog.setGraphic(null);
+            pipelineDialog.initOwner(editorTreePane.getScene().getWindow());
+            pipelineDialog.setTitle(messageSource.getMessage("editor.dialog.create-model.title", null, Locale.getDefault()));
+            pipelineDialog.setHeaderText(messageSource.getMessage("editor.dialog.create-model.header", null, Locale.getDefault()));
+            pipelineDialog.setContentText(messageSource.getMessage("editor.dialog.create-model.content", null, Locale.getDefault()));
 
-        String pipeline = pipelineDialog.showAndWait().orElse(null);
-        if (pipeline == null) {
-            return;
+            pipelineInput = pipelineDialog.showAndWait().orElse(null);
         }
+
+        String pipeline = pipelineInput;
 
         projectService.saveArtivact(projectService.getActiveArtivact());
 

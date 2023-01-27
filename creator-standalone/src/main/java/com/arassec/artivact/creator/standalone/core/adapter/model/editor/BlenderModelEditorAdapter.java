@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 @ConditionalOnProperty(value = "adapter.implementation.model-editor", havingValue = "Blender")
 public class BlenderModelEditorAdapter implements ModelEditorAdapter {
 
-    private static final String BLENDER_DIR = "project-setup/Utils/Blender";
+    private static final String BLENDER_DIR = "Utils/Blender";
 
     @Value("${adapter.implementation.model-editor.executable}")
     private String executable;
