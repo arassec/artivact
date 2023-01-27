@@ -7,7 +7,7 @@
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 <?import javafx.scene.control.Tooltip?>
 <AnchorPane xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.arassec.artivact.creator.ui.controller.ProjectChooserController">
+            fx:controller="com.arassec.artivact.creator.standalone.ui.controller.ProjectChooserController">
     <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
           AnchorPane.topAnchor="0.0">
         <children>

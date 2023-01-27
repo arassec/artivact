@@ -3,6 +3,6 @@
 <?import javafx.scene.layout.FlowPane?>
 <FlowPane xmlns="http://javafx.com/javafx"
           xmlns:fx="http://javafx.com/fxml"
-          fx:controller="com.arassec.artivact.creator.ui.controller.EditorContentImageSetOverviewController"
+          fx:controller="com.arassec.artivact.creator.standalone.ui.controller.EditorContentImageSetOverviewController"
           fx:id="imageSetOverviewContentPane">
 </FlowPane>
