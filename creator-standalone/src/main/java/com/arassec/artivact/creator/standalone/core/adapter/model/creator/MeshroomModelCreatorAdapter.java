@@ -1,8 +1,9 @@
 package com.arassec.artivact.creator.standalone.core.adapter.model.creator;
 
-import com.arassec.artivact.creator.standalone.core.model.Artivact;
+import com.arassec.artivact.common.util.FileUtil;
+import com.arassec.artivact.creator.standalone.core.adapter.BaseAdapter;
+import com.arassec.artivact.creator.standalone.core.model.CreatorArtivact;
 import com.arassec.artivact.creator.standalone.core.model.ArtivactCreatorException;
-import com.arassec.artivact.creator.standalone.core.util.FileHelper;
 import com.arassec.artivact.creator.standalone.core.util.ProgressMonitor;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.exec.CommandLine;
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 @ConditionalOnProperty(value = "adapter.implementation.model-creator", havingValue = "Meshroom")
-public class MeshroomModelCreatorAdapter implements ModelCreatorAdapter {
+public class MeshroomModelCreatorAdapter extends BaseAdapter implements ModelCreatorAdapter {
 
     public static final String DEFAULT_PIPELINE = "meshroom-200k-4.mg";
 
@@ -39,7 +40,7 @@ public class MeshroomModelCreatorAdapter implements ModelCreatorAdapter {
 
     private final MessageSource messageSource;
 
-    private final FileHelper fileHelper;
+    private final FileUtil fileUtil;
 
     @Value("${adapter.implementation.model-creator.executable}")
     private String executable;
@@ -54,20 +55,20 @@ public class MeshroomModelCreatorAdapter implements ModelCreatorAdapter {
         return PIPELINES;
     }
 
-    public void createModel(Artivact artivact, String pipeline, ProgressMonitor progressMonitor) {
-        Path projectRoot = artivact.getProjectRoot();
+    public void createModel(CreatorArtivact creatorArtivact, String pipeline, ProgressMonitor progressMonitor) {
+        Path projectRoot = creatorArtivact.getProjectRoot();
 
-        Path inputDir = projectRoot.resolve(FileHelper.TEMP_DIR);
+        Path inputDir = creatorArtivact.getProjectTempDir();
         Path resultDir = projectRoot.resolve(MESHROOM_DIR).resolve(MESHROOM_RESULT_DIR);
         Path cacheDir = projectRoot.resolve(MESHROOM_DIR).resolve(MESHROOM_CACHE_DIR);
 
-        fileHelper.emptyDir(inputDir);
-        fileHelper.emptyDir(resultDir);
-        fileHelper.emptyDir(cacheDir);
+        fileUtil.emptyDir(inputDir);
+        fileUtil.emptyDir(resultDir);
+        fileUtil.emptyDir(cacheDir);
 
-        artivact.getImageSets().forEach(imageSet -> {
+        creatorArtivact.getImageSets().forEach(imageSet -> {
             if (imageSet.isModelInput()) {
-                fileHelper.copyImages(artivact, imageSet, inputDir, progressMonitor);
+                copyImages(creatorArtivact, imageSet, inputDir, progressMonitor);
             }
         });
 
@@ -94,7 +95,7 @@ public class MeshroomModelCreatorAdapter implements ModelCreatorAdapter {
             // can safely request the exit value
             resultHandler.waitFor();
 
-            artivact.createModel(resultDir, pipeline);
+            creatorArtivact.createModel(resultDir, pipeline);
         } catch (IOException e) {
             throw new ArtivactCreatorException("Could not create 3D model!", e);
         } catch (InterruptedException e) {
@@ -106,6 +107,11 @@ public class MeshroomModelCreatorAdapter implements ModelCreatorAdapter {
     public void cancelModelCreation() {
         killProcesses("meshroom");
         killProcesses("aliceVision");
+    }
+
+    @Override
+    public boolean supportsCancellation() {
+        return true;
     }
 
     @SuppressWarnings("SimplifyStreamApiCallChains")

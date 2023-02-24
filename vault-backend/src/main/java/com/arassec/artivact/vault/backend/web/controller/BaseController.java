@@ -1,6 +1,7 @@
 package com.arassec.artivact.vault.backend.web.controller;
 
-import com.arassec.artivact.vault.backend.service.model.Artivact;
+import com.arassec.artivact.vault.backend.core.Roles;
+import com.arassec.artivact.vault.backend.service.model.VaultArtivact;
 import com.arassec.artivact.vault.backend.service.model.TranslatableItem;
 import com.arassec.artivact.vault.backend.web.model.TranslatedItem;
 import org.springframework.security.core.Authentication;
@@ -14,9 +15,9 @@ import java.util.Locale;
 
 public abstract class BaseController {
 
-    protected String createMainImageUrl(Artivact artivact) {
-        if (!artivact.getMediaContent().getImages().isEmpty()) {
-            return createImageUrl(artivact.getId(), artivact.getMediaContent().getImages().get(0));
+    protected String createMainImageUrl(VaultArtivact vaultArtivact) {
+        if (!vaultArtivact.getMediaContent().getImages().isEmpty()) {
+            return createImageUrl(vaultArtivact.getId(), vaultArtivact.getMediaContent().getImages().get(0));
         }
         return null;
     }
@@ -78,4 +79,15 @@ public abstract class BaseController {
         return userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
     }
 
+    protected boolean isAdmin(Authentication authentication) {
+        return getRoles(authentication).contains(Roles.ROLE_ADMIN);
+    }
+
+    protected boolean isUser(Authentication authentication) {
+        return getRoles(authentication).contains(Roles.ROLE_USER);
+    }
+
+    protected boolean isAdminOrUser(Authentication authentication) {
+        return isAdmin(authentication) || isUser(authentication);
+    }
 }

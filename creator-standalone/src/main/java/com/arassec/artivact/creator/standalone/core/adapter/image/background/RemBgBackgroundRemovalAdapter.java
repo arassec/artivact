@@ -1,9 +1,9 @@
 package com.arassec.artivact.creator.standalone.core.adapter.image.background;
 
-import com.arassec.artivact.creator.standalone.core.model.Artivact;
+import com.arassec.artivact.common.util.FileUtil;
+import com.arassec.artivact.creator.standalone.core.model.CreatorArtivact;
 import com.arassec.artivact.creator.standalone.core.model.ArtivactCreatorException;
 import com.arassec.artivact.creator.standalone.core.model.ArtivactImageSet;
-import com.arassec.artivact.creator.standalone.core.util.FileHelper;
 import com.arassec.artivact.creator.standalone.core.util.ProgressMonitor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,16 +26,16 @@ import java.util.Locale;
 @ConditionalOnProperty(value = "adapter.implementation.background", havingValue = "RemBg")
 public class RemBgBackgroundRemovalAdapter extends BaseRemBgBackgroundRemovalAdapter {
 
-    private final FileHelper fileHelper;
+    private final FileUtil fileUtil;
 
     private final MessageSource messageSource;
 
     @Value("${adapter.implementation.background.executable}")
     private String executable;
 
-    public List<Path> removeBackgroundFromImages(Artivact artivact, ArtivactImageSet imageSet,
+    public List<Path> removeBackgroundFromImages(CreatorArtivact creatorArtivact, ArtivactImageSet imageSet,
                                                  ProgressMonitor progressMonitor) {
-        initializeEnvironment(artivact, imageSet, progressMonitor, fileHelper);
+        initializeEnvironment(creatorArtivact, imageSet, progressMonitor, fileUtil);
 
         Executor executor = new DefaultExecutor();
         executor.setExitValue(1);

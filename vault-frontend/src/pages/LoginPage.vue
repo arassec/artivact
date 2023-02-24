@@ -47,7 +47,7 @@ function onSubmit() {
           store.setUserdata(response.data);
           $q.notify({
             color: 'positive',
-            position: 'top',
+            position: 'bottom',
             message: 'Login successful',
             icon: 'report'
           })
@@ -56,7 +56,7 @@ function onSubmit() {
         .catch(() => {
           $q.notify({
             color: 'negative',
-            position: 'top',
+            position: 'bottom',
             message: 'Loading UserData failed',
             icon: 'report_problem'
           })
@@ -65,7 +65,7 @@ function onSubmit() {
     .catch(() => {
       $q.notify({
         color: 'negative',
-        position: 'top',
+        position: 'bottom',
         message: 'Login failed',
         icon: 'report_problem'
       })

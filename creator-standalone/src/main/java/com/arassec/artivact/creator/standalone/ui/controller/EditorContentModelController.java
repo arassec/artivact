@@ -66,7 +66,7 @@ public class EditorContentModelController extends EditorContentBaseController {
                 model.getExportFiles().add(exportModelUserData.getFilename());
             }
 
-            projectService.saveArtivact(projectService.getActiveArtivact());
+            projectService.saveArtivact(projectService.getActiveCreatorArtivact());
             updateContent(index);
         });
 
@@ -74,8 +74,8 @@ public class EditorContentModelController extends EditorContentBaseController {
         contextMenu.setStyle("-fx-selection-bar: lightgrey;");
         contextMenu.getItems().add(toggleExportMenuItem);
 
-        var artivactModel = projectService.getActiveArtivact().getModels().get(index);
-        try (var inputStream = Files.list(projectService.getActiveArtivact().getProjectRoot().resolve(artivactModel.getPath()))) {
+        var artivactModel = projectService.getActiveCreatorArtivact().getModels().get(index);
+        try (var inputStream = Files.list(projectService.getActiveCreatorArtivact().getProjectRoot().resolve(artivactModel.getPath()))) {
             inputStream.forEach(filePath -> {
                 var assetPreviewPane = createPreview(artivactModel, filePath);
 
@@ -98,13 +98,13 @@ public class EditorContentModelController extends EditorContentBaseController {
         Pane preview;
 
         if ("blend".equals(fileEnding) || "blend1".equals(fileEnding)) {
-            preview = createRawPreview(projectService.getActiveArtivact().getProjectRoot().resolve("Utils/blender-logo.png"),
+            preview = createRawPreview(projectService.getActiveCreatorArtivact().getProjectRoot().resolve("Utils/blender-logo.png"),
                     false, false);
         } else if ("glb".equals(fileEnding) || "gltf".equals(fileEnding)) {
-            preview = createRawPreview(projectService.getActiveArtivact().getProjectRoot().resolve("Utils/gltf-logo.png"),
+            preview = createRawPreview(projectService.getActiveCreatorArtivact().getProjectRoot().resolve("Utils/gltf-logo.png"),
                     false, false);
         } else {
-            preview = createRawPreview(projectService.getActiveArtivact().getProjectRoot().resolve("Utils/fallback-image.png"),
+            preview = createRawPreview(projectService.getActiveCreatorArtivact().getProjectRoot().resolve("Utils/fallback-image.png"),
                     false, false);
         }
 

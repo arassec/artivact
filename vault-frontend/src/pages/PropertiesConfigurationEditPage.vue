@@ -41,7 +41,7 @@ export default {
         .catch(() => {
           $q.notify({
             color: 'negative',
-            position: 'top',
+            position: 'bottom',
             message: 'Loading failed',
             icon: 'report_problem'
           })
@@ -56,7 +56,7 @@ export default {
         .catch(() => {
           $q.notify({
             color: 'negative',
-            position: 'top',
+            position: 'bottom',
             message: 'Loading locales failed',
             icon: 'report_problem'
           })
@@ -77,7 +77,7 @@ export default {
           .then(() => {
             $q.notify({
               color: 'positive',
-              position: 'top',
+              position: 'bottom',
               message: 'Configuration saved',
               icon: 'report'
             })
@@ -85,7 +85,7 @@ export default {
           .catch(() => {
             $q.notify({
               color: 'negative',
-              position: 'top',
+              position: 'bottom',
               message: 'Saving failed',
               icon: 'report_problem'
             })

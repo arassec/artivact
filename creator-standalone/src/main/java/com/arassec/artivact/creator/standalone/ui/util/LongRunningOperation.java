@@ -1,6 +1,6 @@
 package com.arassec.artivact.creator.standalone.ui.util;
 
-import com.arassec.artivact.creator.standalone.core.model.Artivact;
+import com.arassec.artivact.creator.standalone.core.model.CreatorArtivact;
 import com.arassec.artivact.creator.standalone.core.model.ArtivactCreatorException;
 import com.arassec.artivact.creator.standalone.core.util.ProgressMonitor;
 import com.arassec.artivact.creator.standalone.ui.event.EditorEvent;
@@ -43,7 +43,7 @@ public class LongRunningOperation implements Runnable {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    private final Artivact activeArtivact;
+    private final CreatorArtivact activeCreatorArtivact;
 
     private boolean cancel = false;
 
@@ -55,13 +55,13 @@ public class LongRunningOperation implements Runnable {
 
     public LongRunningOperation(Window window, ProgressMonitor progressMonitor, Operation operation,
                                 Operation finishedCallback, Operation cancelledCallback,
-                                ApplicationEventPublisher applicationEventPublisher, Artivact activeArtivact) {
+                                ApplicationEventPublisher applicationEventPublisher, CreatorArtivact activeCreatorArtivact) {
         this.progressMonitor = progressMonitor;
         this.operation = operation;
         this.finishedCallback = finishedCallback;
         this.cancelledCallback = cancelledCallback;
         this.applicationEventPublisher = applicationEventPublisher;
-        this.activeArtivact = activeArtivact;
+        this.activeCreatorArtivact = activeCreatorArtivact;
 
         progressDialog = new Dialog<>();
         progressDialog.initStyle(StageStyle.UNDECORATED);
@@ -83,9 +83,9 @@ public class LongRunningOperation implements Runnable {
         progressLabelPane.getChildren().add(progressLabel);
         contentBox.getChildren().add(progressLabelPane);
 
-        if (activeArtivact != null) {
+        if (activeCreatorArtivact != null) {
             notesTextArea = new TextArea();
-            notesTextArea.setText(activeArtivact.getNotes());
+            notesTextArea.setText(activeCreatorArtivact.getNotes());
             var notesBox = new VBox();
             notesBox.getChildren().add(new Label("Notes:"));
             notesBox.getChildren().add(notesTextArea);
@@ -166,8 +166,8 @@ public class LongRunningOperation implements Runnable {
             Platform.runLater(finishedCallback::execute);
             if (endedRegularly) {
                 applicationEventPublisher.publishEvent(new SceneEvent(SceneEventType.MODAL_CLOSED, null, null));
-                if (activeArtivact != null) {
-                    activeArtivact.setNotes(notesTextArea.getText());
+                if (activeCreatorArtivact != null) {
+                    activeCreatorArtivact.setNotes(notesTextArea.getText());
                     applicationEventPublisher.publishEvent(new EditorEvent(EditorEventType.UPDATE_NOTES, -1));
                 }
                 Platform.runLater(progressDialog::close);

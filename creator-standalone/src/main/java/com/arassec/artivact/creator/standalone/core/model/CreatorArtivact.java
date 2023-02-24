@@ -1,9 +1,11 @@
 package com.arassec.artivact.creator.standalone.core.model;
 
-import com.arassec.artivact.creator.standalone.core.util.FileHelper;
+import com.arassec.artivact.common.model.Artivact;
+import com.arassec.artivact.common.util.FileUtil;
 import com.arassec.artivact.creator.standalone.core.util.ProgressMonitor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.imageio.ImageIO;
@@ -22,15 +24,12 @@ import java.util.stream.Stream;
 
 @Slf4j
 @Data
-public class Artivact {
+@EqualsAndHashCode(callSuper = true)
+public class CreatorArtivact extends Artivact {
 
-    private static final String DATA_DIR = "Data";
+    private static final String TEMP_DIR = "Temp";
 
-    private static final String IMAGES_DIR = "images";
-
-    private static final String IMAGES_PREVIEW_DIR = "preview";
-
-    private static final String MODELS_DIR = "models";
+    public static final String IMAGES_PREVIEW_DIR = "preview";
 
     private static final String MESHROOM_DIR = "Meshroom";
 
@@ -58,13 +57,22 @@ public class Artivact {
     private Path projectRoot;
 
     @JsonIgnore
-    private FileHelper fileHelper;
+    private FileUtil fileUtil;
 
-    public Artivact() {
+    public CreatorArtivact() {
     }
 
-    public Artivact(String id) {
+    public CreatorArtivact(String id) {
         this.id = id;
+    }
+
+    public Path getImagesPreviewDir(boolean includeProjectRoot) {
+        Path imagesDir = getImagesDir(includeProjectRoot);
+        return Path.of(imagesDir.toString(), IMAGES_PREVIEW_DIR);
+    }
+
+    public Path getProjectTempDir() {
+        return projectRoot.resolve(TEMP_DIR);
     }
 
     public String getPreviewImage() {
@@ -75,35 +83,13 @@ public class Artivact {
                 .orElse(FALLBACK_IMAGE);
     }
 
-    public Path getMainDir(boolean includeProjectRoot) {
-        var firstSubDir = getSubDir(0, id);
-        var secondSubDir = getSubDir(1, id);
-        if (includeProjectRoot) {
-            return Path.of(projectRoot.toAbsolutePath().toString(), DATA_DIR, firstSubDir, secondSubDir, id);
-        }
-        return Path.of(DATA_DIR, firstSubDir, secondSubDir, id);
-    }
-
-    public Path getImagesDir(boolean includeProjectRoot) {
-        return getAssetDir(includeProjectRoot, id, IMAGES_DIR);
-    }
-
-    public Path getImagesPreviewDir(boolean includeProjectRoot) {
-        Path imagesDir = getImagesDir(includeProjectRoot);
-        return Path.of(imagesDir.toString(), IMAGES_PREVIEW_DIR);
-    }
-
-    public Path getModelsDir(boolean includeProjectRoot, String artivactId) {
-        return getAssetDir(includeProjectRoot, artivactId, MODELS_DIR);
-    }
-
-    public Path getModelDir(boolean includeProjectRoot, String artivactId, int assetNumber) {
-        return Path.of(getModelsDir(includeProjectRoot, artivactId).toString(), getAssetName(assetNumber, null));
+    public int getNextAssetNumber(Path assetDir) {
+        return getNextAssetNumber(assetDir, List.of(IMAGES_PREVIEW_DIR));
     }
 
     public ArtivactImage createImage(File asset) {
         log.debug("Creating new image: {}", asset.getPath());
-        fileHelper.createDirIfRequired(getImagesPreviewDir(true));
+        fileUtil.createDirIfRequired(getImagesPreviewDir(true));
 
         int nextAssetNumber = getNextAssetNumber(getImagesDir(true));
         String[] assetNameParts = asset.getName().split("\\.");
@@ -134,19 +120,9 @@ public class Artivact {
                 .build();
     }
 
-    public Path getImagePath(boolean includeProjectRoot, int assetNumber, String extension) {
-        var firstSubDir = getSubDir(0, id);
-        var secondSubDir = getSubDir(1, id);
-        var imageName = getAssetName(assetNumber, extension);
-        if (includeProjectRoot) {
-            return projectRoot.resolve(Path.of(DATA_DIR, firstSubDir, secondSubDir, id, IMAGES_DIR, imageName));
-        }
-        return Path.of(DATA_DIR, firstSubDir, secondSubDir, id, IMAGES_DIR, imageName);
-    }
-
     public Path getImagePreviewPath(boolean includeProjectRoot, int assetNumber, String extension) {
-        var firstSubDir = getSubDir(0, id);
-        var secondSubDir = getSubDir(1, id);
+        var firstSubDir = getSubDir(0);
+        var secondSubDir = getSubDir(1);
         var imageName = getAssetName(assetNumber, extension);
         if (includeProjectRoot) {
             return projectRoot.resolve(Path.of(DATA_DIR, firstSubDir, secondSubDir, id, IMAGES_DIR,
@@ -178,22 +154,22 @@ public class Artivact {
     }
 
     public void addModel(Path modelFile) {
-        Path modelsDir = getModelsDir(true, id);
+        Path modelsDir = getModelsDir(true);
 
-        fileHelper.createDirIfRequired(modelsDir);
+        fileUtil.createDirIfRequired(modelsDir);
 
         int nextAssetNumber = getNextAssetNumber(modelsDir);
 
-        var targetDir = getModelDir(false, id, nextAssetNumber);
-        var targetDirWithProjectRoot = getModelDir(true, id, nextAssetNumber);
+        var targetDir = getModelDir(false, nextAssetNumber);
+        var targetDirWithProjectRoot = getModelDir(true, nextAssetNumber);
 
-        fileHelper.createDirIfRequired(targetDirWithProjectRoot);
+        fileUtil.createDirIfRequired(targetDirWithProjectRoot);
 
         var destination = Paths.get(targetDirWithProjectRoot.toString(), modelFile.getFileName().toString());
         try {
             Files.copy(modelFile, destination, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            fileHelper.deleteDir(targetDirWithProjectRoot);
+            fileUtil.deleteDir(targetDirWithProjectRoot);
             throw new ArtivactCreatorException("Could not copy model files!", e);
         }
         ArtivactModel artivactModel = ArtivactModel.builder()
@@ -208,20 +184,20 @@ public class Artivact {
     }
 
     public void createModel(Path sourceDir, String comment) {
-        Path modelsDir = getModelsDir(true, id);
+        Path modelsDir = getModelsDir(true);
 
-        fileHelper.createDirIfRequired(modelsDir);
+        fileUtil.createDirIfRequired(modelsDir);
 
         int nextAssetNumber = getNextAssetNumber(modelsDir);
 
-        var targetDir = getModelDir(false, id, nextAssetNumber);
-        var targetDirWithProjectRoot = getModelDir(true, id, nextAssetNumber);
+        var targetDir = getModelDir(false, nextAssetNumber);
+        var targetDirWithProjectRoot = getModelDir(true, nextAssetNumber);
 
-        fileHelper.createDirIfRequired(targetDirWithProjectRoot);
+        fileUtil.createDirIfRequired(targetDirWithProjectRoot);
 
         try (Stream<Path> stream = Files.list(sourceDir)) {
             if (stream.findAny().isEmpty()) {
-                fileHelper.deleteDir(targetDirWithProjectRoot);
+                fileUtil.deleteDir(targetDirWithProjectRoot);
                 throw new ArtivactCreatorException("Source for model creation not present: " + sourceDir);
             }
 
@@ -232,14 +208,14 @@ public class Artivact {
                     try {
                         Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
                     } catch (IOException e) {
-                        fileHelper.deleteDir(targetDirWithProjectRoot);
+                        fileUtil.deleteDir(targetDirWithProjectRoot);
                         throw new ArtivactCreatorException("Could not copy model files!", e);
                     }
                 });
             }
 
         } catch (IOException e) {
-            fileHelper.deleteDir(targetDirWithProjectRoot);
+            fileUtil.deleteDir(targetDirWithProjectRoot);
             throw new ArtivactCreatorException("Could not copy asset directory!", e);
         }
 
@@ -257,7 +233,7 @@ public class Artivact {
     public void deleteModel(int index) {
         if (models.size() > index) {
             ArtivactModel modelToDelete = getModels().get(index);
-            fileHelper.deleteDir(projectRoot.resolve(modelToDelete.getPath()));
+            fileUtil.deleteDir(projectRoot.resolve(modelToDelete.getPath()));
             models.remove(index);
         }
     }
@@ -308,18 +284,18 @@ public class Artivact {
     }
 
     public void deleteArtivactDir(Path rootDir) {
-        fileHelper.deleteDir(rootDir.resolve(getMainDir(false)));
-        var firstSubDir = rootDir.resolve(DATA_DIR).resolve(getSubDir(0, id));
-        var secondSubDir = Path.of(firstSubDir.toString(), getSubDir(1, id));
+        fileUtil.deleteDir(rootDir.resolve(getMainDir(false)));
+        var firstSubDir = rootDir.resolve(DATA_DIR).resolve(getSubDir(0));
+        var secondSubDir = Path.of(firstSubDir.toString(), getSubDir(1));
         try {
             try (Stream<Path> stream = Files.list(secondSubDir)) {
                 if (stream.findAny().isEmpty()) {
-                    fileHelper.deleteDir(secondSubDir);
+                    fileUtil.deleteDir(secondSubDir);
                 }
             }
             try (Stream<Path> stream = Files.list(firstSubDir)) {
                 if (stream.findAny().isEmpty()) {
-                    fileHelper.deleteDir(firstSubDir);
+                    fileUtil.deleteDir(firstSubDir);
                 }
             }
         } catch (IOException e) {
@@ -327,47 +303,8 @@ public class Artivact {
         }
     }
 
-    private int getNextAssetNumber(Path dir) {
-        var highestNumber = 0;
-        try (Stream<Path> stream = Files.list(dir)) {
-            List<Path> assets = stream.toList();
-            for (Path path : assets) {
-                if (IMAGES_PREVIEW_DIR.equals(path.getFileName().toString())
-                        || ".".equals(path.getFileName().toString())
-                        || "..".equals(path.getFileName().toString())) {
-                    continue;
-                }
-                var number = Integer.parseInt(path.getFileName().toString().split("\\.")[0]);
-                if (number > highestNumber) {
-                    highestNumber = number;
-                }
-            }
-        } catch (IOException e) {
-            throw new ArtivactCreatorException("Could not read assets!", e);
-        }
-        return (highestNumber + 1);
-    }
-
     private String formatPath(Path path) {
         return path.toString().replace("\\", "/");
-    }
-
-    private Path getAssetDir(boolean includeProjectRoot, String artivactId, String assetSubDir) {
-        var firstSubDir = getSubDir(0, artivactId);
-        var secondSubDir = getSubDir(1, artivactId);
-        if (includeProjectRoot) {
-            return projectRoot.resolve(Path.of(DATA_DIR, firstSubDir, secondSubDir, artivactId, assetSubDir));
-        }
-        return Path.of(DATA_DIR, firstSubDir, secondSubDir, artivactId, assetSubDir);
-    }
-
-    private String getSubDir(int index, String artivactId) {
-        if (index == 0) {
-            return artivactId.substring(0, 3);
-        } else if (index == 1) {
-            return artivactId.substring(3, 6);
-        }
-        throw new IllegalArgumentException("Index not supported: " + index);
     }
 
     private void writeImagePreview(File image, String extension, File targetFile) throws IOException {
@@ -383,13 +320,6 @@ public class Artivact {
         var outputImage = new BufferedImage(targetWidth, targetHeight, type);
         outputImage.getGraphics().drawImage(resultingImage, 0, 0, null);
         ImageIO.write(outputImage, extension, targetFile);
-    }
-
-    private String getAssetName(int assetNumber, String extension) {
-        if (extension != null && !extension.isEmpty() && !extension.strip().isBlank()) {
-            return String.format("%03d", assetNumber) + "." + extension;
-        }
-        return String.format("%03d", assetNumber);
     }
 
 }

@@ -38,7 +38,13 @@
 
           <div style="margin-top: -1rem" class="q-mb-md">
             <q-badge class="q-mr-xs vertical-middle" color="accent" v-for="(tag, index) in artivactDetails.tags"
-                     :key="index">{{ tag.translatedValue }}
+                     :key="index">
+              <template v-if="tag.url">
+                <a :href="tag.url" class="tag-link">{{ tag.translatedValue }}</a>
+              </template>
+              <template v-else>
+                {{ tag.translatedValue }}
+              </template>
             </q-badge>
           </div>
 
@@ -134,5 +140,10 @@ function getModelUrl(): string {
 
 .artivact-carousel {
   min-height: 500px;
+}
+
+.tag-link {
+  text-decoration: none;
+  color: white;
 }
 </style>

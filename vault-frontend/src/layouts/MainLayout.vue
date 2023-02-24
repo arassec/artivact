@@ -4,82 +4,76 @@
     <q-header elevated class="bg-primary text-white" height-hint="98">
       <q-toolbar class="q-pl-xs">
 
-        <div>
-          <q-btn flat round color="white" icon="menu" size="md">
-            <q-menu>
+        <div class="fixed-right">
+
+          <q-btn flat color="white" class="q-mt-xs" icon="view_in_ar" v-if="userdataStore.authenticated">
+            <q-tooltip>Artivact Configuration</q-tooltip>
+            <q-menu anchor="bottom middle" self="top middle">
               <q-list>
-                <q-item clickable v-close-popup @click="home">
+                <q-item clickable v-close-popup @click="propertiesAdministration" v-if="userdataStore.isAdmin">
                   <q-item-section avatar>
-                    <q-icon name="home" size="xs" color="primary"></q-icon>
+                    <q-icon name="article" size="xs" color="primary"></q-icon>
                   </q-item-section>
-                  <q-item-section>Home</q-item-section>
+                  <q-item-section>Properties</q-item-section>
                 </q-item>
-                <q-separator/>
-                <q-item clickable v-close-popup v-if="!userdataStore.authenticated" @click="login">
+                <q-item clickable v-close-popup @click="tagsAdministration" v-if="userdataStore.isAdmin">
                   <q-item-section avatar>
-                    <q-icon name="login" size="xs" color="primary"></q-icon>
+                    <q-icon name="label" size="xs" color="primary"></q-icon>
                   </q-item-section>
-                  <q-item-section>Login</q-item-section>
+                  <q-item-section>Tags</q-item-section>
                 </q-item>
-                <q-item clickable v-close-popup v-if="userdataStore.authenticated" @click="logout">
+                <q-item clickable v-close-popup @click="createArtivact">
                   <q-item-section avatar>
-                    <q-icon name="logout" size="xs" color="primary"></q-icon>
+                    <q-icon name="add" size="xs" color="primary"></q-icon>
                   </q-item-section>
-                  <q-item-section>Logout</q-item-section>
+                  <q-item-section>Add new</q-item-section>
                 </q-item>
-                <q-item clickable v-close-popup v-if="userdataStore.authenticated" @click="accountSettings">
-                  <q-item-section avatar>
-                    <q-icon name="person" size="xs" color="primary"></q-icon>
-                  </q-item-section>
-                  <q-item-section>Account</q-item-section>
-                </q-item>
-
-                <q-item clickable v-if="userdataStore.isAdmin">
-                  <q-item-section avatar>
-                    <q-icon name="build" size="xs" color="primary"></q-icon>
-                  </q-item-section>
-                  <q-item-section>Administration</q-item-section>
-                  <q-item-section side>
-                    <q-icon name="keyboard_arrow_right"/>
-                  </q-item-section>
-                  <q-menu anchor="top end" self="top start">
-                    <q-list>
-                      <q-item clickable v-close-popup @click="propertiesAdministration">
-                        <q-item-section avatar>
-                          <q-icon name="article" size="xs" color="primary"></q-icon>
-                        </q-item-section>
-                        <q-item-section>Artivact Properties</q-item-section>
-                      </q-item>
-                      <q-item clickable v-close-popup @click="tagsAdministration">
-                        <q-item-section avatar>
-                          <q-icon name="label" size="xs" color="primary"></q-icon>
-                        </q-item-section>
-                        <q-item-section>Artivact Tags</q-item-section>
-                      </q-item>
-                      <q-item clickable v-close-popup @click="systemSettings">
-                        <q-item-section avatar>
-                          <q-icon name="settings" size="xs" color="primary"></q-icon>
-                        </q-item-section>
-                        <q-item-section>System Settings</q-item-section>
-                      </q-item>
-                    </q-list>
-                  </q-menu>
-                </q-item>
-
               </q-list>
             </q-menu>
           </q-btn>
 
-          <label class="q-ml-md">
-            {{ userdataStore.username }}
-          </label>
+          <q-btn flat color="white" class="q-mt-xs" icon="settings" v-if="userdataStore.isAdmin">
+            <q-tooltip>System Settings</q-tooltip>
+            <q-menu anchor="bottom middle" self="top middle">
+              <q-list>
+                <q-item clickable v-close-popup @click="systemSettings">
+                  <q-item-section avatar>
+                    <q-icon name="settings" size="xs" color="primary"></q-icon>
+                  </q-item-section>
+                  <q-item-section>System Settings</q-item-section>
+                </q-item>
+              </q-list>
+            </q-menu>
+          </q-btn>
+
+          <router-link to="/account" class="silent-link" v-if="userdataStore.authenticated">
+            <q-btn icon="manage_accounts" flat class="q-mt-xs">
+              <q-tooltip>Account Settings</q-tooltip>
+            </q-btn>
+          </router-link>
+
+          <router-link to="/user-login" class="silent-link" v-if="!userdataStore.authenticated">
+            <q-btn flat color="white" icon="login" size="md" class="q-mr-xs q-mt-xs">
+              <q-tooltip>Login</q-tooltip>
+            </q-btn>
+          </router-link>
+
+          <router-link to="/" class="silent-link" v-if="userdataStore.authenticated">
+            <q-btn flat color="white" icon-right="logout" size="md" class="q-mt-xs q-mr-xs" @click="logout">
+              <label class="q-mr-sm">
+                {{ userdataStore.username }}
+              </label>
+              <q-tooltip>Logout</q-tooltip>
+            </q-btn>
+          </router-link>
+
         </div>
 
-        <q-toolbar-title class="absolute-center">
-          <router-link to="/" class="silent-link">
+        <router-link to="/" class="silent-link">
+          <q-btn flat>
             {{ data }}
-          </router-link>
-        </q-toolbar-title>
+          </q-btn>
+        </router-link>
 
       </q-toolbar>
 
@@ -128,7 +122,7 @@ export default defineComponent({
         .catch(() => {
           $q.notify({
             color: 'negative',
-            position: 'top',
+            position: 'bottom',
             message: 'Loading locales failed',
             icon: 'report_problem'
           })
@@ -144,7 +138,7 @@ export default defineComponent({
         .catch(() => {
           $q.notify({
             color: 'negative',
-            position: 'top',
+            position: 'bottom',
             message: 'Loading title failed',
             icon: 'report_problem'
           })
@@ -159,7 +153,7 @@ export default defineComponent({
         .catch(() => {
           $q.notify({
             color: 'negative',
-            position: 'top',
+            position: 'bottom',
             message: 'Loading UserData failed',
             icon: 'report_problem'
           })
@@ -174,23 +168,11 @@ export default defineComponent({
         .catch(() => {
           $q.notify({
             color: 'negative',
-            position: 'top',
+            position: 'bottom',
             message: 'Loading License failed',
             icon: 'report_problem'
           })
         });
-    }
-
-    function home() {
-      $r.push('/')
-    }
-
-    function login() {
-      $r.push('/user-login')
-    }
-
-    function accountSettings() {
-      $r.push('/account')
     }
 
     function propertiesAdministration() {
@@ -199,6 +181,21 @@ export default defineComponent({
 
     function tagsAdministration() {
       $r.push('/administration/configuration/tags/edit')
+    }
+
+    function createArtivact() {
+      api.post('/api/artivact/new')
+        .then((response) => {
+          $r.push('/administration/configuration/artivact/' + response.data)
+        })
+        .catch(() => {
+          $q.notify({
+            color: 'negative',
+            position: 'bottom',
+            message: 'Creating artivact failed',
+            icon: 'report_problem'
+          })
+        });
     }
 
     function systemSettings() {
@@ -213,7 +210,7 @@ export default defineComponent({
               userdataStore.setUserdata(response.data);
               $q.notify({
                 color: 'positive',
-                position: 'top',
+                position: 'bottom',
                 message: 'Logout successful',
                 icon: 'report'
               })
@@ -222,7 +219,7 @@ export default defineComponent({
             .catch(() => {
               $q.notify({
                 color: 'negative',
-                position: 'top',
+                position: 'bottom',
                 message: 'Loading UserData failed',
                 icon: 'report_problem'
               })
@@ -231,7 +228,7 @@ export default defineComponent({
         .catch(() => {
           $q.notify({
             color: 'negative',
-            position: 'top',
+            position: 'bottom',
             message: 'Logout failed',
             icon: 'report_problem'
           })
@@ -245,12 +242,10 @@ export default defineComponent({
       loadLocales,
       loadUserData,
       loadLicense,
-      home,
-      login,
       logout,
-      accountSettings,
       propertiesAdministration,
       tagsAdministration,
+      createArtivact,
       systemSettings
     }
   },

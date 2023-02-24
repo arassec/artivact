@@ -1,0 +1,11 @@
+version: "3"
+
+services:
+  postgres-db:
+    image: "postgres:15-alpine"
+    container_name: "artivact-postgres-db"
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=artivact
+      - POSTGRES_PASSWORD=artivact

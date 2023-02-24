@@ -40,7 +40,7 @@ void loop() {
       // Process command in sdata.
       switch( sdata[0] ) {
       case 'v':
-        Serial.println("artivact-tt-v1");
+        Serial.println("creatorArtivact-tt-v1");
         break;
       case 't':
         if (strlen(sdata)>1) {

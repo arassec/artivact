@@ -1,6 +1,6 @@
 package com.arassec.artivact.creator.standalone.ui.controller;
 
-import com.arassec.artivact.creator.standalone.core.model.Artivact;
+import com.arassec.artivact.creator.standalone.core.model.CreatorArtivact;
 import com.arassec.artivact.creator.standalone.core.model.ArtivactAsset;
 import com.arassec.artivact.creator.standalone.core.model.ArtivactCreatorException;
 import com.arassec.artivact.creator.standalone.core.service.ProjectService;
@@ -73,8 +73,8 @@ public abstract class EditorContentBaseController extends BaseController impleme
 
     protected abstract void updateContent(int index);
 
-    protected Pane createRawPreview(Artivact artivact, ArtivactAsset asset) {
-        return createRawPreview(asset.getPreviewPath(artivact.getProjectRoot()), true, true);
+    protected Pane createRawPreview(CreatorArtivact creatorArtivact, ArtivactAsset asset) {
+        return createRawPreview(asset.getPreviewPath(creatorArtivact.getProjectRoot()), true, true);
     }
 
     protected Pane createRawPreview(Path filePath, boolean border, boolean background) {
@@ -85,7 +85,7 @@ public abstract class EditorContentBaseController extends BaseController impleme
             var imagePane = new StackPane();
             imagePane.getChildren().add(imageView);
             if (background) {
-                imagePane.setBackground(ImageUtil.getEditorPreviewBackground(projectService.getActiveArtivact().getProjectRoot()));
+                imagePane.setBackground(ImageUtil.getEditorPreviewBackground(projectService.getActiveCreatorArtivact().getProjectRoot()));
             }
             if (border) {
                 imagePane.setStyle("-fx-border-style: 1px solid; -fx-border-color: black");

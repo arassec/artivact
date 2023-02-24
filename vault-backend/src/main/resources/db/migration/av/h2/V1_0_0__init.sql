@@ -3,18 +3,19 @@ CREATE TABLE av_artivact
     id                 VARCHAR(128) PRIMARY KEY,
     version            INTEGER,
     scanned            TIMESTAMP,
-    title              TEXT,
-    restrictions       TEXT,
-    description        TEXT,
-    properties         TEXT,
-    media_content_json TEXT
+    title_json         TEXT,
+    restrictions_json  TEXT,
+    description_json   TEXT,
+    properties_json    TEXT,
+    media_content_json TEXT,
+    tags_json          TEXT
 );
 
 CREATE TABLE av_configuration
 (
-    id      VARCHAR(128) PRIMARY KEY,
-    version INTEGER,
-    content TEXT
+    id           VARCHAR(128) PRIMARY KEY,
+    version      INTEGER,
+    content_json TEXT
 );
 
 CREATE TABLE av_account

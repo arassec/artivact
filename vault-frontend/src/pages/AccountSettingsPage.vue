@@ -48,7 +48,7 @@ function loadAccount() {
     .catch(() => {
       $q.notify({
         color: 'negative',
-        position: 'top',
+        position: 'bottom',
         message: 'Loading failed',
         icon: 'report_problem'
       })
@@ -74,7 +74,7 @@ function saveAccount() {
     .then(() => {
       $q.notify({
         color: 'positive',
-        position: 'top',
+        position: 'bottom',
         message: 'Account saved',
         icon: 'report'
       })
@@ -82,7 +82,7 @@ function saveAccount() {
     .catch(() => {
       $q.notify({
         color: 'negative',
-        position: 'top',
+        position: 'bottom',
         message: 'Saving failed',
         icon: 'report_problem'
       })

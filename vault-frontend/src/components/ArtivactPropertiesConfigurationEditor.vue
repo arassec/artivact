@@ -1,43 +1,75 @@
 <template>
   <div>
+    <q-list bordered class="rounded-borders q-mb-lg">
+      <draggable :list="propertiesConfigurationProp.categories" item-key="id" group="categories" handle=".category-move-icon">
+        <template #item="{ element }">
+          <q-expansion-item :label="element.value" group="categories" header-class="bg-primary text-white"
+                            class="category"
+                            expand-separator expand-icon-class="text-white">
 
-    <q-card v-for="(category, categoryKey) in propertiesConfigurationProp.categories" :key="categoryKey"
-            class="q-mb-lg">
+            <template v-slot:header>
+              <q-item-section avatar>
+                <div class="text-white q-gutter-md">
+                  <q-icon name="drag_indicator" class="category-move-icon" size="lg"></q-icon>
+                </div>
+              </q-item-section>
 
-      <q-card-section class="bg-primary text-white">
-        <div class="text-h6">{{ category.value }}</div>
-      </q-card-section>
+              <q-item-section class="category-label">
+                  {{ element.value }}
+              </q-item-section>
 
-      <q-separator/>
+              <q-item-section side>
+                <q-btn round dense flat class="float-right" color="white"
+                       icon="delete" size="md" @click="deleteCategory(element)"></q-btn>
+              </q-item-section>
+            </template>
 
-      <q-card-section>
-        <artivact-translatable-item-editor :item="category" :locales="locales" label="Category"
-                                           :show-separator="false"/>
-      </q-card-section>
+            <q-card class="q-mb-lg">
 
-      <q-separator/>
+              <q-separator/>
 
-      <q-card-section>
-        <h3 class="av-text-h3">Properties</h3>
-        <div v-for="(property, propertyKey) in category.properties" :key="propertyKey">
-          <artivact-translatable-item-editor :item="property" :locales="locales" label="Property"
-                                             :show-separator="false"/>
-          <artivact-property-value-range-editor :value-range="property.valueRange" :locales="locales"/>
-        </div>
-      </q-card-section>
+              <q-card-section>
+                <artivact-translatable-item-editor :item="element" :locales="locales" label="Category"
+                                                   :show-separator="false"/>
+              </q-card-section>
 
-      <q-separator/>
+              <q-separator/>
 
-      <q-card-section>
-        <q-btn label="Add Property" @click="addProperty(category)" color="primary"/>
-      </q-card-section>
-    </q-card>
+              <q-card-section>
+                <h3 class="av-text-h3">Properties</h3>
 
-    <q-btn label="Add Category" @click="addCategory" color="primary"/>
+                <div v-for="(property, propertyKey) in element.properties" :key="propertyKey">
+                  <q-btn round dense flat class="float-right q-ml-sm"
+                         icon="delete" size="md" @click="deleteProperty(element, propertyKey)"></q-btn>
+
+                  <artivact-translatable-item-editor :item="property" :locales="locales" label="Property"
+                                                     :show-separator="false"/>
+                  <artivact-property-value-range-editor :value-range="property.valueRange" :locales="locales"/>
+                </div>
+              </q-card-section>
+
+              <q-card-section>
+                <div class="row">
+                  <q-space></q-space>
+                  <q-btn label="Add Property" @click="addProperty(element)" color="secondary"/>
+                </div>
+              </q-card-section>
+            </q-card>
+          </q-expansion-item>
+        </template>
+      </draggable>
+    </q-list>
+
+    <div class="row">
+      <q-space></q-space>
+      <q-btn label="Add Category" @click="addCategory" color="primary"/>
+    </div>
+
   </div>
 </template>
 
 <script setup lang="ts">
+import draggable from 'vuedraggable';
 import {PropType, toRef} from 'vue';
 import {PropertiesConfiguration, Property, PropertyCategory} from 'components/models';
 import ArtivactTranslatableItemEditor from 'components/ArtivactTranslatableItemEditor.vue';
@@ -77,8 +109,26 @@ function addProperty(category: PropertyCategory) {
   category.properties.push(property);
 }
 
+function deleteCategory(category: PropertyCategory) {
+  propertiesConfigurationProp.value.categories
+    .splice(propertiesConfigurationProp.value.categories.indexOf(category), 1);
+}
+
+function deleteProperty(category: PropertyCategory, propertyKey: number) {
+  category.properties.splice(propertyKey, 1);
+}
+
 </script>
 
 <style scoped>
+.category {
+  border-bottom: 1px solid white;
+}
 
+.category-label {
+  font-size: large;
+}
+.category-label {
+  font-size: large;
+}
 </style>

@@ -1,9 +1,9 @@
 package com.arassec.artivact.creator.standalone.core.service;
 
-import com.arassec.artivact.creator.standalone.core.model.Artivact;
+import com.arassec.artivact.common.util.FileUtil;
+import com.arassec.artivact.creator.standalone.core.model.CreatorArtivact;
 import com.arassec.artivact.creator.standalone.core.model.ArtivactCreatorException;
 import com.arassec.artivact.creator.standalone.core.model.Project;
-import com.arassec.artivact.creator.standalone.core.util.FileHelper;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
@@ -22,12 +22,12 @@ public class ProjectService {
 
     private static final String ARTIVACT_FILE_SUFFIX = ".artivact.json";
 
-    private final FileHelper fileHelper;
+    private final FileUtil fileUtil;
 
     private final ObjectMapper objectMapper;
 
-    public ProjectService(FileHelper fileHelper) {
-        this.fileHelper = fileHelper;
+    public ProjectService(FileUtil fileUtil) {
+        this.fileUtil = fileUtil;
         objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
@@ -37,7 +37,7 @@ public class ProjectService {
     private Project activeProject;
 
     @Getter
-    private Artivact activeArtivact;
+    private CreatorArtivact activeCreatorArtivact;
 
     public boolean isProjectDir(Path projectRoot) {
         return Files.exists(projectRoot.resolve("Utils/checkerboard.png"));
@@ -48,9 +48,9 @@ public class ProjectService {
     }
 
     public void updateProject(Path projectRoot) {
-        fileHelper.createDirIfRequired(projectRoot.resolve("Data"));
-        fileHelper.createDirIfRequired(projectRoot.resolve("Temp"));
-        fileHelper.copyClasspathResource(Path.of("project-setup"), projectRoot);
+        fileUtil.createDirIfRequired(projectRoot.resolve("Data"));
+        fileUtil.createDirIfRequired(projectRoot.resolve("Temp"));
+        fileUtil.copyClasspathResource(Path.of("project-setup"), projectRoot);
         try {
             Path metashapeWorkflowFile = projectRoot.resolve("Utils/Metashape/artivact-metashape-workflow.xml");
             String metashapeWorkflow = Files.readString(metashapeWorkflowFile);
@@ -63,23 +63,23 @@ public class ProjectService {
     }
 
     public void initializeActiveArtivact(String artivactId) {
-        activeArtivact = readArtivact(artivactId);
+        activeCreatorArtivact = readArtivact(artivactId);
     }
 
-    public void initializeActiveArtivact(Artivact artivact) {
-        activeArtivact = artivact;
+    public void initializeActiveArtivact(CreatorArtivact creatorArtivact) {
+        activeCreatorArtivact = creatorArtivact;
     }
 
-    public Artivact createArtivact() {
-        var artivact = new Artivact(UUID.randomUUID().toString());
+    public CreatorArtivact createArtivact() {
+        var artivact = new CreatorArtivact(UUID.randomUUID().toString());
         artivact.setProjectRoot(activeProject.getRootDir());
-        artivact.setFileHelper(fileHelper);
+        artivact.setFileUtil(fileUtil);
         saveArtivact(artivact);
         return artivact;
     }
 
-    public Artivact readArtivact(String artivactId) {
-        var dummyArtivact = new Artivact(artivactId);
+    public CreatorArtivact readArtivact(String artivactId) {
+        var dummyArtivact = new CreatorArtivact(artivactId);
         dummyArtivact.setProjectRoot(activeProject.getRootDir());
 
         var artivactFile = Path.of(dummyArtivact.getMainDir(true).toString(),
@@ -91,7 +91,7 @@ public class ProjectService {
 
         try {
             var artivactJson = Files.readString(artivactFile);
-            var artivact = objectMapper.readValue(artivactJson, Artivact.class);
+            var artivact = objectMapper.readValue(artivactJson, CreatorArtivact.class);
             if (artivact.getImageSets() == null) {
                 artivact.setImageSets(new LinkedList<>());
             }
@@ -100,7 +100,7 @@ public class ProjectService {
             }
 
             artivact.setProjectRoot(activeProject.getRootDir());
-            artivact.setFileHelper(fileHelper);
+            artivact.setFileUtil(fileUtil);
 
             return artivact;
         } catch (IOException e) {
@@ -108,27 +108,27 @@ public class ProjectService {
         }
     }
 
-    public void saveArtivact(Artivact artivact) {
-        if (artivact == null || !StringUtils.hasText(artivact.getId())) {
+    public void saveArtivact(CreatorArtivact creatorArtivact) {
+        if (creatorArtivact == null || !StringUtils.hasText(creatorArtivact.getId())) {
             throw new ArtivactCreatorException("No ID on artivact to persist!");
         }
 
-        String artivactId = artivact.getId();
+        String artivactId = creatorArtivact.getId();
 
-        var artivactDir = artivact.getMainDir(true);
+        var artivactDir = creatorArtivact.getMainDir(true);
         var artivactFile = Path.of(artivactDir.toString(), artivactId + ARTIVACT_FILE_SUFFIX);
 
-        fileHelper.createDirIfRequired(artivactDir);
+        fileUtil.createDirIfRequired(artivactDir);
 
         try {
-            Files.writeString(artivactFile, objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(artivact));
+            Files.writeString(artivactFile, objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(creatorArtivact));
         } catch (IOException e) {
             throw new ArtivactCreatorException("Could not persist artivact data set!", e);
         }
     }
 
-    public void deleteArtivact(Artivact artivact) {
-        artivact.deleteArtivactDir(activeProject.getRootDir());
+    public void deleteArtivact(CreatorArtivact creatorArtivact) {
+        creatorArtivact.deleteArtivactDir(activeProject.getRootDir());
     }
 
     public List<String> getArtivactIds() {

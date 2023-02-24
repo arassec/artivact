@@ -13,7 +13,7 @@ A tool to create and organize virtual artifacts for websites or virtual reality 
 
 It can be used to perform the following tasks:
 
-- Automatically capture images via camera and artivact-turntable as input for model generation
+- Automatically capture images via camera and creatorArtivact-turntable as input for model generation
 - Automatically remove backgrounds from captured images using [rembg](https://github.com/danielgatis/rembg)
 - Generate 3D models using photogrammetry with [Meshroom](https://github.com/alicevision/Meshroom) or [Metashape](https://www.agisoft.com/)
 - Open generated 3D models in [Blender3D](https://www.blender.org/) to manually finalize them
@@ -52,12 +52,12 @@ If a software is configured, e.g. 'Meshroom' or 'Blender', the respective tool m
 
 ### Usage
 
-Save the provided JAR-file from the [releases page](https://github.com/arassec/artivact-creator/releases/) and run it
+Save the provided JAR-file from the [releases page](https://github.com/arassec/creatorArtivact-creator/releases/) and run it
 with a JRE17 or later.
 
 #### Using the Artivact-Turntable
 
-Linux users have to be in the "dialout" group to use the artivact turntable!
+Linux users have to be in the "dialout" group to use the creatorArtivact turntable!
 
 The turntable delay might be configured in case commands are sent to quickly to the turntable and it stops working.
 
@@ -74,7 +74,7 @@ Alternatively you can run rembg in a Docker container and call it remotely via H
 be started in docker, e.g. like this:
 ``docker run -d -p 5000:5000 --name=rembg --restart=always danielgatis/rembg s``
 
-The artivact-creator configuration is then as follows:
+The creatorArtivact-creator configuration is then as follows:
 
 ```
 adapter.implementation.background=RemBgRemote

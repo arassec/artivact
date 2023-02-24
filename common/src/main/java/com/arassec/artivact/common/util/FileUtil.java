@@ -1,8 +1,7 @@
-package com.arassec.artivact.creator.standalone.core.util;
+package com.arassec.artivact.common.util;
 
-import com.arassec.artivact.creator.standalone.core.model.Artivact;
-import com.arassec.artivact.creator.standalone.core.model.ArtivactCreatorException;
-import com.arassec.artivact.creator.standalone.core.model.ArtivactImageSet;
+import com.arassec.artivact.common.exception.ArtivactException;
+import com.arassec.artivact.common.model.Artivact;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -12,19 +11,21 @@ import java.net.URISyntaxException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import static com.arassec.artivact.common.model.Artivact.DATA_DIR;
 
 @Component
-public class FileHelper {
-
-    public static final String TEMP_DIR = "Temp";
+public class FileUtil {
 
     public boolean isDirEmpty(final Path directory) {
         try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(directory)) {
             return !dirStream.iterator().hasNext();
         } catch (IOException e) {
-            throw new ArtivactCreatorException("Could not check directory!", e);
+            throw new ArtivactException("Could not check directory!", e);
         }
     }
 
@@ -38,7 +39,7 @@ public class FileHelper {
             try {
                 Files.createDirectories(directory);
             } catch (IOException e) {
-                throw new ArtivactCreatorException("Could not create directory: " + directory, e);
+                throw new ArtivactException("Could not create directory: " + directory, e);
             }
         }
     }
@@ -52,7 +53,7 @@ public class FileHelper {
         try {
             var resourceUrl = classLoader.getResource(sourceDir);
             if (resourceUrl == null) {
-                throw new ArtivactCreatorException("Could not open resource: " + sourceDir);
+                throw new ArtivactException("Could not open resource: " + sourceDir);
             }
             var resourceDir = resourceUrl.toURI();
 
@@ -63,7 +64,7 @@ public class FileHelper {
             }
 
         } catch (URISyntaxException | IOException e) {
-            throw new ArtivactCreatorException("Could not create initial project layout!", e);
+            throw new ArtivactException("Could not create initial project layout!", e);
         }
     }
 
@@ -85,23 +86,37 @@ public class FileHelper {
                 });
             }
         } catch (IOException e) {
-            throw new ArtivactCreatorException("Could not delete directory!", e);
+            throw new ArtivactException("Could not delete directory!", e);
         }
     }
 
-    public void copyImages(Artivact artivact, ArtivactImageSet imageSet, Path destination, ProgressMonitor progressMonitor) {
-        var index = new AtomicInteger(1);
-        imageSet.getImages().forEach(artivactImage -> {
-            progressMonitor.setProgress("Copying image " + index.getAndIncrement() + "/" + imageSet.getImages().size());
-            Path source = artivact.getProjectRoot().resolve(artivactImage.getPath());
-            String[] parts = artivactImage.getPath().split("/");
-            Path target = destination.resolve(parts[parts.length - 1]);
-            try {
-                Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException e) {
-                throw new ArtivactCreatorException("Could not copy artivact images for model creation!", e);
+    public void deleteArtivactDir(Artivact artivact) {
+        Path artivactMainDir = artivact.getMainDir(true);
+        Path firstSubDir = artivact.getFirstSubDir(true);
+        Path secondSubDir = artivact.getSecondSubDir(true);
+
+        deleteDir(artivactMainDir);
+
+        try {
+            try (Stream<Path> stream = Files.list(secondSubDir)) {
+                if (stream.findAny().isEmpty()) {
+                    deleteDir(secondSubDir);
+                }
             }
-        });
+            try (Stream<Path> stream = Files.list(firstSubDir)) {
+                if (stream.findAny().isEmpty()) {
+                    deleteDir(firstSubDir);
+                }
+            }
+        } catch (IOException e) {
+            throw new ArtivactException("Could not delete all directories for Artivact-ID: " + artivact.getId());
+        }
+    }
+
+    public Optional<String> getExtension(String filename) {
+        return Optional.ofNullable(filename)
+                .filter(f -> f.contains("."))
+                .map(f -> f.substring(filename.lastIndexOf(".") + 1));
     }
 
     private void copyClasspathResourcesFromJar(URI resourceDir, Path targetDir) throws IOException {

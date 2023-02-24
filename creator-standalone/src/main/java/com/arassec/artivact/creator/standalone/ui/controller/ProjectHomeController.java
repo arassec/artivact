@@ -1,6 +1,6 @@
 package com.arassec.artivact.creator.standalone.ui.controller;
 
-import com.arassec.artivact.creator.standalone.core.model.Artivact;
+import com.arassec.artivact.creator.standalone.core.model.CreatorArtivact;
 import com.arassec.artivact.creator.standalone.core.model.ArtivactCreatorException;
 import com.arassec.artivact.creator.standalone.core.service.ExportService;
 import com.arassec.artivact.creator.standalone.core.service.ModelService;
@@ -114,7 +114,7 @@ public class ProjectHomeController implements ApplicationEventPublisherAware {
     }
 
     public void createModels() {
-        List<Artivact> artivactsWithoutModels = projectService.getArtivactIds().stream()
+        List<CreatorArtivact> artivactsWithoutModels = projectService.getArtivactIds().stream()
                 .map(projectService::readArtivact)
                 .filter(artivact -> artivact.getModels().isEmpty())
                 .toList();
@@ -124,14 +124,14 @@ public class ProjectHomeController implements ApplicationEventPublisherAware {
         }
 
         var progressMonitor = new ProgressMonitor();
-        for (Artivact artivact : artivactsWithoutModels) {
+        for (CreatorArtivact creatorArtivact : artivactsWithoutModels) {
             executor.execute(new LongRunningOperation(artivactsTable.getScene().getWindow(), progressMonitor,
                     () -> {
-                        modelService.createModel(artivact, modelService.getDefaultPipeline(), progressMonitor);
+                        modelService.createModel(creatorArtivact, modelService.getDefaultPipeline(), progressMonitor);
                         return messageSource.getMessage("general.ok", null, Locale.getDefault());
                     },
                     () -> {
-                        projectService.saveArtivact(artivact);
+                        projectService.saveArtivact(creatorArtivact);
                         return messageSource.getMessage("general.done", null, Locale.getDefault());
                     },
                     () -> {
@@ -246,10 +246,10 @@ public class ProjectHomeController implements ApplicationEventPublisherAware {
         return icon;
     }
 
-    private Optional<Boolean> checkModelFiles(Artivact artivact, String ending) {
+    private Optional<Boolean> checkModelFiles(CreatorArtivact creatorArtivact, String ending) {
         final var result = new AtomicBoolean(false);
-        artivact.getModels().forEach(model -> {
-            try (var fileStream = Files.list(artivact.getProjectRoot().resolve(model.getPath()))) {
+        creatorArtivact.getModels().forEach(model -> {
+            try (var fileStream = Files.list(creatorArtivact.getProjectRoot().resolve(model.getPath()))) {
                 fileStream.forEach(file -> {
                     if (file.getFileName().toString().endsWith(ending)) {
                         result.set(true);

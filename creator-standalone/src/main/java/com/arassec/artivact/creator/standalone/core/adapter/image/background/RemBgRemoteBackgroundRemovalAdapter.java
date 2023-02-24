@@ -1,9 +1,9 @@
 package com.arassec.artivact.creator.standalone.core.adapter.image.background;
 
-import com.arassec.artivact.creator.standalone.core.model.Artivact;
+import com.arassec.artivact.common.util.FileUtil;
+import com.arassec.artivact.creator.standalone.core.model.CreatorArtivact;
 import com.arassec.artivact.creator.standalone.core.model.ArtivactCreatorException;
 import com.arassec.artivact.creator.standalone.core.model.ArtivactImageSet;
-import com.arassec.artivact.creator.standalone.core.util.FileHelper;
 import com.arassec.artivact.creator.standalone.core.util.ProgressMonitor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +40,7 @@ import java.util.stream.Stream;
 @ConditionalOnProperty(value = "adapter.implementation.background", havingValue = "RemBgRemote")
 public class RemBgRemoteBackgroundRemovalAdapter extends BaseRemBgBackgroundRemovalAdapter {
 
-    private final FileHelper fileHelper;
+    private final FileUtil fileUtil;
 
     private final MessageSource messageSource;
 
@@ -48,8 +48,8 @@ public class RemBgRemoteBackgroundRemovalAdapter extends BaseRemBgBackgroundRemo
     private String remoteUrl;
 
     @Override
-    public List<Path> removeBackgroundFromImages(Artivact artivact, ArtivactImageSet imageSet, ProgressMonitor progressMonitor) {
-        initializeEnvironment(artivact, imageSet, progressMonitor, fileHelper);
+    public List<Path> removeBackgroundFromImages(CreatorArtivact creatorArtivact, ArtivactImageSet imageSet, ProgressMonitor progressMonitor) {
+        initializeEnvironment(creatorArtivact, imageSet, progressMonitor, fileUtil);
 
         List<Path> result = new LinkedList<>();
 

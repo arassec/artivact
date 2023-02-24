@@ -38,9 +38,9 @@ public class ConfigurationService extends BaseService {
     public PropertiesConfiguration loadPropertiesConfiguration(List<String> roles) {
         ConfigurationEntity entity = loadEntity(ConfigurationType.PROPERTIES.name());
 
-        if (StringUtils.hasText(entity.getContent())) {
+        if (StringUtils.hasText(entity.getContentJson())) {
             try {
-                PropertiesConfiguration propertiesConfiguration = getObjectMapper().readValue(entity.getContent(),
+                PropertiesConfiguration propertiesConfiguration = getObjectMapper().readValue(entity.getContentJson(),
                         PropertiesConfiguration.class);
 
                 PropertiesConfiguration result = new PropertiesConfiguration();
@@ -79,7 +79,7 @@ public class ConfigurationService extends BaseService {
         ConfigurationEntity entity = loadEntity(ConfigurationType.PROPERTIES.name());
 
         try {
-            entity.setContent(getObjectMapper().writeValueAsString(propertiesConfiguration));
+            entity.setContentJson(getObjectMapper().writeValueAsString(propertiesConfiguration));
         } catch (JsonProcessingException e) {
             throw new ArtivactVaultException("Could not convert properties configuration to JSON!", e);
         }
@@ -98,9 +98,9 @@ public class ConfigurationService extends BaseService {
     public LicenseConfiguration loadLicenseConfiguration(List<String> roles) {
         ConfigurationEntity entity = loadEntity(ConfigurationType.LICENSE.name());
 
-        if (StringUtils.hasText(entity.getContent())) {
+        if (StringUtils.hasText(entity.getContentJson())) {
             try {
-                LicenseConfiguration licenseConfiguration = getObjectMapper().readValue(entity.getContent(),
+                LicenseConfiguration licenseConfiguration = getObjectMapper().readValue(entity.getContentJson(),
                         LicenseConfiguration.class);
 
                 LicenseConfiguration result = new LicenseConfiguration();
@@ -150,7 +150,7 @@ public class ConfigurationService extends BaseService {
         ConfigurationEntity entity = loadEntity(ConfigurationType.LICENSE.name());
 
         try {
-            entity.setContent(getObjectMapper().writeValueAsString(licenseConfiguration));
+            entity.setContentJson(getObjectMapper().writeValueAsString(licenseConfiguration));
         } catch (JsonProcessingException e) {
             throw new ArtivactVaultException("Could not convert license configuration to JSON!", e);
         }
@@ -161,9 +161,9 @@ public class ConfigurationService extends BaseService {
     public TagsConfiguration loadTagsConfiguration(List<String> roles) {
         ConfigurationEntity entity = loadEntity(ConfigurationType.TAGS.name());
 
-        if (StringUtils.hasText(entity.getContent())) {
+        if (StringUtils.hasText(entity.getContentJson())) {
             try {
-                TagsConfiguration tagsConfiguration = getObjectMapper().readValue(entity.getContent(),
+                TagsConfiguration tagsConfiguration = getObjectMapper().readValue(entity.getContentJson(),
                         TagsConfiguration.class);
 
                 TagsConfiguration result = new TagsConfiguration();
@@ -190,7 +190,7 @@ public class ConfigurationService extends BaseService {
         });
 
         try {
-            entity.setContent(getObjectMapper().writeValueAsString(tagsConfiguration));
+            entity.setContentJson(getObjectMapper().writeValueAsString(tagsConfiguration));
         } catch (JsonProcessingException e) {
             throw new ArtivactVaultException("Could not convert license configuration to JSON!", e);
         }

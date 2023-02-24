@@ -34,7 +34,7 @@ public class EditorNotesController extends BaseController implements Application
 
     @FXML
     public void initialize() {
-        var activeArtivact = projectService.getActiveArtivact();
+        var activeArtivact = projectService.getActiveCreatorArtivact();
 
         var pathToPreviewImage = activeArtivact.getProjectRoot().resolve(activeArtivact.getPreviewImage());
 
@@ -57,7 +57,7 @@ public class EditorNotesController extends BaseController implements Application
     @Override
     public void onApplicationEvent(EditorEvent event) {
         if (EditorEventType.UPDATE_NOTES.equals(event.getType())) {
-            notesArea.setText(projectService.getActiveArtivact().getNotes());
+            notesArea.setText(projectService.getActiveCreatorArtivact().getNotes());
         }
     }
 }

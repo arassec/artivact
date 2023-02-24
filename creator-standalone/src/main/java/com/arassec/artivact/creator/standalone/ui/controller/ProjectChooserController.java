@@ -1,9 +1,9 @@
 package com.arassec.artivact.creator.standalone.ui.controller;
 
+import com.arassec.artivact.common.util.FileUtil;
 import com.arassec.artivact.creator.standalone.core.model.Project;
 import com.arassec.artivact.creator.standalone.core.service.ConfigurationService;
 import com.arassec.artivact.creator.standalone.core.service.ProjectService;
-import com.arassec.artivact.creator.standalone.core.util.FileHelper;
 import com.arassec.artivact.creator.standalone.ui.event.SceneConfig;
 import com.arassec.artivact.creator.standalone.ui.event.SceneEvent;
 import com.arassec.artivact.creator.standalone.ui.event.SceneEventType;
@@ -53,7 +53,7 @@ public class ProjectChooserController implements ApplicationEventPublisherAware 
 
     private final MessageSource messageSource;
 
-    private final FileHelper fileHelper;
+    private final FileUtil fileUtil;
 
     private final ProjectService projectService;
 
@@ -108,7 +108,7 @@ public class ProjectChooserController implements ApplicationEventPublisherAware 
             return;
         }
 
-        if (!fileHelper.isDirEmpty(projectDir.toPath())) {
+        if (!fileUtil.isDirEmpty(projectDir.toPath())) {
             var alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle(messageSource.getMessage("project-chooser.new-project.error.dialog-title", null, Locale.getDefault()));
             alert.setContentText(messageSource.getMessage("project-chooser.new-project.error.dialog-text", null,

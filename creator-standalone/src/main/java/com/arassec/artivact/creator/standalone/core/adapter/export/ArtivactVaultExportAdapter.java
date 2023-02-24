@@ -1,7 +1,7 @@
 package com.arassec.artivact.creator.standalone.core.adapter.export;
 
+import com.arassec.artivact.common.util.FileUtil;
 import com.arassec.artivact.creator.standalone.core.model.*;
-import com.arassec.artivact.creator.standalone.core.util.FileHelper;
 import com.arassec.artivact.creator.standalone.core.util.ProgressMonitor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ArtivactVaultExportAdapter implements ExportAdapter {
 
-    private final FileHelper fileHelper;
+    private final FileUtil fileUtil;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -32,39 +32,39 @@ public class ArtivactVaultExportAdapter implements ExportAdapter {
     }
 
     @Override
-    public void export(Artivact artivact, Path targetDir, ProgressMonitor progressMonitor) {
-        Path exportDir = targetDir.resolve(artivact.getMainDir(false));
+    public void export(CreatorArtivact creatorArtivact, Path targetDir, ProgressMonitor progressMonitor) {
+        Path exportDir = targetDir.resolve(creatorArtivact.getMainDir(false));
 
-        fileHelper.deleteDir(exportDir);
-        fileHelper.createDirIfRequired(exportDir);
+        fileUtil.deleteDir(exportDir);
+        fileUtil.createDirIfRequired(exportDir);
 
-        var imagesExported = exportImages(artivact, exportDir, artivact.getImageSets().stream()
+        var imagesExported = exportImages(creatorArtivact, exportDir, creatorArtivact.getImageSets().stream()
                 .map(ArtivactImageSet::getImages)
                 .flatMap(Collection::stream)
                 .filter(ArtivactImage::isExport)
-                .collect(Collectors.toList()));
+                .toList());
 
-        var modelsExported = exportModels(artivact, exportDir, artivact.getModels());
+        var modelsExported = exportModels(creatorArtivact, exportDir, creatorArtivact.getModels());
 
-        var dataExported = exportData(artivact, exportDir);
+        var dataExported = exportData(creatorArtivact, exportDir);
 
         if (!imagesExported && !modelsExported && !dataExported) {
-            artivact.deleteArtivactDir(targetDir);
+            creatorArtivact.deleteArtivactDir(targetDir);
         }
     }
 
-    private boolean exportImages(Artivact artivact, Path exportDir, List<ArtivactImage> images) {
+    private boolean exportImages(CreatorArtivact creatorArtivact, Path exportDir, List<ArtivactImage> images) {
         if (images.isEmpty()) {
             return false;
         }
 
         Path imageExportDir = exportDir.resolve("images");
-        fileHelper.createDirIfRequired(imageExportDir);
+        fileUtil.createDirIfRequired(imageExportDir);
 
         for (var i = 0; i < images.size(); i++) {
             String targetFilename = String.format("%03d", i) + "." + determineFileEnding(images.get(i).getPath());
             try {
-                Files.copy(artivact.getProjectRoot().resolve(images.get(i).getPath()), imageExportDir.resolve(targetFilename),
+                Files.copy(creatorArtivact.getProjectRoot().resolve(images.get(i).getPath()), imageExportDir.resolve(targetFilename),
                         StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
                 throw new ArtivactCreatorException("Could not export image!", e);
@@ -74,18 +74,18 @@ public class ArtivactVaultExportAdapter implements ExportAdapter {
         return true;
     }
 
-    private boolean exportModels(Artivact artivact, Path exportDir, List<ArtivactModel> models) {
+    private boolean exportModels(CreatorArtivact creatorArtivact, Path exportDir, List<ArtivactModel> models) {
         var modelsExported = false;
 
         Path modelExportDir = exportDir.resolve("models");
-        fileHelper.createDirIfRequired(modelExportDir);
+        fileUtil.createDirIfRequired(modelExportDir);
 
         for (var i = 0; i < models.size(); i++) {
             for (var exportFile : models.get(i).getExportFiles()) {
                 modelsExported = true;
                 String targetFilename = String.format("%03d", i) + "." + determineFileEnding(exportFile);
                 try {
-                    Files.copy(artivact.getProjectRoot().resolve(artivact.getModelDir(true, artivact.getId(),
+                    Files.copy(creatorArtivact.getProjectRoot().resolve(creatorArtivact.getModelDir(true,
                                     models.get(i).getNumber())).resolve(exportFile), modelExportDir.resolve(targetFilename),
                             StandardCopyOption.REPLACE_EXISTING);
                 } catch (IOException e) {
@@ -95,17 +95,17 @@ public class ArtivactVaultExportAdapter implements ExportAdapter {
         }
 
         if (!modelsExported) {
-            fileHelper.deleteDir(modelExportDir);
+            fileUtil.deleteDir(modelExportDir);
         }
 
         return modelsExported;
     }
 
-    private boolean exportData(Artivact artivact, Path targetDir) {
-        if (StringUtils.hasText(artivact.getNotes())) {
+    private boolean exportData(CreatorArtivact creatorArtivact, Path targetDir) {
+        if (StringUtils.hasText(creatorArtivact.getNotes())) {
             try {
                 Map<String, Object> data = new HashMap<>();
-                data.put("notes", artivact.getNotes());
+                data.put("notes", creatorArtivact.getNotes());
                 Files.writeString(targetDir.resolve("data.json").toAbsolutePath(), objectMapper.writeValueAsString(data));
             } catch (IOException e) {
                 throw new ArtivactCreatorException("Could not create notes file during export!", e);

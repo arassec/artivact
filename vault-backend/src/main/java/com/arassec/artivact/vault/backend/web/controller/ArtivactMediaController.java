@@ -7,7 +7,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.*;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -24,7 +26,7 @@ import java.util.zip.ZipOutputStream;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/artivact/media")
-public class ArtivactMediaController {
+public class ArtivactMediaController extends BaseController {
 
     private final MediaService mediaService;
 
@@ -97,6 +99,23 @@ public class ArtivactMediaController {
         response.addHeader("Expires", "0");
 
         return ResponseEntity.ok(streamResponseBody);
+    }
+
+    @PostMapping("/{artivactId}/image/upload")
+    public ResponseEntity<String> uploadImage(@PathVariable("artivactId") String artivactId,
+                                              @RequestPart(value = "file") final MultipartFile file,
+                                              Authentication authentication) {
+        mediaService.addImageToArtivact(artivactId, file, getRoles(authentication));
+        return ResponseEntity.ok("image uploaded");
+    }
+
+
+    @PostMapping("/{artivactId}/model/upload")
+    public ResponseEntity<String> uploadModel(@PathVariable("artivactId") String artivactId,
+                                              @RequestPart(value = "file") final MultipartFile file,
+                                              Authentication authentication) {
+        mediaService.addModelToArtivact(artivactId, file, getRoles(authentication));
+        return ResponseEntity.ok("model uploaded");
     }
 
 }

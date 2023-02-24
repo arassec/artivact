@@ -1,6 +1,6 @@
 package com.arassec.artivact.creator.standalone.core.adapter.model.creator;
 
-import com.arassec.artivact.creator.standalone.core.model.Artivact;
+import com.arassec.artivact.creator.standalone.core.model.CreatorArtivact;
 import com.arassec.artivact.creator.standalone.core.util.ProgressMonitor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,13 +20,18 @@ public class FallbackModelCreatorAdapter implements ModelCreatorAdapter {
     }
 
     @Override
-    public void createModel(Artivact artivact, String pipeline, ProgressMonitor progressMonitor) {
-        log.info("Fallback model creator called for artivact: {}", artivact.getId());
+    public void createModel(CreatorArtivact creatorArtivact, String pipeline, ProgressMonitor progressMonitor) {
+        log.info("Fallback model creator called for artivact: {}", creatorArtivact.getId());
     }
 
     @Override
     public void cancelModelCreation() {
         log.info("Fallback model creator called to cancel model creation.");
+    }
+
+    @Override
+    public boolean supportsCancellation() {
+        return false;
     }
 
 }

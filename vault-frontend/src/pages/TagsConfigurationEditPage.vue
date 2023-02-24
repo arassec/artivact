@@ -36,7 +36,7 @@ function loadLocales() {
     .catch(() => {
       $q.notify({
         color: 'negative',
-        position: 'top',
+        position: 'bottom',
         message: 'Loading locales failed',
         icon: 'report_problem'
       })
@@ -53,7 +53,7 @@ function loadTagsConfiguration() {
     .catch(() => {
       $q.notify({
         color: 'negative',
-        position: 'top',
+        position: 'bottom',
         message: 'Loading failed',
         icon: 'report_problem'
       })
@@ -66,7 +66,7 @@ function saveTagsConfiguration() {
     .then(() => {
       $q.notify({
         color: 'positive',
-        position: 'top',
+        position: 'bottom',
         message: 'Tags saved',
         icon: 'report'
       })
@@ -74,7 +74,7 @@ function saveTagsConfiguration() {
     .catch(() => {
       $q.notify({
         color: 'negative',
-        position: 'top',
+        position: 'bottom',
         message: 'Saving failed',
         icon: 'report_problem'
       })

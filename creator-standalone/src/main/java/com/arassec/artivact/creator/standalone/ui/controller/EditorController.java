@@ -9,6 +9,7 @@ import com.arassec.artivact.creator.standalone.core.util.ProgressMonitor;
 import com.arassec.artivact.creator.standalone.ui.event.*;
 import com.arassec.artivact.creator.standalone.ui.util.DialogHelper;
 import com.arassec.artivact.creator.standalone.ui.util.LongRunningOperation;
+import com.arassec.artivact.creator.standalone.ui.util.Operation;
 import jakarta.annotation.PreDestroy;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -99,7 +100,7 @@ public class EditorController implements ApplicationEventPublisherAware, Applica
         VBox.setVgrow(contentSplitPane, Priority.ALWAYS);
 
         backButton.setOnAction(event -> {
-                    projectService.saveArtivact(projectService.getActiveArtivact());
+                    projectService.saveArtivact(projectService.getActiveCreatorArtivact());
                     applicationEventPublisher.publishEvent(
                             new SceneEvent(SceneEventType.LOAD_SCENE, new SceneConfig(SceneEvent.PROJECT_HOME_FXML, null), null));
                 }
@@ -203,16 +204,16 @@ public class EditorController implements ApplicationEventPublisherAware, Applica
 
         executor.execute(new LongRunningOperation(editorTreePane.getScene().getWindow(), progressMonitor,
                 () -> {
-                    projectService.getActiveArtivact().addImageSet(images, progressMonitor, null, true);
+                    projectService.getActiveCreatorArtivact().addImageSet(images, progressMonitor, null, true);
                     return messageSource.getMessage(I18N_OK, null, Locale.getDefault());
                 },
                 () -> {
-                    projectService.saveArtivact(projectService.getActiveArtivact());
+                    projectService.saveArtivact(projectService.getActiveCreatorArtivact());
                     applicationEventPublisher.publishEvent(new EditorEvent(EditorEventType.UPDATE_EDITOR_TREE_AND_SELECT_IMAGE_SET_OVERVIEW, -1));
                     return messageSource.getMessage(I18N_DONE, null, Locale.getDefault());
                 },
                 () -> cancelProgress(progressMonitor),
-                applicationEventPublisher, projectService.getActiveArtivact()
+                applicationEventPublisher, projectService.getActiveCreatorArtivact()
         ));
     }
 
@@ -222,13 +223,13 @@ public class EditorController implements ApplicationEventPublisherAware, Applica
                 () -> {
                     ArtivactImageSet selectedImageSet = null;
                     if (selectedImageSetIndex != -1) {
-                        selectedImageSet = projectService.getActiveArtivact().getImageSets().get(selectedImageSetIndex);
+                        selectedImageSet = projectService.getActiveCreatorArtivact().getImageSets().get(selectedImageSetIndex);
                     }
-                    imageService.capturePhotos(projectService.getActiveArtivact(), 1, false, progressMonitor, selectedImageSet);
+                    imageService.capturePhotos(projectService.getActiveCreatorArtivact(), 1, false, progressMonitor, selectedImageSet);
                     return messageSource.getMessage(I18N_OK, null, Locale.getDefault());
                 },
                 () -> {
-                    projectService.saveArtivact(projectService.getActiveArtivact());
+                    projectService.saveArtivact(projectService.getActiveCreatorArtivact());
                     if (selectedImageSetIndex != -1) {
                         applicationEventPublisher.publishEvent(new EditorEvent(EditorEventType.IMAGE_SET_SELECTED, selectedImageSetIndex));
                     } else {
@@ -249,22 +250,22 @@ public class EditorController implements ApplicationEventPublisherAware, Applica
 
         Pair<Integer, Boolean> userInput = userInputOptional.get();
 
-        projectService.saveArtivact(projectService.getActiveArtivact());
+        projectService.saveArtivact(projectService.getActiveCreatorArtivact());
 
         var progressMonitor = new ProgressMonitor();
         executor.execute(new LongRunningOperation(editorTreePane.getScene().getWindow(), progressMonitor,
                 () -> {
-                    imageService.capturePhotos(projectService.getActiveArtivact(), userInput.getKey(), userInput.getValue(),
+                    imageService.capturePhotos(projectService.getActiveCreatorArtivact(), userInput.getKey(), userInput.getValue(),
                             progressMonitor, null);
                     return messageSource.getMessage(I18N_OK, null, Locale.getDefault());
                 },
                 () -> {
-                    projectService.saveArtivact(projectService.getActiveArtivact());
+                    projectService.saveArtivact(projectService.getActiveCreatorArtivact());
                     applicationEventPublisher.publishEvent(new EditorEvent(EditorEventType.UPDATE_EDITOR_TREE_AND_SELECT_IMAGE_SET_OVERVIEW, -1));
                     return messageSource.getMessage(I18N_DONE, null, Locale.getDefault());
                 },
                 () -> cancelProgress(progressMonitor),
-                applicationEventPublisher, projectService.getActiveArtivact()
+                applicationEventPublisher, projectService.getActiveCreatorArtivact()
         ));
     }
 
@@ -272,7 +273,7 @@ public class EditorController implements ApplicationEventPublisherAware, Applica
         var progressMonitor = new ProgressMonitor();
         executor.execute(new LongRunningOperation(editorTreePane.getScene().getWindow(), progressMonitor,
                 () -> {
-                    var artivact = projectService.getActiveArtivact();
+                    var artivact = projectService.getActiveCreatorArtivact();
                     List<Path> images = imageService.removeBackgrounds(artivact, artivact.getImageSets().get(imageSetIndex),
                             progressMonitor);
                     artivact.addImageSet(images.stream().map(Path::toFile).toList(), progressMonitor, true,
@@ -285,19 +286,19 @@ public class EditorController implements ApplicationEventPublisherAware, Applica
                     return messageSource.getMessage(I18N_OK, null, Locale.getDefault());
                 },
                 () -> {
-                    projectService.saveArtivact(projectService.getActiveArtivact());
+                    projectService.saveArtivact(projectService.getActiveCreatorArtivact());
                     applicationEventPublisher.publishEvent(new EditorEvent(EditorEventType.UPDATE_EDITOR_TREE_AND_SELECT_IMAGE_SET_OVERVIEW, -1));
                     return messageSource.getMessage(I18N_DONE, null, Locale.getDefault());
                 },
                 null, // Cannot be cancelled!
-                applicationEventPublisher, projectService.getActiveArtivact()
+                applicationEventPublisher, projectService.getActiveCreatorArtivact()
         ));
     }
 
     private void toggleModelInput(Integer imageSetIndex) {
-        ArtivactImageSet selectedImageSet = projectService.getActiveArtivact().getImageSets().get(imageSetIndex);
+        ArtivactImageSet selectedImageSet = projectService.getActiveCreatorArtivact().getImageSets().get(imageSetIndex);
         selectedImageSet.setModelInput(!selectedImageSet.isModelInput());
-        projectService.saveArtivact(projectService.getActiveArtivact());
+        projectService.saveArtivact(projectService.getActiveCreatorArtivact());
         applicationEventPublisher.publishEvent(new EditorEvent(EditorEventType.UPDATE_EDITOR_TREE, -1));
     }
 
@@ -311,8 +312,8 @@ public class EditorController implements ApplicationEventPublisherAware, Applica
         var file = fileChooser.showOpenDialog(editorTreePane.getScene().getWindow());
 
         if (file != null) {
-            projectService.getActiveArtivact().addModel(file.toPath());
-            projectService.saveArtivact(projectService.getActiveArtivact());
+            projectService.getActiveCreatorArtivact().addModel(file.toPath());
+            projectService.saveArtivact(projectService.getActiveCreatorArtivact());
             applicationEventPublisher.publishEvent(new EditorEvent(EditorEventType.UPDATE_EDITOR_TREE, -1));
         }
     }
@@ -334,29 +335,35 @@ public class EditorController implements ApplicationEventPublisherAware, Applica
 
         String pipeline = pipelineInput;
 
-        projectService.saveArtivact(projectService.getActiveArtivact());
+        projectService.saveArtivact(projectService.getActiveCreatorArtivact());
 
         var progressMonitor = new ProgressMonitor();
+
+        Operation cancelCallback = null;
+        if (modelService.cancelModelCreationSupported()) {
+            cancelCallback = () -> {
+                modelService.cancelModelCreation();
+                return cancelProgress(progressMonitor);
+            };
+        }
+
         executor.execute(new LongRunningOperation(editorTreePane.getScene().getWindow(), progressMonitor,
                 () -> {
-                    modelService.createModel(projectService.getActiveArtivact(), pipeline, progressMonitor);
+                    modelService.createModel(projectService.getActiveCreatorArtivact(), pipeline, progressMonitor);
                     return messageSource.getMessage(I18N_OK, null, Locale.getDefault());
                 },
                 () -> {
-                    projectService.saveArtivact(projectService.getActiveArtivact());
+                    projectService.saveArtivact(projectService.getActiveCreatorArtivact());
                     applicationEventPublisher.publishEvent(new EditorEvent(EditorEventType.UPDATE_EDITOR_TREE, -1));
                     return messageSource.getMessage(I18N_DONE, null, Locale.getDefault());
                 },
-                () -> {
-                    modelService.cancelModelCreation();
-                    return cancelProgress(progressMonitor);
-                },
-                applicationEventPublisher, projectService.getActiveArtivact()
+                cancelCallback,
+                applicationEventPublisher, projectService.getActiveCreatorArtivact()
         ));
     }
 
     private void editModel(int modelIndex) {
-        var artivact = projectService.getActiveArtivact();
+        var artivact = projectService.getActiveCreatorArtivact();
 
         var progressMonitor = new ProgressMonitor();
         progressMonitor.setProgressPrefix(messageSource.getMessage("editor.dialog.edit-model.progress.prefix", null, Locale.getDefault()));
@@ -367,7 +374,7 @@ public class EditorController implements ApplicationEventPublisherAware, Applica
                     return messageSource.getMessage(I18N_OK, null, Locale.getDefault());
                 },
                 () -> {
-                    projectService.saveArtivact(projectService.getActiveArtivact());
+                    projectService.saveArtivact(projectService.getActiveCreatorArtivact());
                     applicationEventPublisher.publishEvent(new EditorEvent(EditorEventType.UPDATE_MODEL_CONTENT, modelIndex));
                     return messageSource.getMessage(I18N_DONE, null, Locale.getDefault());
                 },
@@ -381,8 +388,8 @@ public class EditorController implements ApplicationEventPublisherAware, Applica
         }
         Optional<ButtonType> result = dialogHelper.showDeleteConfirmDialog(editorTreePane.getScene().getWindow());
         if (result.orElse(ButtonType.NO) == ButtonType.OK) {
-            projectService.getActiveArtivact().deleteImageSet(projectService.getActiveArtivact().getImageSets().get(imageSetIndex));
-            projectService.saveArtivact(projectService.getActiveArtivact());
+            projectService.getActiveCreatorArtivact().deleteImageSet(projectService.getActiveCreatorArtivact().getImageSets().get(imageSetIndex));
+            projectService.saveArtivact(projectService.getActiveCreatorArtivact());
             applicationEventPublisher.publishEvent(new EditorEvent(EditorEventType.UPDATE_EDITOR_TREE_AND_SELECT_IMAGE_SET_OVERVIEW, -1));
         }
     }
@@ -393,8 +400,8 @@ public class EditorController implements ApplicationEventPublisherAware, Applica
         }
         Optional<ButtonType> result = dialogHelper.showDeleteConfirmDialog(editorTreePane.getScene().getWindow());
         if (result.orElse(ButtonType.NO) == ButtonType.OK) {
-            projectService.getActiveArtivact().deleteModel(modelIndex);
-            projectService.saveArtivact(projectService.getActiveArtivact());
+            projectService.getActiveCreatorArtivact().deleteModel(modelIndex);
+            projectService.saveArtivact(projectService.getActiveCreatorArtivact());
             applicationEventPublisher.publishEvent(new EditorEvent(EditorEventType.UPDATE_EDITOR_TREE_AND_SELECT_IMAGE_SET_OVERVIEW, -1));
         }
     }
@@ -409,7 +416,7 @@ public class EditorController implements ApplicationEventPublisherAware, Applica
         var progressMonitor = new ProgressMonitor("Exporting - ");
         executor.execute(new LongRunningOperation(editorTreePane.getScene().getWindow(), progressMonitor,
                 () -> {
-                    exportService.export(projectService.getActiveArtivact(), progressMonitor);
+                    exportService.export(projectService.getActiveCreatorArtivact(), progressMonitor);
                     return messageSource.getMessage(I18N_OK, null, Locale.getDefault());
                 },
                 () -> messageSource.getMessage(I18N_DONE, null, Locale.getDefault()),

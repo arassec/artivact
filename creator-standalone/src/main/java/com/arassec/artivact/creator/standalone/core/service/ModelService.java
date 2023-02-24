@@ -2,7 +2,7 @@ package com.arassec.artivact.creator.standalone.core.service;
 
 import com.arassec.artivact.creator.standalone.core.adapter.model.creator.ModelCreatorAdapter;
 import com.arassec.artivact.creator.standalone.core.adapter.model.editor.ModelEditorAdapter;
-import com.arassec.artivact.creator.standalone.core.model.Artivact;
+import com.arassec.artivact.creator.standalone.core.model.CreatorArtivact;
 import com.arassec.artivact.creator.standalone.core.model.ArtivactAsset;
 import com.arassec.artivact.creator.standalone.core.util.ProgressMonitor;
 import lombok.RequiredArgsConstructor;
@@ -28,16 +28,20 @@ public class ModelService {
         return modelCreatorAdapter.getPipelines();
     }
 
-    public void createModel(Artivact artivact, String pipeline, ProgressMonitor progressMonitor) {
-        modelCreatorAdapter.createModel(artivact, pipeline, progressMonitor);
+    public void createModel(CreatorArtivact creatorArtivact, String pipeline, ProgressMonitor progressMonitor) {
+        modelCreatorAdapter.createModel(creatorArtivact, pipeline, progressMonitor);
     }
 
     public void cancelModelCreation() {
         modelCreatorAdapter.cancelModelCreation();
     }
 
-    public void openModel(Artivact artivact, ArtivactAsset asset) {
-        modelEditorAdapter.openModel(artivact, asset);
+    public void openModel(CreatorArtivact creatorArtivact, ArtivactAsset asset) {
+        modelEditorAdapter.openModel(creatorArtivact, asset);
+    }
+
+    public boolean cancelModelCreationSupported() {
+        return modelCreatorAdapter.supportsCancellation();
     }
 
 }

@@ -37,7 +37,7 @@ function scanArtivacts() {
     .then(() => {
       $q.notify({
         color: 'positive',
-        position: 'top',
+        position: 'bottom',
         message: 'Scan successful',
         icon: 'report'
       })
@@ -45,7 +45,7 @@ function scanArtivacts() {
     .catch(() => {
       $q.notify({
         color: 'negative',
-        position: 'top',
+        position: 'bottom',
         message: 'Scan failed',
         icon: 'report_problem'
       })
@@ -66,7 +66,7 @@ function loadLicenseConfiguration() {
     .catch(() => {
       $q.notify({
         color: 'negative',
-        position: 'top',
+        position: 'bottom',
         message: 'License configuration loading failed',
         icon: 'report_problem'
       })
@@ -81,7 +81,7 @@ function loadLocales() {
     .catch(() => {
       $q.notify({
         color: 'negative',
-        position: 'top',
+        position: 'bottom',
         message: 'Loading locales failed',
         icon: 'report_problem'
       })
@@ -93,7 +93,7 @@ function saveLicenseConfiguration() {
     .then(() => {
       $q.notify({
         color: 'positive',
-        position: 'top',
+        position: 'bottom',
         message: 'License configuration saved',
         icon: 'report'
       })
@@ -101,7 +101,7 @@ function saveLicenseConfiguration() {
     .catch(() => {
       $q.notify({
         color: 'negative',
-        position: 'top',
+        position: 'bottom',
         message: 'Saving failed',
         icon: 'report_problem'
       })

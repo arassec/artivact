@@ -18,6 +18,6 @@ public class ConfigurationEntity {
     @Version
     private Integer version;
 
-    private String content;
+    private String contentJson;
 
 }

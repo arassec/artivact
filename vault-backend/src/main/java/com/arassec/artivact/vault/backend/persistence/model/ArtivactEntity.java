@@ -21,11 +21,11 @@ public class ArtivactEntity {
 
     private LocalDateTime scanned;
 
-    private String title;
+    private String titleJson;
 
-    private String restrictions;
+    private String restrictionsJson;
 
-    private String description;
+    private String descriptionJson;
 
     private String propertiesJson;
 

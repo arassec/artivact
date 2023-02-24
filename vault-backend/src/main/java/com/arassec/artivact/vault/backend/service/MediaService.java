@@ -1,14 +1,17 @@
 package com.arassec.artivact.vault.backend.service;
 
+import com.arassec.artivact.common.exception.ArtivactException;
+import com.arassec.artivact.common.model.Artivact;
+import com.arassec.artivact.common.util.FileUtil;
 import com.arassec.artivact.vault.backend.core.ArtivactVaultException;
-import com.arassec.artivact.vault.backend.service.model.Artivact;
 import com.arassec.artivact.vault.backend.service.model.ImageSize;
-import lombok.RequiredArgsConstructor;
+import com.arassec.artivact.vault.backend.service.model.VaultArtivact;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.imgscalr.Scalr;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -16,12 +19,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.LinkedList;
 import java.util.List;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class MediaService {
 
     public static final String IMAGES = "images";
@@ -32,19 +35,27 @@ public class MediaService {
 
     private final ArtivactService artivactService;
 
-    @Value("${artivact.vault.data.dir}")
-    private String artivactsDir;
+    private final FileUtil fileUtil;
+
+    private final Path dataDir;
+
+    public MediaService(ArtivactService artivactService, FileUtil fileUtil) {
+        this.artivactService = artivactService;
+        this.fileUtil = fileUtil;
+        this.dataDir = artivactService.getProjectRoot().resolve(Artivact.DATA_DIR);
+    }
 
     public byte[] getArtivactImage(String artivactId, String fileName, ImageSize targetSize) {
+
         try {
-            Path originalImagePath = Path.of(artivactsDir)
+            Path originalImagePath = dataDir
                     .resolve(artivactId.substring(0, 3))
                     .resolve(artivactId.substring(3, 6))
                     .resolve(artivactId)
                     .resolve(IMAGES)
                     .resolve(fileName);
 
-            Path scaledImageDirPath = Path.of(artivactsDir)
+            Path scaledImageDirPath = dataDir
                     .resolve(artivactId.substring(0, 3))
                     .resolve(artivactId.substring(3, 6))
                     .resolve(artivactId)
@@ -89,7 +100,7 @@ public class MediaService {
     }
 
     public FileSystemResource getArtivactModel(String artivactId, String fileName) {
-        return new FileSystemResource(Path.of(artivactsDir)
+        return new FileSystemResource(dataDir
                 .resolve(artivactId.substring(0, 3))
                 .resolve(artivactId.substring(3, 6))
                 .resolve(artivactId)
@@ -100,10 +111,10 @@ public class MediaService {
     public List<String> getMediaFilesForDownload(String artivactId) {
         List<String> result = new LinkedList<>();
 
-        Artivact artivact = artivactService.loadArtivact(artivactId, List.of());// roles are not required!
+        VaultArtivact vaultArtivact = artivactService.loadArtivact(artivactId, List.of());// roles are not required!
 
-        result.addAll(artivact.getMediaContent().getImages().stream()
-                .map(image -> Path.of(artivactsDir)
+        result.addAll(vaultArtivact.getMediaContent().getImages().stream()
+                .map(image -> dataDir
                         .resolve(artivactId.substring(0, 3))
                         .resolve(artivactId.substring(3, 6))
                         .resolve(artivactId)
@@ -113,8 +124,8 @@ public class MediaService {
                 .map(Path::toString)
                 .toList());
 
-        result.addAll(artivact.getMediaContent().getModels().stream()
-                .map(model -> Path.of(artivactsDir)
+        result.addAll(vaultArtivact.getMediaContent().getModels().stream()
+                .map(model -> dataDir
                         .resolve(artivactId.substring(0, 3))
                         .resolve(artivactId.substring(3, 6))
                         .resolve(artivactId)
@@ -125,6 +136,51 @@ public class MediaService {
                 .toList());
 
         return result;
+    }
+
+    @Transactional
+    public void addImageToArtivact(String artivactId, MultipartFile file, List<String> roles) {
+        VaultArtivact vaultArtivact = artivactService.loadArtivact(artivactId, roles);
+
+        int nextAssetNumber = vaultArtivact.getNextAssetNumber(vaultArtivact.getImagesDir(true));
+        String fileExtension = fileUtil.getExtension(file.getOriginalFilename()).orElseThrow();
+        Path imagePath = vaultArtivact.getImagePath(true, nextAssetNumber, fileExtension);
+
+        try {
+            Files.copy(file.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new ArtivactException("Could not save image!", e);
+        }
+
+        vaultArtivact.getMediaContent().getImages().add(vaultArtivact.getAssetName(nextAssetNumber, fileExtension));
+
+        artivactService.saveArtivact(vaultArtivact);
+    }
+
+    @Transactional
+    public void addModelToArtivact(String artivactId, MultipartFile file, List<String> roles) {
+        VaultArtivact vaultArtivact = artivactService.loadArtivact(artivactId, roles);
+
+        int nextAssetNumber = vaultArtivact.getNextAssetNumber(vaultArtivact.getModelsDir(true));
+        String fileExtension = fileUtil.getExtension(file.getOriginalFilename()).orElseThrow();
+
+        if (!"glb".equals(fileExtension)) {
+            throw new ArtivactException("Unsupported model format. Models must be in GLB format!");
+        }
+
+        String assetName = vaultArtivact.getAssetName(nextAssetNumber, fileExtension);
+
+        Path modelPath = vaultArtivact.getModelsDir(true).resolve(assetName);
+
+        try {
+            Files.copy(file.getInputStream(), modelPath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new ArtivactException("Could not save model!", e);
+        }
+
+        vaultArtivact.getMediaContent().getModels().add(assetName);
+
+        artivactService.saveArtivact(vaultArtivact);
     }
 
 }

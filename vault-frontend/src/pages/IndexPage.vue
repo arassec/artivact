@@ -30,7 +30,7 @@ export default defineComponent({
         .catch(() => {
           $q.notify({
             color: 'negative',
-            position: 'top',
+            position: 'bottom',
             message: 'Loading failed',
             icon: 'report_problem'
           })

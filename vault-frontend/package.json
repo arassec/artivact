@@ -13,17 +13,16 @@
     "build": "quasar build"
   },
   "dependencies": {
-    "@google/model-viewer": "^2.0.0",
-    "@quasar/extras": "^1.0.0",
-    "axios": "^0.27.2",
-    "core-js": "^3.6.5",
-    "pinia": "^2.0.17",
-    "quasar": "^2.6.0",
-    "sortablejs": "^1.15.0",
-    "sortablejs-vue3": "^1.2.0",
-    "vue": "^3.0.0",
+    "@google/model-viewer": "^3.0.0",
+    "@quasar/extras": "^1.15.10",
+    "axios": "^1.2.6",
+    "core-js": "^3.27.2",
+    "pinia": "^2.0.30",
+    "quasar": "^2.11.5",
+    "vue": "^3.2.45",
     "vue-i18n": "^9.2.2",
-    "vue-router": "^4.0.0"
+    "vue-router": "^4.1.6",
+    "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
     "@intlify/vue-i18n-loader": "^4.2.0",

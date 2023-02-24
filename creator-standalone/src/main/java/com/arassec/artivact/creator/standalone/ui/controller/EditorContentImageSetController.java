@@ -46,7 +46,7 @@ public class EditorContentImageSetController extends EditorContentBaseController
             var source = ((MenuItem) actionEvent.getSource());
             var artivactImage = (ArtivactImage) source.getUserData();
             artivactImage.setExport(!artivactImage.isExport());
-            projectService.saveArtivact(projectService.getActiveArtivact());
+            projectService.saveArtivact(projectService.getActiveCreatorArtivact());
             updateContent(imageSetIndex);
         });
 
@@ -58,8 +58,8 @@ public class EditorContentImageSetController extends EditorContentBaseController
             if (result.orElse(ButtonType.NO) == ButtonType.OK) {
                 var source = ((MenuItem) actionEvent.getSource());
                 var artivactImage = (ArtivactImage) source.getUserData();
-                projectService.getActiveArtivact().deleteImage(artivactImage);
-                projectService.saveArtivact(projectService.getActiveArtivact());
+                projectService.getActiveCreatorArtivact().deleteImage(artivactImage);
+                projectService.saveArtivact(projectService.getActiveCreatorArtivact());
                 updateContent(imageSetIndex);
             }
         });
@@ -70,7 +70,7 @@ public class EditorContentImageSetController extends EditorContentBaseController
         contextMenu.getItems().add(new SeparatorMenuItem());
         contextMenu.getItems().add(deleteMenuItem);
 
-        projectService.getActiveArtivact().getImageSets().get(imageSetIndex).getImages().forEach(asset -> {
+        projectService.getActiveCreatorArtivact().getImageSets().get(imageSetIndex).getImages().forEach(asset -> {
             var assetPreviewPane = createPreview(asset);
 
             assetPreviewPane.setOnContextMenuRequested(contextMenuEvent -> {
@@ -84,7 +84,7 @@ public class EditorContentImageSetController extends EditorContentBaseController
     }
 
     private Pane createPreview(ArtivactImage artivactImage) {
-        Pane preview = createRawPreview(projectService.getActiveArtivact(), artivactImage);
+        Pane preview = createRawPreview(projectService.getActiveCreatorArtivact(), artivactImage);
 
         var horizontalBox = new HBox();
 

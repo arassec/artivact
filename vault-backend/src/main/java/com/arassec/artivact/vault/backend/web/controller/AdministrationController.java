@@ -22,7 +22,7 @@ public class AdministrationController extends BaseController {
 
     @PostMapping(value = "/scan")
     public void scanArtivactDir() {
-        artivactService.scanArtivactsDir();
+        artivactService.scanDataDir();
     }
 
     @GetMapping(value = "/property")

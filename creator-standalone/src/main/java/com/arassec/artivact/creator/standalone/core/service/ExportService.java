@@ -1,7 +1,7 @@
 package com.arassec.artivact.creator.standalone.core.service;
 
 import com.arassec.artivact.creator.standalone.core.adapter.export.ExportAdapter;
-import com.arassec.artivact.creator.standalone.core.model.Artivact;
+import com.arassec.artivact.creator.standalone.core.model.CreatorArtivact;
 import com.arassec.artivact.creator.standalone.core.util.ProgressMonitor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,8 +14,8 @@ public class ExportService {
 
     private final ExportAdapter exportAdapter;
 
-    public void export(Artivact artivact, ProgressMonitor progressMonitor) {
-        exportAdapter.export(artivact, artivact.getProjectRoot().resolve("Export"), progressMonitor);
+    public void export(CreatorArtivact creatorArtivact, ProgressMonitor progressMonitor) {
+        exportAdapter.export(creatorArtivact, creatorArtivact.getProjectRoot().resolve("Export"), progressMonitor);
     }
 
 }

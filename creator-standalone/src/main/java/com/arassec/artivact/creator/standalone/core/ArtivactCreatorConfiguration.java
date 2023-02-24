@@ -1,5 +1,7 @@
 package com.arassec.artivact.creator.standalone.core;
 
+import com.arassec.artivact.common.ArtivactCommonConfiguration;
+import com.arassec.artivact.common.util.FileUtil;
 import com.arassec.artivact.creator.standalone.core.adapter.image.background.BackgroundRemovalAdapter;
 import com.arassec.artivact.creator.standalone.core.adapter.image.background.FallbackBackgroundRemovalAdapter;
 import com.arassec.artivact.creator.standalone.core.adapter.image.camera.CameraAdapter;
@@ -10,14 +12,15 @@ import com.arassec.artivact.creator.standalone.core.adapter.model.creator.Fallba
 import com.arassec.artivact.creator.standalone.core.adapter.model.creator.ModelCreatorAdapter;
 import com.arassec.artivact.creator.standalone.core.adapter.model.editor.FallbackModelEditorAdapter;
 import com.arassec.artivact.creator.standalone.core.adapter.model.editor.ModelEditorAdapter;
-import com.arassec.artivact.creator.standalone.core.util.FileHelper;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.support.ResourceBundleMessageSource;
 
 @Configuration
+@Import(ArtivactCommonConfiguration.class)
 public class ArtivactCreatorConfiguration {
 
     @Bean
@@ -36,8 +39,8 @@ public class ArtivactCreatorConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public CameraAdapter fallbackCameraAdapter(FileHelper fileHelper) {
-        return new FallbackCameraAdapter(fileHelper);
+    public CameraAdapter fallbackCameraAdapter(FileUtil fileUtil) {
+        return new FallbackCameraAdapter(fileUtil);
     }
 
     @Bean

@@ -108,14 +108,13 @@ public class EditorTreeController implements ApplicationEventPublisherAware, App
             int index = selectedTreeItem.getValue().getIndex();
 
             if (AssetType.IMAGE.equals(assetType)) {
-                projectService.getActiveArtivact().openDirInOs(projectService.getActiveArtivact().getImagesDir(true));
+                projectService.getActiveCreatorArtivact().openDirInOs(projectService.getActiveCreatorArtivact().getImagesDir(true));
             } else if (AssetType.MODEL.equals(assetType) && index < 0) {
-                projectService.getActiveArtivact().openDirInOs(projectService.getActiveArtivact().getModelsDir(true,
-                        projectService.getActiveArtivact().getId()));
+                projectService.getActiveCreatorArtivact().openDirInOs(projectService.getActiveCreatorArtivact().getModelsDir(true));
             } else if (AssetType.MODEL.equals(assetType)) {
-                var artivactModel = projectService.getActiveArtivact().getModels().get(index);
-                projectService.getActiveArtivact().openDirInOs(projectService.getActiveArtivact().getModelDir(true,
-                        projectService.getActiveArtivact().getId(), artivactModel.getNumber()));
+                var artivactModel = projectService.getActiveCreatorArtivact().getModels().get(index);
+                projectService.getActiveCreatorArtivact().openDirInOs(projectService.getActiveCreatorArtivact().getModelDir(true,
+                        artivactModel.getNumber()));
             }
         });
 
@@ -142,7 +141,7 @@ public class EditorTreeController implements ApplicationEventPublisherAware, App
         imageSetsTreeItem.setExpanded(true);
         imageSetsTreeItem.setGraphic(new FontIcon("fas-images"));
 
-        var artivact = projectService.getActiveArtivact();
+        var artivact = projectService.getActiveCreatorArtivact();
 
         for (var i = 0; i < artivact.getImageSets().size(); i++) {
             TreeItem<EditorTreeItemContent> imageItem =

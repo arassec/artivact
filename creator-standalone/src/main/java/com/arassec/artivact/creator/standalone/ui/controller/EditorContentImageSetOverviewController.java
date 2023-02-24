@@ -35,14 +35,14 @@ public class EditorContentImageSetOverviewController extends EditorContentBaseCo
         imageSetOverviewContentPane.getChildren().clear();
 
         var counter = new AtomicInteger(0);
-        projectService.getActiveArtivact().getImageSets()
+        projectService.getActiveCreatorArtivact().getImageSets()
                 .forEach(imageSet -> imageSetOverviewContentPane.getChildren().add(createPreview(imageSet, counter.getAndIncrement())));
     }
 
     private Pane createPreview(ArtivactImageSet imageSet, int index) {
         if (!imageSet.getImages().isEmpty()) {
 
-            Pane preview = createRawPreview(projectService.getActiveArtivact(), imageSet.getImages().get(0));
+            Pane preview = createRawPreview(projectService.getActiveCreatorArtivact(), imageSet.getImages().get(0));
 
             var horizontalBox = new HBox();
 

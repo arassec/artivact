@@ -1,12 +1,12 @@
 package com.arassec.artivact.creator.standalone.core.service;
 
+import com.arassec.artivact.common.util.FileUtil;
 import com.arassec.artivact.creator.standalone.core.adapter.image.background.BackgroundRemovalAdapter;
 import com.arassec.artivact.creator.standalone.core.adapter.image.camera.CameraAdapter;
 import com.arassec.artivact.creator.standalone.core.adapter.image.turntable.TurntableAdapter;
-import com.arassec.artivact.creator.standalone.core.model.Artivact;
+import com.arassec.artivact.creator.standalone.core.model.CreatorArtivact;
 import com.arassec.artivact.creator.standalone.core.model.ArtivactCreatorException;
 import com.arassec.artivact.creator.standalone.core.model.ArtivactImageSet;
-import com.arassec.artivact.creator.standalone.core.util.FileHelper;
 import com.arassec.artivact.creator.standalone.core.util.ProgressMonitor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,15 +32,15 @@ public class ImageService {
 
     private final BackgroundRemovalAdapter backgroundRemovalAdapter;
 
-    private final FileHelper fileHelper;
+    private final FileUtil fileUtil;
 
     private final MessageSource messageSource;
 
-    public void capturePhotos(Artivact artivact, int numPhotos, boolean useTurnTable, ProgressMonitor progressMonitor,
+    public void capturePhotos(CreatorArtivact creatorArtivact, int numPhotos, boolean useTurnTable, ProgressMonitor progressMonitor,
                               ArtivactImageSet targetImageSet) {
-        Path targetDir = artivact.getProjectRoot().resolve(FileHelper.TEMP_DIR);
+        Path targetDir = creatorArtivact.getProjectTempDir();
 
-        fileHelper.emptyDir(targetDir);
+        fileUtil.emptyDir(targetDir);
 
         progressMonitor.setProgressPrefix(messageSource.getMessage("image-service.capture-photos.progress.prefix", null, Locale.getDefault()));
 
@@ -65,18 +65,18 @@ public class ImageService {
             progressMonitor.setProgressPrefix(messageSource.getMessage("editor.dialog.add-images.progress.prefix", null, Locale.getDefault()));
 
             if (targetImageSet != null) {
-                artivact.addImages(images, progressMonitor, false, useTurnTable, targetImageSet);
+                creatorArtivact.addImages(images, progressMonitor, false, useTurnTable, targetImageSet);
             } else {
-                artivact.addImageSet(images, progressMonitor, false, useTurnTable);
+                creatorArtivact.addImageSet(images, progressMonitor, false, useTurnTable);
             }
         } catch (IOException e) {
             throw new ArtivactCreatorException("Could not add captured images!", e);
         }
     }
 
-    public List<Path> removeBackgrounds(Artivact artivact, ArtivactImageSet imageSet,
-                                                 ProgressMonitor progressMonitor) {
-        return backgroundRemovalAdapter.removeBackgroundFromImages(artivact, imageSet, progressMonitor);
+    public List<Path> removeBackgrounds(CreatorArtivact creatorArtivact, ArtivactImageSet imageSet,
+                                        ProgressMonitor progressMonitor) {
+        return backgroundRemovalAdapter.removeBackgroundFromImages(creatorArtivact, imageSet, progressMonitor);
     }
 
 }

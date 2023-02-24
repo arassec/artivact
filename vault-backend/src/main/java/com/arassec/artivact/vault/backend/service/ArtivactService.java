@@ -1,5 +1,8 @@
 package com.arassec.artivact.vault.backend.service;
 
+import com.arassec.artivact.common.exception.ArtivactException;
+import com.arassec.artivact.common.model.Artivact;
+import com.arassec.artivact.common.util.FileUtil;
 import com.arassec.artivact.vault.backend.core.ArtivactVaultException;
 import com.arassec.artivact.vault.backend.persistence.model.ArtivactEntity;
 import com.arassec.artivact.vault.backend.persistence.repository.ArtivactEntityRepository;
@@ -8,16 +11,21 @@ import com.arassec.artivact.vault.backend.service.model.configuration.Properties
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import jakarta.transaction.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.print.attribute.standard.Media;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,7 +39,10 @@ public class ArtivactService extends BaseService {
 
     private final ArtivactEntityRepository artivactEntityRepository;
 
-    private final String artivactsDir;
+    private final FileUtil fileUtil;
+
+    @Getter
+    private final Path projectRoot;
 
     private final TypeReference<HashMap<String, String>> propertiesTypeRef = new TypeReference<>() {
     };
@@ -40,55 +51,101 @@ public class ArtivactService extends BaseService {
     };
 
     public ArtivactService(ObjectMapper objectMapper, ArtivactEntityRepository artivactEntityRepository,
-                           ConfigurationService configurationService, @Value("${artivact.vault.data.dir}") String artivactsDir) {
+                           ConfigurationService configurationService, @Value("${artivact.vault.project.root}") String projectRootString,
+                           FileUtil fileUtil) {
         super(objectMapper);
         this.configurationService = configurationService;
         this.artivactEntityRepository = artivactEntityRepository;
-        this.artivactsDir = artivactsDir;
+        this.projectRoot = Path.of(projectRootString);
+        this.fileUtil = fileUtil;
     }
 
     @Transactional
-    public void scanArtivactsDir() {
+    public void scanDataDir() {
         var now = LocalDateTime.now();
-        scanArtivactsDirRecursively(Path.of(artivactsDir), now);
+        scanDataDirRecursively(projectRoot.resolve(Artivact.DATA_DIR), now);
         artivactEntityRepository.deleteAllByScannedBefore(now.minusMinutes(1));
     }
 
-    public Artivact loadArtivact(String artivactId, List<String> roles) {
+    @Transactional
+    public VaultArtivact createArtivact() {
+        VaultArtivact vaultArtivact = VaultArtivact.builder()
+                .id(UUID.randomUUID().toString())
+                .version(0)
+                .projectRoot(projectRoot)
+                .title(new TranslatableItem())
+                .description(new TranslatableItem())
+                .mediaContent(new MediaContent())
+                .build();
+
+        try {
+            if (!Files.exists(vaultArtivact.getImagesDir(true))) {
+                Files.createDirectories(vaultArtivact.getImagesDir(true));
+            }
+            if (!Files.exists(vaultArtivact.getScaledImagesDir(true))) {
+                Files.createDirectories(vaultArtivact.getScaledImagesDir(true));
+            }
+            if (!Files.exists(vaultArtivact.getModelsDir(true))) {
+                Files.createDirectories(vaultArtivact.getModelsDir(true));
+            }
+        } catch (IOException e) {
+            throw new ArtivactException("Could not create artivact directories!", e);
+        }
+
+        saveArtivact(vaultArtivact);
+
+        return vaultArtivact;
+    }
+
+    @Transactional
+    public VaultArtivact loadArtivact(String artivactId, List<String> roles) {
         Optional<ArtivactEntity> entityOptional = artivactEntityRepository.findById(artivactId);
         return entityOptional.map(artivactEntity -> fromEntity(artivactEntity, roles)).orElse(null);
     }
 
-    public List<Artivact> loadArtivacts(List<String> roles) {
-        List<Artivact> result = new LinkedList<>();
+    @Transactional
+    public List<VaultArtivact> loadArtivacts(List<String> roles) {
+        List<VaultArtivact> result = new LinkedList<>();
         artivactEntityRepository.findAll().forEach(entity -> result.add(fromEntity(entity, roles)));
         return result;
     }
 
-    public void saveArtivact(Artivact artivact) {
-        var entity = artivactEntityRepository.findById(artivact.getId()).orElse(new ArtivactEntity());
-        entity.setId(artivact.getId());
-        entity.setVersion(artivact.getVersion());
-        if (!StringUtils.hasText(artivact.getTitle().getId())) {
-            artivact.getTitle().setId(UUID.randomUUID().toString());
+    @Transactional
+    public void saveArtivact(VaultArtivact vaultArtivact) {
+        var entity = artivactEntityRepository.findById(vaultArtivact.getId()).orElse(new ArtivactEntity());
+        entity.setId(vaultArtivact.getId());
+        entity.setVersion(vaultArtivact.getVersion());
+        if (!StringUtils.hasText(vaultArtivact.getTitle().getId())) {
+            vaultArtivact.getTitle().setId(UUID.randomUUID().toString());
         }
-        entity.setTitle(toJson(artivact.getTitle()));
-        if (!StringUtils.hasText(artivact.getDescription().getId())) {
-            artivact.getDescription().setId(UUID.randomUUID().toString());
+        entity.setTitleJson(toJson(vaultArtivact.getTitle()));
+        if (!StringUtils.hasText(vaultArtivact.getDescription().getId())) {
+            vaultArtivact.getDescription().setId(UUID.randomUUID().toString());
         }
-        entity.setDescription(toJson(artivact.getDescription()));
-        entity.setMediaContentJson(toJson(artivact.getMediaContent()));
-        entity.setPropertiesJson(toJson(artivact.getProperties()));
-        entity.setTagsJson(toJson(artivact.getTags().stream().map(TranslatableItem::getId).toList()));
+        entity.setDescriptionJson(toJson(vaultArtivact.getDescription()));
+        entity.setPropertiesJson(toJson(vaultArtivact.getProperties()));
+        entity.setTagsJson(toJson(vaultArtivact.getTags().stream().map(TranslatableItem::getId).toList()));
+
+        entity.setMediaContentJson(toJson(vaultArtivact.getMediaContent()));
+        updateMediaContent(entity, vaultArtivact.getMainDir(true), true);
+
         artivactEntityRepository.save(entity);
     }
 
-    private Artivact fromEntity(ArtivactEntity entity, List<String> roles) {
-        return Artivact.builder()
+    @Transactional
+    public void deleteArtivact(String artivactId, List<String> roles) {
+        VaultArtivact vaultArtivact = loadArtivact(artivactId, roles);
+        artivactEntityRepository.deleteById(artivactId);
+        fileUtil.deleteArtivactDir(vaultArtivact);
+    }
+
+    private VaultArtivact fromEntity(ArtivactEntity entity, List<String> roles) {
+        return VaultArtivact.builder()
                 .id(entity.getId())
                 .version(entity.getVersion())
-                .title(fromJson(entity.getTitle(), TranslatableItem.class))
-                .description(fromJson(entity.getDescription(), TranslatableItem.class))
+                .projectRoot(projectRoot)
+                .title(fromJson(entity.getTitleJson(), TranslatableItem.class))
+                .description(fromJson(entity.getDescriptionJson(), TranslatableItem.class))
                 .mediaContent(fromJson(entity.getMediaContentJson(), MediaContent.class))
                 .properties(readPropertiesJson(entity.getPropertiesJson(), roles))
                 .tags(readTagsJson(entity.getTagsJson(), roles))
@@ -146,7 +203,7 @@ public class ArtivactService extends BaseService {
         return isAllowed(matchingPropertyOptional, roles);
     }
 
-    private void scanArtivactsDirRecursively(Path root, LocalDateTime scanTime) {
+    private void scanDataDirRecursively(Path root, LocalDateTime scanTime) {
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(root)) {
             directoryStream.forEach(path -> {
 
@@ -159,49 +216,92 @@ public class ArtivactService extends BaseService {
                     Optional<ArtivactEntity> entityOptional = artivactEntityRepository.findById(artivactId);
                     ArtivactEntity entity;
                     if (entityOptional.isPresent()) {
-                        log.debug("Found artivact, updating media content.");
+                        log.info("Updating media content of existing artivact: {}", artivactId);
                         entity = entityOptional.get();
                     } else {
-                        log.debug("New artivact, saving data.");
+                        log.info("Importing new artivact: {}", artivactId);
                         entity = new ArtivactEntity();
                         entity.setId(artivactId);
                         entity.setVersion(0);
-                        entity.setTitle("");
+                        entity.setTitleJson("");
                     }
 
                     entity.setScanned(scanTime);
 
-                    var newMediaContent = new MediaContent();
-                    var scannedMediaContent = createMediaContent(path.getParent());
-                    Set<String> existingImages = new HashSet<>();
-                    if (StringUtils.hasText(entity.getMediaContentJson())) {
-                        MediaContent existingMediaContent = fromJson(entity.getMediaContentJson(), MediaContent.class);
-                        existingMediaContent.getImages().forEach(imageEntry ->
-                                scannedMediaContent.getImages().forEach(scannedImageEntry -> {
-                                    if (imageEntry.equals(scannedImageEntry)) {
-                                        newMediaContent.getImages().add(scannedImageEntry);
-                                        existingImages.add(scannedImageEntry);
-                                    }
-                                }));
-                    }
-                    scannedMediaContent.getImages().forEach(scannedImageEntry -> {
-                        if (!existingImages.contains(scannedImageEntry)) {
-                            newMediaContent.getImages().add(scannedImageEntry);
-                        }
-                    });
-                    newMediaContent.setModels(scannedMediaContent.getModels());
-
-                    entity.setMediaContentJson(toJson(newMediaContent));
+                    updateMediaContent(entity, path.getParent(), false);
 
                     artivactEntityRepository.save(entity);
                 } else if (Files.isDirectory(path)) {
-                    scanArtivactsDirRecursively(path, scanTime);
+                    scanDataDirRecursively(path, scanTime);
                 }
 
             });
         } catch (IOException e) {
             throw new ArtivactVaultException("Could not scan artivacts directory!", e);
         }
+    }
+
+    private void updateMediaContent(ArtivactEntity entity, Path artivactDir, boolean cleanup) {
+        var newMediaContent = new MediaContent();
+        var scannedMediaContent = createMediaContent(artivactDir);
+        Set<String> existingImages = new HashSet<>();
+        if (StringUtils.hasText(entity.getMediaContentJson())) {
+            MediaContent existingMediaContent = fromJson(entity.getMediaContentJson(), MediaContent.class);
+
+            existingMediaContent.getImages().forEach(existingImageEntry ->
+                    scannedMediaContent.getImages().forEach(scannedImageEntry -> {
+                        if (existingImageEntry.equals(scannedImageEntry)) {
+                            newMediaContent.getImages().add(scannedImageEntry);
+                            existingImages.add(scannedImageEntry);
+                        }
+                    }));
+
+            if (cleanup) {
+                scannedMediaContent.getImages().stream()
+                        .filter(image -> !existingMediaContent.getImages().contains(image))
+                        .forEach(obsoleteImage -> {
+                            try {
+                                Files.delete(artivactDir.resolve(Artivact.IMAGES_DIR).resolve(obsoleteImage));
+                                Files.list(artivactDir.resolve(VaultArtivact.SCALED_IMAGES_DIR)).forEach(
+                                        scaledImageFile -> {
+                                            if (scaledImageFile.getFileName().toString().endsWith(obsoleteImage)) {
+                                                try {
+                                                    Files.delete(scaledImageFile);
+                                                } catch (IOException e) {
+                                                    throw new ArtivactException("Could not delete obsolete scaled image!", e);
+                                                }
+                                            }
+                                        }
+                                );
+                            } catch (IOException e) {
+                                throw new ArtivactException("Could not delete obsolete image!", e);
+                            }
+                        });
+
+                scannedMediaContent.getModels().stream()
+                        .filter(model -> !existingMediaContent.getModels().contains(model))
+                        .forEach(obsoleteModel -> {
+                            try {
+                                Files.delete(artivactDir.resolve(Artivact.MODELS_DIR).resolve(obsoleteModel));
+                            } catch (IOException e) {
+                                throw new ArtivactException("Could not delete obsolete model!", e);
+                            }
+                        });
+            }
+
+            newMediaContent.setModels(existingMediaContent.getModels());
+        }
+
+        if (!cleanup) {
+            scannedMediaContent.getImages().forEach(scannedImageEntry -> {
+                if (!existingImages.contains(scannedImageEntry)) {
+                    newMediaContent.getImages().add(scannedImageEntry);
+                }
+            });
+            newMediaContent.setModels(scannedMediaContent.getModels());
+        }
+
+        entity.setMediaContentJson(toJson(newMediaContent));
     }
 
     private MediaContent createMediaContent(Path artivactDir) {

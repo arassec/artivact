@@ -30,12 +30,12 @@
                     </Button>
                     <Separator/>
                     <Button mnemonicParsing="false" onAction="#addArtivact"
-                            text="%project-home.toolbar.add-artivact.button.text">
+                            text="%project-home.toolbar.add-creatorArtivact.button.text">
                         <graphic>
                             <FontIcon iconLiteral="fas-plus" iconSize="16"/>
                         </graphic>
                         <tooltip>
-                            <Tooltip text="%project-home.toolbar.add-artivact.button.tooltip"/>
+                            <Tooltip text="%project-home.toolbar.add-creatorArtivact.button.tooltip"/>
                         </tooltip>
                     </Button>
                     <Pane fx:id="spacer"/>

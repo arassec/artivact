@@ -57,7 +57,7 @@ export default {
         .catch(() => {
           $q.notify({
             color: 'negative',
-            position: 'top',
+            position: 'bottom',
             message: 'Loading failed',
             icon: 'report_problem'
           })
@@ -72,7 +72,7 @@ export default {
         .catch(() => {
           $q.notify({
             color: 'negative',
-            position: 'top',
+            position: 'bottom',
             message: 'Loading properties failed',
             icon: 'report_problem'
           })

@@ -1,6 +1,6 @@
 package com.arassec.artivact.creator.standalone.core.adapter.model.editor;
 
-import com.arassec.artivact.creator.standalone.core.model.Artivact;
+import com.arassec.artivact.creator.standalone.core.model.CreatorArtivact;
 import com.arassec.artivact.creator.standalone.core.model.ArtivactAsset;
 import com.arassec.artivact.creator.standalone.core.model.ArtivactCreatorException;
 import com.arassec.artivact.creator.standalone.core.model.AssetType;
@@ -29,12 +29,12 @@ public class BlenderModelEditorAdapter implements ModelEditorAdapter {
     @Value("${adapter.implementation.model-editor.executable}")
     private String executable;
 
-    public void openModel(Artivact artivact, ArtivactAsset asset) {
+    public void openModel(CreatorArtivact creatorArtivact, ArtivactAsset asset) {
         if (!AssetType.MODEL.equals(asset.getType())) {
             throw new ArtivactCreatorException("Only models can be opened in Blender!");
         }
 
-        var modelPath =artivact.getProjectRoot().resolve(asset.getPath());
+        var modelPath = creatorArtivact.getProjectRoot().resolve(asset.getPath());
 
         var blenderProjectExists = new AtomicBoolean(false);
         var blenderProjectFile = new StringBuilder();
@@ -46,7 +46,7 @@ public class BlenderModelEditorAdapter implements ModelEditorAdapter {
             cmdLine.addArgument(blenderProjectFile.toString());
         } else {
             cmdLine.addArgument("--python");
-            cmdLine.addArgument(artivact.getProjectRoot().resolve(BLENDER_DIR).resolve("blender-obj-import.py")
+            cmdLine.addArgument(creatorArtivact.getProjectRoot().resolve(BLENDER_DIR).resolve("blender-obj-import.py")
                     .toAbsolutePath().toString());
             cmdLine.addArgument("--");
             cmdLine.addArgument(modelPath.toAbsolutePath().toString());
