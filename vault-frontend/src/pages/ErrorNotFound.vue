@@ -1,21 +1,21 @@
 <template>
-  <div class="fullscreen text-center q-pa-md flex flex-center">
-    <div>
-      <div style="font-size: 30vh">
-        404
-      </div>
+  <ArtivactContent>
+    <div class="col">
+      <h1 class="av-text-h1">404</h1>
 
       <div class="text-h2" style="opacity:.4">
-        Oops. Nothing here...
+        Page not found...
       </div>
     </div>
-  </div>
+  </ArtivactContent>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import ArtivactContent from 'components/ArtivactContent.vue';
 
 export default defineComponent({
-  name: 'ErrorNotFound'
+  name: 'ErrorNotFound',
+  components: {ArtivactContent}
 });
 </script>

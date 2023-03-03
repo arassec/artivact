@@ -57,3 +57,9 @@ a:visited {
 .silent-link:hover {
   cursor: pointer;
 }
+
+@media (min-width: 1024px) {
+  .artivact-modal-content {
+    min-width: 25em;
+  }
+}

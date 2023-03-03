@@ -55,9 +55,9 @@
 
           </div>
           <q-form :action="'/api/artivact/media/' + artivactDetails.id + '/zip'" method="get" class="q-mt-lg col-shrink">
-            <label v-if="licenseStore.license.licenseLabel">{{ licenseStore.license.prefix }} <a
+            <div v-if="licenseStore.license.licenseLabel">{{ licenseStore.license.prefix }} <a
               :href="licenseStore.license.licenseUrl">{{ licenseStore.license.licenseLabel }}</a>
-              {{ licenseStore.license.suffix }}</label>
+              {{ licenseStore.license.suffix }}</div>
             <q-btn type="submit" icon="download" color="primary" class="q-mt-xs">{{
                 $t('downloadMediaFilesButtonLabel')
               }}
@@ -89,9 +89,9 @@
         </label>
       </div>
       <q-form :action="'/api/artivact/media/' + artivactDetails.id + '/zip'" method="get" class="q-mt-lg">
-        <label v-if="licenseStore.license.licenseLabel">{{ licenseStore.license.prefix }} <a
+        <div v-if="licenseStore.license.licenseLabel">{{ licenseStore.license.prefix }} <a
           :href="licenseStore.license.licenseUrl">{{ licenseStore.license.licenseLabel }}</a>
-          {{ licenseStore.license.suffix }}</label>
+          {{ licenseStore.license.suffix }}</div>
         <q-btn type="submit" icon="download" color="primary" class="q-mt-xs">{{
             $t('downloadMediaFilesButtonLabel')
           }}

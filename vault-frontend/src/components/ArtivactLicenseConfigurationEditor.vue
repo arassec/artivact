@@ -1,8 +1,13 @@
 <template>
   <div v-if="licenseConfiguration != null && locales != null">
+    <div class="q-mb-lg">
+      Configures the license string displayed on the artivacts details-page. The license is composed of a prefix, the
+      actual license and a suffix. If an URL is configured, the license will be rendered as link to the provided URL.
+    </div>
+
     <q-card class="q-mb-lg">
       <q-card-section class="bg-primary text-white">
-        <div class="text-h6">Configures the license String displayed on the artivacts details-page.</div>
+        <div class="text-h6">License</div>
       </q-card-section>
 
       <q-card-section>

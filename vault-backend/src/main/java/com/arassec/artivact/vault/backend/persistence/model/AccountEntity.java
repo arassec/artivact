@@ -19,13 +19,7 @@ public class AccountEntity {
 
     private String password;
 
-    private boolean enabled;
-
     private String email;
-
-    private String firstname;
-
-    private String lastname;
 
     private String roles;
 

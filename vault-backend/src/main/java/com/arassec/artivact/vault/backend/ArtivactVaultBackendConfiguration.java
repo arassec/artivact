@@ -24,8 +24,8 @@ public class ArtivactVaultBackendConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/account").authenticated()
                         .requestMatchers("/api/administration/**").hasRole("ADMIN")
-                        .requestMatchers("/api/configuration/account").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/artivact").hasRole("USER")
                         .anyRequest().permitAll()
                 )

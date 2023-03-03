@@ -1,56 +1,26 @@
 <template>
-  <q-page class="row justify-center">
-    <div class="row configuration-area">
-      <div class="col items-center">
-
-        <div>
-          <h1 class="av-text-h1">License Configuration</h1>
-          <artivact-license-configuration-editor :license-configuration="licenseConfigurationRef"
-                                                 :locales="localesRef"/>
-          <q-btn label="Save License" color="primary" class="q-mb-lg"
-                 @click="saveLicenseConfiguration()"/>
-        </div>
-        <q-separator/>
-
-        <h1 class="av-text-h1">Filesystem Administration</h1>
-        <label>Scans the data directory for new Artivacts.</label>
-        <q-btn label="Scan" color="primary" class="float-right q-mb-lg" @click="scanArtivacts()"/>
-
+  <ArtivactContent>
+      <div>
+        <h1 class="av-text-h1">License Configuration</h1>
+        <artivact-license-configuration-editor :license-configuration="licenseConfigurationRef"
+                                               :locales="localesRef"/>
+        <q-btn label="Save License" color="primary" class="q-mb-lg float-right"
+               @click="saveLicenseConfiguration()"/>
       </div>
-    </div>
-  </q-page>
+  </ArtivactContent>
 </template>
 
-<!--suppress JSUnusedGlobalSymbols -->
 <script setup lang="ts">
 
-import {api} from 'boot/axios';
 import {useQuasar} from 'quasar';
+import {api} from 'boot/axios';
 import {onMounted, Ref, ref} from 'vue';
-import ArtivactLicenseConfigurationEditor from 'components/ArtivactLicenseConfigurationEditor.vue';
 import {LicenseConfiguration} from 'components/models';
+import ArtivactLicenseConfigurationEditor from 'components/ArtivactLicenseConfigurationEditor.vue';
+import ArtivactContent from 'components/ArtivactContent.vue';
 
+// noinspection JSUnusedGlobalSymbols
 const $q = useQuasar();
-
-function scanArtivacts() {
-  api.post('/api/administration/scan')
-    .then(() => {
-      $q.notify({
-        color: 'positive',
-        position: 'bottom',
-        message: 'Scan successful',
-        icon: 'report'
-      })
-    })
-    .catch(() => {
-      $q.notify({
-        color: 'negative',
-        position: 'bottom',
-        message: 'Scan failed',
-        icon: 'report_problem'
-      })
-    })
-}
 
 const localesRef = ref([]);
 const licenseConfigurationRef: Ref<LicenseConfiguration | null> = ref(null)
@@ -95,7 +65,7 @@ function saveLicenseConfiguration() {
         color: 'positive',
         position: 'bottom',
         message: 'License configuration saved',
-        icon: 'report'
+        icon: 'check'
       })
     })
     .catch(() => {
@@ -116,5 +86,4 @@ onMounted(() => {
 </script>
 
 <style scoped>
-
 </style>

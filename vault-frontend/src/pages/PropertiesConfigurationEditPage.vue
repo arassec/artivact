@@ -1,29 +1,28 @@
 <template>
-  <q-page class="row justify-center">
-    <div class="row configuration-area">
-      <div class="col items-center">
+  <ArtivactContent>
+    <div class="col">
+      <h1 class="av-text-h1">Properties Configuration</h1>
 
-        <h1 class="av-text-h1">Properties Configuration</h1>
-        <artivact-properties-configuration-editor :properties-configuration="propertiesConfiguration"
-                                                  :locales="localesRef" v-if="propertiesConfiguration"/>
+      <artivact-properties-configuration-editor :properties-configuration="propertiesConfiguration"
+                                                :locales="localesRef" v-if="propertiesConfiguration"/>
 
-        <q-separator class="q-mt-md q-mb-md"/>
+      <q-separator class="q-mt-md q-mb-md"/>
 
-        <q-btn label="Save" color="primary" class="float-right q-mb-lg" @click="saveProperties()"/>
-      </div>
+      <q-btn label="Save" color="primary" class="float-right q-mb-lg" @click="saveProperties()"/>
     </div>
-  </q-page>
+  </ArtivactContent>
 </template>
 
 <script>
 import ArtivactPropertiesConfigurationEditor from '../components/ArtivactPropertiesConfigurationEditor';
 import {useQuasar} from 'quasar';
 import {onMounted, ref} from 'vue';
-import {api} from '../boot/axios';
+import {api} from 'boot/axios';
+import ArtivactContent from 'components/ArtivactContent.vue';
 
 export default {
   name: 'PropertiesConfigurationEditPage',
-  components: {ArtivactPropertiesConfigurationEditor},
+  components: {ArtivactContent, ArtivactPropertiesConfigurationEditor},
   setup() {
     const $q = useQuasar()
     const propertiesConfigurationRef = ref(null)
@@ -97,7 +96,4 @@ export default {
 </script>
 
 <style scoped>
-.configuration-area {
-  width: 75%;
-}
 </style>

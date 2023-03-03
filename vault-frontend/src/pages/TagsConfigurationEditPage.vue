@@ -1,18 +1,15 @@
 <template>
-  <q-page class="row justify-center">
-    <div class="row configuration-area">
-      <div class="col items-center">
+  <ArtivactContent>
+    <div class="col">
+      <h1 class="av-text-h1">Tags Configuration</h1>
 
-        <h1 class="av-text-h1">Tags Configuration</h1>
+      <artivact-tags-configuration-editor :tags-configuration="tagsConfigurationRef" :locales="localesRef"/>
 
-        <artivact-tags-configuration-editor :tags-configuration="tagsConfigurationRef" :locales="localesRef"/>
+      <q-separator class="q-mt-md q-mb-md"/>
 
-        <q-separator class="q-mt-md q-mb-md"/>
-
-        <q-btn label="Save" color="primary" class="float-right q-mb-lg" @click="saveTagsConfiguration()"/>
-      </div>
+      <q-btn label="Save" color="primary" class="float-right q-mb-lg" @click="saveTagsConfiguration()"/>
     </div>
-  </q-page>
+  </ArtivactContent>
 </template>
 
 <script setup lang="ts">
@@ -21,6 +18,7 @@ import {useQuasar} from 'quasar';
 import {onMounted, Ref, ref} from 'vue';
 import {TagsConfiguration} from 'components/models';
 import ArtivactTagsConfigurationEditor from 'components/ArtivactTagsConfigurationEditor.vue';
+import ArtivactContent from 'components/ArtivactContent.vue';
 
 const localesRef = ref([]);
 const tagsConfigurationRef: Ref<TagsConfiguration | null> = ref(null)
@@ -60,8 +58,9 @@ function loadTagsConfiguration() {
     })
 }
 
-const $q = useQuasar();
 function saveTagsConfiguration() {
+  const $q = useQuasar();
+
   api.post('/api/administration/tags', json)
     .then(() => {
       $q.notify({
@@ -89,7 +88,4 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.configuration-area {
-  width: 75%;
-}
 </style>

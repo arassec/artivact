@@ -1,26 +1,44 @@
 <template>
-  <q-page class="q-ma-lg">
-    <div class="row justify-center">
-      <h1 class="av-text-h1">Account Settings</h1>
-    </div>
-    <div class="row justify-center q-mb-md">
-      <q-input outlined v-model="usernameRef" class="col-5" type="text" name="username" label="Username"/>
-    </div>
-    <div class="row justify-center">
-      <q-input outlined v-model="passwordRef" class="col-5" type="password" name="password" label="Password"
-               :error="passwordValidationFailedRef"/>
-    </div>
-    <div class="row justify-center">
-      <q-input outlined v-model="passwordRepeatRef" class="col-5" type="password" name="password" label="Password (repeat)"
-               :error="passwordValidationFailedRef"/>
-    </div>
-    <div class="row justify-center q-mt-lg">
-      <div class="col-5">
-        <q-btn label="Save" color="primary" class="float-right q-mb-lg" @click="saveAccount()"/>
-      </div>
-    </div>
+  <ArtivactContent>
+    <div class="col">
 
-  </q-page>
+      <div>
+        <h1 class="av-text-h1">Account Settings</h1>
+        <div class="q-mb-lg">
+          Here you can configure your account settings.
+        </div>
+
+        <q-card class="q-mb-lg">
+          <q-card-section class="bg-primary text-white">
+            <div class="text-h6">Account</div>
+          </q-card-section>
+
+          <q-card-section>
+            <q-input outlined v-model="usernameRef" class="col-5" type="text" name="username" label="Username"/>
+          </q-card-section>
+
+          <q-card-section>
+            <q-input outlined v-model="passwordRef" class="col-5" type="password" name="password" label="Password"
+                     :error="passwordValidationFailedRef"/>
+          </q-card-section>
+
+          <q-card-section>
+            <q-input outlined v-model="passwordRepeatRef" class="col-5" type="password" name="password"
+                     label="Password (repeat)" :error="passwordValidationFailedRef"/>
+          </q-card-section>
+
+          <q-card-section>
+            <q-input outlined v-model="emailRef" class="col-5" type="text" name="email"
+                     label="E-Mail"/>
+          </q-card-section>
+        </q-card>
+
+        <q-btn label="Save" color="primary" class="float-right q-mb-lg" @click="saveAccount()"/>
+
+      </div>
+
+    </div>
+  </ArtivactContent>
 </template>
 
 <script setup lang="ts">
@@ -29,21 +47,28 @@ import {useQuasar} from 'quasar';
 import {api} from 'boot/axios';
 import {onMounted, ref} from 'vue';
 import {Account} from 'components/models';
+import ArtivactContent from 'components/ArtivactContent.vue';
 
-const $q = useQuasar();
 const accountRef = ref({} as Account);
 
 const usernameRef = ref('');
 const passwordRef = ref('');
 const passwordRepeatRef = ref('');
 const passwordValidationFailedRef = ref(false);
+const emailRef = ref('');
+
+// noinspection JSUnusedGlobalSymbols
+const $q = useQuasar();
 
 function loadAccount() {
-  api.get('/api/configuration/account')
+  const $q = useQuasar();
+
+  api.get('/api/account')
     .then((result) => {
       let account = result.data as Account;
       accountRef.value = account;
       usernameRef.value = account.username;
+      emailRef.value = account.email;
     })
     .catch(() => {
       $q.notify({
@@ -67,11 +92,18 @@ function saveAccount() {
     id: accountRef.value.id,
     version: accountRef.value.version,
     username: usernameRef.value,
-    password: passwordRef.value
+    password: passwordRef.value,
+    email: emailRef.value,
+    user: undefined,
+    admin: undefined
   }
 
-  api.post('/api/configuration/account', account)
-    .then(() => {
+  api.put('/api/account', account)
+    .then((result) => {
+      let account = result.data as Account;
+      accountRef.value = account;
+      usernameRef.value = account.username;
+      emailRef.value = account.email;
       $q.notify({
         color: 'positive',
         position: 'bottom',
@@ -95,5 +127,4 @@ onMounted(() => {
 </script>
 
 <style scoped>
-
 </style>

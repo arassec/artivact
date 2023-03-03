@@ -1,7 +1,7 @@
 <template>
-  <q-page v-if="artivactDetails" class="q-ma-lg">
+  <ArtivactContent v-if="artivactDetails">
 
-    <div class="row justify-center">
+    <div class="col-12">
       <div class="col items-center">
         <router-link :to="'/administration/configuration/artivact/' + artivactDetails.id"
                      v-if="userdataStore.authenticated">
@@ -16,29 +16,29 @@
       </div>
     </div>
 
-    <div class="row q-mt-lg">
-      <template v-if="artivactDetails && propertiesDataRef">
-        <div class="col property-category" v-for="(category, index) in propertiesDataRef" :key="index">
-          <artivact-property-category-viewer :category="category" :properties="artivactDetails.properties"/>
-        </div>
-      </template>
+    <div class="col-12 q-mt-lg row">
+        <template v-if="artivactDetails && propertiesDataRef">
+          <div class="col property-category" v-for="(category, index) in propertiesDataRef" :key="index">
+            <artivact-property-category-viewer :category="category" :properties="artivactDetails.properties"/>
+          </div>
+        </template>
     </div>
-
-  </q-page>
+  </ArtivactContent>
 </template>
 
 <script>
 import {useQuasar} from 'quasar';
-import {api} from '../boot/axios';
+import {api} from 'boot/axios';
 import {useRoute} from 'vue-router';
 import {onMounted, ref} from 'vue';
 import ArtivactMediaCarousel from '../components/ArtivactMediaCarousel';
 import ArtivactPropertyCategoryViewer from '../components/ArtivactPropertyCategoryViewer';
-import {useUserdataStore} from '../stores/userdata';
+import {useUserdataStore} from 'stores/userdata';
+import ArtivactContent from 'components/ArtivactContent.vue';
 
 export default {
   name: 'DetailsPage',
-  components: {ArtivactPropertyCategoryViewer, ArtivactMediaCarousel},
+  components: {ArtivactContent, ArtivactPropertyCategoryViewer, ArtivactMediaCarousel},
   setup() {
     const $q = useQuasar()
 

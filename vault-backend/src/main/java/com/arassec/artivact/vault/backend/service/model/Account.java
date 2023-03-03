@@ -19,4 +19,10 @@ public class Account {
 
     private String password;
 
+    private String email;
+
+    private Boolean user;
+
+    private Boolean admin;
+
 }

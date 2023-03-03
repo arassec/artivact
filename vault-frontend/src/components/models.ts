@@ -64,10 +64,13 @@ export interface UserData {
 }
 
 export interface Account {
-  id: number;
+  id: number | undefined;
   version: number;
   username: string;
   password: string;
+  email: string;
+  user: boolean | undefined;
+  admin: boolean | undefined;
 }
 
 export interface TranslatedLicense {

@@ -63,24 +63,6 @@ public class ConfigurationController extends BaseController {
         return configurationService.loadTranslatedPropertyCategories(locale, getRoles(authentication));
     }
 
-    @GetMapping(value = "/account")
-    public Account getAccount(Authentication authentication) {
-
-        if (authentication != null) {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            return accountService.loadByUsername(userDetails.getUsername()).orElse(null);
-        }
-        return null;
-    }
-
-    @PostMapping(value = "/account")
-    public void updateAccount(@RequestBody Account account, Authentication authentication) {
-        if (account != null && authentication != null) {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            accountService.updateAccount(userDetails.getUsername(), account);
-        }
-    }
-
     @GetMapping(value = "/license/translated")
     public TranslatedLicense getTranslatedLicenseConfiguration(Locale locale, Authentication authentication) {
         LicenseConfiguration licenseConfiguration = configurationService.loadLicenseConfiguration(getRoles(authentication));

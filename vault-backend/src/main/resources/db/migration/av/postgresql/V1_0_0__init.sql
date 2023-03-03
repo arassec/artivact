@@ -24,10 +24,7 @@ CREATE TABLE av_account
     version   INTEGER,
     username  VARCHAR(50)  NOT NULL,
     password  VARCHAR(500) NOT NULL,
-    enabled   boolean      NOT NULL,
     email     VARCHAR(128),
-    firstname VARCHAR(128),
-    lastname  VARCHAR(128),
     roles     VARCHAR(500)
 );
 

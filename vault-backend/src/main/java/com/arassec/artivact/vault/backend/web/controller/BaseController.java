@@ -80,14 +80,23 @@ public abstract class BaseController {
     }
 
     protected boolean isAdmin(Authentication authentication) {
+        if (authentication == null) {
+            return false;
+        }
         return getRoles(authentication).contains(Roles.ROLE_ADMIN);
     }
 
     protected boolean isUser(Authentication authentication) {
+        if (authentication == null) {
+            return false;
+        }
         return getRoles(authentication).contains(Roles.ROLE_USER);
     }
 
     protected boolean isAdminOrUser(Authentication authentication) {
+        if (authentication == null) {
+            return false;
+        }
         return isAdmin(authentication) || isUser(authentication);
     }
 }

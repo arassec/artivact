@@ -1,7 +1,7 @@
 <template>
-  <q-page v-if="artivactDataRef" class="q-ma-lg">
+  <ArtivactContent v-if="artivactDataRef">
 
-    <div class="row configuration-area">
+    <div class="col-12">
       <div class="col items-center">
         <h1 class="av-text-h1">Base Data</h1>
         <div class="q-mb-sm" v-if="tagsDataRef" v-show="tagsDataRef.tags.length > 0">
@@ -39,7 +39,7 @@
         <h2 class="av-text-h2">Images</h2>
         <div>
           <artivact-image-editor :images="artivactDataRef.images" :models="artivactDataRef.models"
-                                 :artivact-id="artivactDataRef.id" @uploaded="loadArtivactData(artivactDataRef.id)"/>
+                                 :artivact-id="artivactDataRef.id" @uploaded="loadArtivactMediaData(artivactDataRef.id)"/>
         </div>
         <h2 class="av-text-h2">3D Models</h2>
         <div class="row">
@@ -47,7 +47,7 @@
                       class="uploader q-mb-md col-12"
                       accept=".glb" field-name="file"
                       :no-thumbnails="true"
-                      @uploaded="loadArtivactData(artivactDataRef.id)"
+                      @uploaded="loadArtivactMediaData(artivactDataRef.id)"
           ></q-uploader>
           <draggable :list="artivactDataRef.models" item-key="fileName" group="models" class="row">
             <template #item="{ element }">
@@ -95,7 +95,7 @@
       </q-card>
     </q-dialog>
 
-  </q-page>
+  </ArtivactContent>
 </template>
 
 <script>
@@ -107,10 +107,13 @@ import {api} from 'boot/axios';
 import ArtivactTranslatableItemEditor from '../components/ArtivactTranslatableItemEditor';
 import ArtivactPropertyCategoryEditor from '../components/ArtivactPropertyCategoryEditor';
 import ArtivactImageEditor from '../components/ArtivactImageEditor';
+import ArtivactContent from 'components/ArtivactContent.vue';
 
 export default {
   name: 'EditPage',
-  components: {draggable, ArtivactImageEditor, ArtivactPropertyCategoryEditor, ArtivactTranslatableItemEditor},
+  components: {
+    ArtivactContent,
+    draggable, ArtivactImageEditor, ArtivactPropertyCategoryEditor, ArtivactTranslatableItemEditor},
   setup() {
     const $q = useQuasar()
     const $r = useRouter();
@@ -133,6 +136,22 @@ export default {
       api.get('/api/artivact/' + artivactId)
         .then((response) => {
           artivactData.value = response.data
+        })
+        .catch(() => {
+          $q.notify({
+            color: 'negative',
+            position: 'bottom',
+            message: 'Loading artivact failed',
+            icon: 'report_problem'
+          })
+        })
+    }
+
+    function loadArtivactMediaData(artivactId) {
+      api.get('/api/artivact/' + artivactId)
+        .then((response) => {
+          artivactData.value.images = response.data.images;
+          artivactData.value.models = response.data.models;
         })
         .catch(() => {
           $q.notify({
@@ -222,6 +241,7 @@ export default {
       confirmDeleteRef,
 
       loadArtivactData,
+      loadArtivactMediaData,
       addTag,
       saveSelectedTag,
       removeTag,
@@ -277,9 +297,6 @@ export default {
 </script>
 
 <style scoped>
-.configuration-area {
-  width: 75%;
-}
 
 .dialog-card {
   min-width: 25em;
