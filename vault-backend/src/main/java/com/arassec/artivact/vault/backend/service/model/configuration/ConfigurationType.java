@@ -6,6 +6,8 @@ public enum ConfigurationType {
 
     LICENSE,
 
-    TAGS
+    TAGS,
+
+    MENU
 
 }

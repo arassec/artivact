@@ -29,14 +29,33 @@ import {useQuasar} from 'quasar';
 import {useUserdataStore} from 'stores/userdata';
 import {useRouter} from 'vue-router';
 import ArtivactContent from 'components/ArtivactContent.vue';
+import {useMenuStore} from 'stores/menu';
 
+// noinspection JSUnusedGlobalSymbols
 const $q = useQuasar()
+// noinspection JSUnusedGlobalSymbols
 const $r = useRouter()
 
 const usernameRef = ref('');
 const passwordRef = ref('');
 
 const store = useUserdataStore();
+const menuStore = useMenuStore();
+
+function loadMenus() {
+  api.get('/api/configuration/menu')
+    .then((response) => {
+      menuStore.setAvailableMenus(response.data);
+    })
+    .catch(() => {
+      $q.notify({
+        color: 'negative',
+        position: 'bottom',
+        message: 'Loading menus failed',
+        icon: 'report_problem'
+      })
+    })
+}
 
 function onSubmit() {
   let postdata = new URLSearchParams();
@@ -45,6 +64,7 @@ function onSubmit() {
 
   api.post('/api/auth/login', postdata)
     .then(() => {
+      loadMenus();
       api.get('/api/configuration/user')
         .then((response) => {
           store.setUserdata(response.data);
@@ -52,7 +72,7 @@ function onSubmit() {
             color: 'positive',
             position: 'bottom',
             message: 'Login successful',
-            icon: 'report'
+            icon: 'check'
           })
           $r.push('/');
         })

@@ -3,7 +3,7 @@ package com.arassec.artivact.vault.backend.web.controller;
 import com.arassec.artivact.vault.backend.core.Roles;
 import com.arassec.artivact.vault.backend.service.model.VaultArtivact;
 import com.arassec.artivact.vault.backend.service.model.TranslatableItem;
-import com.arassec.artivact.vault.backend.web.model.TranslatedItem;
+import com.arassec.artivact.vault.backend.service.model.TranslatedItem;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

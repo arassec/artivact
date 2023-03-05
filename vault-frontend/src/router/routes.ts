@@ -15,6 +15,7 @@ const routes: RouteRecordRaw[] = [
       {path: '/administration/configuration/properties/edit', component: () => import('pages/PropertiesConfigurationEditPage.vue')},
       {path: '/administration/configuration/tags/edit', component: () => import('pages/TagsConfigurationEditPage.vue')},
       {path: '/administration/configuration/license/edit', component: () => import('pages/LicenseConfigurationEditPage.vue')},
+      {path: '/administration/configuration/menu/edit', component: () => import('pages/MenuConfigurationPage.vue')},
       //{path: 'about', component: () => import('pages/IndexPage.vue')},
     ],
   },

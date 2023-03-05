@@ -43,6 +43,19 @@ export interface PropertiesConfiguration {
   categories: PropertyCategory[];
 }
 
+export interface MenuEntry extends TranslatableItem {
+  target: string;
+}
+
+export interface Menu extends TranslatableItem {
+  menuEntries: MenuEntry[];
+  target: string;
+}
+
+export interface MenuConfiguration {
+  menus: Menu[];
+}
+
 export interface TranslatedProperty extends TranslatedItem {
   valueRange: TranslatedItem[];
   enteredValue: string;
@@ -50,6 +63,15 @@ export interface TranslatedProperty extends TranslatedItem {
 
 export interface TranslatedPropertyCategory extends TranslatedItem {
   properties: TranslatedProperty[];
+}
+
+export interface TranslatedMenuEntry extends TranslatedItem {
+  target: string;
+}
+
+export interface TranslatedMenu extends TranslatedItem {
+  translatedMenuEntries: TranslatedMenuEntry[];
+  target: string;
 }
 
 export interface SelectboxModel {

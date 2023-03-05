@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="q-ml-sm">
     <label class="q-mr-xs q-mt-xs text-grey vertical-middle badge-container-label">Range of values:</label>
     <q-badge class="q-mr-xs vertical-middle" color="secondary" v-for="(value, key) in valueRangeProp" :key="key">
       {{ value.value }}
@@ -22,7 +22,6 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-    <q-separator class="q-mt-xs q-mb-lg"/>
   </div>
 </template>
 

@@ -68,7 +68,7 @@
         <q-card-section>
           <q-btn label="Cancel" color="primary" @click="showCreateModalRef = false"/>
           <q-btn label="Save" color="primary" class="float-right"
-                 @click="showCreateModalRef = false; createAccount()"/>
+                 @click="showCreateModalRef = !createAccount()"/>
         </q-card-section>
       </q-card>
 
@@ -107,7 +107,7 @@
         <q-card-section>
           <q-btn label="Cancel" color="primary" @click="showEditModalRef = false"/>
           <q-btn label="Save" color="primary" class="float-right"
-                 @click="showEditModalRef = false; updateAccount()"/>
+                 @click="showEditModalRef = !updateAccount()"/>
         </q-card-section>
       </q-card>
 
@@ -176,12 +176,13 @@ function loadAccounts() {
     })
 }
 
-function createAccount() {
+function createAccount(): boolean {
   if (!passwordRef.value || passwordRef.value !== passwordRepeatRef.value) {
     passwordValidationFailedRef.value = true;
-    return;
+    return false;
   } else {
     passwordValidationFailedRef.value = false;
+    passwordRepeatRef.value = '';
   }
 
   let account: Account = {
@@ -212,17 +213,20 @@ function createAccount() {
         icon: 'report_problem'
       })
     })
+
+  return true;
 }
 
-function updateAccount() {
+function updateAccount(): boolean {
   if (!editAccountRef.value) {
-    return;
+    return false;
   }
-  if (editAccountRef.value.password !== passwordRepeatRef.value) {
+  if (editAccountRef.value.password != null && editAccountRef.value.password !== passwordRepeatRef.value) {
     passwordValidationFailedRef.value = true;
-    return;
+    return false;
   } else {
     passwordValidationFailedRef.value = false;
+    passwordRepeatRef.value = '';
   }
 
   api.put('/api/administration/account', editAccountRef.value)
@@ -242,6 +246,8 @@ function updateAccount() {
         icon: 'report_problem'
       })
     })
+
+  return true;
 }
 
 function deleteAccount(id: number) {

@@ -1,46 +1,45 @@
 <template>
   <ArtivactContent>
     <div class="col">
-      <h1 class="av-text-h1">Properties Configuration</h1>
-      <div class="q-mb-lg">Here the properties of artivacts are configured. They are organized in categories, which can
-        be ordered by drag & drop. The categories with their respective properties are shown at the bottom of the
-        artivact
-        details page.
+      <h1 class="av-text-h1">Menu Configuration</h1>
+      <div class="q-mb-lg">The navigation bar's central main menu is configured on this page. Each menu can have several
+        entries that point to pages. The menus themselves can be ordered by drag & drop.
       </div>
 
-      <artivact-properties-configuration-editor :properties-configuration="propertiesConfiguration"
-                                                :locales="localesRef" v-if="propertiesConfiguration"/>
+      <artivact-menu-configuration-editor :locales="localesRef" :menu-configuration="menuConfiguration"
+                                          v-if="menuConfiguration"/>
 
       <q-separator class="q-mt-md q-mb-md"/>
 
-      <q-btn label="Save" color="primary" class="float-right q-mb-lg" @click="saveProperties()"/>
+      <q-btn label="Save" color="primary" class="float-right q-mb-lg" @click="saveMenu()"/>
     </div>
   </ArtivactContent>
 </template>
 
 <script>
-import ArtivactPropertiesConfigurationEditor from '../components/ArtivactPropertiesConfigurationEditor';
 import {useQuasar} from 'quasar';
 import {onMounted, ref} from 'vue';
 import {api} from 'boot/axios';
 import ArtivactContent from 'components/ArtivactContent.vue';
+import ArtivactMenuConfigurationEditor from 'components/ArtivactMenuConfigurationEditor.vue';
+import {useMenuStore} from 'stores/menu';
 
 export default {
   name: 'PropertiesConfigurationEditPage',
-  components: {ArtivactContent, ArtivactPropertiesConfigurationEditor},
+  components: {ArtivactMenuConfigurationEditor, ArtivactContent},
   setup() {
     const $q = useQuasar()
-    const propertiesConfigurationRef = ref(null)
-
+    const menuConfigurationRef = ref(null)
     const localesRef = ref([]);
+    const menuStore = useMenuStore();
 
     let json = {};
 
-    function loadPropertyConfiguration() {
-      api.get('/api/administration/property')
+    function loadMenuConfiguration() {
+      api.get('/api/administration/menu')
         .then((response) => {
           json = response.data;
-          propertiesConfigurationRef.value = json;
+          menuConfigurationRef.value = json;
         })
         .catch(() => {
           $q.notify({
@@ -69,20 +68,32 @@ export default {
 
     onMounted(() => {
       loadLocales();
-      loadPropertyConfiguration();
+      loadMenuConfiguration();
     })
 
     return {
-      propertiesConfiguration: ref(propertiesConfigurationRef),
+      menuConfiguration: ref(menuConfigurationRef),
       localesRef,
 
-      saveProperties() {
-        api.post('/api/administration/property', json)
+      saveMenu() {
+        api.post('/api/administration/menu', json)
           .then(() => {
+            api.get('/api/configuration/menu')
+              .then((response) => {
+                menuStore.setAvailableMenus(response.data);
+              })
+              .catch(() => {
+                $q.notify({
+                  color: 'negative',
+                  position: 'bottom',
+                  message: 'Loading menus failed',
+                  icon: 'report_problem'
+                })
+              })
             $q.notify({
               color: 'positive',
               position: 'bottom',
-              message: 'Properties saved',
+              message: 'Menu saved',
               icon: 'check'
             })
           })

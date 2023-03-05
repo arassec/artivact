@@ -1,18 +1,23 @@
 package com.arassec.artivact.vault.backend.web.controller;
 
-import com.arassec.artivact.vault.backend.service.AccountService;
 import com.arassec.artivact.vault.backend.service.ConfigurationService;
-import com.arassec.artivact.vault.backend.service.model.Account;
+import com.arassec.artivact.vault.backend.service.model.TranslatedMenu;
+import com.arassec.artivact.vault.backend.service.model.TranslatedPropertyCategory;
 import com.arassec.artivact.vault.backend.service.model.configuration.LicenseConfiguration;
 import com.arassec.artivact.vault.backend.service.model.configuration.TagsConfiguration;
-import com.arassec.artivact.vault.backend.web.model.*;
+import com.arassec.artivact.vault.backend.web.model.TranslatedLicense;
+import com.arassec.artivact.vault.backend.web.model.TranslatedTag;
+import com.arassec.artivact.vault.backend.web.model.TranslatedTagsConfiguration;
+import com.arassec.artivact.vault.backend.web.model.UserData;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Locale;
@@ -24,8 +29,6 @@ import java.util.Locale;
 public class ConfigurationController extends BaseController {
 
     private final ConfigurationService configurationService;
-
-    private final AccountService accountService;
 
     @Value("${artivact.vault.available.locales}")
     private List<String> availableLocales;
@@ -63,7 +66,12 @@ public class ConfigurationController extends BaseController {
         return configurationService.loadTranslatedPropertyCategories(locale, getRoles(authentication));
     }
 
-    @GetMapping(value = "/license/translated")
+    @GetMapping(value = "/menu")
+    public List<TranslatedMenu> getTranslatedMenu(Locale locale, Authentication authentication) {
+        return configurationService.loadTranslatedMenus(locale, getRoles(authentication));
+    }
+
+    @GetMapping(value = "/license")
     public TranslatedLicense getTranslatedLicenseConfiguration(Locale locale, Authentication authentication) {
         LicenseConfiguration licenseConfiguration = configurationService.loadLicenseConfiguration(getRoles(authentication));
 
@@ -77,7 +85,6 @@ public class ConfigurationController extends BaseController {
 
         return result;
     }
-
 
     @GetMapping(value = "/tags/translated")
     public TranslatedTagsConfiguration getTranslatedTagsConfiguration(Locale locale, Authentication authentication) {

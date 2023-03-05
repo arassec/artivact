@@ -15,13 +15,10 @@
           </q-item-section>
         </template>
 
-        <q-card class="q-mb-lg">
+        <q-card>
           <q-card-section>
             <artivact-translatable-item-editor :locales="locales" :item="tagEntry" label="Prefix"
                                                :show-separator="false"/>
-          </q-card-section>
-
-          <q-card-section>
             <q-input outlined v-model="tagEntry.url" label="URL"/>
           </q-card-section>
         </q-card>
@@ -75,7 +72,6 @@ function deleteTag(index: number) {
     tagsConfigurationRef.value?.tags.splice(index, 1);
   }
 }
-
 
 </script>
 

@@ -3,6 +3,7 @@ package com.arassec.artivact.vault.backend.web.controller;
 import com.arassec.artivact.vault.backend.service.ArtivactService;
 import com.arassec.artivact.vault.backend.service.ConfigurationService;
 import com.arassec.artivact.vault.backend.service.model.configuration.LicenseConfiguration;
+import com.arassec.artivact.vault.backend.service.model.configuration.MenuConfiguration;
 import com.arassec.artivact.vault.backend.service.model.configuration.PropertiesConfiguration;
 import com.arassec.artivact.vault.backend.service.model.configuration.TagsConfiguration;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,16 @@ public class AdministrationController extends BaseController {
     @PostMapping(value = "/property")
     public void saveProperties(@RequestBody PropertiesConfiguration propertiesConfiguration) {
         configurationService.savePropertiesConfiguration(propertiesConfiguration);
+    }
+
+    @GetMapping(value = "/menu")
+    public MenuConfiguration getMenus(Authentication authentication) {
+        return configurationService.loadMenuConfiguration(getRoles(authentication));
+    }
+
+    @PostMapping(value = "/menu")
+    public void saveMenus(@RequestBody MenuConfiguration menuConfiguration) {
+        configurationService.saveMenuConfiguration(menuConfiguration);
     }
 
     @GetMapping(value = "/license")

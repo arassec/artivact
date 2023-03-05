@@ -108,7 +108,7 @@ function saveAccount() {
         color: 'positive',
         position: 'bottom',
         message: 'Account saved',
-        icon: 'report'
+        icon: 'check'
       })
     })
     .catch(() => {

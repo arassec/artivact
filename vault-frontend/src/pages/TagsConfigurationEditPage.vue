@@ -20,13 +20,15 @@ import {TagsConfiguration} from 'components/models';
 import ArtivactTagsConfigurationEditor from 'components/ArtivactTagsConfigurationEditor.vue';
 import ArtivactContent from 'components/ArtivactContent.vue';
 
+// noinspection JSUnusedGlobalSymbols
+const $q = useQuasar();
+
 const localesRef = ref([]);
 const tagsConfigurationRef: Ref<TagsConfiguration | null> = ref(null)
 
 let json = {} as TagsConfiguration;
 
 function loadLocales() {
-  let $q = useQuasar();
   api.get('/api/configuration/locale')
     .then((response) => {
       localesRef.value = response.data
@@ -42,7 +44,6 @@ function loadLocales() {
 }
 
 function loadTagsConfiguration() {
-  let $q = useQuasar();
   api.get('/api/administration/tags')
     .then((response) => {
       json = response.data;
@@ -59,15 +60,13 @@ function loadTagsConfiguration() {
 }
 
 function saveTagsConfiguration() {
-  const $q = useQuasar();
-
   api.post('/api/administration/tags', json)
     .then(() => {
       $q.notify({
         color: 'positive',
         position: 'bottom',
         message: 'Tags saved',
-        icon: 'report'
+        icon: 'check'
       })
     })
     .catch(() => {

@@ -2,105 +2,129 @@
   <q-layout view="hHh lpR fFf">
 
     <q-header elevated class="bg-primary text-white" height-hint="98">
-      <q-toolbar class="q-pl-xs">
+      <q-toolbar class="q-pl-xs page-toolbar">
 
-        <q-toolbar-title>
+        <q-toolbar-title class="q-mt-xs q-mb-xs">
 
-          <router-link to="/" class="silent-link">
-            <q-btn flat>
-              {{ data }}
+          <template v-for="menu in menuStore.menus" :key="menu.id">
+            <!-- Only menu with target, no entries defined: -->
+            <router-link :to="menu.target" v-if="menu.translatedMenuEntries.length === 0 && menu.target" class="menu-entry-link">
+              <q-btn no-caps flat color="white" :label="menu.translatedValue"></q-btn>
+            </router-link>
+
+            <!-- Menu with entries -->
+            <q-btn no-caps flat color="white" :label="menu.translatedValue"
+                   v-if="menu.translatedMenuEntries.length > 0">
+              <q-menu anchor="bottom middle" self="top middle">
+                <q-list>
+                  <template v-for="(menuEntry, menuEntryIndex) in menu.translatedMenuEntries" :key="menuEntryIndex">
+                    <router-link :to="menuEntry.target" class="menu-entry-link">
+                      <q-item clickable v-close-popup class="menu-entry">
+                        <q-item-section>{{ menuEntry.translatedValue }}</q-item-section>
+                      </q-item>
+                    </router-link>
+                  </template>
+                </q-list>
+              </q-menu>
             </q-btn>
-          </router-link>
+          </template>
 
         </q-toolbar-title>
 
-          <q-btn flat color="white" class="q-mt-xs" icon="settings" v-if="userdataStore.isAdmin">
-            <q-tooltip v-if="!systemMenuOpen">System Settings</q-tooltip>
-            <q-menu anchor="bottom middle" self="top middle" @before-show="systemMenuOpen = true"
-                    @before-hide="systemMenuOpen = false">
-              <q-list>
-                <q-item clickable v-close-popup @click="systemSettings" class="menu-entry">
-                  <q-item-section><label class="menu-label">
-                    <q-icon name="plagiarism" size="xs" color="primary" class="q-mr-sm"></q-icon>
-                    Filesystem Scan</label>
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </q-menu>
+        <q-btn flat color="white" icon="settings" v-if="userdataStore.isAdmin">
+          <q-tooltip v-if="!systemMenuOpen">System Settings</q-tooltip>
+          <q-menu anchor="bottom middle" self="top middle" @before-show="systemMenuOpen = true"
+                  @before-hide="systemMenuOpen = false">
+            <q-list>
+              <q-item clickable v-close-popup @click="menuSettings" class="menu-entry">
+                <q-item-section><label class="menu-label">
+                  <q-icon name="menu" size="xs" color="primary" class="q-mr-sm"></q-icon>
+                  Main Menu</label>
+                </q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup @click="systemSettings" class="menu-entry">
+                <q-item-section><label class="menu-label">
+                  <q-icon name="plagiarism" size="xs" color="primary" class="q-mr-sm"></q-icon>
+                  Filesystem Scan</label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </q-btn>
+
+        <q-btn flat color="white" icon="view_in_ar" v-if="userdataStore.isUserOrAdmin">
+          <q-tooltip v-if="!artivactMenuOpen">Artivact Settings</q-tooltip>
+          <q-menu anchor="bottom middle" self="top middle" @before-show="artivactMenuOpen = true"
+                  @before-hide="artivactMenuOpen = false">
+            <q-list>
+              <q-item clickable v-close-popup @click="createArtivact" class="menu-entry"
+                      v-if="userdataStore.isUserOrAdmin">
+                <q-item-section><label class="menu-label">
+                  <q-icon name="add" size="xs" color="primary" class="q-mr-sm"></q-icon>
+                  Create Artivact</label>
+                </q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup @click="propertiesAdministration" v-if="userdataStore.isAdmin"
+                      class="menu-entry">
+                <q-item-section><label class="menu-label">
+                  <q-icon name="article" size="xs" color="primary" class="q-mr-sm"></q-icon>
+                  Properties</label>
+                </q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup @click="tagsAdministration" v-if="userdataStore.isAdmin"
+                      class="menu-entry">
+                <q-item-section><label class="menu-label">
+                  <q-icon name="label" size="xs" color="primary" class="q-mr-sm"></q-icon>
+                  Tags</label>
+                </q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup @click="licenseAdministration" v-if="userdataStore.isAdmin"
+                      class="menu-entry">
+                <q-item-section><label class="menu-label">
+                  <q-icon name="policy" size="xs" color="primary" class="q-mr-sm"></q-icon>
+                  License</label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </q-btn>
+
+        <q-btn flat color="white" icon="manage_accounts" v-if="userdataStore.authenticated">
+          <q-tooltip v-if="!accountsMenuOpen">Account Settings</q-tooltip>
+          <q-menu anchor="bottom middle" self="top middle" @before-show="accountsMenuOpen = true"
+                  @before-hide="accountsMenuOpen = false">
+            <q-list>
+              <q-item clickable v-close-popup @click="accountSettings" class="menu-entry">
+                <q-item-section><label class="menu-label">
+                  <q-icon name="person" size="xs" color="primary" class="q-mr-sm"></q-icon>
+                  Account</label>
+                </q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup @click="accountsConfiguration" v-if="userdataStore.isAdmin"
+                      class="menu-entry">
+                <q-item-section><label class="menu-label">
+                  <q-icon name="group" size="xs" color="primary" class="q-mr-sm"></q-icon>
+                  Accounts</label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </q-btn>
+
+        <router-link to="/user-login" v-if="!userdataStore.authenticated" class="menu-entry-link">
+          <q-btn flat color="white" icon="login" size="md">
+            <q-tooltip>Login</q-tooltip>
           </q-btn>
+        </router-link>
 
-          <q-btn flat color="white" class="q-mt-xs" icon="view_in_ar" v-if="userdataStore.authenticated">
-            <q-tooltip v-if="!artivactMenuOpen">Artivact Settings</q-tooltip>
-            <q-menu anchor="bottom middle" self="top middle" @before-show="artivactMenuOpen = true"
-                    @before-hide="artivactMenuOpen = false">
-              <q-list>
-                <q-item clickable v-close-popup @click="createArtivact" class="menu-entry">
-                  <q-item-section><label class="menu-label">
-                    <q-icon name="add" size="xs" color="primary" class="q-mr-sm"></q-icon>
-                    Create Artivact</label>
-                  </q-item-section>
-                </q-item>
-                <q-item clickable v-close-popup @click="propertiesAdministration" v-if="userdataStore.isAdmin"
-                        class="menu-entry">
-                  <q-item-section><label class="menu-label">
-                    <q-icon name="article" size="xs" color="primary" class="q-mr-sm"></q-icon>
-                    Properties</label>
-                  </q-item-section>
-                </q-item>
-                <q-item clickable v-close-popup @click="tagsAdministration" v-if="userdataStore.isAdmin"
-                        class="menu-entry">
-                  <q-item-section><label class="menu-label">
-                    <q-icon name="label" size="xs" color="primary" class="q-mr-sm"></q-icon>
-                    Tags</label>
-                  </q-item-section>
-                </q-item>
-                <q-item clickable v-close-popup @click="licenseAdministration" v-if="userdataStore.isAdmin"
-                        class="menu-entry">
-                  <q-item-section><label class="menu-label">
-                    <q-icon name="policy" size="xs" color="primary" class="q-mr-sm"></q-icon>
-                    License</label>
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </q-menu>
+        <router-link to="/" v-if="userdataStore.authenticated" class="menu-entry-link">
+          <q-btn no-caps flat color="white" icon-right="logout" size="md" @click="logout">
+            <label class="q-mr-sm">
+              {{ userdataStore.username }}
+            </label>
+            <q-tooltip>Logout</q-tooltip>
           </q-btn>
-
-          <q-btn flat color="white" class="q-mt-xs" icon="manage_accounts" v-if="userdataStore.authenticated">
-            <q-tooltip v-if="!accountsMenuOpen">Account Settings</q-tooltip>
-            <q-menu anchor="bottom middle" self="top middle" @before-show="accountsMenuOpen = true"
-                    @before-hide="accountsMenuOpen = false">
-              <q-list>
-                <q-item clickable v-close-popup @click="accountSettings" class="menu-entry">
-                  <q-item-section><label class="menu-label">
-                    <q-icon name="person" size="xs" color="primary" class="q-mr-sm"></q-icon>
-                    Account</label>
-                  </q-item-section>
-                </q-item>
-                <q-item clickable v-close-popup @click="accountsConfiguration" v-if="userdataStore.isAdmin"
-                        class="menu-entry">
-                  <q-item-section><label class="menu-label">
-                    <q-icon name="group" size="xs" color="primary" class="q-mr-sm"></q-icon>
-                    Accounts</label>
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </q-menu>
-          </q-btn>
-
-          <router-link to="/user-login" class="silent-link" v-if="!userdataStore.authenticated">
-            <q-btn flat color="white" icon="login" size="md" class="q-mr-xs q-mt-xs">
-              <q-tooltip>Login</q-tooltip>
-            </q-btn>
-          </router-link>
-
-          <router-link to="/" class="silent-link" v-if="userdataStore.authenticated">
-            <q-btn flat color="white" icon-right="logout" size="md" class="q-mt-xs q-mr-xs" @click="logout">
-              <label class="q-mr-sm">
-                {{ userdataStore.username }}
-              </label>
-              <q-tooltip>Logout</q-tooltip>
-            </q-btn>
-          </router-link>
+        </router-link>
 
       </q-toolbar>
     </q-header>
@@ -123,6 +147,7 @@ import {useUserdataStore} from 'stores/userdata';
 import {useRouter} from 'vue-router';
 import {useLocaleStore} from 'stores/locale';
 import {useLicenseStore} from 'stores/license';
+import {useMenuStore} from 'stores/menu';
 
 export default defineComponent({
   name: 'MainLayout',
@@ -134,6 +159,7 @@ export default defineComponent({
 
     const userdataStore = useUserdataStore();
     const localeStore = useLocaleStore();
+    const menuStore = useMenuStore();
     const licenseStore = useLicenseStore();
 
     const artivactMenuOpen = ref(false);
@@ -150,6 +176,21 @@ export default defineComponent({
             color: 'negative',
             position: 'bottom',
             message: 'Loading locales failed',
+            icon: 'report_problem'
+          })
+        })
+    }
+
+    function loadMenus() {
+      api.get('/api/configuration/menu')
+        .then((response) => {
+          menuStore.setAvailableMenus(response.data);
+        })
+        .catch(() => {
+          $q.notify({
+            color: 'negative',
+            position: 'bottom',
+            message: 'Loading menus failed',
             icon: 'report_problem'
           })
         })
@@ -187,7 +228,7 @@ export default defineComponent({
     }
 
     function loadLicense() {
-      api.get('/api/configuration/license/translated')
+      api.get('/api/configuration/license')
         .then((response) => {
           licenseStore.setLicense(response.data);
         })
@@ -239,6 +280,10 @@ export default defineComponent({
       $r.push('/administration/filesystem/scan')
     }
 
+    function menuSettings() {
+      $r.push('/administration/configuration/menu/edit')
+    }
+
     function accountSettings() {
       $r.push('/account')
     }
@@ -250,25 +295,8 @@ export default defineComponent({
     function logout() {
       api.get('/api/auth/logout')
         .then(() => {
-          api.get('/api/configuration/user')
-            .then((response) => {
-              userdataStore.setUserdata(response.data);
-              $q.notify({
-                color: 'positive',
-                position: 'bottom',
-                message: 'Logout successful',
-                icon: 'report'
-              })
-              $r.push('/');
-            })
-            .catch(() => {
-              $q.notify({
-                color: 'negative',
-                position: 'bottom',
-                message: 'Loading UserData failed',
-                icon: 'report_problem'
-              })
-            });
+          loadUserData();
+          loadMenus();
         })
         .catch(() => {
           $q.notify({
@@ -283,11 +311,13 @@ export default defineComponent({
     return {
       data,
       userdataStore,
+      menuStore,
       artivactMenuOpen,
       systemMenuOpen,
       accountsMenuOpen,
       loadTitle,
       loadLocales,
+      loadMenus,
       loadUserData,
       loadLicense,
       logout,
@@ -296,6 +326,7 @@ export default defineComponent({
       licenseAdministration,
       createArtivact,
       systemSettings,
+      menuSettings,
       accountSettings,
       accountsConfiguration,
     }
@@ -305,14 +336,24 @@ export default defineComponent({
     this.loadTitle();
     this.loadUserData();
     this.loadLicense();
+    this.loadMenus();
   }
 });
 
 </script>
 
 <style scoped>
+.page-toolbar {
+  min-height: 10px;
+}
+
 .menu-label:hover {
   cursor: pointer;
+}
+
+.menu-entry-link {
+  text-decoration: none;
+  color: var(--q-primary);
 }
 
 .menu-entry:hover {

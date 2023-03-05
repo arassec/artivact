@@ -1,6 +1,5 @@
-package com.arassec.artivact.vault.backend.web.model;
+package com.arassec.artivact.vault.backend.service.model;
 
-import com.arassec.artivact.vault.backend.service.model.TranslatableItem;
 import lombok.Getter;
 import lombok.Setter;
 

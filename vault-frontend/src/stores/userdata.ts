@@ -21,13 +21,31 @@ export const useUserdataStore = defineStore('userdata', {
       return state.userdata.username;
     },
     isAdmin(state) {
-      let adminRoleFound = false;
+      let roleFound = false;
       state.userdata.roles.forEach(role => {
         if (role === 'ROLE_ADMIN') {
-          adminRoleFound = true;
+          roleFound = true;
         }
       })
-      return adminRoleFound;
+      return roleFound;
+    },
+    isUser(state) {
+      let roleFound = false;
+      state.userdata.roles.forEach(role => {
+        if (role === 'ROLE_USER') {
+          roleFound = true;
+        }
+      })
+      return roleFound;
+    },
+    isUserOrAdmin(state) {
+      let roleFound = false;
+      state.userdata.roles.forEach(role => {
+        if (role === 'ROLE_USER' || role === 'ROLE_ADMIN') {
+          roleFound = true;
+        }
+      })
+      return roleFound;
     }
   },
 

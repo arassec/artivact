@@ -3,16 +3,8 @@ package com.arassec.artivact.vault.backend.service;
 import com.arassec.artivact.vault.backend.core.ArtivactVaultException;
 import com.arassec.artivact.vault.backend.persistence.model.ConfigurationEntity;
 import com.arassec.artivact.vault.backend.persistence.repository.ConfigurationEntityRepository;
-import com.arassec.artivact.vault.backend.service.model.Property;
-import com.arassec.artivact.vault.backend.service.model.PropertyCategory;
-import com.arassec.artivact.vault.backend.service.model.TranslatableItem;
-import com.arassec.artivact.vault.backend.service.model.configuration.ConfigurationType;
-import com.arassec.artivact.vault.backend.service.model.configuration.LicenseConfiguration;
-import com.arassec.artivact.vault.backend.service.model.configuration.PropertiesConfiguration;
-import com.arassec.artivact.vault.backend.service.model.configuration.TagsConfiguration;
-import com.arassec.artivact.vault.backend.web.model.TranslatedItem;
-import com.arassec.artivact.vault.backend.web.model.TranslatedProperty;
-import com.arassec.artivact.vault.backend.web.model.TranslatedPropertyCategory;
+import com.arassec.artivact.vault.backend.service.model.*;
+import com.arassec.artivact.vault.backend.service.model.configuration.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -64,6 +56,34 @@ public class ConfigurationService extends BaseService {
         return new PropertiesConfiguration();
     }
 
+    public MenuConfiguration loadMenuConfiguration(List<String> roles) {
+        ConfigurationEntity entity = loadEntity(ConfigurationType.MENU.name());
+
+        if (StringUtils.hasText(entity.getContentJson())) {
+            try {
+                MenuConfiguration menuConfiguration = getObjectMapper().readValue(entity.getContentJson(), MenuConfiguration.class);
+
+                MenuConfiguration result = new MenuConfiguration();
+
+                result.setMenus(menuConfiguration.getMenus().stream()
+                        .filter(menu -> isAllowed(Optional.of(menu), roles))
+                        .toList());
+
+                result.getMenus().forEach(menu -> menu.getMenuEntries().removeAll(
+                        menu.getMenuEntries().stream()
+                                .filter(menuEntry -> !isAllowed(Optional.of(menuEntry), roles))
+                                .toList())
+                );
+
+                return result;
+            } catch (JsonProcessingException e) {
+                throw new ArtivactVaultException("Could not convert main-menu JSON!", e);
+            }
+        }
+
+        return new MenuConfiguration();
+    }
+
     public void savePropertiesConfiguration(PropertiesConfiguration propertiesConfiguration) {
         propertiesConfiguration.getCategories().forEach(propertyCategory -> {
             if (!StringUtils.hasText(propertyCategory.getId())) {
@@ -87,11 +107,42 @@ public class ConfigurationService extends BaseService {
         configurationEntityRepository.save(entity);
     }
 
+    public void saveMenuConfiguration(MenuConfiguration menuConfiguration) {
+        menuConfiguration.getMenus().forEach(menu -> {
+            if (!StringUtils.hasText(menu.getId())) {
+                menu.setId(UUID.randomUUID().toString());
+            }
+            menu.getMenuEntries().forEach(menuEntry -> {
+                if (!StringUtils.hasText(menuEntry.getId())) {
+                    menuEntry.setId(UUID.randomUUID().toString());
+                }
+            });
+        });
+
+        ConfigurationEntity entity = loadEntity(ConfigurationType.MENU.name());
+
+        try {
+            entity.setContentJson(getObjectMapper().writeValueAsString(menuConfiguration));
+        } catch (JsonProcessingException e) {
+            throw new ArtivactVaultException("Could not convert properties configuration to JSON!", e);
+        }
+
+        configurationEntityRepository.save(entity);
+    }
+
     public List<TranslatedPropertyCategory> loadTranslatedPropertyCategories(Locale locale, List<String> roles) {
         PropertiesConfiguration propertiesConfiguration = loadPropertiesConfiguration(roles);
 
         return propertiesConfiguration.getCategories().stream()
                 .map(propertyCategory -> translatePropertyCategory(propertyCategory, locale))
+                .toList();
+    }
+
+    public List<TranslatedMenu> loadTranslatedMenus(Locale locale, List<String> roles) {
+        MenuConfiguration menuConfiguration = loadMenuConfiguration(roles);
+
+        return menuConfiguration.getMenus().stream()
+                .map(menu -> translateMenu(menu, locale))
                 .toList();
     }
 
@@ -216,13 +267,24 @@ public class ConfigurationService extends BaseService {
         TranslatedPropertyCategory result = new TranslatedPropertyCategory();
         translate(result, propertyCategory, locale);
         result.setProperties(propertyCategory.getProperties().stream()
-                .map(property -> translatedProperty(property, locale))
+                .map(property -> translateProperty(property, locale))
                 .toList()
         );
         return result;
     }
 
-    private TranslatedProperty translatedProperty(Property property, Locale locale) {
+    private TranslatedMenu translateMenu(Menu menu, Locale locale) {
+        TranslatedMenu result = new TranslatedMenu();
+        translate(result, menu, locale);
+        result.setTarget(menu.getTarget());
+        result.setTranslatedMenuEntries(menu.getMenuEntries().stream()
+                .map(menuEntry -> translateMainMenuEntry(menuEntry, locale))
+                .toList()
+        );
+        return result;
+    }
+
+    private TranslatedProperty translateProperty(Property property, Locale locale) {
         TranslatedProperty result = new TranslatedProperty();
         translate(result, property, locale);
         result.setValueRange(property.getValueRange().stream().
@@ -232,6 +294,13 @@ public class ConfigurationService extends BaseService {
                     return translatedItem;
                 })
                 .toList());
+        return result;
+    }
+
+    private TranslatedMenuEntry translateMainMenuEntry(MenuEntry menuEntry, Locale locale) {
+        TranslatedMenuEntry result = new TranslatedMenuEntry();
+        translate(result, menuEntry, locale);
+        result.setTarget(menuEntry.getTarget());
         return result;
     }
 

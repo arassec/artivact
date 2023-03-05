@@ -1,4 +1,4 @@
-package com.arassec.artivact.vault.backend.web.model;
+package com.arassec.artivact.vault.backend.service.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,8 +12,8 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class TranslatedPropertyCategory extends TranslatedItem {
+public class TranslatedProperty extends TranslatedItem {
 
-    private List<TranslatedProperty> properties = new LinkedList<>();
+    private List<TranslatedItem> valueRange = new LinkedList<>();
 
 }

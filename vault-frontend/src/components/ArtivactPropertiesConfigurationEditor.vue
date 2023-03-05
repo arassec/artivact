@@ -4,8 +4,7 @@
       <draggable :list="propertiesConfigurationProp.categories" item-key="id" group="categories" handle=".category-move-icon">
         <template #item="{ element }">
           <q-expansion-item :label="element.value" group="categories" header-class="bg-primary text-white"
-                            class="category"
-                            expand-separator expand-icon-class="text-white">
+                            class="category" expand-separator expand-icon-class="text-white">
 
             <template v-slot:header>
               <q-item-section avatar>
@@ -36,15 +35,20 @@
               <q-separator/>
 
               <q-card-section>
-                <h3 class="av-text-h3">Properties</h3>
+                <h2 class="av-text-h2">Properties</h2>
 
-                <div v-for="(property, propertyKey) in element.properties" :key="propertyKey">
+                <div v-for="(property, index) in element.properties" :key="index">
                   <q-btn round dense flat class="float-right q-ml-sm"
-                         icon="delete" size="md" @click="deleteProperty(element, propertyKey)"></q-btn>
+                         icon="delete" size="md" @click="deleteProperty(element, index)"></q-btn>
+                  <q-btn round dense flat class="float-right q-ml-sm" v-if="index > 0"
+                         icon="arrow_upward" size="md" @click="moveUp(element, index)"></q-btn>
+                  <q-btn round dense flat class="float-right q-ml-sm" v-if="index < (element.properties.length -1)"
+                         icon="arrow_downward" size="md" @click="moveDown(element, index)"></q-btn>
 
                   <artivact-translatable-item-editor :item="property" :locales="locales" label="Property"
                                                      :show-separator="false"/>
                   <artivact-property-value-range-editor :value-range="property.valueRange" :locales="locales"/>
+                  <q-separator class="q-mt-sm q-mb-lg"/>
                 </div>
               </q-card-section>
 
@@ -69,8 +73,9 @@
 </template>
 
 <script setup lang="ts">
+// noinspection ES6UnusedImports
 import draggable from 'vuedraggable';
-import {PropType, toRef} from 'vue';
+import {PropType, ref, toRef} from 'vue';
 import {PropertiesConfiguration, Property, PropertyCategory} from 'components/models';
 import ArtivactTranslatableItemEditor from 'components/ArtivactTranslatableItemEditor.vue';
 import ArtivactPropertyValueRangeEditor from 'components/ArtivactPropertyValueRangeEditor.vue';
@@ -86,6 +91,12 @@ const props = defineProps({
   }
 });
 const propertiesConfigurationProp = toRef(props, 'propertiesConfiguration');
+
+const showDetailsStore = ref([]);
+
+function showDetails(index: number) {
+  showDetailsStore[index] = true;
+}
 
 function addCategory() {
   let category: PropertyCategory = {
@@ -114,8 +125,24 @@ function deleteCategory(category: PropertyCategory) {
     .splice(propertiesConfigurationProp.value.categories.indexOf(category), 1);
 }
 
-function deleteProperty(category: PropertyCategory, propertyKey: number) {
-  category.properties.splice(propertyKey, 1);
+function deleteProperty(category: PropertyCategory, index: number) {
+  category.properties.splice(index, 1);
+}
+
+function moveUp(category: PropertyCategory, index: number) {
+  if (index > 0) {
+    let el = category.properties[index];
+    category.properties[index] = category.properties[index - 1];
+    category.properties[index - 1] = el;
+  }
+}
+
+function moveDown(category: PropertyCategory, index: number) {
+  if (index !== -1 && index < category.properties.length - 1) {
+    let el = category.properties[index];
+    category.properties[index] = category.properties[index + 1];
+    category.properties[index + 1] = el;
+  }
 }
 
 </script>
@@ -125,9 +152,6 @@ function deleteProperty(category: PropertyCategory, propertyKey: number) {
   border-bottom: 1px solid white;
 }
 
-.category-label {
-  font-size: large;
-}
 .category-label {
   font-size: large;
 }
