@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,8 +49,14 @@ public abstract class BaseService {
         if (translatableItemOptional.isEmpty() || translatableItemOptional.get().getRestrictions().isEmpty()) {
             return true;
         }
-        return translatableItemOptional.get().getRestrictions().stream()
-                .anyMatch(roles::contains);
+        return isAllowed(translatableItemOptional.get().getRestrictions(), roles);
+    }
+
+    protected boolean isAllowed(Collection<String> restrictions, List<String> roles) {
+        if (restrictions.isEmpty()) {
+            return true;
+        }
+        return restrictions.stream().anyMatch(roles::contains);
     }
 
 }

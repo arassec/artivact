@@ -1,7 +1,8 @@
 <template>
   <div>
     <q-list bordered class="rounded-borders q-mb-lg">
-      <draggable :list="propertiesConfigurationProp.categories" item-key="id" group="categories" handle=".category-move-icon">
+      <draggable :list="propertiesConfigurationProp.categories" item-key="id" group="categories"
+                 handle=".category-move-icon">
         <template #item="{ element }">
           <q-expansion-item :label="element.value" group="categories" header-class="bg-primary text-white"
                             class="category" expand-separator expand-icon-class="text-white">
@@ -14,7 +15,7 @@
               </q-item-section>
 
               <q-item-section class="category-label">
-                  {{ element.value }}
+                {{ element.value }}
               </q-item-section>
 
               <q-item-section side>
@@ -75,7 +76,7 @@
 <script setup lang="ts">
 // noinspection ES6UnusedImports
 import draggable from 'vuedraggable';
-import {PropType, ref, toRef} from 'vue';
+import {PropType, toRef} from 'vue';
 import {PropertiesConfiguration, Property, PropertyCategory} from 'components/models';
 import ArtivactTranslatableItemEditor from 'components/ArtivactTranslatableItemEditor.vue';
 import ArtivactPropertyValueRangeEditor from 'components/ArtivactPropertyValueRangeEditor.vue';
@@ -91,12 +92,6 @@ const props = defineProps({
   }
 });
 const propertiesConfigurationProp = toRef(props, 'propertiesConfiguration');
-
-const showDetailsStore = ref([]);
-
-function showDetails(index: number) {
-  showDetailsStore[index] = true;
-}
 
 function addCategory() {
   let category: PropertyCategory = {

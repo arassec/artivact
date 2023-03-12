@@ -148,6 +148,7 @@ import {useRouter} from 'vue-router';
 import {useLocaleStore} from 'stores/locale';
 import {useLicenseStore} from 'stores/license';
 import {useMenuStore} from 'stores/menu';
+import {useRoleStore} from 'stores/role';
 
 export default defineComponent({
   name: 'MainLayout',
@@ -161,6 +162,7 @@ export default defineComponent({
     const localeStore = useLocaleStore();
     const menuStore = useMenuStore();
     const licenseStore = useLicenseStore();
+    const roleStore = useRoleStore();
 
     const artivactMenuOpen = ref(false);
     const systemMenuOpen = ref(false);
@@ -176,6 +178,21 @@ export default defineComponent({
             color: 'negative',
             position: 'bottom',
             message: 'Loading locales failed',
+            icon: 'report_problem'
+          })
+        })
+    }
+
+    function loadRoles() {
+      api.get('/api/configuration/role')
+        .then((response) => {
+          roleStore.setAvailableRoles(response.data);
+        })
+        .catch(() => {
+          $q.notify({
+            color: 'negative',
+            position: 'bottom',
+            message: 'Loading roles failed',
             icon: 'report_problem'
           })
         })
@@ -317,6 +334,7 @@ export default defineComponent({
       accountsMenuOpen,
       loadTitle,
       loadLocales,
+      loadRoles,
       loadMenus,
       loadUserData,
       loadLicense,
@@ -333,6 +351,7 @@ export default defineComponent({
   },
   mounted() {
     this.loadLocales();
+    this.loadRoles();
     this.loadTitle();
     this.loadUserData();
     this.loadLicense();

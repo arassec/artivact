@@ -4,6 +4,11 @@
     <div class="col-12">
       <div class="col items-center">
         <h1 class="av-text-h1">Base Data</h1>
+
+        <artivact-restrictions-editor :restrictions="artivactDataRef.restrictions"
+          @delete-restriction="removeRestriction" @add-restriction="addRestriction" class="q-mb-md"/>
+        <q-separator class="q-mb-md"/>
+
         <div class="q-mb-sm" v-if="tagsDataRef" v-show="tagsDataRef.tags.length > 0">
           <label class="q-mr-xs q-mt-xs vertical-middle">Tags:</label>
           <q-badge class="q-mr-xs vertical-middle" color="secondary" v-for="(tag, index) in artivactDataRef.tags"
@@ -108,10 +113,12 @@ import ArtivactTranslatableItemEditor from '../components/ArtivactTranslatableIt
 import ArtivactPropertyCategoryEditor from '../components/ArtivactPropertyCategoryEditor';
 import ArtivactImageEditor from '../components/ArtivactImageEditor';
 import ArtivactContent from 'components/ArtivactContent.vue';
+import ArtivactRestrictionsEditor from 'components/ArtivactRestrictionsEditor.vue';
 
 export default {
   name: 'EditPage',
   components: {
+    ArtivactRestrictionsEditor,
     ArtivactContent,
     draggable, ArtivactImageEditor, ArtivactPropertyCategoryEditor, ArtivactTranslatableItemEditor},
   setup() {
@@ -216,6 +223,17 @@ export default {
       artivactData.value.tags = artivactData.value?.tags.filter(item => item !== tag);
     }
 
+    function removeRestriction(role) {
+      const index = artivactData.value.restrictions.indexOf(role);
+      if (index > -1) {
+        artivactData.value.restrictions.splice(index, 1);
+      }
+    }
+
+    function addRestriction(role) {
+      artivactData.value.restrictions.push(role);
+    }
+
     function deleteModel(element) {
       artivactData.value?.models.splice(artivactData.value?.models.indexOf(element), 1);
     }
@@ -240,12 +258,13 @@ export default {
       localesRef,
       confirmDeleteRef,
 
-      loadArtivactData,
       loadArtivactMediaData,
       addTag,
       saveSelectedTag,
       removeTag,
       deleteModel,
+      addRestriction,
+      removeRestriction,
 
       save() {
         let artivact = artivactData.value;

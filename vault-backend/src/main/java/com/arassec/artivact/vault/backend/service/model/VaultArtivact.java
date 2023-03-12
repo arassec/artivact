@@ -24,7 +24,7 @@ public class VaultArtivact extends Artivact {
     private Path projectRoot;
 
     @Builder.Default
-    private Set<String> restrictions = new HashSet<>();
+    private List<String> restrictions = new LinkedList<>();
 
     private TranslatableItem description;
 

@@ -12,6 +12,7 @@ export interface ArtivactCardData {
 export interface ArtivactDetails {
   id: string;
   version: number;
+  restrictions: string[];
   title: TranslatableItem;
   description: TranslatableItem;
   images: MediaEntry[];

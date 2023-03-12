@@ -11,25 +11,22 @@ import com.arassec.artivact.vault.backend.service.model.configuration.Properties
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import jakarta.transaction.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.print.attribute.standard.Media;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 @Slf4j
 @Service
@@ -100,14 +97,22 @@ public class ArtivactService extends BaseService {
     @Transactional
     public VaultArtivact loadArtivact(String artivactId, List<String> roles) {
         Optional<ArtivactEntity> entityOptional = artivactEntityRepository.findById(artivactId);
-        return entityOptional.map(artivactEntity -> fromEntity(artivactEntity, roles)).orElse(null);
+        Optional<VaultArtivact> vaultArtivactOptional = entityOptional.map(artivactEntity -> fromEntity(artivactEntity, roles));
+        if (vaultArtivactOptional.isPresent()) {
+            VaultArtivact vaultArtivact = vaultArtivactOptional.get();
+            if (isAllowed(vaultArtivact.getRestrictions(), roles)) {
+                return vaultArtivact;
+            }
+        }
+        return null;
     }
 
     @Transactional
     public List<VaultArtivact> loadArtivacts(List<String> roles) {
-        List<VaultArtivact> result = new LinkedList<>();
-        artivactEntityRepository.findAll().forEach(entity -> result.add(fromEntity(entity, roles)));
-        return result;
+        return StreamSupport.stream(artivactEntityRepository.findAll().spliterator(), false)
+                .map(entity -> fromEntity(entity, roles))
+                .filter(artivact -> isAllowed(artivact.getRestrictions(), roles))
+                .toList();
     }
 
     @Transactional
@@ -115,6 +120,10 @@ public class ArtivactService extends BaseService {
         var entity = artivactEntityRepository.findById(vaultArtivact.getId()).orElse(new ArtivactEntity());
         entity.setId(vaultArtivact.getId());
         entity.setVersion(vaultArtivact.getVersion());
+        entity.setRestrictions(getRestrictions(vaultArtivact.getRestrictions()));
+        if (!vaultArtivact.getRestrictions().isEmpty()) {
+            entity.setRestrictions(String.join(",", vaultArtivact.getRestrictions()));
+        }
         if (!StringUtils.hasText(vaultArtivact.getTitle().getId())) {
             vaultArtivact.getTitle().setId(UUID.randomUUID().toString());
         }
@@ -144,6 +153,7 @@ public class ArtivactService extends BaseService {
                 .id(entity.getId())
                 .version(entity.getVersion())
                 .projectRoot(projectRoot)
+                .restrictions(getRestrictions(entity.getRestrictions()))
                 .title(fromJson(entity.getTitleJson(), TranslatableItem.class))
                 .description(fromJson(entity.getDescriptionJson(), TranslatableItem.class))
                 .mediaContent(fromJson(entity.getMediaContentJson(), MediaContent.class))
@@ -334,6 +344,20 @@ public class ArtivactService extends BaseService {
         }
 
         return result;
+    }
+
+    private List<String> getRestrictions(String input) {
+        if (StringUtils.hasText(input)) {
+            return List.of(input.split(","));
+        }
+        return new LinkedList<>();
+    }
+
+    private String getRestrictions(List<String> input) {
+        if (input != null && !input.isEmpty()) {
+            return String.join(",", input);
+        }
+        return null;
     }
 
 }

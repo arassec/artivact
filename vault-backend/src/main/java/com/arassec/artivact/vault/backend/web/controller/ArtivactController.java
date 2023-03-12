@@ -24,7 +24,7 @@ public class ArtivactController extends BaseController {
 
     private final ArtivactService artivactService;
 
-    @GetMapping( "/{artivactId}")
+    @GetMapping("/{artivactId}")
     public ResponseEntity<ArtivactDetails> loadArtivact(@PathVariable String artivactId, Locale locale,
                                                         Authentication authentication) {
         VaultArtivact artivact = artivactService.loadArtivact(artivactId, getRoles(authentication));
@@ -33,6 +33,7 @@ public class ArtivactController extends BaseController {
             return ResponseEntity.ok(ArtivactDetails.builder()
                     .id(artivact.getId())
                     .version(artivact.getVersion())
+                    .restrictions(artivact.getRestrictions())
                     .title(translateItem(artivact.getTitle(), locale))
                     .description(translateItem(artivact.getDescription(), locale))
                     .images(artivact.getMediaContent().getImages().stream()
@@ -85,6 +86,7 @@ public class ArtivactController extends BaseController {
         }
 
         vaultArtivact.setVersion(artivactDetails.getVersion());
+        vaultArtivact.setRestrictions(artivactDetails.getRestrictions());
         vaultArtivact.setTitle(removeTranslation(artivactDetails.getTitle()));
         vaultArtivact.setDescription(removeTranslation(artivactDetails.getDescription()));
         vaultArtivact.setMediaContent(mediaContent);
@@ -102,7 +104,7 @@ public class ArtivactController extends BaseController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping( "/{artivactId}")
+    @DeleteMapping("/{artivactId}")
     public ResponseEntity<Void> deleteArtivact(@PathVariable String artivactId, Authentication authentication) {
 
         if (!isAdminOrUser(authentication)) {

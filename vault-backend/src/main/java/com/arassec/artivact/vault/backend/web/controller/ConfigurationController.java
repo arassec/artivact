@@ -1,5 +1,6 @@
 package com.arassec.artivact.vault.backend.web.controller;
 
+import com.arassec.artivact.vault.backend.core.Roles;
 import com.arassec.artivact.vault.backend.service.ConfigurationService;
 import com.arassec.artivact.vault.backend.service.model.TranslatedMenu;
 import com.arassec.artivact.vault.backend.service.model.TranslatedPropertyCategory;
@@ -39,6 +40,11 @@ public class ConfigurationController extends BaseController {
     @GetMapping(value = "/locale")
     public List<String> getAvailableLocales() {
         return availableLocales;
+    }
+
+    @GetMapping(value = "/role")
+    public List<String> getAvailableRoles() {
+        return List.of(Roles.ROLE_ADMIN, Roles.ROLE_USER);
     }
 
     @GetMapping(value = "/title")

@@ -19,6 +19,8 @@ public class ArtivactDetails {
 
     private Integer version;
 
+    private List<String> restrictions;
+
     private TranslatedItem title;
 
     private TranslatedItem description;

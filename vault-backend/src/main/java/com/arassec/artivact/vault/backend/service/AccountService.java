@@ -2,7 +2,7 @@ package com.arassec.artivact.vault.backend.service;
 
 import com.arassec.artivact.vault.backend.core.Roles;
 import com.arassec.artivact.vault.backend.persistence.model.AccountEntity;
-import com.arassec.artivact.vault.backend.persistence.repository.AccountRepository;
+import com.arassec.artivact.vault.backend.persistence.repository.AccountEntityRepository;
 import com.arassec.artivact.vault.backend.service.model.Account;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +28,7 @@ import java.util.stream.StreamSupport;
 @RequiredArgsConstructor
 public class AccountService implements UserDetailsService {
 
-    private final AccountRepository accountRepository;
+    private final AccountEntityRepository accountEntityRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -38,7 +38,7 @@ public class AccountService implements UserDetailsService {
     @PostConstruct
     public void initialize() {
         if (StringUtils.hasText(initialUsername)) {
-            if (accountRepository.findByUsername(initialUsername).isPresent()) {
+            if (accountEntityRepository.findByUsername(initialUsername).isPresent()) {
                 return;
             }
 
@@ -62,7 +62,7 @@ public class AccountService implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<AccountEntity> accountEntityOptional = accountRepository.findByUsername(username);
+        Optional<AccountEntity> accountEntityOptional = accountEntityRepository.findByUsername(username);
 
         if (accountEntityOptional.isPresent()) {
             AccountEntity accountEntity = accountEntityOptional.get();
@@ -78,7 +78,7 @@ public class AccountService implements UserDetailsService {
     }
 
     public Optional<Account> loadOwnAccount(String username) {
-        Optional<AccountEntity> accountEntityOptional = accountRepository.findByUsername(username);
+        Optional<AccountEntity> accountEntityOptional = accountEntityRepository.findByUsername(username);
         if (accountEntityOptional.isPresent()) {
             AccountEntity accountEntity = accountEntityOptional.get();
             Account account = mapEntity(accountEntity);
@@ -90,7 +90,7 @@ public class AccountService implements UserDetailsService {
     }
 
     public Account updateOwnAccount(String originalUsername, Account account) {
-        AccountEntity accountEntity = accountRepository.findById(account.getId()).orElseThrow();
+        AccountEntity accountEntity = accountEntityRepository.findById(account.getId()).orElseThrow();
 
         if (originalUsername == null || !originalUsername.equals(accountEntity.getUsername())) {
             throw new IllegalStateException("Account does not match logged in user!");
@@ -106,7 +106,7 @@ public class AccountService implements UserDetailsService {
 
         accountEntity.setEmail(account.getEmail());
 
-        AccountEntity savedAccountEntity = accountRepository.save(accountEntity);
+        AccountEntity savedAccountEntity = accountEntityRepository.save(accountEntity);
 
         account.setVersion(savedAccountEntity.getVersion());
 
@@ -114,14 +114,14 @@ public class AccountService implements UserDetailsService {
     }
 
     public List<Account> loadAllExcept(String username) {
-        return StreamSupport.stream(accountRepository.findAll().spliterator(), false)
+        return StreamSupport.stream(accountEntityRepository.findAll().spliterator(), false)
                 .filter(entity -> !entity.getUsername().equals(username))
                 .map(this::mapEntity)
                 .toList();
     }
 
     public Account updateAccount(Account account) {
-        AccountEntity accountEntity = accountRepository.findById(account.getId()).orElseThrow();
+        AccountEntity accountEntity = accountEntityRepository.findById(account.getId()).orElseThrow();
 
         if (StringUtils.hasText(account.getUsername())) {
             accountEntity.setUsername(account.getUsername());
@@ -134,7 +134,7 @@ public class AccountService implements UserDetailsService {
         accountEntity.setEmail(account.getEmail());
         accountEntity.setRoles(getRoles(account));
 
-        AccountEntity savedAccountEntity = accountRepository.save(accountEntity);
+        AccountEntity savedAccountEntity = accountEntityRepository.save(accountEntity);
 
         account.setVersion(savedAccountEntity.getVersion());
         account.setPassword(null);
@@ -149,7 +149,7 @@ public class AccountService implements UserDetailsService {
         accountEntity.setEmail(account.getEmail());
         accountEntity.setRoles(getRoles(account));
 
-        AccountEntity savedAccountEntity = accountRepository.save(accountEntity);
+        AccountEntity savedAccountEntity = accountEntityRepository.save(accountEntity);
 
         account.setId(savedAccountEntity.getId());
         account.setVersion(savedAccountEntity.getVersion());
@@ -159,7 +159,7 @@ public class AccountService implements UserDetailsService {
     }
 
     public void deleteAccount(int id) {
-        accountRepository.deleteById(id);
+        accountEntityRepository.deleteById(id);
     }
 
     private Account mapEntity(AccountEntity accountEntity) {

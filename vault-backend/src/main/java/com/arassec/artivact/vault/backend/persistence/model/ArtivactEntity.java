@@ -23,7 +23,7 @@ public class ArtivactEntity {
 
     private String titleJson;
 
-    private String restrictionsJson;
+    private String restrictions;
 
     private String descriptionJson;
 
