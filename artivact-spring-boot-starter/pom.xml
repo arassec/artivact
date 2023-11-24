@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.arassec.artivact</groupId>
+        <artifactId>artivact</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>artivact-spring-boot-starter</artifactId>
+    <packaging>jar</packaging>
+
+    <name>artivact-spring-boot-starter</name>
+    <description>Spring-Boot starter of the artivact application to manage virtual artifacts.</description>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>com.arassec.artivact</groupId>
+            <artifactId>backend</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+    </dependencies>
+
+</project>

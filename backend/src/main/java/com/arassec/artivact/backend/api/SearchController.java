@@ -1,0 +1,71 @@
+package com.arassec.artivact.backend.api;
+
+import com.arassec.artivact.backend.api.model.ItemCardData;
+import com.arassec.artivact.backend.api.model.SearchResult;
+import com.arassec.artivact.backend.service.SearchService;
+import com.arassec.artivact.backend.service.model.item.Item;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@Slf4j
+@RequiredArgsConstructor
+@RestController
+@RequestMapping("/api/search")
+public class SearchController extends BaseFileController {
+
+    private final SearchService searchService;
+
+    @PostMapping("/index/recreate")
+    public void recreateIndex() {
+        searchService.recreateIndex();
+    }
+
+    @GetMapping
+    public SearchResult search(@RequestParam("query") String searchTerm,
+                               @RequestParam(value = "pageNo", required = false, defaultValue = "0") int pageNumber,
+                               @RequestParam(value = "pageSize", required = false, defaultValue = "9") int pageSize,
+                               @RequestParam(value = "maxResults", required = false, defaultValue = "100") int maxResults) {
+        List<Item> items = searchService.search(searchTerm, maxResults);
+        return getSearchResult(items, pageNumber, pageSize);
+    }
+
+    private SearchResult getSearchResult(List<Item> all, int pageNumber, int pageSize) {
+        if (all != null && !all.isEmpty() && pageSize > 0) {
+            long totalPages = all.size() / pageSize;
+            if (all.size() % pageSize > 0) {
+                totalPages++;
+            }
+            if (totalPages > 0 && totalPages > pageNumber) {
+                int startIndex = pageNumber * pageSize;
+                int endIndex = startIndex + pageSize;
+                if (endIndex >= all.size()) {
+                    endIndex = all.size();
+                }
+                return SearchResult.builder()
+                        .pageNumber(pageNumber)
+                        .pageSize(pageSize)
+                        .totalPages(totalPages)
+                        .data(all.stream()
+                                .map(item -> ItemCardData.builder()
+                                        .itemId(item.getId())
+                                        .title(item.getTitle())
+                                        .imageUrl(createMainImageUrl(item))
+                                        .hasModel(!item.getMediaContent().getModels().isEmpty())
+                                        .build()
+                                ).toList()
+                                .subList(startIndex, endIndex))
+                        .build();
+            }
+        }
+        return SearchResult.builder()
+                .pageNumber(pageNumber)
+                .pageSize(0)
+                .totalPages(0)
+                .data(List.of())
+                .build();
+    }
+
+}

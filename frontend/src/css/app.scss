@@ -1,0 +1,94 @@
+// app global css in SCSS form
+
+.av-text-h1 {
+  font-size: 3rem;
+  margin: 0;
+}
+
+.av-text-h2 {
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.av-text-h3 {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.av-text-h3 {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.av-label-h1 {
+  font-size: 3rem;
+  font-weight: 300;
+  line-height: 6rem;
+  margin: 0;
+  vertical-align: middle;
+}
+
+.av-label-h2 {
+  font-size: 1.5rem;
+  font-weight: 300;
+  line-height: 3.75rem;
+  letter-spacing: -0.00833em;
+  margin: 0;
+  vertical-align: middle;
+}
+
+h2 {
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+h3 {
+  font-size: 1rem;
+  margin: 0;
+}
+
+body {
+  color: var(--q-primary);
+}
+
+a:link {
+  color: var(--q-secondary);
+}
+
+a:visited {
+  color: var(--q-primary);
+}
+
+.silent-link {
+  color: inherit;
+  all: unset;
+}
+
+.silent-link:visited {
+  color: inherit;
+  all: unset;
+}
+
+.silent-link:hover {
+  cursor: pointer;
+}
+
+@media (min-width: 1024px) {
+  .artivact-modal-content {
+    min-width: 25em;
+    min-height: 30em;
+  }
+
+  .artivact-fixed-modal-content {
+    width: 25em;
+    height: 30em;
+  }
+}
+
+.editor-label {
+  min-width: 8em;
+}
+
+.darkened-parallax-container > .q-parallax__media {
+  filter: brightness(75%);
+}

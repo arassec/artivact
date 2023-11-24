@@ -1,0 +1,49 @@
+{
+  "name": "artivact",
+  "version": "1.0.0-SNAPSHOT",
+  "description": "A tool to create and maintain virtual artifacts.",
+  "productName": "Artivact",
+  "author": "Andreas Sensen <andreas.sensen@arassec.com>",
+  "private": true,
+  "scripts": {
+    "lint": "eslint --fix --ext .js,.vue ./",
+    "format": "prettier --write \"**/*.{js,vue,scss,html,md,json}\" --ignore-path .gitignore",
+    "test": "echo \"No test specified\" && exit 0",
+    "dev": "quasar dev",
+    "build": "quasar build",
+    "dev:electron": "quasar dev -m electron",
+    "build:electron": "quasar build -m electron"
+  },
+  "dependencies": {
+    "@electron/remote": "^2.1.0",
+    "@quasar/extras": "^1.16.8",
+    "axios": "^1.6.2",
+    "pinia": "^2.1.7",
+    "quasar": "^2.14.0",
+    "tree-kill": "^1.2.2",
+    "vue": "^3.3.8",
+    "vue-i18n": "^9.7.1",
+    "vue-router": "^4.0.0",
+    "vuedraggable": "^4.1.0",
+    "markdown-it": "^13.0.1"
+  },
+  "devDependencies": {
+    "@intlify/vue-i18n-loader": "^5.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.10.0",
+    "@typescript-eslint/parser": "^5.10.0",
+    "electron": "^27.1.2",
+    "eslint": "^8.10.0",
+    "eslint-plugin-vue": "^9.0.0",
+    "eslint-config-prettier": "^8.1.0",
+    "prettier": "^2.5.1",
+    "@types/node": "^12.20.21",
+    "@quasar/app-vite": "^1.3.0",
+    "autoprefixer": "^10.4.2",
+    "typescript": "^4.5.4"
+  },
+  "engines": {
+    "node": "^18 || ^16 || ^14.19",
+    "npm": ">= 6.13.4",
+    "yarn": ">= 1.21.1"
+  }
+}
