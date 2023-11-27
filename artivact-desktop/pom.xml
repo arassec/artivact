@@ -194,7 +194,7 @@
                                 <configuration>
                                     <target>
                                         <gunzip src="${project.build.directory}/jre.tar.gz"/>
-                                        <untar src="jre.tar" dest="${project.build.directory}"/>
+                                        <untar src="${project.build.directory}/jre.tar" dest="${project.build.directory}"/>
                                     </target>
                                 </configuration>
                             </execution>
