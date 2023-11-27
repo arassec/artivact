@@ -19,7 +19,7 @@
         <sonar.skip>true</sonar.skip>
 
         <windows.jre.url>adoptium/temurin21-binaries/releases/download/jdk-21.0.1+12/OpenJDK21U-jre_x64_windows_hotspot_21.0.1_12.zip</windows.jre.url>
-        <linux.jre.url>adoptium/temurin21-binaries/releases/download/jdk-21.0.1%2B12/OpenJDK21U-jre_x64_linux_hotspot_21.0.1_12.tar.gz</linux.jre.url>
+        <linux.jre.url>adoptium/temurin21-binaries/releases/download/jdk-21.0.1+12/OpenJDK21U-jre_x64_linux_hotspot_21.0.1_12.tar.gz</linux.jre.url>
         <jre.folder>jdk-21.0.1+12-jre</jre.folder>
     </properties>
 

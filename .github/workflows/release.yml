@@ -40,7 +40,9 @@ jobs:
         with:
           java-version: 21
       - name: Set Release Version
-        run: echo "RELEASE_VERSION=${GITHUB_REF:11}" >> $GITHUB_ENV
+        run: |
+          chcp 65001 #set code page to utf-8
+          echo ("RELEASE_VERSION=" + ${GITHUB_REF:11}) >> $env:GITHUB_ENV
       - name: Build
         run: .\mvnw.cmd clean install -Drevision=$RELEASE_VERSION --no-transfer-progress -P release-desktop-windows
       - name: Upload binaries to release
