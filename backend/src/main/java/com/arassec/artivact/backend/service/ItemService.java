@@ -5,7 +5,7 @@ import com.arassec.artivact.backend.persistence.model.ItemEntity;
 import com.arassec.artivact.backend.service.aop.GenerateIds;
 import com.arassec.artivact.backend.service.aop.RestrictResult;
 import com.arassec.artivact.backend.service.aop.TranslateResult;
-import com.arassec.artivact.backend.service.exception.VaultException;
+import com.arassec.artivact.backend.service.exception.ArtivactException;
 import com.arassec.artivact.backend.service.model.Roles;
 import com.arassec.artivact.backend.service.model.TranslatableString;
 import com.arassec.artivact.backend.service.model.configuration.TagsConfiguration;
@@ -34,7 +34,7 @@ import java.util.stream.Stream;
 @Slf4j
 @Service
 @Transactional
-public class VaultItemService extends BaseFileService {
+public class ItemService extends BaseFileService {
 
     private final ItemEntityRepository itemEntityRepository;
 
@@ -47,11 +47,11 @@ public class VaultItemService extends BaseFileService {
 
     private final Path itemsFileDir;
 
-    public VaultItemService(ItemEntityRepository itemEntityRepository,
-                            ConfigurationService configurationService,
-                            SearchService searchService,
-                            ObjectMapper objectMapper,
-                            ProjectRootProvider projectRootProvider) {
+    public ItemService(ItemEntityRepository itemEntityRepository,
+                       ConfigurationService configurationService,
+                       SearchService searchService,
+                       ObjectMapper objectMapper,
+                       ProjectRootProvider projectRootProvider) {
         this.itemEntityRepository = itemEntityRepository;
         this.configurationService = configurationService;
         this.searchService = searchService;
@@ -249,7 +249,7 @@ public class VaultItemService extends BaseFileService {
         String fileExtension = getExtension(file.getOriginalFilename()).orElseThrow();
 
         if (StringUtils.hasText(requiredFileExtension) && !requiredFileExtension.equals(fileExtension)) {
-            throw new VaultException("Unsupported file format. Files must be in '" + requiredFileExtension + "' format!");
+            throw new ArtivactException("Unsupported file format. Files must be in '" + requiredFileExtension + "' format!");
         }
 
         String assetName = getAssetName(nextAssetNumber, fileExtension);
@@ -259,7 +259,7 @@ public class VaultItemService extends BaseFileService {
         try {
             Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            throw new VaultException("Could not save model!", e);
+            throw new ArtivactException("Could not save model!", e);
         }
 
         return assetName;
@@ -271,7 +271,7 @@ public class VaultItemService extends BaseFileService {
             try {
                 Files.createDirectories(assetDir);
             } catch (IOException e) {
-                throw new VaultException("Could not create asset directory!", e);
+                throw new ArtivactException("Could not create asset directory!", e);
             }
         }
         try (Stream<Path> stream = Files.list(assetDir)) {
@@ -294,7 +294,7 @@ public class VaultItemService extends BaseFileService {
                 }
             }
         } catch (IOException e) {
-            throw new VaultException("Could not read assets!", e);
+            throw new ArtivactException("Could not read assets!", e);
         }
         return (highestNumber + 1);
     }

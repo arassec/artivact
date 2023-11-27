@@ -1,6 +1,6 @@
 package com.arassec.artivact.backend.service.aop;
 
-import com.arassec.artivact.backend.service.exception.VaultException;
+import com.arassec.artivact.backend.service.exception.ArtivactException;
 import com.arassec.artivact.backend.service.model.TranslatableItem;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -53,7 +53,7 @@ public class TranslateResultAspect {
                     collection.forEach(collectionEntry -> translateIfPossible(collectionEntry, locale));
                 }
             } catch (IllegalAccessException e) {
-                throw new VaultException("Could not translate method result!", e);
+                throw new ArtivactException("Could not translate method result!", e);
             }
         }
     }

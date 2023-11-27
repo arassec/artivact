@@ -12,4 +12,6 @@ public enum ConfigurationType {
 
     APPEARANCE,
 
+    ADAPTER
+
 }

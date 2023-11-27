@@ -2,7 +2,7 @@ package com.arassec.artivact.backend.api;
 
 import com.arassec.artivact.backend.api.model.UserData;
 import com.arassec.artivact.backend.service.ConfigurationService;
-import com.arassec.artivact.backend.service.exception.VaultException;
+import com.arassec.artivact.backend.service.exception.ArtivactException;
 import com.arassec.artivact.backend.service.model.Roles;
 import com.arassec.artivact.backend.service.model.appearance.ColorTheme;
 import com.arassec.artivact.backend.service.model.configuration.AppearanceConfiguration;
@@ -123,7 +123,7 @@ public class ConfigurationController {
             configurationService.saveAppearanceConfiguration(appearanceConfiguration);
             return ResponseEntity.ok("small favicon uploaded");
         } catch (IOException e) {
-            throw new VaultException("Could not Base64 encode small favicon!", e);
+            throw new ArtivactException("Could not Base64 encode small favicon!", e);
         }
     }
 
@@ -135,7 +135,7 @@ public class ConfigurationController {
             configurationService.saveAppearanceConfiguration(appearanceConfiguration);
             return ResponseEntity.ok("small favicon uploaded");
         } catch (IOException e) {
-            throw new VaultException("Could not Base64 encode small favicon!", e);
+            throw new ArtivactException("Could not Base64 encode small favicon!", e);
         }
     }
 

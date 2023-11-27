@@ -12,7 +12,8 @@
     "dev": "quasar dev",
     "build": "quasar build",
     "dev:electron": "quasar dev -m electron",
-    "build:electron": "quasar build -m electron"
+    "build:electron": "quasar build -m electron",
+    "build:all": "quasar build -m spa && quasar build -m electron"
   },
   "dependencies": {
     "@electron/remote": "^2.1.0",

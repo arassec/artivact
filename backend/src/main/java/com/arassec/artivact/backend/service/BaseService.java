@@ -1,6 +1,6 @@
 package com.arassec.artivact.backend.service;
 
-import com.arassec.artivact.backend.service.exception.VaultException;
+import com.arassec.artivact.backend.service.exception.ArtivactException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.util.StringUtils;
@@ -18,7 +18,7 @@ public abstract class BaseService {
         try {
             return getObjectMapper().writeValueAsString(object);
         } catch (JsonProcessingException e) {
-            throw new VaultException("Could not convert object to JSON-String!", e);
+            throw new ArtivactException("Could not convert object to JSON-String!", e);
         }
     }
 
@@ -28,13 +28,13 @@ public abstract class BaseService {
                 return clazz.getConstructor().newInstance();
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                      NoSuchMethodException e) {
-                throw new VaultException("Could not create default instance of object!", e);
+                throw new ArtivactException("Could not create default instance of object!", e);
             }
         }
         try {
             return getObjectMapper().readValue(json, clazz);
         } catch (JsonProcessingException e) {
-            throw new VaultException("Could not convert JSON-String to object!", e);
+            throw new ArtivactException("Could not convert JSON-String to object!", e);
         }
     }
 

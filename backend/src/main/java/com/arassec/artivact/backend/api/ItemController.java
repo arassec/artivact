@@ -2,8 +2,8 @@ package com.arassec.artivact.backend.api;
 
 import com.arassec.artivact.backend.api.model.ItemDetails;
 import com.arassec.artivact.backend.api.model.MediaEntry;
-import com.arassec.artivact.backend.service.VaultItemService;
-import com.arassec.artivact.backend.service.exception.VaultException;
+import com.arassec.artivact.backend.service.ItemService;
+import com.arassec.artivact.backend.service.exception.ArtivactException;
 import com.arassec.artivact.backend.service.model.item.ImageSize;
 import com.arassec.artivact.backend.service.model.item.MediaContent;
 import com.arassec.artivact.backend.service.model.item.Item;
@@ -30,20 +30,20 @@ import java.util.zip.ZipOutputStream;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/item")
-public class VaultItemController extends BaseFileController {
+public class ItemController extends BaseFileController {
 
-    private final VaultItemService vaultItemService;
+    private final ItemService itemService;
 
     @PostMapping
     public ResponseEntity<String> create() {
-        Item item = vaultItemService.create();
-        item = vaultItemService.save(item);
+        Item item = itemService.create();
+        item = itemService.save(item);
         return ResponseEntity.ok(item.getId());
     }
 
     @GetMapping("/{itemId}")
     public ResponseEntity<ItemDetails> load(@PathVariable String itemId) {
-        Item item = vaultItemService.load(itemId);
+        Item item = itemService.load(itemId);
 
         if (item == null) {
             throw new IllegalArgumentException("No item found with ID " + itemId);
@@ -75,7 +75,7 @@ public class VaultItemController extends BaseFileController {
     @PutMapping
     public ResponseEntity<Void> save(@RequestBody ItemDetails itemDetails) {
 
-        Item item = vaultItemService.load(itemDetails.getId());
+        Item item = itemService.load(itemDetails.getId());
 
         if (item == null) {
             throw new IllegalArgumentException("No item found with ID " + itemDetails.getId());
@@ -97,14 +97,14 @@ public class VaultItemController extends BaseFileController {
         item.setProperties(itemDetails.getProperties());
         item.setTags(itemDetails.getTags());
 
-        vaultItemService.save(item);
+        itemService.save(item);
 
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{itemId}")
     public ResponseEntity<Void> deleteItem(@PathVariable String itemId) {
-        vaultItemService.delete(itemId);
+        itemService.delete(itemId);
         return ResponseEntity.ok().build();
     }
 
@@ -115,7 +115,7 @@ public class VaultItemController extends BaseFileController {
             imageSize = ImageSize.ORIGINAL;
         }
 
-        FileSystemResource image = vaultItemService.loadImage(itemId, fileName, imageSize);
+        FileSystemResource image = itemService.loadImage(itemId, fileName, imageSize);
 
         var headers = new HttpHeaders();
         headers.setContentType(MediaType.valueOf(URLConnection.guessContentTypeFromName(fileName)));
@@ -123,7 +123,7 @@ public class VaultItemController extends BaseFileController {
         try {
             return new HttpEntity<>(Files.readAllBytes(image.getFile().toPath()), headers);
         } catch (IOException e) {
-            throw new VaultException("Could not read artivact model!", e);
+            throw new ArtivactException("Could not read artivact model!", e);
         }
     }
 
@@ -137,12 +137,12 @@ public class VaultItemController extends BaseFileController {
         headers.setContentDisposition(contentDisposition);
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 
-        FileSystemResource model = vaultItemService.loadModel(itemId, fileName);
+        FileSystemResource model = itemService.loadModel(itemId, fileName);
 
         try {
             return new HttpEntity<>(Files.readAllBytes(model.getFile().toPath()), headers);
         } catch (IOException e) {
-            throw new VaultException("Could not read artivact model!", e);
+            throw new ArtivactException("Could not read artivact model!", e);
         }
     }
 
@@ -150,7 +150,7 @@ public class VaultItemController extends BaseFileController {
     public ResponseEntity<StreamingResponseBody> downloadMedia(HttpServletResponse response,
                                                                   @PathVariable String itemId) {
 
-        List<String> mediaFiles = vaultItemService.getFilesForDownload(itemId);
+        List<String> mediaFiles = itemService.getFilesForDownload(itemId);
 
         StreamingResponseBody streamResponseBody = out -> {
             final ZipOutputStream zipOutputStream = new ZipOutputStream(response.getOutputStream());
@@ -190,7 +190,7 @@ public class VaultItemController extends BaseFileController {
     public ResponseEntity<String> uploadImage(@PathVariable String itemId,
                                               @RequestPart(value = "file") final MultipartFile file) {
         synchronized (this) {
-            vaultItemService.addImage(itemId, file);
+            itemService.addImage(itemId, file);
         }
         return ResponseEntity.ok("image uploaded");
     }
@@ -199,7 +199,7 @@ public class VaultItemController extends BaseFileController {
     public ResponseEntity<String> uploadModel(@PathVariable String itemId,
                                               @RequestPart(value = "file") final MultipartFile file) {
         synchronized (this) {
-            vaultItemService.addModel(itemId, file);
+            itemService.addModel(itemId, file);
         }
         return ResponseEntity.ok("model uploaded");
     }

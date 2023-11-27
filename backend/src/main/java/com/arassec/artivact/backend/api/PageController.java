@@ -1,7 +1,7 @@
 package com.arassec.artivact.backend.api;
 
 import com.arassec.artivact.backend.service.PageService;
-import com.arassec.artivact.backend.service.exception.VaultException;
+import com.arassec.artivact.backend.service.exception.ArtivactException;
 import com.arassec.artivact.backend.service.model.page.PageContent;
 import com.arassec.artivact.backend.service.model.item.ImageSize;
 import lombok.RequiredArgsConstructor;
@@ -63,7 +63,7 @@ public class PageController {
         try {
             return new HttpEntity<>(Files.readAllBytes(model.getFile().toPath()), headers);
         } catch (IOException e) {
-            throw new VaultException("Could not read artivact model!", e);
+            throw new ArtivactException("Could not read artivact model!", e);
         }
     }
 

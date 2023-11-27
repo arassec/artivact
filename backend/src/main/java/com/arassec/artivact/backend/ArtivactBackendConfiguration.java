@@ -7,7 +7,9 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.*;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -85,6 +87,22 @@ public class ArtivactBackendConfiguration {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Provides a message source for I18N of labels and texts.
+     *
+     * @return A {@link MessageSource} with translated texts.
+     */
+    @Bean
+    public MessageSource messageSource() {
+        var messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasenames("i18n/artivact-creator-labels");
+        messageSource.setFallbackToSystemLocale(false);
+        return messageSource;
+    }
+
+    /**
+     * Object mapper that ignores unknown properties.
+     */
     @Bean
     @Primary
     public ObjectMapper objectMapper() {

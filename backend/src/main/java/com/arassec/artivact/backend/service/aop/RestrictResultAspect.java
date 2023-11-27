@@ -1,6 +1,6 @@
 package com.arassec.artivact.backend.service.aop;
 
-import com.arassec.artivact.backend.service.exception.VaultException;
+import com.arassec.artivact.backend.service.exception.ArtivactException;
 import com.arassec.artivact.backend.service.model.RestrictedItem;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -60,7 +60,7 @@ public class RestrictResultAspect {
                     field.set(object, filterCollection(collection, roles));
                 }
             } catch (IllegalAccessException e) {
-                throw new VaultException("Could not restrict method result!", e);
+                throw new ArtivactException("Could not restrict method result!", e);
             }
         }
         return object;

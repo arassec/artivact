@@ -3,7 +3,7 @@ package com.arassec.artivact.backend.service;
 import com.arassec.artivact.backend.persistence.ItemEntityRepository;
 import com.arassec.artivact.backend.service.aop.RestrictResult;
 import com.arassec.artivact.backend.service.aop.TranslateResult;
-import com.arassec.artivact.backend.service.exception.VaultException;
+import com.arassec.artivact.backend.service.exception.ArtivactException;
 import com.arassec.artivact.backend.service.model.item.Item;
 import com.arassec.artivact.backend.service.util.ProjectRootProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -91,7 +91,7 @@ public class SearchService extends BaseService {
 
             return result;
         } catch (IOException | QueryNodeException e) {
-            throw new VaultException("Error during item search!", e);
+            throw new ArtivactException("Error during item search!", e);
         }
     }
 
@@ -108,7 +108,7 @@ public class SearchService extends BaseService {
 
             indexWriter = new IndexWriter(indexDirectory, config);
         } catch (IOException e) {
-            throw new VaultException("Could not create search index writer!", e);
+            throw new ArtivactException("Could not create search index writer!", e);
         }
     }
 
@@ -133,7 +133,7 @@ public class SearchService extends BaseService {
             indexWriter.addDocument(luceneDocument);
             indexWriter.commit();
         } catch (IOException e) {
-            throw new VaultException("Could not write to search index!", e);
+            throw new ArtivactException("Could not write to search index!", e);
         }
     }
 
@@ -142,7 +142,7 @@ public class SearchService extends BaseService {
             indexWriter.close();
             indexWriter = null;
         } catch (IOException e) {
-            throw new VaultException("Could not close search index!", e);
+            throw new ArtivactException("Could not close search index!", e);
         }
     }
 

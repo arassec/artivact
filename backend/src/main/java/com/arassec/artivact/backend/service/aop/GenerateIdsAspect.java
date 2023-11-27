@@ -1,6 +1,6 @@
 package com.arassec.artivact.backend.service.aop;
 
-import com.arassec.artivact.backend.service.exception.VaultException;
+import com.arassec.artivact.backend.service.exception.ArtivactException;
 import com.arassec.artivact.backend.service.model.IdentifiedItem;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -54,7 +54,7 @@ public class GenerateIdsAspect {
                     collection.forEach(this::generateIdsIfRequired);
                 }
             } catch (IllegalAccessException e) {
-                throw new VaultException("Could not generate IDs for IdentifiedItem!", e);
+                throw new ArtivactException("Could not generate IDs for IdentifiedItem!", e);
             }
         }
     }

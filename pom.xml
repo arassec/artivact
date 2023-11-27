@@ -49,8 +49,8 @@
     <properties>
         <revision>1.0.0-SNAPSHOT</revision>
 
-        <java.version>17</java.version>
-        <maven.compiler.release>17</maven.compiler.release>
+        <java.version>21</java.version>
+        <maven.compiler.release>21</maven.compiler.release>
 
         <nodejs.version>v18.12.1</nodejs.version>
 

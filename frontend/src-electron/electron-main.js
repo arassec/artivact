@@ -19,7 +19,7 @@ function timer(ms) {
 
 function startBackend() {
   backendPort = 51232;
-  backendChildProcess = require('child_process').spawn('java', [
+  backendChildProcess = require('child_process').spawn('bin/java', [
     '-Dserver.port=' + backendPort,
     '-Dspring.profiles.active=desktop',
     '-jar',

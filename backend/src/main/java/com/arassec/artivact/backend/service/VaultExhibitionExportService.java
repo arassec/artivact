@@ -1,6 +1,6 @@
 package com.arassec.artivact.backend.service;
 
-import com.arassec.artivact.backend.service.exception.VaultException;
+import com.arassec.artivact.backend.service.exception.ArtivactException;
 import com.arassec.artivact.backend.service.model.export.avexhibition.ArtivactExhibitionModule;
 import com.arassec.artivact.backend.service.model.export.avexhibition.ItemData;
 import com.arassec.artivact.backend.service.model.export.avexhibition.TranslatableText;
@@ -72,7 +72,7 @@ public class VaultExhibitionExportService extends BaseFileService {
             Files.writeString(exportPath.resolve(EXPORT_INDEX_FILE),
                     objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(modules), StandardOpenOption.CREATE);
         } catch (IOException e) {
-            throw new VaultException("Could not write export index.json!", e);
+            throw new ArtivactException("Could not write export index.json!", e);
         }
 
         // Copy required module and item files:
@@ -90,7 +90,7 @@ public class VaultExhibitionExportService extends BaseFileService {
                     }
                 }
             } catch (IOException e) {
-                throw new VaultException("Could not export file!", e);
+                throw new ArtivactException("Could not export file!", e);
             }
         });
 

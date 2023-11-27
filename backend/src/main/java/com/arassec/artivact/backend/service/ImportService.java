@@ -1,6 +1,6 @@
 package com.arassec.artivact.backend.service;
 
-import com.arassec.artivact.backend.service.exception.VaultException;
+import com.arassec.artivact.backend.service.exception.ArtivactException;
 import com.arassec.artivact.backend.service.model.item.Item;
 import com.arassec.artivact.backend.service.util.ProjectRootProvider;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -27,15 +27,15 @@ public class ImportService extends BaseFileService {
 
     private final Path itemsFileDir;
 
-    private final VaultItemService vaultItemService;
+    private final ItemService itemService;
 
     @Getter
     private final ObjectMapper objectMapper;
 
-    public ImportService(final VaultItemService vaultItemService,
+    public ImportService(final ItemService itemService,
                          final ObjectMapper objectMapper,
                          ProjectRootProvider projectRootProvider) {
-        this.vaultItemService = vaultItemService;
+        this.itemService = itemService;
         this.objectMapper = objectMapper;
         this.itemsFileDir = projectRootProvider.getProjectRoot().resolve(ITEMS_FILE_DIR);
     }
@@ -44,7 +44,7 @@ public class ImportService extends BaseFileService {
         log.info("Importing from directory: {}", itemsFileDir.toAbsolutePath());
         getItemIdsFromCreatorExport().forEach(itemPath -> {
             String itemId = itemPath.getFileName().toString();
-            var vaultItem = vaultItemService.load(itemId);
+            var vaultItem = itemService.load(itemId);
             if (vaultItem == null) {
                 processNewEntity(itemPath);
             } else {
@@ -56,12 +56,12 @@ public class ImportService extends BaseFileService {
 
     private void processNewEntity(Path itemPath) {
         log.info("Creating item: {}", itemPath.getFileName());
-        Item item = vaultItemService.create();
+        Item item = itemService.create();
         item.getDescription().setValue(readNotes(itemPath));
         item.setId(itemPath.getFileName().toString());
         item.getMediaContent().setImages(getFiles(itemPath, IMAGES_DIR));
         item.getMediaContent().setModels(getFiles(itemPath, MODELS_DIR));
-        vaultItemService.save(item);
+        itemService.save(item);
     }
 
     private void updateExistingEntity(Path itemPath, Item item) {
@@ -83,7 +83,7 @@ public class ImportService extends BaseFileService {
                 .toList()
         );
 
-        vaultItemService.save(item);
+        itemService.save(item);
     }
 
     private List<Path> getItemIdsFromCreatorExport() {
@@ -102,7 +102,7 @@ public class ImportService extends BaseFileService {
                 }
             });
         } catch (IOException e) {
-            throw new VaultException("Could not read item ids!", e);
+            throw new ArtivactException("Could not read item ids!", e);
         }
     }
 

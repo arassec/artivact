@@ -1,0 +1,180 @@
+package com.arassec.artivact.backend.service.creator.adapter.image.turntable;
+
+import com.arassec.artivact.backend.service.creator.adapter.AdapterImplementation;
+import com.arassec.artivact.backend.service.exception.ArtivactException;
+import com.arassec.artivact.backend.service.model.configuration.AdapterConfiguration;
+import com.arassec.artivact.backend.service.util.ProgressMonitor;
+import com.fazecast.jSerialComm.SerialPort;
+import com.fazecast.jSerialComm.SerialPortDataListener;
+import com.fazecast.jSerialComm.SerialPortEvent;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+/**
+ * The Artivact open source turntable.
+ */
+@Slf4j
+@Component
+@Getter
+public class ArtivactTurntableAdapter extends BaseTurntableAdapter {
+
+    /**
+     * The implementation supported by this adapter.
+     */
+    private final AdapterImplementation supportedImplementation = AdapterImplementation.ARTIVACT_TURNTABLE_ADAPTER;
+
+    /**
+     * Indicates whether the turntable was found using USB or not.
+     */
+    private final AtomicBoolean turntableFound = new AtomicBoolean(false);
+
+    /**
+     * Indicates whether the rotation finished or not.
+     */
+    private final AtomicBoolean finished = new AtomicBoolean(false);
+
+    /**
+     * The USB serial port the turntable is attached to.
+     */
+    private SerialPort liveSerialPort;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void initialize(ProgressMonitor progressMonitor, TurntableInitParams initParams) {
+        super.initialize(progressMonitor, initParams);
+
+        log.trace("Initialization Artivact-Turntable");
+
+        this.liveSerialPort = null;
+
+        SerialPort[] serialPorts = SerialPort.getCommPorts();
+
+        for (SerialPort p : serialPorts) {
+            log.trace("Checking serial port for artivact turntable {} - {} - {}", p.getSystemPortName(),
+                    p.getDescriptivePortName(), p.getPortDescription());
+
+            p.setComPortParameters(9600, 8, 1, 0); // default connection settings for Arduino
+            p.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING, 0, 0); // block until bytes can be written
+            p.openPort();
+            log.trace("Serial port open: {}", p.isOpen());
+
+            if (p.isOpen()) {
+                turntableFound.set(true);
+
+                liveSerialPort = p;
+
+                liveSerialPort.addDataListener(new SerialPortDataListener() {
+                    @Override
+                    public void serialEvent(SerialPortEvent event) {
+                        try {
+                            TimeUnit.MILLISECONDS.sleep(250);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            throw new ArtivactException("Interrupted during turntable interaction!", e);
+                        }
+                        var resultBuilder = new StringBuilder();
+
+                        int size = event.getSerialPort().bytesAvailable();
+
+                        log.trace("About to read {} bytes from tunrtable.", size);
+
+                        var buffer = new byte[size];
+                        event.getSerialPort().readBytes(buffer, size);
+                        resultBuilder.append(new String(buffer));
+
+                        String commandResult = resultBuilder.toString().trim();
+
+                        // "d" as in "done"...
+                        if (commandResult.startsWith("d")) {
+                            log.trace("Finished rotating artivact turntable.");
+                            finished.set(true);
+                        }
+                    }
+
+                    @Override
+                    public int getListeningEvents() {
+                        return SerialPort.LISTENING_EVENT_DATA_AVAILABLE;
+                    }
+                });
+            }
+        }
+
+        log.trace("Turntable initialization finished.");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public synchronized void rotate(int numPhotos) {
+        finished.set(false);
+        try {
+            int turntableDelay = initParams.getTurntableDelay();
+
+            if (turntableDelay > 0) {
+                TimeUnit.MILLISECONDS.sleep(turntableDelay);
+            }
+
+            liveSerialPort.getOutputStream().write(("t" + numPhotos + "\n").getBytes());
+            liveSerialPort.getOutputStream().flush();
+
+            while (!finished.get() && turntableFound.get()) {
+                TimeUnit.MILLISECONDS.sleep(250);
+                log.trace("Waiting for turntable to finish...");
+                log.trace("Current status: {} / {}", finished.get(), turntableFound.get());
+            }
+
+            log.trace("Turntable finished.");
+        } catch (Exception e) {
+            Thread.currentThread().interrupt();
+            throw new ArtivactException("Error during turntable usage!", e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<Void> teardown() {
+        super.teardown();
+
+        if (liveSerialPort != null && !liveSerialPort.closePort()) {
+            throw new IllegalStateException("Could not close serial port to turntable!");
+        }
+
+        liveSerialPort = null;
+        turntableFound.set(false);
+        finished.set(false);
+
+        return Optional.empty();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void testConfiguration(AdapterConfiguration adapterConfiguration) {
+        if (!healthy(adapterConfiguration)) {
+            throw new ArtivactException("Artivact-Turntable not available!");
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean healthy(AdapterConfiguration adapterConfiguration) {
+        initialize(null, null);
+        boolean result = liveSerialPort != null;
+        teardown();
+        return result;
+    }
+
+}

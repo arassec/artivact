@@ -1,6 +1,6 @@
 package com.arassec.artivact.backend.service;
 
-import com.arassec.artivact.backend.service.exception.VaultException;
+import com.arassec.artivact.backend.service.exception.ArtivactException;
 import com.arassec.artivact.backend.service.model.item.ImageSize;
 import org.imgscalr.Scalr;
 import org.springframework.core.io.FileSystemResource;
@@ -20,11 +20,16 @@ import java.util.stream.Stream;
 
 public abstract class BaseFileService extends BaseService {
 
-    protected static final String ITEMS_FILE_DIR = "items";
+    public static final String ITEMS_FILE_DIR = "items";
 
     public static final String IMAGES_DIR = "images";
 
     public static final String MODELS_DIR = "models";
+
+    /**
+     * The directory containing preview images of item photos.
+     */
+    protected static final String IMAGES_PREVIEW_DIR = "preview";
 
     @SuppressWarnings("java:S6204") // Result list needs to be mutable!
     public List<String> getFiles(Path path, String subDir) {
@@ -42,7 +47,7 @@ public abstract class BaseFileService extends BaseService {
                         .collect(Collectors.toList());
 
             } catch (IOException e) {
-                throw new VaultException("Could not read files from path: " + path, e);
+                throw new ArtivactException("Could not read files from path: " + path, e);
             }
         }
         return new LinkedList<>();
@@ -57,7 +62,7 @@ public abstract class BaseFileService extends BaseService {
             Files.createDirectories(filePath.getParent());
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            throw new VaultException("Could not save file!", e);
+            throw new ArtivactException("Could not save file!", e);
         }
 
         return fileName;
@@ -108,7 +113,7 @@ public abstract class BaseFileService extends BaseService {
             }
 
         } catch (IOException e) {
-            throw new VaultException("Could not read artivact image file!", e);
+            throw new ArtivactException("Could not read artivact image file!", e);
         }
     }
 
@@ -140,7 +145,7 @@ public abstract class BaseFileService extends BaseService {
             }
 
         } catch (IOException e) {
-            throw new VaultException("Could not delete directory!", e);
+            throw new ArtivactException("Could not delete directory!", e);
         }
     }
 
@@ -162,7 +167,7 @@ public abstract class BaseFileService extends BaseService {
                 });
             }
         } catch (IOException e) {
-            throw new VaultException("Could not delete directory!", e);
+            throw new ArtivactException("Could not delete directory!", e);
         }
     }
 
@@ -171,7 +176,7 @@ public abstract class BaseFileService extends BaseService {
             try {
                 Files.createDirectories(directory);
             } catch (IOException e) {
-                throw new VaultException("Could not create directory: " + directory, e);
+                throw new ArtivactException("Could not create directory: " + directory, e);
             }
         }
     }

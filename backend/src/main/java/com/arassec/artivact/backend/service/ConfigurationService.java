@@ -5,7 +5,7 @@ import com.arassec.artivact.backend.persistence.model.ConfigurationEntity;
 import com.arassec.artivact.backend.service.aop.GenerateIds;
 import com.arassec.artivact.backend.service.aop.RestrictResult;
 import com.arassec.artivact.backend.service.aop.TranslateResult;
-import com.arassec.artivact.backend.service.exception.VaultException;
+import com.arassec.artivact.backend.service.exception.ArtivactException;
 import com.arassec.artivact.backend.service.model.TranslatableString;
 import com.arassec.artivact.backend.service.model.appearance.ColorTheme;
 import com.arassec.artivact.backend.service.model.configuration.*;
@@ -100,14 +100,14 @@ public class ConfigurationService extends BaseService {
             try (InputStream is = classPathResource.getInputStream()) {
                 result.setEncodedFaviconSmall(Base64.getEncoder().encodeToString(is.readAllBytes()));
             } catch (IOException e) {
-                throw new VaultException("Could not read 16x16 pixel favicon!", e);
+                throw new ArtivactException("Could not read 16x16 pixel favicon!", e);
             }
 
             classPathResource = new ClassPathResource("icons/artivact-logo-32.ico", this.getClass().getClassLoader());
             try (InputStream is = classPathResource.getInputStream()) {
                 result.setEncodedFaviconLarge(Base64.getEncoder().encodeToString(is.readAllBytes()));
             } catch (IOException e) {
-                throw new VaultException("Could not read 32x32 pixel favicon!", e);
+                throw new ArtivactException("Could not read 32x32 pixel favicon!", e);
             }
 
             return result;
@@ -128,6 +128,15 @@ public class ConfigurationService extends BaseService {
     @GenerateIds
     public void saveTagsConfiguration(TagsConfiguration tagsConfiguration) {
         saveEntity(ConfigurationType.TAGS, toJson(tagsConfiguration));
+    }
+
+    public AdapterConfiguration loadAdapterConfiguration() {
+        ConfigurationEntity entity = loadOrCreateEntity(ConfigurationType.TAGS.name());
+        return fromJson(entity.getContentJson(), AdapterConfiguration.class);
+    }
+
+    public void saveAdapterConfiguration(AdapterConfiguration adapterConfiguration) {
+        saveEntity(ConfigurationType.APPEARANCE, toJson(adapterConfiguration));
     }
 
     @RestrictResult
