@@ -41,8 +41,9 @@ jobs:
           java-version: 21
       - name: Version-Test
         env:
-          RELEASE_VERSION: ${GITHUB_REF:11}
-        run: echo "$RELEASE_VERSION"
+          RELEASE_VERSION_A: $env:{GITHUB_REF:11}
+          RELEASE_VERSION_B: ${{ env.GITHUB_REF:11 }}
+        run: echo "Version $RELEASE_VERSION_A $RELEASE_VERSION_B"
       - name: Build
         env:
           RELEASE_VERSION: ${GITHUB_REF:11}
