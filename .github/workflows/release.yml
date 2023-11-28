@@ -44,15 +44,13 @@ jobs:
       - name: Version-Test
         run: echo "Version $env:RELEASE_VERSION"
       - name: Build
-        env:
-          RELEASE_VERSION: ${{ github.ref_name }}
         run: .\mvnw.cmd clean install -Drevision="$env:RELEASE_VERSION" --no-transfer-progress -P release-desktop-windows
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file_glob: true
-          file: "artivact-desktop/target/artivact-desktop-windows-v${{ env.RELEASE_VERSION }}-bin.zip"
+          file: "artivact-desktop/target/artivact-desktop-windows-v$env:RELEASE_VERSION-bin.zip"
           release_name: 'Version ${{ env.RELEASE_VERSION }}'
           tag: ${{ github.ref }}
           overwrite: true
