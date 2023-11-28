@@ -39,12 +39,10 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 21
-      - name: Set Release Version
-        run: |
-          chcp 65001 #set code page to utf-8
-          echo ("RELEASE_VERSION=" + ${GITHUB_REF:11}) >> $env:GITHUB_ENV
       - name: Build
-        run: .\mvnw.cmd clean install -Drevision=${{env.RELEASE_VERSION}} --no-transfer-progress -P release-desktop-windows
+        run: .\mvnw.cmd clean install -Drevision=$env:RELEASE_VERSION --no-transfer-progress -P release-desktop-windows
+        env:
+          RELEASE_VERSION: ${GITHUB_REF:11}
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
