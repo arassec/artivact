@@ -84,7 +84,7 @@
                                     <overwrite>true</overwrite>
                                     <resources>
                                         <resource>
-                                            <directory>${project.parent.basedir}/frontend/dist/electron/Packaged/Artivact-win32-x64</directory>
+                                            <directory>${project.basedir}/../frontend/dist/electron/Packaged/Artivact-win32-x64</directory>
                                             <includes>
                                                 <include>**</include>
                                             </includes>
@@ -126,7 +126,7 @@
                                     <goal>copy</goal>
                                 </goals>
                                 <configuration>
-                                    <sourceFile>${project.parent.basedir}/artivact-server/target/artivact-server-${revision}.jar</sourceFile>
+                                    <sourceFile>${project.basedir}/../artivact-server/target/artivact-server-${revision}.jar</sourceFile>
                                     <destinationFile>${project.build.directory}/artivact-desktop-windows-v${revision}/resources/artivact-server.jar</destinationFile>
                                 </configuration>
                             </execution>
@@ -217,7 +217,7 @@
                                     <overwrite>true</overwrite>
                                     <resources>
                                         <resource>
-                                            <directory>${project.parent.basedir}/frontend/dist/electron/Packaged/Artivact-linux-x64</directory>
+                                            <directory>${project.basedir}/../frontend/dist/electron/Packaged/Artivact-linux-x64</directory>
                                             <includes>
                                                 <include>**</include>
                                             </includes>
@@ -259,7 +259,7 @@
                                     <goal>copy</goal>
                                 </goals>
                                 <configuration>
-                                    <sourceFile>${project.parent.basedir}/artivact-server/target/artivact-server-${revision}.jar</sourceFile>
+                                    <sourceFile>${project.basedir}/../artivact-server/target/artivact-server-${revision}.jar</sourceFile>
                                     <destinationFile>${project.build.directory}/artivact-desktop-linux-v${revision}/resources/artivact-server.jar</destinationFile>
                                 </configuration>
                             </execution>
