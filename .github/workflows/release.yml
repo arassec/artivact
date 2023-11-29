@@ -39,12 +39,12 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 21
-      - name: Set Release Version
-        run: echo "RELEASE_VERSION=${GITHUB_REF:11}" >> $env:GITHUB_ENV
-      - name: Show Release Version
-        run: echo "Release-Version is $env:RELEASE_VERSION"
+      - uses: battila7/get-version-action@v2
+      - run: echo ${{ steps.get_version.outputs.version-without-v }}
       - name: Build
-        run: .\mvnw.cmd clean install -Drevision="$env:RELEASE_VERSION" --no-transfer-progress -P release-desktop-windows
+        env:
+          RELEASE_VERSION: ${{ github.ref_name }}
+        run: .\mvnw.cmd clean install -Drevision="${{ steps.get_version.outputs.version-without-v }}" --no-transfer-progress -P release-desktop-windows
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
