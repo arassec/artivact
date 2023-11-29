@@ -39,11 +39,14 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 21
-      - name: Get Release Version
-        uses: battila7/get-version-action@v2
+      - name: Parser
+        uses: johngeorgewright/parse-version-action
+        with:
+          ref: ${{ github.ref }}
+          trim-start: v
+      - name: Debug
+        run: echo 'version = ${{ steps.parser.outputs.version }}'
       - name: Build
-        env:
-          RELEASE_VERSION: ${{ github.ref_name }}
         run: .\mvnw.cmd clean install -Drevision="${{ steps.get_version.outputs.version-without-v }}" --no-transfer-progress -P release-desktop-windows
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
