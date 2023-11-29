@@ -55,8 +55,8 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file_glob: true
-          file: "artivact-desktop/target/artivact-desktop-windows-v${{ env.RELEASE_VERSION }}-bin.zip"
-          release_name: 'Version ${{ env.RELEASE_VERSION }}'
+          file: "artivact-desktop/target/artivact-desktop-windows-v${{ steps.release_info.outputs.version_short }}-bin.zip"
+          release_name: 'Version ${{ steps.release_info.outputs.version_short }}'
           tag: ${{ github.ref }}
           overwrite: true
 
