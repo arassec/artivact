@@ -39,8 +39,8 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 21
-      - uses: battila7/get-version-action@v2
-      - run: echo ${{ steps.get_version.outputs.version-without-v }}
+      - name: Get Release Version
+        uses: battila7/get-version-action@v2
       - name: Build
         env:
           RELEASE_VERSION: ${{ github.ref_name }}
