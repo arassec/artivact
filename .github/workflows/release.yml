@@ -47,7 +47,7 @@ jobs:
       - name: Debug
         run: echo 'version = ${{ steps.parser.outputs.version }}'
       - name: Build
-        run: .\mvnw.cmd clean install -Drevision="${{ steps.get_version.outputs.version-without-v }}" --no-transfer-progress -P release-desktop-windows
+        run: .\mvnw.cmd clean install -Drevision="${{ steps.parser.outputs.version }}" --no-transfer-progress -P release-desktop-windows
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
