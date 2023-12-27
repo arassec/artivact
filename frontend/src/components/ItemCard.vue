@@ -2,7 +2,7 @@
   <template v-if="!disabled">
     <router-link :to="'/item/' + artivactCardData.itemId">
       <q-card class="bg-info card">
-        <q-img
+        <q-img v-if="artivactCardData.imageUrl"
           :src="artivactCardData.imageUrl + '?imageSize=ITEM_CARD'"
           class="card-image"
         >
@@ -12,6 +12,11 @@
             }}
           </div>
         </q-img>
+        <div class="absolute-bottom text-h6" v-if="!artivactCardData.imageUrl && artivactCardData.title">
+          {{
+            artivactCardData.title ? translate(artivactCardData.title) : "?"
+          }}
+        </div>
         <router-link :to="'/item/' + artivactCardData.itemId + '?model=true'">
           <q-btn
             v-if="artivactCardData.hasModel"
@@ -28,7 +33,7 @@
   </template>
   <template v-else>
     <q-card class="bg-info card">
-      <q-img
+      <q-img v-if="artivactCardData.imageUrl"
         :src="artivactCardData.imageUrl + '?imageSize=ITEM_CARD'"
         class="card-image"
       >
@@ -36,14 +41,17 @@
           {{ artivactCardData.title ? translate(artivactCardData.title) : "?" }}
         </div>
       </q-img>
+      <div class="absolute-bottom text-h6" v-if="!artivactCardData.imageUrl && artivactCardData.title">
+        {{ artivactCardData.title ? translate(artivactCardData.title) : "?" }}
+      </div>
     </q-card>
   </template>
 </template>
 
 <script setup lang="ts">
-import { ItemCardData } from './models';
-import { PropType } from 'vue';
-import { translate } from './utils';
+import {ItemCardData} from './models';
+import {PropType} from 'vue';
+import {translate} from './utils';
 
 defineProps({
   artivactCardData: {

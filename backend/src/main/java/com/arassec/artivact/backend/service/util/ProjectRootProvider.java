@@ -12,7 +12,7 @@ public class ProjectRootProvider {
 
     private final Path projectRoot;
 
-    public ProjectRootProvider(@Value("${artivact.vault.project.root:avdata}") String projectRootString) {
+    public ProjectRootProvider(@Value("${artivact.project.root:avdata}") String projectRootString) {
         this.projectRoot = Path.of(projectRootString);
     }
 

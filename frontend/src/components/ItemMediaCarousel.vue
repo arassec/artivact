@@ -32,19 +32,42 @@
         </q-carousel-slide>
       </q-carousel>
 
-      <div
+      <q-carousel
         class="artivact-carousel bg-info shadow-2 rounded-borders col-xs-12 col-sm-8 col-md-8 col-lg-8 col-xl-8"
         v-if="itemDetailsRef.models.length > 0"
         v-show="!showImagesRef"
+        v-model="modelSlide"
+        v-model:fullscreen="fullscreen"
+        animated
+        infinite
+        padding
+        navigation
+        control-color="white"
+        control-type="flat"
       >
-        <item-model-viewer :model-url="getModelUrl()" />
-      </div>
+        <q-carousel-slide
+          draggable="false"
+          v-for="(model, index) of itemDetailsRef.models"
+          :key="index"
+          :name="index">
+          <item-model-viewer :model-url="model.url"/>
+          <q-btn
+            round
+            dense
+            flat
+            class="absolute-top-right fullscreen-button"
+            color="white"
+            :icon="fullscreen ? 'fullscreen_exit' : 'fullscreen'"
+            @click="fullscreen = !fullscreen"
+          />
+        </q-carousel-slide>
+      </q-carousel>
 
       <div class="col-4 xs-hide">
         <div class="q-ml-md column full-height">
           <div class="av-label-h2 col-2">
             Details
-            <q-separator class="q-mr-xl" />
+            <q-separator class="q-mr-xl"/>
           </div>
 
           <div style="margin-top: -1rem" class="q-mb-md">
@@ -54,10 +77,10 @@
               v-for="(tag, index) in itemDetailsRef.tags"
               :key="index"
             >
-              <template v-if="tag.url">
+              <template v-if="tag.url && !desktopStore.isDesktopModeEnabled">
                 <a :href="tag.url" class="tag-link">{{
-                  tag.translatedValue
-                }}</a>
+                    tag.translatedValue
+                  }}</a>
               </template>
               <template v-else>
                 {{ tag.translatedValue }}
@@ -84,12 +107,12 @@
             >
               {{ licenseStore.licenseConfiguration.prefix.translatedValue }}
               <a :href="licenseStore.licenseConfiguration.licenseUrl">{{
-                licenseStore.licenseConfiguration.licenseLabel.translatedValue
-              }}</a>
+                  licenseStore.licenseConfiguration.licenseLabel.translatedValue
+                }}</a>
               {{ licenseStore.licenseConfiguration.suffix.translatedValue }}
             </div>
             <q-btn type="submit" icon="download" color="primary" class="q-mt-xs"
-              >{{ $t("downloadMediaFilesButtonLabel") }}
+            >{{ $t('downloadMediaFilesButtonLabel') }}
             </q-btn>
           </q-form>
         </div>
@@ -126,7 +149,7 @@
           color="secondary"
           v-for="(tag, index) in itemDetailsRef.tags"
           :key="index"
-          >{{ tag.translatedValue }}
+        >{{ tag.translatedValue }}
         </q-badge>
       </div>
       <div v-if="itemDetailsRef.description.translatedValue" class="q-mt-lg">
@@ -148,12 +171,12 @@
         >
           {{ licenseStore.licenseConfiguration.prefix.translatedValue }}
           <a :href="licenseStore.licenseConfiguration.licenseUrl">{{
-            licenseStore.licenseConfiguration.licenseLabel.translatedValue
-          }}</a>
+              licenseStore.licenseConfiguration.licenseLabel.translatedValue
+            }}</a>
           {{ licenseStore.licenseConfiguration.suffix.translatedValue }}
         </div>
         <q-btn type="submit" icon="download" color="primary" class="q-mt-xs"
-          >{{ $t("downloadMediaFilesButtonLabel") }}
+        >{{ $t('downloadMediaFilesButtonLabel') }}
         </q-btn>
       </q-form>
     </div>
@@ -161,12 +184,14 @@
 </template>
 
 <script setup lang="ts">
-import { PropType, ref, toRef } from 'vue';
-import { ItemDetails } from 'components/models';
-import { useLicenseStore } from 'stores/license';
+import {PropType, ref, toRef} from 'vue';
+import {ItemDetails} from 'components/models';
+import {useLicenseStore} from 'stores/license';
 import ItemModelViewer from 'components/ItemModelViewer.vue';
+import {useDesktopStore} from 'stores/desktop';
 
 const licenseStore = useLicenseStore();
+const desktopStore = useDesktopStore();
 
 const props = defineProps({
   itemDetails: {
@@ -186,14 +211,10 @@ const itemDetailsRef = toRef(props, 'itemDetails');
 const fullscreen = ref(false);
 
 let slide = ref(0);
-let showImagesRef = toRef(props, 'showImages');
+let modelSlide = ref(0);
+let showImages = props.showImages;
+let showImagesRef = toRef(showImages);
 
-function getModelUrl(): string {
-  if (itemDetailsRef.value.models.length > 0) {
-    return itemDetailsRef.value.models[0].url;
-  }
-  return '';
-}
 </script>
 
 <style scoped>

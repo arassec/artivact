@@ -42,7 +42,7 @@ public class FallbackCameraAdapter extends BaseCameraAdapter {
     public void captureImage(String filename) {
         Path targetFile = initParams.getTargetDir().resolve(filename + ".jpg");
         log.info("Fallback camera adapter called with 'targetDir' {} and 'filename' {}", initParams.getTargetDir(), filename);
-        fileUtil.copyClasspathResource(Path.of("project-setup/Utils/fallback-image.jpg"),
+        fileUtil.copyClasspathResource(Path.of("project-setup/utils/fallback-image.jpg"),
                 initParams.getTargetDir().getParent());
         try {
             Files.move(initParams.getTargetDir().getParent().resolve("fallback-image.jpg"), targetFile, StandardCopyOption.REPLACE_EXISTING);

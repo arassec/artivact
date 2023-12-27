@@ -118,8 +118,7 @@ public class RemBgRemoteBackgroundRemovalAdapter extends BaseRemBgBackgroundRemo
      * @return {@code true} if the configured endpoint is available, {@code false} otherwise.
      */
     private boolean callWebApi(AdapterConfiguration adapterConfiguration) {
-        try {
-            HttpClient httpClient = HttpClient.newHttpClient();
+        try (HttpClient httpClient = HttpClient.newHttpClient()) {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(new URI(adapterConfiguration.getConfigValue(getSupportedImplementation())))
                     .GET()

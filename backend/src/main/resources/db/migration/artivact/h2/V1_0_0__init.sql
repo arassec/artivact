@@ -27,7 +27,14 @@ CREATE TABLE av_page
 
 CREATE TABLE av_item
 (
-    id                 VARCHAR(128) PRIMARY KEY,
-    version            INTEGER,
-    content_json       TEXT
+    id           VARCHAR(128) PRIMARY KEY,
+    version      INTEGER,
+    content_json TEXT
+);
+
+CREATE TABLE av_exhibition
+(
+    id           VARCHAR(128) PRIMARY KEY,
+    version      INTEGER,
+    content_json TEXT
 );

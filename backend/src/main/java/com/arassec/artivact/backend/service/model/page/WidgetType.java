@@ -5,13 +5,14 @@ import lombok.Getter;
 
 import java.util.Arrays;
 
+@Getter
 public enum WidgetType {
 
     PAGE_TITLE(PageTitleWidget.class),
 
     TEXT(TextWidget.class),
 
-    SEARCH(SearchWidget.class),
+    ITEM_SEARCH(ItemSearchWidget.class),
 
     ITEM_CAROUSEL(ItemCarouselWidget.class),
 
@@ -23,7 +24,6 @@ public enum WidgetType {
 
     IMAGE_TEXT(ImageTextWidget.class);
 
-    @Getter
     private final Class<? extends Widget> widgetClass;
 
     WidgetType(Class<? extends Widget> widgetClass) {

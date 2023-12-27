@@ -268,10 +268,10 @@
 </template>
 
 <script setup lang="ts">
-import { useQuasar } from 'quasar';
-import { api } from 'boot/axios';
-import { onMounted, Ref, ref } from 'vue';
-import { Account } from 'components/models';
+import {useQuasar} from 'quasar';
+import {api} from 'boot/axios';
+import {onMounted, Ref, ref} from 'vue';
+import {Account} from 'components/models';
 import ArtivactContent from 'components/ArtivactContent.vue';
 
 const quasar = useQuasar();

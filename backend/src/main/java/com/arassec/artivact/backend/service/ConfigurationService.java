@@ -5,6 +5,7 @@ import com.arassec.artivact.backend.persistence.model.ConfigurationEntity;
 import com.arassec.artivact.backend.service.aop.GenerateIds;
 import com.arassec.artivact.backend.service.aop.RestrictResult;
 import com.arassec.artivact.backend.service.aop.TranslateResult;
+import com.arassec.artivact.backend.service.creator.adapter.AdapterImplementation;
 import com.arassec.artivact.backend.service.exception.ArtivactException;
 import com.arassec.artivact.backend.service.model.TranslatableString;
 import com.arassec.artivact.backend.service.model.appearance.ColorTheme;
@@ -16,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -32,6 +34,8 @@ public class ConfigurationService extends BaseService {
     private final ConfigurationEntityRepository configurationEntityRepository;
 
     private final PageService pageService;
+
+    private final Environment environment;
 
     @Getter
     private final ObjectMapper objectMapper;
@@ -75,6 +79,10 @@ public class ConfigurationService extends BaseService {
         saveEntity(ConfigurationType.LICENSE, toJson(licenseConfiguration));
     }
 
+    public boolean isDesktopMode() {
+        return environment.matchesProfiles("desktop");
+    }
+
     public AppearanceConfiguration loadAppearanceConfiguration() {
         ConfigurationEntity entity = loadOrCreateEntity(ConfigurationType.APPEARANCE.name());
         if (StringUtils.hasText(entity.getContentJson())) {
@@ -82,7 +90,7 @@ public class ConfigurationService extends BaseService {
         } else {
             AppearanceConfiguration result = new AppearanceConfiguration();
 
-            result.setApplicationTitle("Artivact-Vault");
+            result.setApplicationTitle("Artivact");
             result.setAvailableLocales("");
 
             ColorTheme colorTheme = new ColorTheme();
@@ -131,12 +139,80 @@ public class ConfigurationService extends BaseService {
     }
 
     public AdapterConfiguration loadAdapterConfiguration() {
-        ConfigurationEntity entity = loadOrCreateEntity(ConfigurationType.TAGS.name());
-        return fromJson(entity.getContentJson(), AdapterConfiguration.class);
+        ConfigurationEntity entity = loadOrCreateEntity(ConfigurationType.ADAPTER.name());
+        AdapterConfiguration adapterConfiguration = fromJson(entity.getContentJson(), AdapterConfiguration.class);
+
+        boolean windowsOs = System.getProperty("os.name").toLowerCase().contains("windows");
+
+        // Initialize default values on first creation:
+        if (adapterConfiguration.getBackgroundRemovalAdapterImplementation() == null) {
+            adapterConfiguration.setBackgroundRemovalAdapterImplementation(AdapterImplementation.FALLBACK_BACKGROUND_REMOVAL_ADAPTER);
+            adapterConfiguration.setCameraAdapterImplementation(AdapterImplementation.FALLBACK_CAMERA_ADAPTER);
+            adapterConfiguration.setTurntableAdapterImplementation(AdapterImplementation.FALLBACK_TURNTABLE_ADAPTER);
+            adapterConfiguration.setModelCreatorImplementation(AdapterImplementation.FALLBACK_MODEL_CREATOR_ADAPTER);
+            adapterConfiguration.setModelEditorImplementation(AdapterImplementation.FALLBACK_MODEL_EDITOR_ADAPTER);
+
+            adapterConfiguration.getConfigValues().put(AdapterImplementation.FALLBACK_TURNTABLE_ADAPTER, "1000");
+            adapterConfiguration.getConfigValues().put(AdapterImplementation.ARTIVACT_TURNTABLE_ADAPTER, "50");
+
+            adapterConfiguration.getConfigValues().put(AdapterImplementation.FALLBACK_BACKGROUND_REMOVAL_ADAPTER, "");
+            adapterConfiguration.getConfigValues().put(AdapterImplementation.REMBG_REMOTE_BACKGROUND_REMOVAL_ADAPTER, "http://localhost:5000");
+
+            adapterConfiguration.getConfigValues().put(AdapterImplementation.FALLBACK_CAMERA_ADAPTER, "");
+            adapterConfiguration.getConfigValues().put(AdapterImplementation.DIGI_CAM_CONTROL_CAMERA_ADAPTER, "C:/Program Files (x86)/digiCamControl/CameraControlCmd.exe");
+            adapterConfiguration.getConfigValues().put(AdapterImplementation.DIGI_CAM_CONTROL_REMOTE_CAMERA_ADAPTER, "http://localhost:5513/");
+            adapterConfiguration.getConfigValues().put(AdapterImplementation.GPHOTO_TWO_CAMERA_ADAPTER, "/usr/bin/gphoto2");
+
+            adapterConfiguration.getConfigValues().put(AdapterImplementation.FALLBACK_MODEL_CREATOR_ADAPTER, "");
+            adapterConfiguration.getConfigValues().put(AdapterImplementation.FALLBACK_MODEL_EDITOR_ADAPTER, "");
+
+            if (windowsOs) {
+                adapterConfiguration.getConfigValues().put(AdapterImplementation.MESHROOM_MODEL_CREATOR_ADAPTER, "C:/Users/<USER>/Tools/Meshroom/meshroom_batch.exe");
+                adapterConfiguration.getConfigValues().put(AdapterImplementation.METASHAPE_MODEL_CREATOR_ADAPTER, "C:/Program Files/Agisoft/Metashape/metashape.exe");
+
+                adapterConfiguration.getConfigValues().put(AdapterImplementation.BLENDER_MODEL_EDITOR_ADAPTER, "C:/Users/<USER>/Tools/Blender/blender.exe");
+            } else {
+                adapterConfiguration.getConfigValues().put(AdapterImplementation.MESHROOM_MODEL_CREATOR_ADAPTER, "~/tools/meshroom/meshroom_batch");
+                adapterConfiguration.getConfigValues().put(AdapterImplementation.METASHAPE_MODEL_CREATOR_ADAPTER, "~/tools/metashape/metashape.sh");
+
+                adapterConfiguration.getConfigValues().put(AdapterImplementation.BLENDER_MODEL_EDITOR_ADAPTER, "~/tools/blender/blender");
+            }
+        }
+
+        // Initialize available options for the current platform:
+        adapterConfiguration.getAvailableTurntableAdapterImplementations().add(AdapterImplementation.FALLBACK_TURNTABLE_ADAPTER);
+        adapterConfiguration.getAvailableTurntableAdapterImplementations().add(AdapterImplementation.ARTIVACT_TURNTABLE_ADAPTER);
+
+        adapterConfiguration.getAvailableBackgroundRemovalAdapterImplementations().add(AdapterImplementation.FALLBACK_BACKGROUND_REMOVAL_ADAPTER);
+        adapterConfiguration.getAvailableBackgroundRemovalAdapterImplementations().add(AdapterImplementation.REMBG_REMOTE_BACKGROUND_REMOVAL_ADAPTER);
+
+        adapterConfiguration.getAvailableModelCreatorAdapterImplementations().add(AdapterImplementation.FALLBACK_MODEL_CREATOR_ADAPTER);
+        adapterConfiguration.getAvailableModelCreatorAdapterImplementations().add(AdapterImplementation.MESHROOM_MODEL_CREATOR_ADAPTER);
+        adapterConfiguration.getAvailableModelCreatorAdapterImplementations().add(AdapterImplementation.METASHAPE_MODEL_CREATOR_ADAPTER);
+
+        adapterConfiguration.getAvailableModelEditorAdapterImplementations().add(AdapterImplementation.FALLBACK_MODEL_EDITOR_ADAPTER);
+        adapterConfiguration.getAvailableModelEditorAdapterImplementations().add(AdapterImplementation.BLENDER_MODEL_EDITOR_ADAPTER);
+
+        adapterConfiguration.getAvailableCameraAdapterImplementations().add(AdapterImplementation.FALLBACK_CAMERA_ADAPTER);
+
+        if (windowsOs) {
+            adapterConfiguration.getAvailableCameraAdapterImplementations().add(AdapterImplementation.DIGI_CAM_CONTROL_CAMERA_ADAPTER);
+            adapterConfiguration.getAvailableCameraAdapterImplementations().add(AdapterImplementation.DIGI_CAM_CONTROL_REMOTE_CAMERA_ADAPTER);
+        } else {
+            adapterConfiguration.getAvailableCameraAdapterImplementations().add(AdapterImplementation.GPHOTO_TWO_CAMERA_ADAPTER);
+        }
+
+        return adapterConfiguration;
     }
 
     public void saveAdapterConfiguration(AdapterConfiguration adapterConfiguration) {
-        saveEntity(ConfigurationType.APPEARANCE, toJson(adapterConfiguration));
+        // Available options are computed on load and must not be saved:
+        adapterConfiguration.setAvailableBackgroundRemovalAdapterImplementations(List.of());
+        adapterConfiguration.setAvailableCameraAdapterImplementations(List.of());
+        adapterConfiguration.setAvailableTurntableAdapterImplementations(List.of());
+        adapterConfiguration.setAvailableModelCreatorAdapterImplementations(List.of());
+        adapterConfiguration.setAvailableModelEditorAdapterImplementations(List.of());
+        saveEntity(ConfigurationType.ADAPTER, toJson(adapterConfiguration));
     }
 
     @RestrictResult

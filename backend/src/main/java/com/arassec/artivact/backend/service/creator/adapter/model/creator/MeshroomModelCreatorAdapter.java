@@ -3,7 +3,6 @@ package com.arassec.artivact.backend.service.creator.adapter.model.creator;
 import com.arassec.artivact.backend.service.creator.adapter.AdapterImplementation;
 import com.arassec.artivact.backend.service.exception.ArtivactException;
 import com.arassec.artivact.backend.service.model.configuration.AdapterConfiguration;
-import com.arassec.artivact.backend.service.model.item.asset.ImageSet;
 import com.arassec.artivact.backend.service.util.CmdUtil;
 import com.arassec.artivact.backend.service.util.FileUtil;
 import lombok.Getter;
@@ -38,7 +37,7 @@ public class MeshroomModelCreatorAdapter extends BaseModelCreatorAdapter {
     /**
      * The directory containing pipeline files.
      */
-    private static final String MESHROOM_DIR = "Utils/Meshroom";
+    private static final String MESHROOM_DIR = "utils/Meshroom";
 
     /**
      * The cache directory of Meshroom.
@@ -90,7 +89,7 @@ public class MeshroomModelCreatorAdapter extends BaseModelCreatorAdapter {
      * {@inheritDoc}
      */
     @Override
-    public ModelCreationResult createModel(List<ImageSet> imageSets, String pipeline) {
+    public ModelCreationResult createModel(List<Path> images, String pipeline) {
 
         Path projectRoot = initParams.getProjectRoot();
         Path tempDir = initParams.getTempDir();
@@ -102,11 +101,8 @@ public class MeshroomModelCreatorAdapter extends BaseModelCreatorAdapter {
         fileUtil.emptyDir(resultDir);
         fileUtil.emptyDir(cacheDir);
 
-        imageSets.forEach(imageSet -> {
-            if (imageSet.isModelInput()) {
-                copyImages(initParams.getProjectRoot(), imageSet, tempDir, progressMonitor);
-            }
-        });
+        copyImages(images, tempDir, progressMonitor,
+                messageSource.getMessage("base-adapter.copy-images.progress.prefix", null, Locale.getDefault()));
 
         var cmdLine = new CommandLine(initParams.getAdapterConfiguration().getConfigValue(getSupportedImplementation()));
         cmdLine.addArgument("-i");
@@ -118,7 +114,7 @@ public class MeshroomModelCreatorAdapter extends BaseModelCreatorAdapter {
         cmdLine.addArgument("--cache");
         cmdLine.addArgument(cacheDir.toAbsolutePath().toString());
 
-        progressMonitor.setProgress(messageSource.getMessage("model-creator-adapter.meshroom.progress.prefix", null, Locale.getDefault()));
+        progressMonitor.updateProgress(messageSource.getMessage("model-creator-adapter.meshroom.progress.prefix", null, Locale.getDefault()));
 
         cmdUtil.execute(cmdLine);
 

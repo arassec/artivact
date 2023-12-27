@@ -13,8 +13,8 @@ export default {
   TEXT_DESCRIPTION: 'Text block with optional heading. Supports Markdown for text formatting.',
   IMAGE_TEXT: 'Image and Text',
   IMAGE_TEXT_DESCRIPTION: 'An image next to a text block. Supports Markdown for text formatting.',
-  SEARCH: 'Item Search',
-  SEARCH_DESCRIPTION: 'Either presents the results of a predefined item search, or lets the user input search parameters and displays the results.',
+  ITEM_SEARCH: 'Item Search',
+  ITEM_SEARCH_DESCRIPTION: 'Either presents the results of a predefined item search, or lets the user input search parameters and displays the results.',
   ITEM_CAROUSEL: 'Item Carousel',
   ITEM_CAROUSEL_DESCRIPTION: 'Shows three item cards at once with support for scrolling through all items of a predefined search.',
   INFO_BOX: 'Info Box',
@@ -22,5 +22,20 @@ export default {
   AVATAR: 'Avatar',
   AVATAR_DESCRIPTION: 'A portrait image with optional subtext and description to the right.',
   SPACE: 'Space',
-  SPACE_DESCRIPTION: 'Adds empty space of configurable size to the page.'
+  SPACE_DESCRIPTION: 'Adds empty space of configurable size to the page.',
+
+  FALLBACK_BACKGROUND_REMOVAL_ADAPTER: 'Fallback',
+  REMBG_REMOTE_BACKGROUND_REMOVAL_ADAPTER: 'rembg (Remote)',
+  FALLBACK_CAMERA_ADAPTER: 'Fallback',
+  DIGI_CAM_CONTROL_CAMERA_ADAPTER: 'DigiCamControl',
+  DIGI_CAM_CONTROL_REMOTE_CAMERA_ADAPTER: 'DigiCamControl (Remote)',
+  GPHOTO_TWO_CAMERA_ADAPTER: 'gphoto2',
+  FALLBACK_TURNTABLE_ADAPTER: 'Fallback',
+  ARTIVACT_TURNTABLE_ADAPTER: 'Artivact Turntable',
+  FALLBACK_MODEL_CREATOR_ADAPTER: 'Fallback',
+  MESHROOM_MODEL_CREATOR_ADAPTER: 'Meshroom',
+  METASHAPE_MODEL_CREATOR_ADAPTER: 'Metashape',
+  FALLBACK_MODEL_EDITOR_ADAPTER: 'Fallback',
+  BLENDER_MODEL_EDITOR_ADAPTER: 'Blender3D',
+
 };

@@ -18,14 +18,16 @@ import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.StoredFields;
-import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
-import org.apache.lucene.queryparser.flexible.standard.StandardQueryParser;
+import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -33,6 +35,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -74,7 +77,15 @@ public class SearchService extends BaseService {
 
     @RestrictResult
     @TranslateResult
+    @SuppressWarnings("java:S6204") // Result list needs to be modifiable!
     public List<Item> search(String query, int maxResults) {
+        if ("*".equals(query)) {
+            Pageable limit = PageRequest.of(0,maxResults);
+            return itemEntityRepository.findAll(limit).stream()
+                    .map(itemEntity -> fromJson(itemEntity.getContentJson(), Item.class))
+                    .collect(Collectors.toList());
+        }
+
         try {
             Directory indexDirectory = FSDirectory.open(searchIndexDir);
 
@@ -87,10 +98,10 @@ public class SearchService extends BaseService {
             List<Item> result = new LinkedList<>();
 
             itemEntityRepository.findAllById(itemIds)
-                    .forEach(vaultItemEntity -> result.add(fromJson(vaultItemEntity.getContentJson(), Item.class)));
+                    .forEach(itementity -> result.add(fromJson(itementity.getContentJson(), Item.class)));
 
             return result;
-        } catch (IOException | QueryNodeException e) {
+        } catch (IOException | ParseException e) {
             throw new ArtivactException("Error during item search!", e);
         }
     }
@@ -147,13 +158,13 @@ public class SearchService extends BaseService {
     }
 
     private static List<String> searchItemIds(String searchTerm, DirectoryReader indexReader, int maxResults)
-            throws QueryNodeException, IOException {
+            throws IOException, ParseException {
         IndexSearcher indexSearcher = new IndexSearcher(indexReader);
 
-        StandardQueryParser standardQueryParser = new StandardQueryParser(new StandardAnalyzer());
-        standardQueryParser.setAllowLeadingWildcard(true);
+        var queryParser = new MultiFieldQueryParser(new String[] {"title", "description"}, new StandardAnalyzer());
+        queryParser.setAllowLeadingWildcard(true);
 
-        Query query = standardQueryParser.parse(searchTerm, "title");
+        Query query = queryParser.parse(searchTerm);
 
         TopDocs hits = indexSearcher.search(query, maxResults);
         StoredFields storedFields = indexSearcher.storedFields();

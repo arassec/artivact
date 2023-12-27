@@ -2,7 +2,6 @@ package com.arassec.artivact.backend.service.creator.adapter.model.creator;
 
 import com.arassec.artivact.backend.service.creator.adapter.AdapterImplementation;
 import com.arassec.artivact.backend.service.model.configuration.AdapterConfiguration;
-import com.arassec.artivact.backend.service.model.item.asset.ImageSet;
 import com.arassec.artivact.backend.service.util.FileUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -52,15 +51,15 @@ public class FallbackModelCreatorAdapter extends BaseModelCreatorAdapter {
      * {@inheritDoc}
      */
     @Override
-    public ModelCreationResult createModel(List<ImageSet> imageSets, String pipeline) {
+    public ModelCreationResult createModel(List<Path> images, String pipeline) {
         log.info("Fallback model creator called with pipeline: {}", pipeline);
 
         Path tempDir = initParams.getTempDir();
 
         fileUtil.emptyDir(tempDir);
 
-        fileUtil.copyClasspathResource(Path.of("project-setup/Utils/fallback-model.obj"), tempDir);
-        fileUtil.copyClasspathResource(Path.of("project-setup/Utils/fallback-model.mtl"), tempDir);
+        fileUtil.copyClasspathResource(Path.of("project-setup/utils/fallback-model.obj"), tempDir);
+        fileUtil.copyClasspathResource(Path.of("project-setup/utils/fallback-model.mtl"), tempDir);
 
         return new ModelCreationResult(tempDir, pipeline);
     }

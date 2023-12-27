@@ -25,6 +25,8 @@ public class Item extends BaseRestrictedItem {
 
     private MediaContent mediaContent;
 
+    private MediaCreationContent mediaCreationContent;
+
     private List<Tag> tags = new LinkedList<>();
 
 }

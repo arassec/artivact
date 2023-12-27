@@ -1,6 +1,7 @@
 export interface SelectboxModel {
   label: string;
   value: string;
+  disable: boolean | undefined;
 }
 
 export interface TranslatableString {
@@ -19,9 +20,10 @@ export interface BaseRestrictedItem {
   restrictions: string[];
 }
 
-export interface MediaEntry {
+export interface Asset {
   fileName: string;
   url: string;
+  transferable: boolean;
 }
 
 export interface ItemCardData {
@@ -31,14 +33,29 @@ export interface ItemCardData {
   hasModel: boolean;
 }
 
+export interface ImageSet {
+  modelInput: boolean;
+  backgroundRemoved: boolean;
+  images: Asset[];
+}
+
+export interface ModelSet {
+  directory: string;
+  comment: string;
+  modelSetImage: string;
+  modelFiles: Asset[];
+}
+
 export interface ItemDetails {
   id: string;
   version: number;
   restrictions: string[];
   title: TranslatableString;
   description: TranslatableString;
-  images: MediaEntry[];
-  models: MediaEntry[];
+  images: Asset[];
+  models: Asset[];
+  creationImageSets: ImageSet[];
+  creationModelSets: ModelSet[];
   properties: Record<string, string>;
   tags: Tag[];
 }
@@ -74,6 +91,12 @@ export interface Menu extends BaseTranslatableRestrictedItem {
   targetPageId: string;
 }
 
+export interface MenuTreeNode extends Menu {
+  disabled: boolean;
+  selectable: boolean;
+  expandable: boolean;
+}
+
 export interface Account {
   id: number | undefined;
   version: number;
@@ -92,14 +115,14 @@ export interface LicenseConfiguration {
 }
 
 export interface ColorTheme {
-  primary   : string,
-  secondary : string,
-  accent    : string,
-  dark      : string,
-  positive  : string,
-  negative  : string,
-  info      : string,
-  warning   : string,
+  primary: string,
+  secondary: string,
+  accent: string,
+  dark: string,
+  positive: string,
+  negative: string,
+  info: string,
+  warning: string,
 }
 
 export interface AppearanceConfiguration {
@@ -108,6 +131,36 @@ export interface AppearanceConfiguration {
   colorTheme: ColorTheme,
   encodedFaviconSmall: string,
   encodedFaviconLarge: string
+}
+
+export enum AdapterImplementation {
+  FALLBACK_BACKGROUND_REMOVAL_ADAPTER='FALLBACK_BACKGROUND_REMOVAL_ADAPTER',
+  REMBG_REMOTE_BACKGROUND_REMOVAL_ADAPTER='REMBG_REMOTE_BACKGROUND_REMOVAL_ADAPTER',
+  FALLBACK_CAMERA_ADAPTER='FALLBACK_CAMERA_ADAPTER',
+  DIGI_CAM_CONTROL_CAMERA_ADAPTER='DIGI_CAM_CONTROL_CAMERA_ADAPTER',
+  DIGI_CAM_CONTROL_REMOTE_CAMERA_ADAPTER='DIGI_CAM_CONTROL_REMOTE_CAMERA_ADAPTER',
+  GPHOTO_TWO_CAMERA_ADAPTER='GPHOTO_TWO_CAMERA_ADAPTER',
+  FALLBACK_TURNTABLE_ADAPTER='FALLBACK_TURNTABLE_ADAPTER',
+  ARTIVACT_TURNTABLE_ADAPTER='ARTIVACT_TURNTABLE_ADAPTER',
+  FALLBACK_MODEL_CREATOR_ADAPTER='FALLBACK_MODEL_CREATOR_ADAPTER',
+  MESHROOM_MODEL_CREATOR_ADAPTER='MESHROOM_MODEL_CREATOR_ADAPTER',
+  METASHAPE_MODEL_CREATOR_ADAPTER='METASHAPE_MODEL_CREATOR_ADAPTER',
+  FALLBACK_MODEL_EDITOR_ADAPTER='FALLBACK_MODEL_EDITOR_ADAPTER',
+  BLENDER_MODEL_EDITOR_ADAPTER='BLENDER_MODEL_EDITOR_ADAPTER'
+}
+
+export interface AdapterConfiguration {
+  backgroundRemovalAdapterImplementation: AdapterImplementation;
+  availableBackgroundRemovalAdapterImplementations: AdapterImplementation[];
+  cameraAdapterImplementation: AdapterImplementation;
+  availableCameraAdapterImplementations: AdapterImplementation[];
+  turntableAdapterImplementation: AdapterImplementation;
+  availableTurntableAdapterImplementations: AdapterImplementation[];
+  modelCreatorImplementation: AdapterImplementation;
+  availableModelCreatorAdapterImplementations: AdapterImplementation[];
+  modelEditorImplementation: AdapterImplementation;
+  availableModelEditorAdapterImplementations: AdapterImplementation[];
+  configValues: Record<string, unknown>;
 }
 
 export interface Tag extends BaseTranslatableRestrictedItem {
@@ -135,4 +188,22 @@ export interface BreadcrumbData {
 
 export interface WidgetPageContainer {
   [key: string]: number
+}
+
+export interface CapturePhotosParams {
+  numPhotos: number;
+  useTurnTable: boolean;
+  turnTableDelay: number;
+  removeBackgrounds: boolean;
+}
+
+export interface OperationProgress {
+  progress: string;
+}
+
+export interface ExhibitionSummary {
+  exhibitionId: string | null;
+  title: TranslatableString;
+  description: TranslatableString;
+  menuIds: string[];
 }

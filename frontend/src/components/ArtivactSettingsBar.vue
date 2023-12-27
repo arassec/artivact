@@ -22,7 +22,7 @@
             class="menu-entry"
           >
             <q-item-section
-              ><label class="menu-label">Default</label></q-item-section
+            ><label class="menu-label">Default</label></q-item-section
             >
           </q-item>
           <template v-for="locale in localeStore.locales" :key="locale">
@@ -33,13 +33,20 @@
               class="menu-entry"
             >
               <q-item-section
-                ><label class="menu-label">{{ locale }}</label></q-item-section
+              ><label class="menu-label">{{ locale }}</label></q-item-section
               >
             </q-item>
           </template>
         </q-list>
       </q-menu>
     </q-btn>
+
+    <!-- EXHIBITION CONFIGURATION -->
+    <router-link to="/administration/configuration/exhibitions">
+      <q-btn flat color="white" icon="collections" v-if="userdataStore.isUserOrAdmin">
+        <q-tooltip>Exhibitions</q-tooltip>
+      </q-btn>
+    </router-link>
 
     <!-- SYSTEM SETTINGS -->
     <q-btn flat color="white" icon="settings" v-if="userdataStore.isAdmin">
@@ -59,15 +66,15 @@
             class="menu-entry"
           >
             <q-item-section
-              ><label class="menu-label">
-                <q-icon
-                  name="article"
-                  size="xs"
-                  color="primary"
-                  class="q-mr-sm"
-                ></q-icon>
-                Properties</label
-              >
+            ><label class="menu-label">
+              <q-icon
+                name="article"
+                size="xs"
+                color="primary"
+                class="q-mr-sm"
+              ></q-icon>
+              Properties</label
+            >
             </q-item-section>
           </q-item>
           <q-item
@@ -78,34 +85,34 @@
             class="menu-entry"
           >
             <q-item-section
-              ><label class="menu-label">
-                <q-icon
-                  name="label"
-                  size="xs"
-                  color="primary"
-                  class="q-mr-sm"
-                ></q-icon>
-                Tags</label
-              >
+            ><label class="menu-label">
+              <q-icon
+                name="label"
+                size="xs"
+                color="primary"
+                class="q-mr-sm"
+              ></q-icon>
+              Tags</label
+            >
             </q-item-section>
           </q-item>
           <q-item
             clickable
             v-close-popup
             @click="gotoLicenseConfigurationPage"
-            v-if="userdataStore.isAdmin"
+            v-if="userdataStore.isAdmin && !desktopStore.isDesktopModeEnabled"
             class="menu-entry"
           >
             <q-item-section
-              ><label class="menu-label">
-                <q-icon
-                  name="policy"
-                  size="xs"
-                  color="primary"
-                  class="q-mr-sm"
-                ></q-icon>
-                License</label
-              >
+            ><label class="menu-label">
+              <q-icon
+                name="policy"
+                size="xs"
+                color="primary"
+                class="q-mr-sm"
+              ></q-icon>
+              License</label
+            >
             </q-item-section>
           </q-item>
           <q-item
@@ -116,15 +123,34 @@
             class="menu-entry"
           >
             <q-item-section
-              ><label class="menu-label">
-                <q-icon
-                  name="palette"
-                  size="xs"
-                  color="primary"
-                  class="q-mr-sm"
-                ></q-icon>
-                Appearance</label
-              >
+            ><label class="menu-label">
+              <q-icon
+                name="palette"
+                size="xs"
+                color="primary"
+                class="q-mr-sm"
+              ></q-icon>
+              Appearance</label
+            >
+            </q-item-section>
+          </q-item>
+          <q-item
+            clickable
+            v-close-popup
+            @click="gotoPeripheralsConfigurationPage"
+            v-if="userdataStore.isAdmin && desktopStore.isDesktopModeEnabled"
+            class="menu-entry"
+          >
+            <q-item-section
+            ><label class="menu-label">
+              <q-icon
+                name="electrical_services"
+                size="xs"
+                color="primary"
+                class="q-mr-sm"
+              ></q-icon>
+              Peripherals</label
+            >
             </q-item-section>
           </q-item>
         </q-list>
@@ -154,15 +180,15 @@
             v-if="userdataStore.isUserOrAdmin"
           >
             <q-item-section
-              ><label class="menu-label">
-                <q-icon
-                  name="add"
-                  size="xs"
-                  color="primary"
-                  class="q-mr-sm"
-                ></q-icon>
-                Create Item</label
-              >
+            ><label class="menu-label">
+              <q-icon
+                name="add"
+                size="xs"
+                color="primary"
+                class="q-mr-sm"
+              ></q-icon>
+              Create Item</label
+            >
             </q-item-section>
           </q-item>
           <q-item
@@ -173,15 +199,15 @@
             v-if="userdataStore.isAdmin"
           >
             <q-item-section
-              ><label class="menu-label">
-                <q-icon
-                  name="import_export"
-                  size="xs"
-                  color="primary"
-                  class="q-mr-sm"
-                ></q-icon>
-                Import Items</label
-              >
+            ><label class="menu-label">
+              <q-icon
+                name="import_export"
+                size="xs"
+                color="primary"
+                class="q-mr-sm"
+              ></q-icon>
+              Import Items</label
+            >
             </q-item-section>
           </q-item>
         </q-list>
@@ -193,7 +219,7 @@
       flat
       color="white"
       icon="manage_accounts"
-      v-if="userdataStore.authenticated"
+      v-if="userdataStore.authenticated && !desktopStore.isDesktopModeEnabled"
     >
       <q-tooltip v-if="!accountsMenuOpen">Account Settings</q-tooltip>
       <q-menu
@@ -210,15 +236,15 @@
             class="menu-entry"
           >
             <q-item-section
-              ><label class="menu-label">
-                <q-icon
-                  name="person"
-                  size="xs"
-                  color="primary"
-                  class="q-mr-sm"
-                ></q-icon>
-                Account</label
-              >
+            ><label class="menu-label">
+              <q-icon
+                name="person"
+                size="xs"
+                color="primary"
+                class="q-mr-sm"
+              ></q-icon>
+              Account</label
+            >
             </q-item-section>
           </q-item>
           <q-item
@@ -229,15 +255,15 @@
             class="menu-entry"
           >
             <q-item-section
-              ><label class="menu-label">
-                <q-icon
-                  name="group"
-                  size="xs"
-                  color="primary"
-                  class="q-mr-sm"
-                ></q-icon>
-                Accounts</label
-              >
+            ><label class="menu-label">
+              <q-icon
+                name="group"
+                size="xs"
+                color="primary"
+                class="q-mr-sm"
+              ></q-icon>
+              Accounts</label
+            >
             </q-item-section>
           </q-item>
         </q-list>
@@ -256,7 +282,7 @@
         >
           <q-item-section>
             <label class="menu-label">
-              <q-icon name="language" size="sm" class="q-mr-sm" />
+              <q-icon name="language" size="sm" class="q-mr-sm"/>
               <label>Locale</label>
             </label>
           </q-item-section>
@@ -269,7 +295,7 @@
                 class="menu-entry"
               >
                 <q-item-section
-                  ><label class="menu-label">Default</label></q-item-section
+                ><label class="menu-label">Default</label></q-item-section
                 >
               </q-item>
               <template v-for="locale in localeStore.locales" :key="locale">
@@ -280,7 +306,7 @@
                   class="menu-entry"
                 >
                   <q-item-section
-                    ><label class="menu-label">{{
+                  ><label class="menu-label">{{
                       locale
                     }}</label></q-item-section
                   >
@@ -290,11 +316,22 @@
           </q-menu>
         </q-item>
 
+        <!-- EXHIBITION CONFIGURATION -->
+        <q-item clickable v-close-popup @click="gotoExhibitionsConfigurationPage"
+                class="menu-entry" v-if="userdataStore.isUserOrAdmin">
+          <q-item-section>
+            <label class="menu-label">
+              <q-icon name="collections" size="sm" class="q-mr-sm"/>
+              <label>Exhib.</label>
+            </label>
+          </q-item-section>
+        </q-item>
+
         <!-- SYSTEM SETTINGS -->
         <q-item clickable class="menu-entry" v-if="userdataStore.isAdmin">
           <q-item-section>
             <label class="menu-label">
-              <q-icon name="article" size="sm" class="q-mr-sm" />
+              <q-icon name="article" size="sm" class="q-mr-sm"/>
               <label>System</label>
             </label>
           </q-item-section>
@@ -308,15 +345,15 @@
                 class="menu-entry"
               >
                 <q-item-section
-                  ><label class="menu-label">
-                    <q-icon
-                      name="article"
-                      size="xs"
-                      color="primary"
-                      class="q-mr-sm"
-                    ></q-icon>
-                    Properties</label
-                  >
+                ><label class="menu-label">
+                  <q-icon
+                    name="article"
+                    size="xs"
+                    color="primary"
+                    class="q-mr-sm"
+                  ></q-icon>
+                  Properties</label
+                >
                 </q-item-section>
               </q-item>
               <q-item
@@ -327,34 +364,34 @@
                 class="menu-entry"
               >
                 <q-item-section
-                  ><label class="menu-label">
-                    <q-icon
-                      name="label"
-                      size="xs"
-                      color="primary"
-                      class="q-mr-sm"
-                    ></q-icon>
-                    Tags</label
-                  >
+                ><label class="menu-label">
+                  <q-icon
+                    name="label"
+                    size="xs"
+                    color="primary"
+                    class="q-mr-sm"
+                  ></q-icon>
+                  Tags</label
+                >
                 </q-item-section>
               </q-item>
               <q-item
                 clickable
                 v-close-popup
                 @click="gotoLicenseConfigurationPage"
-                v-if="userdataStore.isAdmin"
+                v-if="userdataStore.isAdmin && !desktopStore.isDesktopModeEnabled"
                 class="menu-entry"
               >
                 <q-item-section
-                  ><label class="menu-label">
-                    <q-icon
-                      name="policy"
-                      size="xs"
-                      color="primary"
-                      class="q-mr-sm"
-                    ></q-icon>
-                    License</label
-                  >
+                ><label class="menu-label">
+                  <q-icon
+                    name="policy"
+                    size="xs"
+                    color="primary"
+                    class="q-mr-sm"
+                  ></q-icon>
+                  License</label
+                >
                 </q-item-section>
               </q-item>
               <q-item
@@ -365,15 +402,15 @@
                 class="menu-entry"
               >
                 <q-item-section
-                  ><label class="menu-label">
-                    <q-icon
-                      name="palette"
-                      size="xs"
-                      color="primary"
-                      class="q-mr-sm"
-                    ></q-icon>
-                    Appearance</label
-                  >
+                ><label class="menu-label">
+                  <q-icon
+                    name="palette"
+                    size="xs"
+                    color="primary"
+                    class="q-mr-sm"
+                  ></q-icon>
+                  Appearance</label
+                >
                 </q-item-section>
               </q-item>
             </q-list>
@@ -384,7 +421,7 @@
         <q-item clickable class="menu-entry" v-if="userdataStore.isUserOrAdmin">
           <q-item-section>
             <label class="menu-label">
-              <q-icon name="add" size="sm" class="q-mr-sm" />
+              <q-icon name="add" size="sm" class="q-mr-sm"/>
               <label>Items</label>
             </label>
           </q-item-section>
@@ -398,15 +435,15 @@
                 v-if="userdataStore.isUserOrAdmin"
               >
                 <q-item-section
-                  ><label class="menu-label">
-                    <q-icon
-                      name="add"
-                      size="xs"
-                      color="primary"
-                      class="q-mr-sm"
-                    ></q-icon>
-                    Create Item</label
-                  >
+                ><label class="menu-label">
+                  <q-icon
+                    name="add"
+                    size="xs"
+                    color="primary"
+                    class="q-mr-sm"
+                  ></q-icon>
+                  Create Item</label
+                >
                 </q-item-section>
               </q-item>
               <q-item
@@ -417,15 +454,15 @@
                 v-if="userdataStore.isAdmin"
               >
                 <q-item-section
-                  ><label class="menu-label">
-                    <q-icon
-                      name="import_export"
-                      size="xs"
-                      color="primary"
-                      class="q-mr-sm"
-                    ></q-icon>
-                    Import Items</label
-                  >
+                ><label class="menu-label">
+                  <q-icon
+                    name="import_export"
+                    size="xs"
+                    color="primary"
+                    class="q-mr-sm"
+                  ></q-icon>
+                  Import Items</label
+                >
                 </q-item-section>
               </q-item>
             </q-list>
@@ -433,10 +470,10 @@
         </q-item>
 
         <!-- ACCOUNT SETTINGS -->
-        <q-item clickable class="menu-entry" v-if="userdataStore.authenticated">
+        <q-item clickable class="menu-entry" v-if="userdataStore.authenticated && !desktopStore.isDesktopModeEnabled">
           <q-item-section>
             <label class="menu-label">
-              <q-icon name="manage_accounts" size="sm" class="q-mr-sm" />
+              <q-icon name="manage_accounts" size="sm" class="q-mr-sm"/>
               <label>Account</label>
             </label>
           </q-item-section>
@@ -449,15 +486,15 @@
                 class="menu-entry"
               >
                 <q-item-section
-                  ><label class="menu-label">
-                    <q-icon
-                      name="person"
-                      size="xs"
-                      color="primary"
-                      class="q-mr-sm"
-                    />
-                    Account
-                  </label>
+                ><label class="menu-label">
+                  <q-icon
+                    name="person"
+                    size="xs"
+                    color="primary"
+                    class="q-mr-sm"
+                  />
+                  Account
+                </label>
                 </q-item-section>
               </q-item>
               <q-item
@@ -468,15 +505,15 @@
                 class="menu-entry"
               >
                 <q-item-section
-                  ><label class="menu-label">
-                    <q-icon
-                      name="group"
-                      size="xs"
-                      color="primary"
-                      class="q-mr-sm"
-                    />
-                    Accounts
-                  </label>
+                ><label class="menu-label">
+                  <q-icon
+                    name="group"
+                    size="xs"
+                    color="primary"
+                    class="q-mr-sm"
+                  />
+                  Accounts
+                </label>
                 </q-item-section>
               </q-item>
             </q-list>
@@ -488,21 +525,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useUserdataStore } from 'stores/userdata';
-import { useLocaleStore } from 'stores/locale';
-import { api } from 'boot/axios';
-import { useRouter } from 'vue-router';
-import { useQuasar } from 'quasar';
-import { useI18n } from 'vue-i18n';
+import {ref} from 'vue';
+import {useUserdataStore} from 'stores/userdata';
+import {useLocaleStore} from 'stores/locale';
+import {api} from 'boot/axios';
+import {useRouter} from 'vue-router';
+import {useQuasar} from 'quasar';
+import {useI18n} from 'vue-i18n';
+import {useDesktopStore} from 'stores/desktop';
 
-const { locale } = useI18n({ useScope: 'global' });
+const {locale} = useI18n({useScope: 'global'});
 
 const quasar = useQuasar();
 const route = useRouter();
 
 const userdataStore = useUserdataStore();
 const localeStore = useLocaleStore();
+const desktopStore = useDesktopStore();
 
 const accountsMenuOpen = ref(false);
 const itemMenuOpen = ref(false);
@@ -523,6 +562,14 @@ function gotoLicenseConfigurationPage() {
 
 function gotoAppearanceConfigurationPage() {
   route.push('/administration/configuration/appearance');
+}
+
+function gotoPeripheralsConfigurationPage() {
+  route.push('/administration/configuration/peripherals');
+}
+
+function gotoExhibitionsConfigurationPage() {
+  route.push('/administration/configuration/exhibitions');
 }
 
 function gotoAccountPage() {

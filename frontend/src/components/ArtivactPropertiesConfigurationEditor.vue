@@ -166,15 +166,11 @@
 <script setup lang="ts">
 // noinspection ES6UnusedImports
 import draggable from 'vuedraggable';
-import { PropType, toRef } from 'vue';
-import {
-  PropertiesConfiguration,
-  Property,
-  PropertyCategory,
-} from 'components/models';
+import {PropType, toRef} from 'vue';
+import {PropertiesConfiguration, Property, PropertyCategory,} from 'components/models';
 import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
 import ArtivactPropertyValueRangeEditor from 'components/ArtivactPropertyValueRangeEditor.vue';
-import { translate } from './utils';
+import {translate} from './utils';
 
 const props = defineProps({
   propertiesConfiguration: {
@@ -192,7 +188,7 @@ function addCategory() {
   let category: PropertyCategory = {
     id: '',
     value: 'New Category',
-    translatedValue: 'New Category',
+    translatedValue: '',
     translations: {},
     restrictions: [],
     properties: [],
@@ -204,7 +200,7 @@ function addProperty(category: PropertyCategory) {
   let property: Property = {
     id: '',
     value: 'New Property',
-    translatedValue: 'New Property',
+    translatedValue: '',
     translations: {},
     restrictions: [],
     valueRange: [],

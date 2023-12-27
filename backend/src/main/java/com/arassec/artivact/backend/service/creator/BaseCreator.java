@@ -10,6 +10,7 @@ import com.arassec.artivact.backend.service.creator.adapter.model.editor.ModelEd
 import com.arassec.artivact.backend.service.exception.ArtivactException;
 import com.arassec.artivact.backend.service.model.ProjectDir;
 import com.arassec.artivact.backend.service.model.configuration.AdapterConfiguration;
+import com.arassec.artivact.backend.service.util.ProjectRootProvider;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,6 +26,8 @@ public abstract class BaseCreator {
      * @return List of available adapters;
      */
     protected abstract List<Adapter<?, ?>> getAdapters();
+
+    protected abstract ProjectRootProvider getProjectRootProvider();
 
     /**
      * Returns the desired adapter.
@@ -107,6 +110,20 @@ public abstract class BaseCreator {
     }
 
     /**
+     * Returns the images directory of the currently active item.
+     *
+     * @param itemId             The ID of the item to get the images directory for.
+     * @param includeProjectRoot Set to {@code true} to append the images directory path to the project's root directory.
+     * @return The path to the currently active item's images directory.
+     */
+    public Path getImagesDir(String itemId, boolean includeProjectRoot) {
+        if (includeProjectRoot) {
+            return getAssetDir(itemId, getProjectRootProvider().getProjectRoot(), ProjectDir.IMAGES_DIR);
+        }
+        return getAssetDir(itemId, null, ProjectDir.IMAGES_DIR);
+    }
+
+    /**
      * Returns the subdirectory according to the Artivact-Creator's directory structure based on the item ID and an index.
      *
      * @param itemId The item's (UU)ID.
@@ -173,7 +190,11 @@ public abstract class BaseCreator {
         try (Stream<Path> stream = Files.list(assetDir)) {
             List<Path> assets = stream.toList();
             for (Path path : assets) {
-                var number = Integer.parseInt(path.getFileName().toString().split("\\.")[0]);
+                String existingAssetNumber = path.getFileName().toString().split("\\.")[0];
+                if (!existingAssetNumber.matches("[0-9]*")) {
+                    continue;
+                }
+                var number = Integer.parseInt(existingAssetNumber);
                 if (number > highestNumber) {
                     highestNumber = number;
                 }

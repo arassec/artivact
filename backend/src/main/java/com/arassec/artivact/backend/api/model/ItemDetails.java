@@ -26,9 +26,13 @@ public class ItemDetails {
 
     private TranslatableString description;
 
-    private List<MediaEntry> images;
+    private List<Asset> images;
 
-    private List<MediaEntry> models;
+    private List<Asset> models;
+
+    private List<ImageSet> creationImageSets;
+
+    private List<ModelSet> creationModelSets;
 
     private Map<String, String> properties;
 

@@ -2,6 +2,7 @@ package com.arassec.artivact.backend.service.model.item;
 
 import lombok.Getter;
 
+@Getter
 public enum ImageSize {
 
     ORIGINAL(-1),
@@ -12,7 +13,6 @@ public enum ImageSize {
 
     PAGE_TITLE(1600);
 
-    @Getter
     private final int width;
 
     ImageSize(int width) {

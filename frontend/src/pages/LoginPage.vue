@@ -35,13 +35,13 @@
 </template>
 
 <script setup lang="ts">
-import { api } from 'boot/axios';
-import { ref } from 'vue';
-import { useQuasar } from 'quasar';
-import { useUserdataStore } from 'stores/userdata';
-import { useRouter } from 'vue-router';
+import {api} from 'boot/axios';
+import {ref} from 'vue';
+import {useQuasar} from 'quasar';
+import {useUserdataStore} from 'stores/userdata';
+import {useRouter} from 'vue-router';
 import ArtivactContent from 'components/ArtivactContent.vue';
-import { useMenuStore } from 'stores/menu';
+import {useMenuStore} from 'stores/menu';
 
 const quasar = useQuasar();
 const route = useRouter();

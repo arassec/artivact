@@ -1,7 +1,7 @@
 <template>
   <div v-if="appearanceConfigurationRef">
     <div class="q-mb-lg">
-      Configures the appearance of the Artivact-Vault application.
+      Configures the appearance of the Artivact application.
     </div>
 
     <q-list bordered class="rounded-borders q-mb-lg">
@@ -206,10 +206,10 @@
 </template>
 
 <script setup lang="ts">
-import { PropType, toRef } from 'vue';
-import { AppearanceConfiguration } from 'components/models';
+import {PropType, toRef} from 'vue';
+import {AppearanceConfiguration} from 'components/models';
 import ArtivactThemeColorEditor from 'components/ArtivactThemeColorEditor.vue';
-import { QUploader, useQuasar } from 'quasar';
+import {QUploader, useQuasar} from 'quasar';
 
 const props = defineProps({
   appearanceConfiguration: {

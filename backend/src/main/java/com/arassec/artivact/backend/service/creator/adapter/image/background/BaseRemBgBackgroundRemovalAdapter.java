@@ -2,7 +2,6 @@ package com.arassec.artivact.backend.service.creator.adapter.image.background;
 
 import com.arassec.artivact.backend.service.exception.ArtivactException;
 import com.arassec.artivact.backend.service.model.configuration.AdapterConfiguration;
-import com.arassec.artivact.backend.service.model.item.asset.ImageSet;
 import com.arassec.artivact.backend.service.util.ProgressMonitor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
@@ -54,12 +53,12 @@ public abstract class BaseRemBgBackgroundRemovalAdapter extends BaseBackgroundRe
      * {@inheritDoc}
      */
     @Override
-    public void removeBackgrounds(ImageSet imageSet) {
-        progressMonitor.setProgressPrefix(getMessageSource().getMessage("background-removal-adapter.rembg.progress.prefix", null,
+    public void removeBackgrounds(List<Path> filePaths) {
+        progressMonitor.updateProgress(getMessageSource().getMessage("background-removal-adapter.rembg.progress.prefix", null,
                 Locale.getDefault()));
-        imageSet.getImages().forEach(image -> {
-            log.debug("Removing background from image: {}", image.getPath());
-            removeBackground(Path.of(image.getPath()));
+        filePaths.forEach(filePath -> {
+            log.debug("Removing background from image: {}", filePath);
+            removeBackground(filePath);
         });
     }
 

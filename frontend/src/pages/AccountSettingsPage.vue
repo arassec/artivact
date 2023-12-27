@@ -69,10 +69,10 @@
 </template>
 
 <script setup lang="ts">
-import { useQuasar } from 'quasar';
-import { api } from 'boot/axios';
-import { onMounted, ref } from 'vue';
-import { Account } from 'components/models';
+import {useQuasar} from 'quasar';
+import {api} from 'boot/axios';
+import {onMounted, ref} from 'vue';
+import {Account} from 'components/models';
 import ArtivactContent from 'components/ArtivactContent.vue';
 
 const accountRef = ref({} as Account);

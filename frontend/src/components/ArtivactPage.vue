@@ -103,8 +103,8 @@
       />
 
       <search-widget
-        v-if="widgetData.type === 'SEARCH'"
-        :widget-data="widgetData as SearchWidgetData"
+        v-if="widgetData.type === 'ITEM_SEARCH'"
+        :widget-data="widgetData as SearchBasedWidgetData"
         :in-edit-mode="inEditMode"
         :move-up-enabled="index > 0"
         :move-down-enabled="index < pageContentRef.widgets.length - 1"
@@ -115,7 +115,7 @@
 
       <item-carousel-widget
         v-if="widgetData.type === 'ITEM_CAROUSEL'"
-        :widget-data="widgetData as ItemCarouselWidgetData"
+        :widget-data="widgetData as SearchBasedWidgetData"
         :in-edit-mode="inEditMode"
         :move-up-enabled="index > 0"
         :move-down-enabled="index < pageContentRef.widgets.length - 1"
@@ -201,26 +201,25 @@
 </template>
 
 <script setup lang="ts">
-import { PropType, ref, toRef } from 'vue';
-import { PageContent, TranslatableString, Widget } from 'components/models';
-import { useUserdataStore } from 'stores/userdata';
+import {PropType, ref, toRef} from 'vue';
+import {PageContent, TranslatableString, Widget} from 'components/models';
+import {useUserdataStore} from 'stores/userdata';
 import TextWidget from 'components/widgets/TextWidget.vue';
 import PageTitleWidget from 'components/widgets/PageTitleWidget.vue';
 import SearchWidget from 'components/widgets/SearchWidget.vue';
 import ItemCarouselWidget from 'components/widgets/ItemCarouselWidget.vue';
-import { useQuasar } from 'quasar';
+import {useQuasar} from 'quasar';
 import {
   AvatarWidgetData,
   ImageTextWidgetData,
   InfoBoxWidgetData,
-  ItemCarouselWidgetData,
   PageTitleWidgetData,
-  SearchWidgetData,
+  SearchBasedWidgetData,
   SpaceWidgetData,
   TextWidgetData,
 } from 'components/widgets/widget-models';
-import { moveDown, moveUp } from 'components/utils';
-import { api } from 'boot/axios';
+import {moveDown, moveUp} from 'components/utils';
+import {api} from 'boot/axios';
 import InfoBoxWidget from 'components/widgets/InfoBoxWidget.vue';
 import AvatarWidget from 'components/widgets/AvatarWidget.vue';
 import SpaceWidget from 'components/widgets/SpaceWidget.vue';
@@ -257,7 +256,7 @@ const availableWidgetTypes = [
   'PAGE_TITLE',
   'TEXT',
   'IMAGE_TEXT',
-  'SEARCH',
+  'ITEM_SEARCH',
   'ITEM_CAROUSEL',
   'INFO_BOX',
   'AVATAR',
@@ -296,14 +295,14 @@ function addWidget() {
         value: 'Text',
       } as TranslatableString,
     } as ImageTextWidgetData);
-  } else if (selectedWidgetTypeRef.value === 'SEARCH') {
+  } else if (selectedWidgetTypeRef.value === 'ITEM_SEARCH') {
     pageContentRef.value?.widgets.push({
-      type: 'SEARCH',
+      type: 'ITEM_SEARCH',
       id: '',
       restrictions: [] as string[],
       searchTerm: '',
       maxResults: 100,
-    } as SearchWidgetData);
+    } as SearchBasedWidgetData);
   } else if (selectedWidgetTypeRef.value === 'ITEM_CAROUSEL') {
     pageContentRef.value?.widgets.push({
       type: 'ITEM_CAROUSEL',
@@ -311,7 +310,7 @@ function addWidget() {
       restrictions: [] as string[],
       searchTerm: '',
       maxResults: 9,
-    } as ItemCarouselWidgetData);
+    } as SearchBasedWidgetData);
   } else if (selectedWidgetTypeRef.value === 'INFO_BOX') {
     pageContentRef.value?.widgets.push({
       type: 'INFO_BOX',

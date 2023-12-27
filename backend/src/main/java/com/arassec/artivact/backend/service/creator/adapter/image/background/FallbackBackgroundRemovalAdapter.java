@@ -3,12 +3,12 @@ package com.arassec.artivact.backend.service.creator.adapter.image.background;
 
 import com.arassec.artivact.backend.service.creator.adapter.AdapterImplementation;
 import com.arassec.artivact.backend.service.model.configuration.AdapterConfiguration;
-import com.arassec.artivact.backend.service.model.item.asset.ImageSet;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
+import java.util.List;
 
 /**
  * Fallback adapter for background removal that can be used if no background removal is required.
@@ -36,9 +36,9 @@ public class FallbackBackgroundRemovalAdapter extends BaseBackgroundRemovalAdapt
      * {@inheritDoc}
      */
     @Override
-    public void removeBackgrounds(ImageSet imageSet) {
-        log.info("Fallback background removal adapter called for image-set: {}", imageSet);
-        imageSet.getImages().forEach(image -> log.info("Fallback background removal adapter called for image: {}", image));
+    public void removeBackgrounds(List<Path> filePaths) {
+        log.info("Fallback background removal adapter called for multiple images.");
+        filePaths.forEach(filePath -> log.info("Fallback background removal adapter called for image: {}", filePath));
     }
 
     /**

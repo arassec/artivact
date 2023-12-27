@@ -60,8 +60,8 @@
 </template>
 
 <script setup lang="ts">
-import { PropType, toRef } from 'vue';
-import { Tag, TagsConfiguration } from 'components/models';
+import {PropType, toRef} from 'vue';
+import {Tag, TagsConfiguration} from 'components/models';
 import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
 
 const props = defineProps({

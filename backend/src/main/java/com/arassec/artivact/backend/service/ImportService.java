@@ -37,7 +37,7 @@ public class ImportService extends BaseFileService {
                          ProjectRootProvider projectRootProvider) {
         this.itemService = itemService;
         this.objectMapper = objectMapper;
-        this.itemsFileDir = projectRootProvider.getProjectRoot().resolve(ITEMS_FILE_DIR);
+        this.itemsFileDir = projectRootProvider.getProjectRoot().resolve(ITEMS_DIR);
     }
 
     public void importCreatorItems() {

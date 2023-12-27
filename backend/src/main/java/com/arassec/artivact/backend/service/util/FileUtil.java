@@ -28,8 +28,7 @@ public class FileUtil {
      * @param fileModifications List of file modifications to perform during project setup.
      */
     public void updateProjectDirectory(Path projectRoot, Path projectSetupDir, List<FileModification> fileModifications) {
-        createDirIfRequired(projectRoot.resolve("Data"));
-        createDirIfRequired(projectRoot.resolve("Temp"));
+        createDirIfRequired(projectRoot.resolve("temp"));
         copyClasspathResource(projectSetupDir, projectRoot);
         fileModifications.forEach(fileModification -> {
             try {
@@ -179,14 +178,14 @@ public class FileUtil {
      */
     public Process openDirInOs(Path directory) {
         var osString = System.getProperty("os.name");
-        String commandString;
+        String[] cmdArray;
         if (osString.contains("Windows")) {
-            commandString = "cmd /c start " + directory.toAbsolutePath();
+            cmdArray = new String[]{"cmd", "/c", "start", directory.toAbsolutePath().toString()};
         } else {
-            commandString = "xdg-open " + directory.toAbsolutePath();
+            cmdArray = new String[]{"xdg-open", directory.toAbsolutePath().toString()};
         }
         try {
-            return Runtime.getRuntime().exec(commandString);
+            return Runtime.getRuntime().exec(cmdArray);
         } catch (IOException e) {
             throw new ArtivactException("Could not open directory!", e);
         }

@@ -40,8 +40,8 @@
 <script setup lang="ts">
 import WidgetTemplate from 'components/widgets/WidgetTemplate.vue';
 import ArtivactContent from 'components/ArtivactContent.vue';
-import { SpaceWidgetData } from 'components/widgets/widget-models';
-import { PropType, toRef } from 'vue';
+import {SpaceWidgetData} from 'components/widgets/widget-models';
+import {PropType, toRef} from 'vue';
 
 const props = defineProps({
   inEditMode: {

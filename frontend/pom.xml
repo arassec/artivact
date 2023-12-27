@@ -13,7 +13,7 @@
     <packaging>pom</packaging>
 
     <name>frontend</name>
-    <description>Frontend of the artivact-vault application to manage virtual artifacts.</description>
+    <description>Frontend of the artivact application to manage virtual artifacts.</description>
 
     <properties>
         <sonar.skip>true</sonar.skip>

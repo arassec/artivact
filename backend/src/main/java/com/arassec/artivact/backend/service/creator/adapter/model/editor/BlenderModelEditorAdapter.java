@@ -3,7 +3,7 @@ package com.arassec.artivact.backend.service.creator.adapter.model.editor;
 import com.arassec.artivact.backend.service.creator.adapter.AdapterImplementation;
 import com.arassec.artivact.backend.service.exception.ArtivactException;
 import com.arassec.artivact.backend.service.model.configuration.AdapterConfiguration;
-import com.arassec.artivact.backend.service.model.item.asset.Model;
+import com.arassec.artivact.backend.service.model.item.CreationModelSet;
 import com.arassec.artivact.backend.service.util.CmdUtil;
 import com.arassec.artivact.backend.service.util.FileUtil;
 import lombok.Getter;
@@ -30,7 +30,7 @@ public class BlenderModelEditorAdapter extends BaseModelEditorAdapter {
     /**
      * The directory containing blender python scripts.
      */
-    private static final String BLENDER_DIR = "Utils/Blender";
+    private static final String BLENDER_DIR = "utils/Blender";
 
     /**
      * The implementation supported by this adapter.
@@ -51,8 +51,8 @@ public class BlenderModelEditorAdapter extends BaseModelEditorAdapter {
      * {@inheritDoc}
      */
     @Override
-    public void open(Model model) {
-        var modelPath = initParams.getProjectRoot().resolve(model.getPath());
+    public void open(CreationModelSet creationModelSet) {
+        var modelPath = initParams.getProjectRoot().resolve(creationModelSet.getDirectory());
 
         var blenderProjectExists = new AtomicBoolean(false);
         var blenderProjectFile = new StringBuilder();

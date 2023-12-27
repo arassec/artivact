@@ -14,7 +14,7 @@
 
         <router-link
           to="/user-login"
-          v-if="!userdataStore.authenticated"
+          v-if="!userdataStore.authenticated && !desktopStore.isDesktopModeEnabled"
           class="menu-entry-link q-mt-xs q-mb-xs"
         >
           <q-btn flat color="white" icon="login" size="md">
@@ -24,7 +24,7 @@
 
         <router-link
           to="/"
-          v-if="userdataStore.authenticated"
+          v-if="userdataStore.authenticated && !desktopStore.isDesktopModeEnabled"
           class="menu-entry-link"
         >
           <q-btn
@@ -35,7 +35,7 @@
             size="md"
             @click="logout"
           >
-            <label class="q-mr-sm">
+            <label class="q-mr-sm cursor-pointer">
               {{ userdataStore.username }}
             </label>
             <q-tooltip>Logout</q-tooltip>
@@ -53,16 +53,17 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import { setCssVar, useQuasar } from 'quasar';
-import { api } from 'boot/axios';
-import { useUserdataStore } from 'stores/userdata';
-import { useLocaleStore } from 'stores/locale';
-import { useLicenseStore } from 'stores/license';
-import { useMenuStore } from 'stores/menu';
-import { useRoleStore } from 'stores/role';
+import {onMounted, ref} from 'vue';
+import {setCssVar, useQuasar} from 'quasar';
+import {api} from 'boot/axios';
+import {useUserdataStore} from 'stores/userdata';
+import {useLocaleStore} from 'stores/locale';
+import {useLicenseStore} from 'stores/license';
+import {useMenuStore} from 'stores/menu';
+import {useRoleStore} from 'stores/role';
 import ArtivactMenuBar from 'components/ArtivactMenuBar.vue';
 import ArtivactSettingsBar from 'components/ArtivactSettingsBar.vue';
+import {useDesktopStore} from 'stores/desktop';
 
 const quasar = useQuasar();
 
@@ -73,6 +74,7 @@ const localeStore = useLocaleStore();
 const menuStore = useMenuStore();
 const licenseStore = useLicenseStore();
 const roleStore = useRoleStore();
+const desktopStore = useDesktopStore();
 
 function loadColorTheme() {
   api
@@ -238,4 +240,9 @@ onMounted(() => {
   text-decoration: none;
   color: var(--q-primary);
 }
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
 </style>

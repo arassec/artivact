@@ -49,6 +49,15 @@
               v-if="searchResultRef.data.length > 0"
             >
               <q-pagination
+                class="lt-sm"
+                size="2em"
+                v-model="searchResultRef.pageNumber"
+                :max="searchResultRef.totalPages"
+                input
+                @update:model-value="search(searchResultRef.pageNumber - 1)"
+              />
+              <q-pagination
+                class="gt-xs"
                 v-model="searchResultRef.pageNumber"
                 :max="searchResultRef.totalPages"
                 input
@@ -140,14 +149,14 @@
 
 <script setup lang="ts">
 import ArtivactContent from 'components/ArtivactContent.vue';
-import { onMounted, PropType, ref, toRef } from 'vue';
-import { SearchBasedWidgetData } from 'components/widgets/widget-models';
-import { SearchResult } from 'components/models';
-import { api } from 'boot/axios';
-import { useQuasar } from 'quasar';
+import {onMounted, PropType, ref, toRef} from 'vue';
+import {SearchBasedWidgetData} from 'components/widgets/widget-models';
+import {SearchResult} from 'components/models';
+import {api} from 'boot/axios';
+import {useQuasar} from 'quasar';
 import ItemCard from 'components/ItemCard.vue';
 import WidgetTemplate from 'components/widgets/WidgetTemplate.vue';
-import { useWidgetdataStore } from 'stores/widgetdata';
+import {useWidgetdataStore} from 'stores/widgetdata';
 import ArtivactItemSearchInput from 'components/widgets/util/ArtivactItemSearchInput.vue';
 
 const props = defineProps({

@@ -20,8 +20,8 @@
     <url>https://www.arassec.com</url>
 
     <scm>
-        <connection>scm:git:git://github.com/arassec/artivact-vault.git</connection>
-        <developerConnection>scm:git:ssh://github.com:arassec/artivact-vault.git</developerConnection>
+        <connection>scm:git:git://github.com/arassec/artivact.git</connection>
+        <developerConnection>scm:git:ssh://github.com:arassec/artivact.git</developerConnection>
         <url>https://github.com/arassec</url>
     </scm>
 
@@ -154,6 +154,12 @@
                 <groupId>com.fazecast</groupId>
                 <artifactId>jSerialComm</artifactId>
                 <version>2.10.4</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.zeroturnaround</groupId>
+                <artifactId>zt-zip</artifactId>
+                <version>1.15</version>
             </dependency>
 
             <!-- Testing -->

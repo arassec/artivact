@@ -17,11 +17,24 @@ function timer(ms) {
   return new Promise(res => setTimeout(res, ms));
 }
 
+// Can be set during startup as command-line parameter, e.g. --artivact.project.root=C:\test-project
+let projectRoot = app.commandLine.getSwitchValue('artivact.project.root');
+if (projectRoot) {
+  console.log('Project root set by command-line: ' + projectRoot);
+} else {
+  projectRoot = '${user.home}/.avdata'
+}
+
 function startBackend() {
   backendPort = 51232;
   backendChildProcess = require('child_process').spawn('bin/java', [
     '-Dserver.port=' + backendPort,
     '-Dspring.profiles.active=desktop',
+    '-Dartivact.project.root=' + projectRoot,
+    '-Dspring.datasource.url=jdbc:h2:file:' + projectRoot + '/dbdata/artivact;AUTO_SERVER=true',
+    '-Dspring.datasource.username=artivact',
+    '-Dspring.datasource.password=artivact',
+    '-Dspring.datasource.driver-class-name=org.h2.Driver',
     '-jar',
     path.join(
       process.resourcesPath,
@@ -52,6 +65,7 @@ async function waitForBackend() {
     }
   }
 }
+
 // Artivact: ---
 
 function createWindow() {
@@ -60,8 +74,8 @@ function createWindow() {
    */
   mainWindow = new BrowserWindow({
     icon: path.resolve(__dirname, 'icons/icon.png'), // tray icon
-    width: 1024,
-    height: 768,
+    width: 1280,
+    height: 1024,
     useContentSize: true,
     // Artivact: +++
     autoHideMenuBar: true,
@@ -93,10 +107,7 @@ function createWindow() {
 
   waitForBackend().then(() => {
     mainWindow.loadURL(process.env.APP_URL);
-    if (process.env.DEBUGGING) {
-      // if on DEV or Production with debug enabled
-      mainWindow.webContents.openDevTools();
-    } else {
+    if (!process.env.DEBUGGING) {
       // we're on production; no access to devtools pls
       mainWindow.webContents.on('devtools-opened', () => {
         mainWindow.webContents.closeDevTools();

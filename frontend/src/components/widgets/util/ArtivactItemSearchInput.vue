@@ -65,11 +65,11 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, PropType, ref, Ref, toRef } from 'vue';
-import { SearchBasedWidgetData } from 'components/widgets/widget-models';
-import { api } from 'boot/axios';
-import { PropertiesConfiguration, TagsConfiguration } from 'components/models';
-import { useQuasar } from 'quasar';
+import {onMounted, PropType, ref, Ref, toRef} from 'vue';
+import {SearchBasedWidgetData} from 'components/widgets/widget-models';
+import {api} from 'boot/axios';
+import {PropertiesConfiguration, TagsConfiguration} from 'components/models';
+import {useQuasar} from 'quasar';
 
 const props = defineProps({
   widgetData: {

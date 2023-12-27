@@ -203,15 +203,15 @@
 </template>
 
 <script setup lang="ts">
-import { PropType, ref, toRef } from 'vue';
-import { ImageTextWidgetData } from 'components/widgets/widget-models';
+import {PropType, ref, toRef} from 'vue';
+import {ImageTextWidgetData} from 'components/widgets/widget-models';
 import ArtivactContent from 'components/ArtivactContent.vue';
 import WidgetTemplate from 'components/widgets/WidgetTemplate.vue';
-import { QUploader } from 'quasar';
+import {QUploader} from 'quasar';
 import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
-import { useLocaleStore } from 'stores/locale';
+import {useLocaleStore} from 'stores/locale';
 import MarkdownIt from 'markdown-it';
-import { translate } from 'components/utils';
+import {translate} from 'components/utils';
 
 const props = defineProps({
   inEditMode: {

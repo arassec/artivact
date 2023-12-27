@@ -9,10 +9,11 @@ import com.arassec.artivact.backend.service.exception.ArtivactException;
 import com.arassec.artivact.backend.service.model.Roles;
 import com.arassec.artivact.backend.service.model.TranslatableString;
 import com.arassec.artivact.backend.service.model.configuration.TagsConfiguration;
-import com.arassec.artivact.backend.service.model.tag.Tag;
 import com.arassec.artivact.backend.service.model.item.ImageSize;
-import com.arassec.artivact.backend.service.model.item.MediaContent;
 import com.arassec.artivact.backend.service.model.item.Item;
+import com.arassec.artivact.backend.service.model.item.MediaContent;
+import com.arassec.artivact.backend.service.model.item.MediaCreationContent;
+import com.arassec.artivact.backend.service.model.tag.Tag;
 import com.arassec.artivact.backend.service.util.ProjectRootProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
@@ -45,7 +46,7 @@ public class ItemService extends BaseFileService {
     @Getter
     private final ObjectMapper objectMapper;
 
-    private final Path itemsFileDir;
+    private final Path itemsDir;
 
     public ItemService(ItemEntityRepository itemEntityRepository,
                        ConfigurationService configurationService,
@@ -56,12 +57,12 @@ public class ItemService extends BaseFileService {
         this.configurationService = configurationService;
         this.searchService = searchService;
         this.objectMapper = objectMapper;
-        this.itemsFileDir = projectRootProvider.getProjectRoot().resolve(ITEMS_FILE_DIR);
-        if (!Files.exists(itemsFileDir)) {
+        this.itemsDir = projectRootProvider.getProjectRoot().resolve(ITEMS_DIR);
+        if (!Files.exists(itemsDir)) {
             try {
-                Files.createDirectories(itemsFileDir);
+                Files.createDirectories(itemsDir);
             } catch (IOException e) {
-                throw new IllegalStateException("Could not create vault items directory!", e);
+                throw new IllegalStateException("Could not create items directory!", e);
             }
         }
     }
@@ -79,6 +80,7 @@ public class ItemService extends BaseFileService {
         item.setTitle(new TranslatableString());
         item.setDescription(new TranslatableString());
         item.setMediaContent(new MediaContent());
+        item.setMediaCreationContent(new MediaCreationContent());
         item.setTags(defaultTags);
 
         return item;
@@ -86,11 +88,11 @@ public class ItemService extends BaseFileService {
 
     @RestrictResult
     @TranslateResult
-    public Item load(String vaultItemId) {
-        Optional<ItemEntity> vaultItemEntityOptional = itemEntityRepository.findById(vaultItemId);
-        if (vaultItemEntityOptional.isPresent()) {
+    public Item load(String itemId) {
+        Optional<ItemEntity> itemEntityOptional = itemEntityRepository.findById(itemId);
+        if (itemEntityOptional.isPresent()) {
             TagsConfiguration tagsConfiguration = configurationService.loadTagsConfiguration();
-            ItemEntity itemEntity = vaultItemEntityOptional.get();
+            ItemEntity itemEntity = itemEntityOptional.get();
             Item item = fromJson(itemEntity.getContentJson(), Item.class);
             item.setVersion(itemEntity.getVersion());
             item.setTags(item.getTags().stream()
@@ -101,9 +103,23 @@ public class ItemService extends BaseFileService {
                     )
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList()));
+
+            if (item.getMediaContent() == null) {
+                item.setMediaContent(new MediaContent());
+            }
+            if (item.getMediaCreationContent() == null) {
+                item.setMediaCreationContent(new MediaCreationContent());
+            }
+
             return item;
         }
+
         return null;
+    }
+
+    @TranslateResult
+    public Item loadUnrestricted(String itemId) {
+        return load(itemId);
     }
 
     @GenerateIds
@@ -114,14 +130,11 @@ public class ItemService extends BaseFileService {
         itemEntity.setVersion(item.getVersion());
         itemEntity.setContentJson(toJson(item));
 
-        List<String> imagesInVaultItem = item.getMediaContent().getImages();
-        List<String> imagesToDelete = getFiles(getDirFromId(itemsFileDir, item.getId()), IMAGES_DIR);
-        imagesToDelete.removeAll(imagesInVaultItem);
-        imagesToDelete.forEach(imageToDelete -> {
+        getDanglingImages(item).forEach(imageToDelete -> {
             try {
-                Files.deleteIfExists(getSubdirFilePath(itemsFileDir, item.getId(), IMAGES_DIR).resolve(imageToDelete));
+                Files.deleteIfExists(getSubdirFilePath(itemsDir, item.getId(), IMAGES_DIR).resolve(imageToDelete));
                 for (ImageSize imageSize : ImageSize.values()) {
-                    Files.deleteIfExists(getSubdirFilePath(itemsFileDir, item.getId(), IMAGES_DIR)
+                    Files.deleteIfExists(getSubdirFilePath(itemsDir, item.getId(), IMAGES_DIR)
                             .resolve(imageSize.name() + "-" + imageToDelete));
                 }
             } catch (IOException e) {
@@ -129,12 +142,13 @@ public class ItemService extends BaseFileService {
             }
         });
 
-        List<String> modelsInVaultItem = item.getMediaContent().getModels();
-        List<String> modelsToDelete = getFiles(getDirFromId(itemsFileDir, item.getId()), MODELS_DIR);
-        modelsToDelete.removeAll(modelsInVaultItem);
+        List<String> modelsInItem = item.getMediaContent().getModels();
+
+        List<String> modelsToDelete = getFiles(getDirFromId(itemsDir, item.getId()), MODELS_DIR);
+        modelsToDelete.removeAll(modelsInItem);
         modelsToDelete.forEach(imageToDelete -> {
             try {
-                Files.deleteIfExists(getSubdirFilePath(itemsFileDir, item.getId(), MODELS_DIR).resolve(imageToDelete));
+                Files.deleteIfExists(getSubdirFilePath(itemsDir, item.getId(), MODELS_DIR).resolve(imageToDelete));
             } catch (IOException e) {
                 log.error("Could not delete obsolete model from filesystem!", e);
             }
@@ -149,39 +163,49 @@ public class ItemService extends BaseFileService {
         return item;
     }
 
-    public void delete(String vaultItemId) {
-        itemEntityRepository.deleteById(vaultItemId);
-        deleteDirAndEmptyParents(getDirFromId(itemsFileDir, vaultItemId));
+    public List<String> getDanglingImages(Item item) {
+        List<String> imagesInItem = new LinkedList<>(item.getMediaContent().getImages());
+        item.getMediaCreationContent().getImageSets().forEach(creationImageSet -> imagesInItem.addAll(creationImageSet.getFiles()));
+
+        List<String> allImagesInFolder = getFiles(getDirFromId(itemsDir, item.getId()), IMAGES_DIR);
+        allImagesInFolder.removeAll(imagesInItem);
+
+        return allImagesInFolder;
     }
 
-    public FileSystemResource loadImage(String vaultItemId, String fileName, ImageSize targetSize) {
-        return loadImage(itemsFileDir, vaultItemId, fileName, targetSize, IMAGES_DIR);
+    public void delete(String itemId) {
+        itemEntityRepository.deleteById(itemId);
+        deleteDirAndEmptyParents(getDirFromId(itemsDir, itemId));
+    }
+
+    public FileSystemResource loadImage(String itemId, String fileName, ImageSize targetSize) {
+        return loadImage(itemsDir, itemId, fileName, targetSize, IMAGES_DIR);
     }
 
 
-    public FileSystemResource loadModel(String vaultItemId, String fileName) {
-        return new FileSystemResource(itemsFileDir
-                .resolve(vaultItemId.substring(0, 3))
-                .resolve(vaultItemId.substring(3, 6))
-                .resolve(vaultItemId)
+    public FileSystemResource loadModel(String itemId, String fileName) {
+        return new FileSystemResource(itemsDir
+                .resolve(itemId.substring(0, 3))
+                .resolve(itemId.substring(3, 6))
+                .resolve(itemId)
                 .resolve(MODELS_DIR)
                 .resolve(fileName));
     }
 
-    public List<String> getFilesForDownload(String vaultItemId) {
+    public List<String> getFilesForDownload(String itemId) {
         List<String> result = new LinkedList<>();
 
-        Item item = load(vaultItemId);
+        Item item = load(itemId);
 
         if (item == null) {
-            throw new IllegalArgumentException("No item with ID " + vaultItemId + " found!");
+            throw new IllegalArgumentException("No item with ID " + itemId + " found!");
         }
 
         result.addAll(item.getMediaContent().getImages().stream()
-                .map(image -> itemsFileDir
-                        .resolve(vaultItemId.substring(0, 3))
-                        .resolve(vaultItemId.substring(3, 6))
-                        .resolve(vaultItemId)
+                .map(image -> itemsDir
+                        .resolve(itemId.substring(0, 3))
+                        .resolve(itemId.substring(3, 6))
+                        .resolve(itemId)
                         .resolve(IMAGES_DIR)
                         .resolve(image)
                         .toAbsolutePath())
@@ -189,10 +213,10 @@ public class ItemService extends BaseFileService {
                 .toList());
 
         result.addAll(item.getMediaContent().getModels().stream()
-                .map(model -> itemsFileDir
-                        .resolve(vaultItemId.substring(0, 3))
-                        .resolve(vaultItemId.substring(3, 6))
-                        .resolve(vaultItemId)
+                .map(model -> itemsDir
+                        .resolve(itemId.substring(0, 3))
+                        .resolve(itemId.substring(3, 6))
+                        .resolve(itemId)
                         .resolve(MODELS_DIR)
                         .resolve(model)
                         .toAbsolutePath())
@@ -203,47 +227,55 @@ public class ItemService extends BaseFileService {
     }
 
     /**
-     * Has to be synchronized because file-upload from the vault frontend is multi-threaded which leads to concurrent
-     * modification exceptions if not synchronized!
-     *
-     * @param vaultItemId ID of the vault item.
-     * @param file        The image file to save.
+     * @param itemId ID of the vault item.
+     * @param file   The image file to save.
      */
-    public void addImage(String vaultItemId, MultipartFile file) {
-        Item item = load(vaultItemId);
+    public void addImage(String itemId, MultipartFile file) {
+        Item item = load(itemId);
 
         if (item == null) {
-            throw new IllegalArgumentException("No item with ID " + vaultItemId + " found!");
+            throw new IllegalArgumentException("No item with ID " + itemId + " found!");
         }
 
         item.getMediaContent().getImages().add(
-                saveFile(vaultItemId, file, IMAGES_DIR, null)
+                saveFile(itemId, file, IMAGES_DIR, null)
         );
         save(item);
+    }
+
+    public void saveImage(String itemId, MultipartFile file) {
+        saveFile(itemId, file, IMAGES_DIR, null);
     }
 
     /**
-     * Has to be synchronized because file-upload from the vault frontend is multi-threaded which leads to concurrent
-     * modification exceptions if not synchronized!
-     *
-     * @param vaultItemId ID of the vault item.
-     * @param file        The model file to save.
+     * @param itemId ID of the vault item.
+     * @param file   The model file to save.
      */
-    public void addModel(String vaultItemId, MultipartFile file) {
-        Item item = load(vaultItemId);
+    public void addModel(String itemId, MultipartFile file) {
+        Item item = load(itemId);
 
         if (item == null) {
-            throw new IllegalArgumentException("No item with ID " + vaultItemId + " found!");
+            throw new IllegalArgumentException("No item with ID " + itemId + " found!");
         }
 
         item.getMediaContent().getModels().add(
-                saveFile(vaultItemId, file, MODELS_DIR, "glb")
+                saveFile(itemId, file, MODELS_DIR, "glb")
         );
         save(item);
     }
 
-    private String saveFile(String vaultItemId, MultipartFile file, String subDir, String requiredFileExtension) {
-        Path targetDir = getSubdirFilePath(itemsFileDir, vaultItemId, subDir);
+    public void copyFile(String itemId, String filename, String subDir, Path targetDir) {
+        Path sourceDir = getSubdirFilePath(itemsDir, itemId, subDir);
+        try {
+            Files.copy(sourceDir.resolve(filename).toAbsolutePath(), targetDir.resolve(filename).toAbsolutePath(),
+                    StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new ArtivactException("Could not copy file!", e);
+        }
+    }
+
+    private String saveFile(String itemId, MultipartFile file, String subDir, String requiredFileExtension) {
+        Path targetDir = getSubdirFilePath(itemsDir, itemId, subDir);
 
         int nextAssetNumber = getNextAssetNumber(targetDir);
         String fileExtension = getExtension(file.getOriginalFilename()).orElseThrow();
@@ -259,7 +291,7 @@ public class ItemService extends BaseFileService {
         try {
             Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            throw new ArtivactException("Could not save model!", e);
+            throw new ArtivactException("Could not save file!", e);
         }
 
         return assetName;

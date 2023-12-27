@@ -5,10 +5,7 @@ import com.arassec.artivact.backend.service.ConfigurationService;
 import com.arassec.artivact.backend.service.exception.ArtivactException;
 import com.arassec.artivact.backend.service.model.Roles;
 import com.arassec.artivact.backend.service.model.appearance.ColorTheme;
-import com.arassec.artivact.backend.service.model.configuration.AppearanceConfiguration;
-import com.arassec.artivact.backend.service.model.configuration.LicenseConfiguration;
-import com.arassec.artivact.backend.service.model.configuration.PropertiesConfiguration;
-import com.arassec.artivact.backend.service.model.configuration.TagsConfiguration;
+import com.arassec.artivact.backend.service.model.configuration.*;
 import com.arassec.artivact.backend.service.model.menu.Menu;
 import com.arassec.artivact.backend.service.model.property.PropertyCategory;
 import lombok.RequiredArgsConstructor;
@@ -98,6 +95,11 @@ public class ConfigurationController {
         return configurationService.loadAppearanceConfiguration().getColorTheme();
     }
 
+    @GetMapping(value = "/public/desktop-mode")
+    public boolean getDesktopMode() {
+        return configurationService.isDesktopMode();
+    }
+
     @GetMapping(value = "/public/favicon/{size}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public HttpEntity<byte[]> getFavicon(@PathVariable Integer size) {
         AppearanceConfiguration appearanceConfiguration = configurationService.loadAppearanceConfiguration();
@@ -177,6 +179,16 @@ public class ConfigurationController {
     @PostMapping(value = "/tags")
     public void saveTags(@RequestBody TagsConfiguration tagsConfiguration) {
         configurationService.saveTagsConfiguration(tagsConfiguration);
+    }
+
+    @GetMapping(value = "/adapter")
+    public AdapterConfiguration getAdapterConfig() {
+        return configurationService.loadAdapterConfiguration();
+    }
+
+    @PostMapping(value = "/adapter")
+    public void saveAdapterConfiguration(@RequestBody AdapterConfiguration adapterConfiguration) {
+        configurationService.saveAdapterConfiguration(adapterConfiguration);
     }
 
     @PostMapping("/menu")

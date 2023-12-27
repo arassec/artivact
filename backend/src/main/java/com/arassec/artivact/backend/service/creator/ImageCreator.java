@@ -1,5 +1,6 @@
 package com.arassec.artivact.backend.service.creator;
 
+import com.arassec.artivact.backend.api.model.Asset;
 import com.arassec.artivact.backend.service.ConfigurationService;
 import com.arassec.artivact.backend.service.creator.adapter.Adapter;
 import com.arassec.artivact.backend.service.creator.adapter.image.background.BackgroundRemovalAdapter;
@@ -11,21 +12,18 @@ import com.arassec.artivact.backend.service.creator.adapter.image.turntable.Turn
 import com.arassec.artivact.backend.service.exception.ArtivactException;
 import com.arassec.artivact.backend.service.model.ProjectDir;
 import com.arassec.artivact.backend.service.model.configuration.AdapterConfiguration;
-import com.arassec.artivact.backend.service.model.item.asset.Image;
-import com.arassec.artivact.backend.service.model.item.asset.ImageSet;
+import com.arassec.artivact.backend.service.model.item.CreationImageSet;
 import com.arassec.artivact.backend.service.util.DirectoryWatcher;
-import com.arassec.artivact.backend.service.util.FileUtil;
 import com.arassec.artivact.backend.service.util.ProgressMonitor;
 import com.arassec.artivact.backend.service.util.ProjectRootProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -46,19 +44,15 @@ public class ImageCreator extends BaseCreator {
     private final ConfigurationService configurationService;
 
     /**
-     * Provides the project's root directory.
-     */
-    private final ProjectRootProvider projectRootProvider;
-
-    /**
-     * The file util.
-     */
-    private final FileUtil fileUtil;
-
-    /**
      * Message source for I18N.
      */
     private final MessageSource messageSource;
+
+    /**
+     * Provides the project's root directory.
+     */
+    @Getter
+    private final ProjectRootProvider projectRootProvider;
 
     /**
      * Watches for new images in the filesystem during photo capturing.
@@ -86,37 +80,35 @@ public class ImageCreator extends BaseCreator {
      * @param turnTableDelay    Delay of the turntable communication.
      * @param removeBackgrounds Automatically removes backgrounds from newly captured images when set to {@code true}.
      * @param progressMonitor   The progress monitor which is updated during processing.
-     * @return The {@link ImageSet} containing the images.
+     * @return The {@link CreationImageSet} containing the images.
      */
-    public List<ImageSet> capturePhotos(String itemId, int numPhotos, boolean useTurnTable,
-                                  int turnTableDelay, boolean removeBackgrounds,
-                                  ProgressMonitor progressMonitor) {
+    public List<CreationImageSet> capturePhotos(String itemId, int numPhotos, boolean useTurnTable,
+                                                int turnTableDelay, boolean removeBackgrounds,
+                                                ProgressMonitor progressMonitor) {
 
-        List<ImageSet> result = new LinkedList<>();
-        ImageSet captureResult = new ImageSet();
+        List<CreationImageSet> result = new LinkedList<>();
+        CreationImageSet captureResult = new CreationImageSet();
 
         Path targetDir = getImagesDir(itemId, true);
-
-        progressMonitor.setProgressPrefix(messageSource.getMessage("image-service.capture-photos.progress.prefix", null, Locale.getDefault()));
 
         AdapterConfiguration adapterConfiguration = configurationService.loadAdapterConfiguration();
 
         // Initialize adapters:
-        log.debug("Initializing turntable adapter for photo capturing.");
         TurntableAdapter turntableAdapter = getTurntableAdapter(adapterConfiguration);
+        log.debug("Initializing turntable adapter for photo capturing: {}", turntableAdapter.getSupportedImplementation());
         turntableAdapter.initialize(progressMonitor, TurntableInitParams.builder()
                 .turntableDelay(turnTableDelay)
                 .build());
 
-        log.debug("Initializing camera adapter for photo capturing.");
         CameraAdapter cameraAdapter = getCameraAdapter(adapterConfiguration);
+        log.debug("Initializing camera adapter for photo capturing: {}", cameraAdapter.getSupportedImplementation());
         cameraAdapter.initialize(progressMonitor, CameraInitParams.builder()
                 .adapterConfiguration(adapterConfiguration)
                 .targetDir(targetDir)
                 .build());
 
-        log.debug("Initializing background-removal adapter for photo capturing.");
         BackgroundRemovalAdapter backgroundRemovalAdapter = getBackgroundRemovalAdapter(adapterConfiguration);
+        log.debug("Initializing background-removal adapter for photo capturing: {}", backgroundRemovalAdapter.getSupportedImplementation());
         backgroundRemovalAdapter.initialize(progressMonitor, BackgroundRemovalInitParams.builder()
                 .adapterConfiguration(adapterConfiguration)
                 .targetDir(getImagesDir(itemId, true))
@@ -129,13 +121,12 @@ public class ImageCreator extends BaseCreator {
         directoryWatcher.startWatching(targetDir, numPhotos,
                 newImage -> processNewImage(removeBackgrounds, backgroundRemovalAdapter, newImage, capturedImages));
 
+        String progressPrefix = messageSource.getMessage("image-creator.capture-photos.progress.prefix", null, Locale.getDefault());
+
         // Start capturing:
         for (var i = 0; i < numPhotos; i++) {
             log.debug("Capturing image: {}", i);
-            if (progressMonitor.isCancelled()) {
-                return result;
-            }
-            progressMonitor.setProgress("(" + (i + 1) + "/" + numPhotos + ")");
+            progressMonitor.updateProgress(progressPrefix + " (" + (i + 1) + "/" + numPhotos + ")");
             String filename = getAssetName(getNextAssetNumber(targetDir), null);
             cameraAdapter.captureImage(filename);
             if (useTurnTable) {
@@ -155,8 +146,8 @@ public class ImageCreator extends BaseCreator {
         cameraAdapter.teardown();
         Optional<List<Path>> imagesWithoutBackground = backgroundRemovalAdapter.teardown();
         if (removeBackgrounds && imagesWithoutBackground.isPresent()) {
-            ImageSet bgRemovalResult = new ImageSet();
-            addCapturedImagesToImageSet(itemId, capturedImages, progressMonitor, bgRemovalResult);
+            CreationImageSet bgRemovalResult = new CreationImageSet();
+            addCapturedImagesToImageSet(itemId, imagesWithoutBackground.get(), progressMonitor, bgRemovalResult);
             result.add(bgRemovalResult);
         }
 
@@ -166,12 +157,12 @@ public class ImageCreator extends BaseCreator {
     /**
      * Removes backgrounds from all images in the image set with the given index.
      *
-     * @param itemId          The ID of the item to which the images belong.
-     * @param imageSet        The image-set to process images from.
-     * @param progressMonitor The progress monitor which is updated during processing.
+     * @param itemId           The ID of the item to which the images belong.
+     * @param creationImageSet The image-set to process images from.
+     * @param progressMonitor  The progress monitor which is updated during processing.
      * @return List of paths of newly created images without background.
      */
-    public List<Path> removeBackgrounds(String itemId, ImageSet imageSet, ProgressMonitor progressMonitor) {
+    public List<Path> removeBackgrounds(String itemId, CreationImageSet creationImageSet, ProgressMonitor progressMonitor) {
         AdapterConfiguration adapterConfiguration = configurationService.loadAdapterConfiguration();
         BackgroundRemovalAdapter backgroundRemovalAdapter = getBackgroundRemovalAdapter(adapterConfiguration);
 
@@ -180,113 +171,42 @@ public class ImageCreator extends BaseCreator {
                 .targetDir(getImagesDir(itemId, true))
                 .build());
 
-        backgroundRemovalAdapter.removeBackgrounds(imageSet);
+        backgroundRemovalAdapter.removeBackgrounds(creationImageSet.getFiles().stream()
+                .map(fileName -> getImagesDir(itemId, true).resolve(fileName))
+                .toList());
 
         return backgroundRemovalAdapter.teardown().orElseGet(List::of);
     }
 
-    /**
-     * Creates a new image set for the currently active item from external added images.
-     *
-     * @param images            List of image files to add to the set.
-     * @param progressMonitor   The progress monitor which is updated during processing.
-     * @param backgroundRemoved Set to {@code true} if the background of the images is already removed.
-     * @param modelInput        Set to {@code true} if the images should be used for model creation.
-     * @return An {@link ImageSet} with the provided images.
-     */
-    public Optional<ImageSet> createImageSet(String itemId, List<File> images, ProgressMonitor progressMonitor, Boolean backgroundRemoved, boolean modelInput) {
-        if (images != null && !images.isEmpty()) {
-            List<Image> artivactImages = new LinkedList<>();
-            var index = new AtomicInteger(0);
-            images.forEach(image -> {
-                log.debug("Creating new image: {}", image.getPath());
-
-                int nextAssetNumber = getNextAssetNumber(getImagesDir(itemId, true));
-                String[] assetNameParts = image.getName().split("\\.");
-                var extension = "";
-                if (assetNameParts.length > 1) {
-                    extension = assetNameParts[assetNameParts.length - 1];
-                }
-
-                var targetFile = getImagePath(itemId, false, nextAssetNumber, extension);
-                var targetFileWithProjectRoot = getImagePath(itemId, true, nextAssetNumber, extension);
-
-                try {
-                    Files.copy(Path.of(image.getPath()), targetFileWithProjectRoot);
-                    log.debug("Image copied to target dir: {}", targetFileWithProjectRoot);
-                } catch (IOException e) {
-                    throw new ArtivactException("Could not copy asset!", e);
-                }
-
-                var asset = Image.builder()
-                        .number(nextAssetNumber)
-                        .path(formatPath(targetFile))
-                        .build();
-
-                artivactImages.add(asset);
-                progressMonitor.updateProgress("(" + index.addAndGet(1) + "/" + images.size() + ")");
-            });
-
-            return Optional.of(new ImageSet(modelInput, backgroundRemoved, artivactImages));
-        }
-
-        return Optional.empty();
+    public Path getTransferSourcePath(String itemId, Asset image) {
+        return getImagesDir(itemId, true).resolve(image.getFileName());
     }
 
-    /**
-     * Deletes the provided image from any image set of the currently active item and the filesystem.
-     *
-     * @param image The image to delete.
-     */
-    public void deleteImage(Image image) {
-        try {
-            Files.deleteIfExists(projectRootProvider.getProjectRoot().resolve(Path.of(image.getPath())));
-        } catch (IOException e) {
-            throw new ArtivactException("Could not delete Images!", e);
-        }
-    }
-
-    /**
-     * Deletes the provided image set from the currently active item.
-     *
-     * @param imageSet The image set to delete.
-     */
-    public void deleteImageSetFiles(ImageSet imageSet) {
-        List<Image> images = new LinkedList<>(imageSet.getImages());
-        images.forEach(this::deleteImage);
-    }
-
-    /**
-     * Returns the images directory of the currently active item.
-     *
-     * @param itemId             The ID of the item to get the images directory for.
-     * @param includeProjectRoot Set to {@code true} to append the images directory path to the project's root directory.
-     * @return The path to the currently active item's images directory.
-     */
-    public Path getImagesDir(String itemId, boolean includeProjectRoot) {
-        if (includeProjectRoot) {
-            return getAssetDir(itemId, projectRootProvider.getProjectRoot(), ProjectDir.IMAGES_DIR);
-        }
-        return getAssetDir(itemId, null, ProjectDir.IMAGES_DIR);
+    public Path getTransferTargetPath(String itemId, Asset image) {
+        Path imagesDir = getImagesDir(itemId, true);
+        int nextAssetNumber = getNextAssetNumber(imagesDir);
+        String extension = FilenameUtils.getExtension(image.getFileName());
+        return projectRootProvider.getProjectRoot().resolve(getImagePath(itemId, nextAssetNumber, extension));
     }
 
     /**
      * Adds internally captured images to an existing image set of the currently active item.
      *
-     * @param images          The images to add to the set.
-     * @param progressMonitor The progress monitor which is updated during processing.
-     * @param targetImageSet  The target image set to add the images to.
+     * @param images                 The images to add to the set.
+     * @param progressMonitor        The progress monitor which is updated during processing.
+     * @param targetCreationImageSet The target image set to add the images to.
      */
-    private void addCapturedImagesToImageSet(String itemId, List<Path> images, ProgressMonitor progressMonitor, ImageSet targetImageSet) {
-        if (images != null && !images.isEmpty() && targetImageSet != null) {
-            List<Image> artivactImages = new LinkedList<>();
+    private void addCapturedImagesToImageSet(String itemId, List<Path> images, ProgressMonitor progressMonitor, CreationImageSet targetCreationImageSet) {
+        if (images != null && !images.isEmpty() && targetCreationImageSet != null) {
+            String progressPrefix = messageSource.getMessage("image-creator.add-images-to-set.progress.prefix", null, Locale.getDefault());
+
+            List<String> fileNames = new LinkedList<>();
             var index = new AtomicInteger(0);
             images.forEach(image -> {
-                var addedImage = addImage(itemId, image);
-                artivactImages.add(addedImage);
-                progressMonitor.updateProgress("(" + index.addAndGet(1) + "/" + images.size() + ")");
+                fileNames.add(addImage(itemId, image));
+                progressMonitor.updateProgress(progressPrefix + " (" + index.addAndGet(1) + "/" + images.size() + ")");
             });
-            targetImageSet.getImages().addAll(artivactImages);
+            targetCreationImageSet.getFiles().addAll(fileNames);
         }
     }
 
@@ -325,21 +245,16 @@ public class ImageCreator extends BaseCreator {
     /**
      * Returns the path to an image with the given asset number.
      *
-     * @param itemId             ID of the item to get the image path from.
-     * @param includeProjectRoot Set to {@code true} to append the image path to the project's root directory.
-     * @param assetNumber        The image's asset number.
-     * @param extension          The image's file extension.
+     * @param itemId      ID of the item to get the image path from.
+     * @param assetNumber The image's asset number.
+     * @param extension   The image's file extension.
      * @return Path to the image file.
      */
-    private Path getImagePath(String itemId, boolean includeProjectRoot, int assetNumber, String extension) {
+    private Path getImagePath(String itemId, int assetNumber, String extension) {
         var firstSubDir = getSubDir(itemId, 0);
         var secondSubDir = getSubDir(itemId, 1);
         var imageName = getAssetName(assetNumber, extension);
-        Path resultPath = Path.of(ProjectDir.ITEMS_DIR, firstSubDir, secondSubDir, itemId, ProjectDir.IMAGES_DIR, imageName);
-        if (includeProjectRoot) {
-            return projectRootProvider.getProjectRoot().resolve(resultPath);
-        }
-        return resultPath;
+        return Path.of(ProjectDir.ITEMS_DIR, firstSubDir, secondSubDir, itemId, ProjectDir.IMAGES_DIR, imageName);
     }
 
     /**
@@ -347,9 +262,9 @@ public class ImageCreator extends BaseCreator {
      *
      * @param itemId The ID of the item to add the image to.
      * @param image  The image to add.
-     * @return The newly created {@link Image}.
+     * @return The newly created image's filename.
      */
-    private Image addImage(String itemId, Path image) {
+    private String addImage(String itemId, Path image) {
         log.debug("Adding new image: {}", image);
 
         String[] assetNameParts = image.getFileName().toString().split("\\.");
@@ -359,12 +274,9 @@ public class ImageCreator extends BaseCreator {
             extension = assetNameParts[assetNameParts.length - 1];
         }
 
-        var targetFile = getImagePath(itemId, false, assetNumber, extension);
+        var targetFile = getImagePath(itemId, assetNumber, extension);
 
-        return Image.builder()
-                .number(assetNumber)
-                .path(formatPath(targetFile))
-                .build();
+        return targetFile.getFileName().toString();
     }
 
 }

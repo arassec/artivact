@@ -2,7 +2,7 @@ package com.arassec.artivact.backend.service.creator.adapter.model.editor;
 
 import com.arassec.artivact.backend.service.creator.adapter.AdapterImplementation;
 import com.arassec.artivact.backend.service.model.configuration.AdapterConfiguration;
-import com.arassec.artivact.backend.service.model.item.asset.Model;
+import com.arassec.artivact.backend.service.model.item.CreationModelSet;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,8 +26,8 @@ public class FallbackModelEditorAdapter extends BaseModelEditorAdapter {
      * {@inheritDoc}
      */
     @Override
-    public void open(Model model) {
-        log.info("Fallback model editor called for model: {}", model);
+    public void open(CreationModelSet creationModelSet) {
+        log.info("Fallback model editor called for model: {}", creationModelSet.getDirectory());
     }
 
     /**

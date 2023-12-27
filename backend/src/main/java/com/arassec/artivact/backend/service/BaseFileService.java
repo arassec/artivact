@@ -20,22 +20,21 @@ import java.util.stream.Stream;
 
 public abstract class BaseFileService extends BaseService {
 
-    public static final String ITEMS_FILE_DIR = "items";
+    public static final String ITEMS_DIR = "items";
+
+    public static final String EXHIBITIONS_DIR = "exhibitions";
 
     public static final String IMAGES_DIR = "images";
 
     public static final String MODELS_DIR = "models";
 
-    /**
-     * The directory containing preview images of item photos.
-     */
-    protected static final String IMAGES_PREVIEW_DIR = "preview";
-
     @SuppressWarnings("java:S6204") // Result list needs to be mutable!
     public List<String> getFiles(Path path, String subDir) {
         if (Files.exists(path.resolve(subDir))) {
             try (Stream<Path> files = Files.list(path.resolve(subDir))) {
-                return files.map(filePath -> filePath.getFileName().toString())
+                return files
+                        .filter(filePath -> !Files.isDirectory(filePath))
+                        .map(filePath -> filePath.getFileName().toString())
                         .filter(file -> {
                             for (ImageSize imageSize : ImageSize.values()) {
                                 if (file.startsWith(imageSize.name())) {

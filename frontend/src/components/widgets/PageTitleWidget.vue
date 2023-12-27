@@ -213,14 +213,14 @@
 </template>
 
 <script setup lang="ts">
-import { PropType, toRef } from 'vue';
-import { PageTitleWidgetData } from 'components/widgets/widget-models';
+import {PropType, toRef} from 'vue';
+import {PageTitleWidgetData} from 'components/widgets/widget-models';
 import ArtivactContent from 'components/ArtivactContent.vue';
 import WidgetTemplate from 'components/widgets/WidgetTemplate.vue';
-import { QUploader } from 'quasar';
+import {QUploader} from 'quasar';
 import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
-import { useLocaleStore } from 'stores/locale';
-import { translate } from '../utils';
+import {useLocaleStore} from 'stores/locale';
+import {translate} from '../utils';
 
 const props = defineProps({
   inEditMode: {

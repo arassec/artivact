@@ -1,8 +1,8 @@
 package com.arassec.artivact.backend.service.creator.adapter.model.creator;
 
 import com.arassec.artivact.backend.service.creator.adapter.Adapter;
-import com.arassec.artivact.backend.service.model.item.asset.ImageSet;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,11 +28,11 @@ public interface ModelCreatorAdapter extends Adapter<ModelCreatorInitParams, Voi
     /**
      * Creates a 3D model using the adapter's underlying photogrammetry tool.
      *
-     * @param imageSets The image-sets to use as model input.
+     * @param images The image-sets to use as model input.
      * @param pipeline  The pipeline to use for model creation.
      * @return The result of the model creation containing the path to the created files.
      */
-    ModelCreationResult createModel(List<ImageSet> imageSets, String pipeline);
+    ModelCreationResult createModel(List<Path> images, String pipeline);
 
     /**
      * Cancels the model creation if supported by the adapter.

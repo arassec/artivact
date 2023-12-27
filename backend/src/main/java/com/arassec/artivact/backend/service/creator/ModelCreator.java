@@ -1,5 +1,6 @@
 package com.arassec.artivact.backend.service.creator;
 
+import com.arassec.artivact.backend.api.model.Asset;
 import com.arassec.artivact.backend.service.ConfigurationService;
 import com.arassec.artivact.backend.service.creator.adapter.Adapter;
 import com.arassec.artivact.backend.service.creator.adapter.model.creator.ModelCreationResult;
@@ -10,8 +11,8 @@ import com.arassec.artivact.backend.service.creator.adapter.model.editor.ModelEd
 import com.arassec.artivact.backend.service.exception.ArtivactException;
 import com.arassec.artivact.backend.service.model.ProjectDir;
 import com.arassec.artivact.backend.service.model.configuration.AdapterConfiguration;
-import com.arassec.artivact.backend.service.model.item.asset.ImageSet;
-import com.arassec.artivact.backend.service.model.item.asset.Model;
+import com.arassec.artivact.backend.service.model.item.CreationImageSet;
+import com.arassec.artivact.backend.service.model.item.CreationModelSet;
 import com.arassec.artivact.backend.service.util.FileUtil;
 import com.arassec.artivact.backend.service.util.ProgressMonitor;
 import com.arassec.artivact.backend.service.util.ProjectRootProvider;
@@ -19,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -26,6 +28,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -46,6 +49,7 @@ public class ModelCreator extends BaseCreator {
     /**
      * Provides the project's root directory.
      */
+    @Getter
     private final ProjectRootProvider projectRootProvider;
 
     /**
@@ -68,12 +72,12 @@ public class ModelCreator extends BaseCreator {
     /**
      * Creates a 3D model using the currently configured model-creator adapter.
      *
-     * @param itemId          The ID of the item to create a model for.
-     * @param imageSets       The image-sets to use as input for model creation.
-     * @param pipeline        The pipeline to use.
-     * @param progressMonitor The progress monitor which will be updated during model creation.
+     * @param itemId            The ID of the item to create a model for.
+     * @param creationImageSets The image-sets to use as input for model creation.
+     * @param pipeline          The pipeline to use.
+     * @param progressMonitor   The progress monitor which will be updated during model creation.
      */
-    public Optional<Model> createModel(String itemId, List<ImageSet> imageSets, String pipeline, ProgressMonitor progressMonitor) {
+    public Optional<CreationModelSet> createModel(String itemId, List<CreationImageSet> creationImageSets, String pipeline, ProgressMonitor progressMonitor) {
         AdapterConfiguration adapterConfiguration = configurationService.loadAdapterConfiguration();
         ModelCreatorAdapter modelCreatorAdapter = getModelCreatorAdapter(adapterConfiguration);
 
@@ -81,7 +85,15 @@ public class ModelCreator extends BaseCreator {
                 .adapterConfiguration(adapterConfiguration)
                 .tempDir(projectRootProvider.getProjectRoot().resolve(ProjectDir.TEMP_DIR))
                 .build());
-        ModelCreationResult result = modelCreatorAdapter.createModel(imageSets, pipeline);
+
+        Path imagesDir = getImagesDir(itemId, true);
+
+        List<Path> images = new LinkedList<>();
+        creationImageSets.forEach(creationImageSet -> images.addAll(creationImageSet.getFiles().stream()
+                .map(imagesDir::resolve)
+                .toList()));
+
+        ModelCreationResult result = modelCreatorAdapter.createModel(images, pipeline);
         modelCreatorAdapter.teardown();
 
         Path sourceDir = result.resultDir();
@@ -128,13 +140,10 @@ public class ModelCreator extends BaseCreator {
             throw new ArtivactException("Could not copy asset directory!", e);
         }
 
-        Model model = Model.builder()
-                .number(nextAssetNumber)
-                .path(formatPath(targetDir))
+        return Optional.of(CreationModelSet.builder()
+                .directory(formatPath(targetDir))
                 .comment(result.comment())
-                .build();
-
-        return Optional.of(model);
+                .build());
     }
 
     /**
@@ -179,16 +188,17 @@ public class ModelCreator extends BaseCreator {
      * Opens the selected model in the currently configured model-editor.
      *
      * @param progressMonitor The progress monitor to show status updates to the user.
-     * @param model           The model to open.
+     * @param creationModel   The model to open.
      */
-    public void openModel(ProgressMonitor progressMonitor, Model model) {
+    public void editModel(ProgressMonitor progressMonitor, CreationModelSet creationModel) {
         AdapterConfiguration adapterConfiguration = configurationService.loadAdapterConfiguration();
         ModelEditorAdapter modelEditorAdapter = getModelEditorAdapter(adapterConfiguration);
 
         modelEditorAdapter.initialize(progressMonitor, ModelEditorInitParams.builder()
+                .projectRoot(projectRootProvider.getProjectRoot())
                 .adapterConfiguration(adapterConfiguration)
                 .build());
-        modelEditorAdapter.open(model);
+        modelEditorAdapter.open(creationModel);
         modelEditorAdapter.teardown();
     }
 
@@ -224,7 +234,7 @@ public class ModelCreator extends BaseCreator {
      * @param itemId    The ID of the item to get the directory for.
      * @param modelFile Path to the model file to add.
      */
-    public Model addModel(String itemId, Path modelFile) {
+    public CreationModelSet addModel(String itemId, Path modelFile) {
         Path modelsDir = getModelsDir(itemId, true);
 
         fileUtil.createDirIfRequired(modelsDir);
@@ -244,9 +254,8 @@ public class ModelCreator extends BaseCreator {
             throw new ArtivactException("Could not copy model files!", e);
         }
 
-        return Model.builder()
-                .number(nextAssetNumber)
-                .path(formatPath(targetDir))
+        return CreationModelSet.builder()
+                .directory(formatPath(targetDir))
                 .comment("import")
                 .build();
     }
@@ -254,12 +263,18 @@ public class ModelCreator extends BaseCreator {
     /**
      * Deletes the model with the given index from the list of models of the currently active item.
      *
-     * @param model The model to delete from the filesystem.
+     * @param creationModel The model to delete from the filesystem.
      */
-    public void deleteModel(Model model) {
-        if (model != null) {
-            fileUtil.deleteDir(projectRootProvider.getProjectRoot().resolve(model.getPath()));
+    public void deleteModel(CreationModelSet creationModel) {
+        if (creationModel != null) {
+            fileUtil.deleteDir(projectRootProvider.getProjectRoot().resolve(creationModel.getDirectory()));
         }
+    }
+
+    public Path getTransferTargetPath(String itemId, Asset model) {
+        Path modelsDir = getModelsDir(itemId, true);
+        int nextAssetNumber = getNextAssetNumber(modelsDir);
+        return modelsDir.resolve(getAssetName(nextAssetNumber, FilenameUtils.getExtension(model.getFileName())));
     }
 
 }

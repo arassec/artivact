@@ -34,8 +34,8 @@
 <script setup lang="ts">
 // noinspection ES6UnusedImports
 import draggable from 'vuedraggable';
-import { PropType, toRef } from 'vue';
-import { MediaEntry } from 'components/models';
+import {PropType, toRef} from 'vue';
+import {Asset} from 'components/models';
 
 const props = defineProps({
   itemId: {
@@ -44,14 +44,14 @@ const props = defineProps({
   },
   images: {
     required: true,
-    type: Object as PropType<MediaEntry[]>,
-    default: [] as MediaEntry[],
+    type: Object as PropType<Asset[]>,
+    default: [] as Asset[],
   },
 });
 
 const imagesRef = toRef(props, 'images');
 
-function deleteImage(element: MediaEntry) {
+function deleteImage(element: Asset) {
   imagesRef.value.splice(imagesRef.value?.indexOf(element), 1);
 }
 </script>

@@ -5,7 +5,7 @@
       <div class="q-mb-lg">
         Here the properties of artivacts are configured. They are organized in
         categories, which can be ordered by drag & drop. The categories with
-        their respective properties are shown at the bottom of the artivact
+        their respective properties are shown at the bottom of the item
         details page.
       </div>
 
@@ -39,11 +39,11 @@
 </template>
 
 <script setup lang="ts">
-import { useQuasar } from 'quasar';
-import { onMounted, ref } from 'vue';
-import { api } from 'boot/axios';
+import {useQuasar} from 'quasar';
+import {onMounted, ref} from 'vue';
+import {api} from 'boot/axios';
 import ArtivactContent from 'components/ArtivactContent.vue';
-import { useLocaleStore } from 'stores/locale';
+import {useLocaleStore} from 'stores/locale';
 import ArtivactPropertiesConfigurationEditor from 'components/ArtivactPropertiesConfigurationEditor.vue';
 
 const quasar = useQuasar();

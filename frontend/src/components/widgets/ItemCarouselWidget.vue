@@ -25,7 +25,7 @@
           control-color="primary"
           navigation
           height="300px"
-          class="shadow-2 rounded-borders full-width"
+          class="flat full-width bg-accent"
         >
           <template v-for="slide in calculateSlides(3)" v-bind:key="slide">
             <q-carousel-slide :name="slide" class="row no-wrap">
@@ -68,7 +68,7 @@
           control-color="primary"
           navigation
           height="300px"
-          class="shadow-2 rounded-borders full-width"
+          class="flat full-width bg-accent"
         >
           <template v-for="slide in calculateSlides(1)" v-bind:key="slide">
             <q-carousel-slide :name="slide" class="row no-wrap">
@@ -189,11 +189,11 @@
 
 <script setup lang="ts">
 import ArtivactContent from 'components/ArtivactContent.vue';
-import { onMounted, PropType, ref, toRef } from 'vue';
-import { SearchBasedWidgetData } from 'components/widgets/widget-models';
-import { useQuasar } from 'quasar';
-import { SearchResult } from 'components/models';
-import { api } from 'boot/axios';
+import {onMounted, PropType, ref, toRef} from 'vue';
+import {SearchBasedWidgetData} from 'components/widgets/widget-models';
+import {useQuasar} from 'quasar';
+import {SearchResult} from 'components/models';
+import {api} from 'boot/axios';
 import ItemCard from 'components/ItemCard.vue';
 import WidgetTemplate from 'components/widgets/WidgetTemplate.vue';
 import ArtivactItemSearchInput from 'components/widgets/util/ArtivactItemSearchInput.vue';

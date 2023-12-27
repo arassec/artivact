@@ -25,9 +25,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, PropType, ref, toRef } from 'vue';
-import { Property, SelectboxModel } from 'components/models';
-import { translate } from 'components/utils';
+import {computed, PropType, ref, toRef} from 'vue';
+import {Property, SelectboxModel} from 'components/models';
+import {translate} from 'components/utils';
 
 const props = defineProps({
   property: {

@@ -1,12 +1,13 @@
 package com.arassec.artivact.backend.api;
 
+import com.arassec.artivact.backend.api.model.Asset;
+import com.arassec.artivact.backend.api.model.ImageSet;
 import com.arassec.artivact.backend.api.model.ItemDetails;
-import com.arassec.artivact.backend.api.model.MediaEntry;
+import com.arassec.artivact.backend.api.model.ModelSet;
 import com.arassec.artivact.backend.service.ItemService;
 import com.arassec.artivact.backend.service.exception.ArtivactException;
-import com.arassec.artivact.backend.service.model.item.ImageSize;
-import com.arassec.artivact.backend.service.model.item.MediaContent;
-import com.arassec.artivact.backend.service.model.item.Item;
+import com.arassec.artivact.backend.service.model.item.*;
+import com.arassec.artivact.backend.service.util.ProjectRootProvider;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +35,8 @@ public class ItemController extends BaseFileController {
 
     private final ItemService itemService;
 
+    private final ProjectRootProvider projectRootProvider;
+
     @PostMapping
     public ResponseEntity<String> create() {
         Item item = itemService.create();
@@ -56,17 +59,42 @@ public class ItemController extends BaseFileController {
                 .title(item.getTitle())
                 .description(item.getDescription())
                 .images(item.getMediaContent().getImages().stream()
-                        .map(fileName -> MediaEntry.builder()
+                        .map(fileName -> Asset.builder()
                                 .fileName(fileName)
                                 .url(createImageUrl(itemId, fileName))
+                                .transferable(false)
                                 .build())
                         .toList())
                 .models(item.getMediaContent().getModels().stream()
-                        .map(fileName -> MediaEntry.builder()
+                        .map(fileName -> Asset.builder()
                                 .fileName(fileName)
                                 .url(createModelUrl(itemId, fileName))
+                                .transferable(false)
                                 .build())
                         .toList())
+                .creationImageSets(item.getMediaCreationContent().getImageSets().stream()
+                        .map(creationImageSet ->
+                                ImageSet.builder()
+                                        .backgroundRemoved(creationImageSet.getBackgroundRemoved())
+                                        .modelInput(creationImageSet.isModelInput())
+                                        .images(creationImageSet.getFiles().stream()
+                                                .map(fileName -> Asset.builder()
+                                                        .fileName(fileName)
+                                                        .url(createImageUrl(itemId, fileName))
+                                                        .transferable(true)
+                                                        .build())
+                                                .toList())
+                                        .build())
+                        .toList())
+                .creationModelSets(item.getMediaCreationContent().getModelSets().stream()
+                        .map(creationModelSet ->
+                                ModelSet.builder()
+                                        .directory(creationModelSet.getDirectory())
+                                        .comment(creationModelSet.getComment())
+                                        .modelSetImage(createModelSetImageUrl(projectRootProvider.getProjectRoot().resolve(creationModelSet.getDirectory())))
+                                        .build())
+                        .toList()
+                )
                 .properties(item.getProperties())
                 .tags(item.getTags())
                 .build());
@@ -83,10 +111,27 @@ public class ItemController extends BaseFileController {
 
         MediaContent mediaContent = new MediaContent();
         mediaContent.getImages().addAll(itemDetails.getImages().stream()
-                .map(MediaEntry::getFileName)
+                .map(Asset::getFileName)
                 .toList());
         mediaContent.getModels().addAll(itemDetails.getModels().stream()
-                .map(MediaEntry::getFileName)
+                .map(Asset::getFileName)
+                .toList());
+
+        MediaCreationContent mediaCreationContent = new MediaCreationContent();
+        mediaCreationContent.getImageSets().addAll(itemDetails.getCreationImageSets().stream()
+                .map(imageSet -> CreationImageSet.builder()
+                        .modelInput(imageSet.isModelInput())
+                        .backgroundRemoved(imageSet.getBackgroundRemoved())
+                        .files(imageSet.getImages().stream()
+                                .map(Asset::getFileName)
+                                .toList())
+                        .build())
+                .toList());
+        mediaCreationContent.getModelSets().addAll(itemDetails.getCreationModelSets().stream()
+                .map(modelSet -> CreationModelSet.builder()
+                        .directory(modelSet.getDirectory())
+                        .comment(modelSet.getComment())
+                        .build())
                 .toList());
 
         item.setVersion(itemDetails.getVersion());
@@ -94,6 +139,7 @@ public class ItemController extends BaseFileController {
         item.setTitle(itemDetails.getTitle());
         item.setDescription(itemDetails.getDescription());
         item.setMediaContent(mediaContent);
+        item.setMediaCreationContent(mediaCreationContent);
         item.setProperties(itemDetails.getProperties());
         item.setTags(itemDetails.getTags());
 
@@ -110,7 +156,7 @@ public class ItemController extends BaseFileController {
 
     @GetMapping(value = "/{itemId}/image/{fileName}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public HttpEntity<byte[]> getImage(@PathVariable String itemId, @PathVariable String fileName,
-                                                   @RequestParam(required = false) ImageSize imageSize) {
+                                       @RequestParam(required = false) ImageSize imageSize) {
         if (imageSize == null) {
             imageSize = ImageSize.ORIGINAL;
         }
@@ -148,7 +194,7 @@ public class ItemController extends BaseFileController {
 
     @GetMapping(value = "/{itemId}/media")
     public ResponseEntity<StreamingResponseBody> downloadMedia(HttpServletResponse response,
-                                                                  @PathVariable String itemId) {
+                                                               @PathVariable String itemId) {
 
         List<String> mediaFiles = itemService.getFilesForDownload(itemId);
 
@@ -188,9 +234,14 @@ public class ItemController extends BaseFileController {
 
     @PostMapping("/{itemId}/image")
     public ResponseEntity<String> uploadImage(@PathVariable String itemId,
-                                              @RequestPart(value = "file") final MultipartFile file) {
+                                              @RequestPart(value = "file") final MultipartFile file,
+                                              @RequestParam(defaultValue = "false", required = false) Boolean uploadOnly) {
         synchronized (this) {
-            itemService.addImage(itemId, file);
+            if (uploadOnly) {
+                itemService.saveImage(itemId, file);
+            } else {
+                itemService.addImage(itemId, file);
+            }
         }
         return ResponseEntity.ok("image uploaded");
     }

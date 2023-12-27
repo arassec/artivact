@@ -1,7 +1,7 @@
 package com.arassec.artivact.backend.service.creator.adapter;
 
 import com.arassec.artivact.backend.service.exception.ArtivactException;
-import com.arassec.artivact.backend.service.model.item.asset.ImageSet;
+import com.arassec.artivact.backend.service.model.item.CreationImageSet;
 import com.arassec.artivact.backend.service.util.ProgressMonitor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -20,16 +21,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Slf4j
 public abstract class BaseAdapter<I extends AdapterInitParams, T> implements Adapter<I, T> {
-
-    /**
-     * The file util.
-     */
-    //protected final FileUtil fileUtil;
-
-    /**
-     * Message source for I18N.
-     */
-    //protected final MessageSource messageSource;
 
     /**
      * The progress monitor to give feedback about the adapter status to the user.
@@ -68,22 +59,19 @@ public abstract class BaseAdapter<I extends AdapterInitParams, T> implements Ada
     }
 
     /**
-     * Copies all images from the provided {@link ImageSet} to the provided destination.
+     * Copies all images from the provided {@link CreationImageSet} to the provided destination.
      *
-     * @param projectRoot     The project's root directory.
-     * @param imageSet        The image set containing the images to copy.
+     * @param images          The images to copy.
      * @param destination     The destination path to copy the images to.
      * @param progressMonitor A progress monitor which is updated during copying.
+     * @param progressPrefix  The prefix to use in the {@link ProgressMonitor}.
      */
-    protected void copyImages(Path projectRoot, ImageSet imageSet, Path destination, ProgressMonitor progressMonitor) {
+    protected void copyImages(List<Path> images, Path destination, ProgressMonitor progressMonitor, String progressPrefix) {
         var index = new AtomicInteger(1);
-        imageSet.getImages().forEach(image -> {
-            progressMonitor.setProgress("Copying image " + index.getAndIncrement() + "/" + imageSet.getImages().size());
-            Path source = projectRoot.resolve(image.getPath());
-            String[] parts = image.getPath().split("/");
-            Path target = destination.resolve(parts[parts.length - 1]);
+        images.forEach(image -> {
+            progressMonitor.updateProgress(progressPrefix + " (" + index.getAndIncrement() + "/" + images.size() + ")");
             try {
-                Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(image, destination.resolve(image.getFileName()), StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
                 throw new ArtivactException("Could not copy artivact images for model creation!", e);
             }

@@ -111,12 +111,12 @@
 
 <script setup lang="ts">
 import WidgetTemplate from 'components/widgets/WidgetTemplate.vue';
-import { InfoBoxWidgetData } from 'components/widgets/widget-models';
-import { computed, PropType, toRef } from 'vue';
-import { useLocaleStore } from 'stores/locale';
+import {InfoBoxWidgetData} from 'components/widgets/widget-models';
+import {computed, PropType, toRef} from 'vue';
+import {useLocaleStore} from 'stores/locale';
 import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
 import ArtivactContent from 'components/ArtivactContent.vue';
-import { translate } from '../utils';
+import {translate} from '../utils';
 
 const props = defineProps({
   inEditMode: {

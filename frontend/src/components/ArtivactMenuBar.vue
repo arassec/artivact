@@ -518,17 +518,17 @@
 </template>
 
 <script setup lang="ts">
-import { useMenuStore } from 'stores/menu';
-import { api } from 'boot/axios';
-import { useQuasar } from 'quasar';
-import { useRouter } from 'vue-router';
-import { useUserdataStore } from 'stores/userdata';
-import { ref } from 'vue';
+import {useMenuStore} from 'stores/menu';
+import {api} from 'boot/axios';
+import {useQuasar} from 'quasar';
+import {useRouter} from 'vue-router';
+import {useUserdataStore} from 'stores/userdata';
+import {ref} from 'vue';
 import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
-import { useLocaleStore } from 'stores/locale';
-import { moveDown, moveUp, translate } from 'components/utils';
-import { Menu } from 'components/models';
-import { useBreadcrumbsStore } from 'stores/breadcrumbs';
+import {useLocaleStore} from 'stores/locale';
+import {moveDown, moveUp, translate} from 'components/utils';
+import {Menu} from 'components/models';
+import {useBreadcrumbsStore} from 'stores/breadcrumbs';
 
 const quasar = useQuasar();
 const router = useRouter();

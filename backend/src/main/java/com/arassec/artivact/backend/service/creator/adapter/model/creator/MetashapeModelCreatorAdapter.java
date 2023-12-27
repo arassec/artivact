@@ -3,7 +3,6 @@ package com.arassec.artivact.backend.service.creator.adapter.model.creator;
 import com.arassec.artivact.backend.service.creator.adapter.AdapterImplementation;
 import com.arassec.artivact.backend.service.exception.ArtivactException;
 import com.arassec.artivact.backend.service.model.configuration.AdapterConfiguration;
-import com.arassec.artivact.backend.service.model.item.asset.ImageSet;
 import com.arassec.artivact.backend.service.util.CmdUtil;
 import com.arassec.artivact.backend.service.util.FileUtil;
 import lombok.Getter;
@@ -67,26 +66,23 @@ public class MetashapeModelCreatorAdapter extends BaseModelCreatorAdapter {
      * {@inheritDoc}
      */
     @Override
-    public ModelCreationResult createModel(List<ImageSet> imageSets, String pipeline) {
+    public ModelCreationResult createModel(List<Path> images, String pipeline) {
         Path tempDir = initParams.getTempDir();
 
-        Path resultDir = tempDir.resolve("/metashape-export/").toAbsolutePath();
+        Path resultDir = tempDir.resolve("metashape-export/").toAbsolutePath();
 
         fileUtil.emptyDir(tempDir);
 
-        imageSets.forEach(imageSet -> {
-            if (imageSet.isModelInput()) {
-                copyImages(initParams.getProjectRoot(), imageSet, tempDir, progressMonitor);
-            }
-        });
+        copyImages(images, tempDir, progressMonitor,
+                messageSource.getMessage("base-adapter.copy-images.progress.prefix", null, Locale.getDefault()));
 
         fileUtil.openDirInOs(tempDir);
 
-        progressMonitor.setProgress(messageSource.getMessage("model-creator-adapter.metashape.progress.prefix", null, Locale.getDefault()));
+        progressMonitor.updateProgress(messageSource.getMessage("model-creator-adapter.metashape.progress.prefix", null, Locale.getDefault()));
 
         cmdUtil.execute(new CommandLine(initParams.getAdapterConfiguration().getConfigValue(getSupportedImplementation())));
 
-        progressMonitor.setProgress(messageSource.getMessage("model-creator-adapter.metashape.import.progress.prefix", null, Locale.getDefault()));
+        progressMonitor.updateProgress(messageSource.getMessage("model-creator-adapter.metashape.import.progress.prefix", null, Locale.getDefault()));
 
         return new ModelCreationResult(resultDir, "metashape");
     }

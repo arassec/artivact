@@ -80,6 +80,15 @@ module.exports = configure(function (/* ctx */) {
       // extendViteConf (viteConf) {},
       // viteVuePluginOptions: {},
 
+      // Artivact: +++
+      viteVuePluginOptions: {
+        template: {
+          compilerOptions: {
+            isCustomElement: tag => ['model-viewer'].includes(tag) // unused-warning is a false positive!
+          },
+        },
+      },
+      // Artivact: ---
 
       // vitePlugins: [
       //   [ 'package-name', { ..options.. } ]

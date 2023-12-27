@@ -74,15 +74,15 @@
 </template>
 
 <script setup lang="ts">
-import { useQuasar } from 'quasar';
-import { api } from 'boot/axios';
-import { useRoute } from 'vue-router';
-import { onMounted, ref } from 'vue';
-import { useUserdataStore } from 'stores/userdata';
+import {useQuasar} from 'quasar';
+import {api} from 'boot/axios';
+import {useRoute} from 'vue-router';
+import {onMounted, ref} from 'vue';
+import {useUserdataStore} from 'stores/userdata';
 import ArtivactContent from 'components/ArtivactContent.vue';
 import ItemMediaCarousel from 'components/ItemMediaCarousel.vue';
-import { useBreadcrumbsStore } from 'stores/breadcrumbs';
-import { translate } from 'components/utils';
+import {useBreadcrumbsStore} from 'stores/breadcrumbs';
+import {translate} from 'components/utils';
 import ArtivactPropertyCategoryViewer from 'components/ArtivactPropertyCategoryViewer.vue';
 
 const quasar = useQuasar();

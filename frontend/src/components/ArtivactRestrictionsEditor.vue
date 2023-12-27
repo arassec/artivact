@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import { PropType, ref, toRef } from 'vue';
+import {PropType, ref, toRef} from 'vue';
 
 const props = defineProps({
   restrictions: {
