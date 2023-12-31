@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://u6wwa4kuo00y"]
+
+[ext_resource type="Script" path="res://scenes/default_exhibition.gd" id="1_rlxcw"]
+
+[node name="DefaultExhibition" type="Node3D"]
+script = ExtResource("1_rlxcw")
