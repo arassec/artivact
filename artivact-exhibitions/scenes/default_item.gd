@@ -76,6 +76,8 @@ func zoom_stop():
 
 
 func _enter_tree():
+	if itemData.title.has("value"):
+		SignalBus.debug(itemData.title.value)
 	if models.size() > 0:
 		updateModel = true
 
@@ -96,7 +98,7 @@ func _process(delta: float):
 		updateModel = false
 		if modelLoaderThread.is_started():
 			modelLoaderThread.wait_to_finish()
-		modelLoaderThread.start(_load_model)
+		modelLoaderThread.start(_load_model, Thread.PRIORITY_LOW)
 	elif glbLoaded:
 		glbLoaded = false
 		_generate_scene()
@@ -127,12 +129,12 @@ func _load_model():
 
 	if result != OK:
 		var errMsg = str("item.load_model(", models[modelIndex], "): FAILED - ", result)
-		SignalBus.trigger_with_payload(SignalBus.SignalType.DEBUG, errMsg)
+		SignalBus.debug(errMsg)
 		printerr(errMsg)
 		return
 
 	glbLoaded = true
-
+	
 
 func _generate_scene():
 	loadedModel = gltfDocument.generate_scene(gltfState)

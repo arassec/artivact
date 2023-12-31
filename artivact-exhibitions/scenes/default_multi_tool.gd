@@ -30,7 +30,6 @@ func setup(zipReaderInput: ZIPReader, toolDataInput: Variant):
 	
 
 func next_item():
-	SignalBus.trigger_with_payload(SignalBus.SignalType.DEBUG, "next_item()")
 	itemIndex = itemIndex + 1
 	if itemIndex > maxItemIndex:
 		itemIndex = 0

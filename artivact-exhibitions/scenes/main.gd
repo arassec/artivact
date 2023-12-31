@@ -24,7 +24,8 @@ func _ready():
 
 
 func update_debug_panel(message: String):
-	$DebugPanel.text = message
+	if $DebugPanel != null:
+		$DebugPanel.text = message
 	
 
 func _on_right_controller_button_pressed(name):
