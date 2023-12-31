@@ -5,7 +5,7 @@
     </div>
 
     <q-list bordered class="rounded-borders q-mb-lg">
-      <q-expansion-item
+      <q-expansion-item v-if="!desktopStore.isDesktopModeEnabled"
         header-class="bg-primary text-white"
         class="list-entry"
         expand-separator
@@ -143,7 +143,7 @@
         </q-card>
       </q-expansion-item>
 
-      <q-expansion-item
+      <q-expansion-item v-if="!desktopStore.isDesktopModeEnabled"
         header-class="bg-primary text-white"
         class="list-entry"
         expand-separator
@@ -210,6 +210,7 @@ import {PropType, toRef} from 'vue';
 import {AppearanceConfiguration} from 'components/models';
 import ArtivactThemeColorEditor from 'components/ArtivactThemeColorEditor.vue';
 import {QUploader, useQuasar} from 'quasar';
+import {useDesktopStore} from 'stores/desktop';
 
 const props = defineProps({
   appearanceConfiguration: {
@@ -219,6 +220,7 @@ const props = defineProps({
 });
 
 const quasar = useQuasar();
+const desktopStore = useDesktopStore();
 
 const appearanceConfigurationRef = toRef(props, 'appearanceConfiguration');
 

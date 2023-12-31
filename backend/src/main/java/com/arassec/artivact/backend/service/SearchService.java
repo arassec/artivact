@@ -126,20 +126,32 @@ public class SearchService extends BaseService {
     private void updateIndexInternal(Item item) {
         try {
             Document luceneDocument = new Document();
+            StringBuffer fulltext = new StringBuffer();
 
             luceneDocument.add(new StoredField("id", item.getId()));
+            appendField(fulltext, "id", item.getId());
 
             if (StringUtils.hasText(item.getTitle().getValue())) {
                 luceneDocument.add(new TextField("title", item.getTitle().getValue(), Field.Store.YES));
+                appendField(fulltext, "title", item.getTitle().getValue());
             }
 
             if (StringUtils.hasText(item.getDescription().getValue())) {
                 luceneDocument.add(new TextField("description", item.getDescription().getValue(), Field.Store.YES));
+                appendField(fulltext, "description", item.getDescription().getValue());
             }
 
-            item.getProperties().forEach((key, value) -> luceneDocument.add(new TextField(key, value, Field.Store.YES)));
+            item.getProperties().forEach((key, value) -> {
+                luceneDocument.add(new TextField(key, value, Field.Store.YES));
+                appendField(fulltext, key, value);
+            });
 
-            item.getTags().forEach(tag -> luceneDocument.add(new TextField(tag.getId(), tag.getValue(), Field.Store.YES)));
+            item.getTags().forEach(tag -> {
+                luceneDocument.add(new TextField(tag.getId(), tag.getValue(), Field.Store.YES));
+                appendField(fulltext, tag.getId(), tag.getValue());
+            });
+
+            luceneDocument.add(new TextField("fulltext", fulltext.toString(), Field.Store.YES));
 
             indexWriter.addDocument(luceneDocument);
             indexWriter.commit();
@@ -161,7 +173,7 @@ public class SearchService extends BaseService {
             throws IOException, ParseException {
         IndexSearcher indexSearcher = new IndexSearcher(indexReader);
 
-        var queryParser = new MultiFieldQueryParser(new String[] {"title", "description"}, new StandardAnalyzer());
+        var queryParser = new MultiFieldQueryParser(new String[] {"fulltext"}, new StandardAnalyzer());
         queryParser.setAllowLeadingWildcard(true);
 
         Query query = queryParser.parse(searchTerm);
@@ -176,6 +188,13 @@ public class SearchService extends BaseService {
             itemIds.add(doc.get("id"));
         }
         return itemIds;
+    }
+
+    private void appendField(StringBuffer target, String key, String value) {
+        target.append(key);
+        target.append("=");
+        target.append(value);
+        target.append(" ");
     }
 
 }
