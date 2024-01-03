@@ -13,11 +13,6 @@ export default boot(({ app }) => {
     return request;
   });
 
-  // Artivact: electron production build calls the backend.
-  if (process.env.MODE === 'electron' && !process.env.DEBUGGING) {
-    api.defaults.baseURL = 'http://localhost:51232';
-  }
-
   app.config.globalProperties.$api = api;
   // ^ ^ ^ this will allow you to use this.$api (for Vue Options API form)
   //       so you can easily perform requests against your app's API

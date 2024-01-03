@@ -100,7 +100,8 @@ module.exports = configure(function (/* ctx */) {
       // https: true
       // open: true // opens browser window automatically
 
-      // Artivact: Use proxy for backend communication.
+      // Artivact: +++
+      // Use proxy for backend communication.
       server: {
         type: 'http'
       },

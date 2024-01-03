@@ -29,7 +29,6 @@ function startBackend() {
   backendPort = 51232;
   backendChildProcess = require('child_process').spawn('bin/java', [
     '-Dserver.port=' + backendPort,
-    '-Dserver.servlet.session.cookie.same-site=none',
     '-Dspring.profiles.active=desktop',
     '-Dartivact.project.root=' + projectRoot,
     '-Dspring.datasource.url=jdbc:h2:file:' + projectRoot + '/dbdata/artivact;AUTO_SERVER=true',
@@ -107,15 +106,18 @@ function createWindow() {
   }
 
   waitForBackend().then(() => {
-    mainWindow.loadURL(process.env.APP_URL);
+    // Artivact: +++
     if (!process.env.DEBUGGING) {
+      mainWindow.loadURL('http://localhost:' + backendPort + '/');
       // we're on production; no access to devtools pls
       mainWindow.webContents.on('devtools-opened', () => {
         mainWindow.webContents.closeDevTools();
       });
+    } else {
+      mainWindow.loadURL(process.env.APP_URL);
     }
+    // Artivact: ---
   });
-  // Artivact: ---
 
   mainWindow.on('ready-to-show', () => {
     // Artivact: +++
