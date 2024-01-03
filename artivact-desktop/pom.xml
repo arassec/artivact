@@ -67,7 +67,7 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <!-- Copy frontend and JRE -->
+                    <!-- Copy frontend, project-setup and JRE -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-resources-plugin</artifactId>
@@ -85,6 +85,25 @@
                                     <resources>
                                         <resource>
                                             <directory>${project.basedir}/../frontend/dist/electron/Packaged/Artivact-win32-x64</directory>
+                                            <includes>
+                                                <include>**</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-project-setup</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}/artivact-desktop-windows-v${revision}/resources/project-setup</outputDirectory>
+                                    <overwrite>true</overwrite>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.basedir}/../backend/src/main/resources/project-setup</directory>
                                             <includes>
                                                 <include>**</include>
                                             </includes>
@@ -200,7 +219,7 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <!-- Copy frontend and JRE -->
+                    <!-- Copy frontend, project-setup and JRE -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-resources-plugin</artifactId>
@@ -218,6 +237,25 @@
                                     <resources>
                                         <resource>
                                             <directory>${project.basedir}/../frontend/dist/electron/Packaged/Artivact-linux-x64</directory>
+                                            <includes>
+                                                <include>**</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-project-setup</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}/artivact-desktop-windows-v${revision}/resources/project-setup</outputDirectory>
+                                    <overwrite>true</overwrite>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.basedir}/../backend/src/main/resources/project-setup</directory>
                                             <includes>
                                                 <include>**</include>
                                             </includes>

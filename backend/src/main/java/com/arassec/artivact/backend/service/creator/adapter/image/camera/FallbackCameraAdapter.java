@@ -3,7 +3,7 @@ package com.arassec.artivact.backend.service.creator.adapter.image.camera;
 import com.arassec.artivact.backend.service.creator.adapter.AdapterImplementation;
 import com.arassec.artivact.backend.service.exception.ArtivactException;
 import com.arassec.artivact.backend.service.model.configuration.AdapterConfiguration;
-import com.arassec.artivact.backend.service.util.FileUtil;
+import com.arassec.artivact.backend.service.util.ProjectRootProvider;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,9 +31,9 @@ public class FallbackCameraAdapter extends BaseCameraAdapter {
     private final AdapterImplementation supportedImplementation = AdapterImplementation.FALLBACK_CAMERA_ADAPTER;
 
     /**
-     * The file util.
+     * The project root dir provider.
      */
-    private final FileUtil fileUtil;
+    private final ProjectRootProvider projectRootProvider;
 
     /**
      * {@inheritDoc}
@@ -42,9 +42,9 @@ public class FallbackCameraAdapter extends BaseCameraAdapter {
     public void captureImage(String filename) {
         Path targetFile = initParams.getTargetDir().resolve(filename + ".jpg");
         log.info("Fallback camera adapter called with 'targetDir' {} and 'filename' {}", initParams.getTargetDir(), filename);
-        fileUtil.copyClasspathResource(Path.of("project-setup/utils/fallback-image.jpg"),
-                initParams.getTargetDir().getParent());
         try {
+            Files.copy(projectRootProvider.getProjectRoot().resolve("/utils/fallback-image.jpg"),
+                    initParams.getTargetDir().getParent());
             Files.move(initParams.getTargetDir().getParent().resolve("fallback-image.jpg"), targetFile, StandardCopyOption.REPLACE_EXISTING);
             Thread.sleep(1000);
         } catch (IOException e) {

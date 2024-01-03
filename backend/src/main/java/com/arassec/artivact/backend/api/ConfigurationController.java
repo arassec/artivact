@@ -66,6 +66,8 @@ public class ConfigurationController {
                             .toList())
                     .username(userDetails.getUsername())
                     .build();
+        } else {
+            log.warn("Userdata requested without authentication!");
         }
         return UserData.builder().authenticated(false).build();
     }

@@ -110,7 +110,7 @@
         "
         no-caps
         flat
-        color="white"
+        :color="menu.menuEntries.length == 0 && !menu.targetPageId ? 'negative' : 'white'"
         :label="translate(menu)"
       >
         <q-tooltip v-if="userdataStore.isAdmin"
@@ -566,6 +566,7 @@ function addMenu() {
 
 function saveMenu(menu: Menu) {
   let menuToSave = menu;
+  let gotoPage = false;
 
   // Check if a menu _entry_ is added:
   if (menu.parentId !== null) {
@@ -575,6 +576,7 @@ function saveMenu(menu: Menu) {
         if (!menu.id) {
           // new menu entry:
           menuToSave.menuEntries.push(menu);
+          gotoPage = true;
         } else {
           // update existing menu entry:
           menuToSave.menuEntries.forEach((existingMenuEntry) => {
@@ -595,6 +597,21 @@ function saveMenu(menu: Menu) {
       menuRef.value = createEmptyMenuRef();
       menuStore.setAvailableMenus(response.data);
       showMenuModal.value = false;
+      if (gotoPage) {
+        menuStore.menus.forEach((existingMenu) => {
+          if (existingMenu.id === menu.parentId) {
+            existingMenu.menuEntries.forEach(existingMenuEntry => {
+              router.push('/page/' + existingMenuEntry.targetPageId);
+            });
+          }
+        });
+      }
+      quasar.notify({
+        color: 'positive',
+        position: 'bottom',
+        message: 'Menu saved',
+        icon: 'check',
+      });
     })
     .catch(() => {
       quasar.notify({
@@ -623,6 +640,12 @@ function deleteMenu() {
       menuRef.value = createEmptyMenuRef();
       menuStore.setAvailableMenus(response.data);
       confirmDeleteRef.value = false;
+      quasar.notify({
+        color: 'positive',
+        position: 'bottom',
+        message: 'Menu deleted',
+        icon: 'check',
+      });
     })
     .catch(() => {
       quasar.notify({
@@ -645,11 +668,16 @@ function addPage(menu: Menu) {
     .post('/api/configuration/menu/' + menu.id + '/page')
     .then((response) => {
       menuStore.setAvailableMenus(response.data);
+      menuStore.availableMenus.forEach(storedMenu => {
+        if (menu.id === storedMenu.id) {
+          router.push('/page/' + storedMenu.targetPageId)
+        }
+      })
       quasar.notify({
         color: 'positive',
         position: 'bottom',
         message: 'Page created',
-        icon: 'done',
+        icon: 'check',
       });
     })
     .catch(() => {

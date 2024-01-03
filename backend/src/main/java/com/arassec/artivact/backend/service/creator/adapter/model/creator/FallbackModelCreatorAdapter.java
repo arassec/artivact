@@ -1,13 +1,17 @@
 package com.arassec.artivact.backend.service.creator.adapter.model.creator;
 
 import com.arassec.artivact.backend.service.creator.adapter.AdapterImplementation;
+import com.arassec.artivact.backend.service.exception.ArtivactException;
 import com.arassec.artivact.backend.service.model.configuration.AdapterConfiguration;
 import com.arassec.artivact.backend.service.util.FileUtil;
+import com.arassec.artivact.backend.service.util.ProjectRootProvider;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +34,11 @@ public class FallbackModelCreatorAdapter extends BaseModelCreatorAdapter {
      * The file util.
      */
     private final FileUtil fileUtil;
+
+    /**
+     * The project root provider.
+     */
+    private final ProjectRootProvider projectRootProvider;
 
     /**
      * {@inheritDoc}
@@ -58,8 +67,12 @@ public class FallbackModelCreatorAdapter extends BaseModelCreatorAdapter {
 
         fileUtil.emptyDir(tempDir);
 
-        fileUtil.copyClasspathResource(Path.of("project-setup/utils/fallback-model.obj"), tempDir);
-        fileUtil.copyClasspathResource(Path.of("project-setup/utils/fallback-model.mtl"), tempDir);
+        try {
+            Files.copy(projectRootProvider.getProjectRoot().resolve("utils/fallback-model.obj"), tempDir);
+            Files.copy(projectRootProvider.getProjectRoot().resolve("utils/fallback-model.mtl"), tempDir);
+        } catch (IOException e) {
+            throw new ArtivactException("Could not copy fallback model files!", e);
+        }
 
         return new ModelCreationResult(tempDir, pipeline);
     }

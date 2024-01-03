@@ -366,7 +366,7 @@ function savePage(leaveEditMode: boolean) {
         color: 'positive',
         position: 'bottom',
         message: 'Page saved',
-        icon: 'done',
+        icon: 'check',
       });
       emit('update-page-content', response.data);
       if (leaveEditMode) {

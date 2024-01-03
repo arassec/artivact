@@ -16,11 +16,13 @@ import { onMounted, ref } from 'vue';
 import ArtivactPage from 'components/ArtivactPage.vue';
 import { PageContent, Widget } from 'components/models';
 import { useBreadcrumbsStore } from 'stores/breadcrumbs';
+import {useMenuStore} from 'stores/menu';
 
 const quasar = useQuasar();
 const route = useRoute();
 
 const breadcrumbsStore = useBreadcrumbsStore();
+const menuStore = useMenuStore();
 
 const pageContentRef = ref();
 const pageIdRef = ref('');
@@ -39,6 +41,14 @@ function loadPage(pageId: string | string[]) {
     .get(url)
     .then((response) => {
       pageContentRef.value = response.data;
+      // With only one page yet, "index page" should be checked by default:
+      let menus = menuStore.availableMenus;
+      if (menus.length == 1) {
+        let menu = menus[0];
+        if (menu?.targetPageId || menu?.menuEntries.length == 1) {
+          pageContentRef.value.indexPage = true;
+        }
+      }
     })
     .catch(() => {
       quasar.notify({

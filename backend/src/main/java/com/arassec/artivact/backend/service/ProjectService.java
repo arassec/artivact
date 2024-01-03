@@ -20,7 +20,7 @@ public class ProjectService {
 
     @PostConstruct
     public void initializeProjectDir() {
-        fileUtil.updateProjectDirectory(projectRootProvider.getProjectRoot(), Path.of("project-setup"), List.of(
+        fileUtil.updateProjectDirectory(projectRootProvider.getProjectRoot(), List.of(
                 new FileModification("utils/Metashape/artivact-metashape-workflow.xml", "##EXPORT_PATH##",
                         projectRootProvider.getProjectRoot().resolve("temp/metashape-export/metashape-export.obj").toAbsolutePath().toString())
         ));

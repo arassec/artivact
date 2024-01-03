@@ -29,6 +29,7 @@ function startBackend() {
   backendPort = 51232;
   backendChildProcess = require('child_process').spawn('bin/java', [
     '-Dserver.port=' + backendPort,
+    '-Dserver.servlet.session.cookie.same-site=none',
     '-Dspring.profiles.active=desktop',
     '-Dartivact.project.root=' + projectRoot,
     '-Dspring.datasource.url=jdbc:h2:file:' + projectRoot + '/dbdata/artivact;AUTO_SERVER=true',
@@ -95,7 +96,7 @@ function createWindow() {
     transparent: true,
     frame: false,
     alwaysOnTop: true,
-    focusable: false
+    focusable: false,
   });
   const splashFile = path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER, 'splash.html')
   splash.loadFile(splashFile).then(() => console.log('Loaded splash.html'));
