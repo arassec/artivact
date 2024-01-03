@@ -17,6 +17,14 @@
     />
 
     <div class="full-width">
+      <label>Syntax for searching property values in fulltext search: "PROPERTY_ID=[SEARCH_TERM]"</label>
+    </div>
+
+    <div class="full-width q-mb-md">
+      <label>Syntax for searching property values only: PROPERTY_ID:"[SEARCH_TERM]"</label>
+    </div>
+
+    <div class="full-width">
       <q-btn-dropdown label="Add Tag" small dense flat>
         <q-list>
           <q-item

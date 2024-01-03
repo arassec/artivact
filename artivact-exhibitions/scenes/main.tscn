@@ -1,0 +1,54 @@
+[gd_scene load_steps=7 format=3 uid="uid://cb45v5ltn27u8"]
+
+[ext_resource type="Script" path="res://scenes/main.gd" id="1_b8uw8"]
+
+[sub_resource type="Environment" id="Environment_d76xc"]
+background_mode = 1
+background_color = Color(0.14902, 0.14902, 0.14902, 1)
+ambient_light_source = 2
+ambient_light_color = Color(1, 1, 1, 1)
+reflected_light_source = 1
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_54kbi"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1thvl"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_str8g"]
+material = SubResource("StandardMaterial3D_1thvl")
+size = Vector3(0.1, 0.1, 0.1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_rpuv3"]
+size = Vector3(0.1, 0.1, 0.1)
+
+[node name="Main" type="Node3D"]
+script = ExtResource("1_b8uw8")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_d76xc")
+camera_attributes = SubResource("CameraAttributesPractical_54kbi")
+
+[node name="XROrigin3D" type="XROrigin3D" parent="."]
+
+[node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
+
+[node name="LeftController" type="XRController3D" parent="XROrigin3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 1, -0.5)
+tracker = &"left_hand"
+
+[node name="Box" type="MeshInstance3D" parent="XROrigin3D/LeftController"]
+mesh = SubResource("BoxMesh_str8g")
+
+[node name="RightController" type="XRController3D" parent="XROrigin3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 1, -0.5)
+tracker = &"right_hand"
+
+[node name="Box" type="MeshInstance3D" parent="XROrigin3D/RightController"]
+mesh = SubResource("BoxMesh_rpuv3")
+
+[node name="DebugPanel" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, -3)
+text = "Debug Panel"
+
+[connection signal="button_pressed" from="XROrigin3D/RightController" to="." method="_on_right_controller_button_pressed"]
+[connection signal="input_vector2_changed" from="XROrigin3D/RightController" to="." method="_on_right_controller_input_vector_2_changed"]

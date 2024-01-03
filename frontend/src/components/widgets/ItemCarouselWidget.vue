@@ -111,7 +111,7 @@
           control-color="primary"
           navigation
           height="300px"
-          class="shadow-2 rounded-borders full-width"
+          class="flat full-width bg-accent"
         >
           <template v-for="slide in calculateSlides(3)" v-bind:key="slide">
             <q-carousel-slide :name="slide" class="row no-wrap">
@@ -157,7 +157,7 @@
           control-color="primary"
           navigation
           height="300px"
-          class="shadow-2 rounded-borders full-width"
+          class="flat full-width bg-accent"
         >
           <template v-for="slide in calculateSlides(1)" v-bind:key="slide">
             <q-carousel-slide :name="slide" class="row no-wrap">
