@@ -9,7 +9,7 @@
         <version>${revision}</version>
     </parent>
 
-    <artifactId>artivact-exhibitions</artifactId>
+    <artifactId>artivact-vr</artifactId>
     <packaging>pom</packaging>
 
     <name>artivact-exhibitions</name>
