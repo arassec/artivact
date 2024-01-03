@@ -21,7 +21,7 @@ CREATE TABLE av_page
 (
     id           VARCHAR(128) PRIMARY KEY,
     version      INTEGER,
-    index_page   boolean NOT NULL,
+    index_page   BOOLEAN NOT NULL,
     content_json TEXT
 );
 
@@ -36,5 +36,7 @@ CREATE TABLE av_exhibition
 (
     id           VARCHAR(128) PRIMARY KEY,
     version      INTEGER,
+    sort_order   INTEGER,
+    image        TEXT,
     content_json TEXT
 );

@@ -2,7 +2,7 @@ CREATE TABLE av_configuration
 (
     id           VARCHAR(128) PRIMARY KEY,
     version      INTEGER,
-    content_json VARCHAR
+    content_json TEXT
 );
 
 CREATE TABLE av_account
@@ -22,19 +22,21 @@ CREATE TABLE av_page
     id           VARCHAR(128) PRIMARY KEY,
     version      INTEGER,
     index_page   boolean NOT NULL,
-    content_json VARCHAR
+    content_json TEXT
 );
 
 CREATE TABLE av_item
 (
     id           VARCHAR(128) PRIMARY KEY,
     version      INTEGER,
-    content_json VARCHAR
+    content_json TEXT
 );
 
 CREATE TABLE av_exhibition
 (
     id           VARCHAR(128) PRIMARY KEY,
     version      INTEGER,
-    content_json VARCHAR
+    sort_order   INTEGER,
+    image_binary TEXT,
+    content_json TEXT
 );
