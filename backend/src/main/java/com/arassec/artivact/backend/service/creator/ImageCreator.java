@@ -24,6 +24,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -125,9 +127,9 @@ public class ImageCreator extends BaseCreator {
 
         // Start capturing:
         for (var i = 0; i < numPhotos; i++) {
-            log.debug("Capturing image: {}", i);
             progressMonitor.updateProgress(progressPrefix + " (" + (i + 1) + "/" + numPhotos + ")");
             String filename = getAssetName(getNextAssetNumber(targetDir), null);
+            log.debug("Capturing image: {}", filename);
             cameraAdapter.captureImage(filename);
             if (useTurnTable) {
                 turntableAdapter.rotate(numPhotos);
@@ -220,23 +222,14 @@ public class ImageCreator extends BaseCreator {
      */
     private void processNewImage(boolean removeBackgrounds, BackgroundRemovalAdapter backgroundRemovalAdapter,
                                  Path createdFile, List<Path> capturedImages) {
-        if (createdFile.toString().toLowerCase().endsWith(".jpg") || createdFile.toString().toLowerCase().endsWith(".jpeg")) {
-            int iterations = 100;
-            int i = 0;
-            while (!Files.exists(createdFile) && i < iterations) {
-                try {
-                    TimeUnit.MILLISECONDS.sleep(50);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    throw new ArtivactException("Interrupted during processing of newly created image file!", e);
-                }
-                i++;
-            }
+        String filename = createdFile.toString().toLowerCase();
+        // Check filetype and if ready for processing. Image might not be completely written by camera adapter!
+        if ((filename.endsWith(".jpg") || filename.endsWith(".jpeg")) && readyForProcessing(createdFile)) {
             log.debug("Captured image file found: {}", createdFile);
-
             capturedImages.add(createdFile);
-
-            if (removeBackgrounds) {
+            // Check again if ready for processing, file might still be blocked by another process!
+            if (removeBackgrounds && readyForProcessing(createdFile)) {
+                log.debug("Removing Background of captured image: {}", createdFile);
                 backgroundRemovalAdapter.removeBackground(createdFile);
             }
         }
@@ -277,6 +270,37 @@ public class ImageCreator extends BaseCreator {
         var targetFile = getImagePath(itemId, assetNumber, extension);
 
         return targetFile.getFileName().toString();
+    }
+
+    /**
+     * Checks if the given file can be accessed.
+     *
+     * @param file The file to check.
+     * @return {@code true} if the file can be processed, {@code false} otherwise.
+     */
+    private boolean readyForProcessing(Path file) {
+        log.debug("Checking file to ensure write access for further processing: {}", file);
+        int iterations = 100;
+        int i = 0;
+        while (i < iterations) {
+            try {
+                TimeUnit.MILLISECONDS.sleep(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new ArtivactException("Interrupted during wait for file check!", e);
+            }
+            i++;
+            if (!Files.exists(file)) {
+                continue;
+            }
+            try (RandomAccessFile raFile = new RandomAccessFile(file.toAbsolutePath().toString(), "rw")) {
+                raFile.close();
+                return true;
+            } catch (IOException e) {
+                log.debug("File not ready for processing ({})!", i);
+            }
+        }
+        return false;
     }
 
 }

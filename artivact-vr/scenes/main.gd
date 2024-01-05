@@ -17,7 +17,7 @@ func _ready():
 	
 	var	exhibitionScene = load("res://scenes/default_exhibition.tscn").instantiate()
 	# TODO: Load scene dynamically when main menu is implemented!
-	exhibitionScene.setup("b7228dcf-438e-4fb9-9b35-8c333aba4122")
+	exhibitionScene.setup("67af9c0c-44e0-4a58-b3a5-0dcfe6f27ec5")
 	add_child(exhibitionScene)
 	
 	SignalBus.register(SignalBus.SignalType.DEBUG, update_debug_panel)
@@ -28,19 +28,19 @@ func update_debug_panel(message: String):
 		$DebugPanel.text = message
 	
 
-func _on_right_controller_button_pressed(name):
-	if name == "trigger_click":
+func _on_right_controller_button_pressed(eventName):
+	if eventName == "trigger_click":
 		SignalBus.trigger(SignalBus.SignalType.NEXT_MODEL)
 
 
-func _on_right_controller_input_vector_2_changed(name, value):
-	if name == "primary" and value.x == 1:
+func _on_right_controller_input_vector_2_changed(eventName, value):
+	if eventName == "primary" and value.x == 1:
 		SignalBus.trigger(SignalBus.SignalType.NEXT_ITEM)
-	elif name == "primary" and value.y == 1:
+	elif eventName == "primary" and value.y == 1:
 		SignalBus.trigger(SignalBus.SignalType.ZOOM_MODEL_IN)
-	elif name == "primary" and value.y == -1:
+	elif eventName == "primary" and value.y == -1:
 		SignalBus.trigger(SignalBus.SignalType.ZOOM_MODEL_OUT)
-	elif name == "primary" and value.y != 1 and value.y != -1:
+	elif eventName == "primary" and value.y != 1 and value.y != -1:
 		SignalBus.trigger(SignalBus.SignalType.ZOOM_MODEL_STOP)
 
 

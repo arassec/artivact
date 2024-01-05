@@ -21,4 +21,3 @@ android/build/*
 # Artivact-Exhibitions specific
 addons/
 *.apk
-*.artivact-exhibition.zip

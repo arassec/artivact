@@ -33,7 +33,7 @@
                             <overwrite>true</overwrite>
                             <resources>
                                 <resource>
-                                    <directory>${project.parent.basedir}/frontend/dist/spa</directory>
+                                    <directory>${project.basedir}/../frontend/dist/spa</directory>
                                     <includes>
                                         <include>**</include>
                                     </includes>

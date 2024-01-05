@@ -35,7 +35,9 @@ func setup(zipReaderInput: ZIPReader, itemIdInput: String):
 	var itemJsonString = zipReader.read_file(str(itemId, "/", itemId, ".artivact.json")).get_string_from_utf8()
 	var parseResult := itemJson.parse(itemJsonString)
 	if parseResult != OK:
-		# TODO: Error Handling!
+		var errMsg = str("default_item.setup(", itemIdInput, "): FAILED - ", parseResult)
+		SignalBus.debug(errMsg)
+		printerr(errMsg)
 		return
 		
 	itemData = itemJson.data
@@ -110,17 +112,16 @@ func _process(delta: float):
 		
 	var scaleFactor = 10 * delta
 	if zoomIn:
-		if (shownModel.scale.x < 10):
+		if (shownModel.scale.x < 2):
 			shownModel.scale = shownModel.scale + Vector3(scaleFactor, scaleFactor, scaleFactor)
 			shownModel.position.y = shownModel.position.y - (scaleFactor / 2)
 	if zoomOut:
-		if (shownModel.scale.x > 1):
+		if (shownModel.scale.x > 0.1):
 			shownModel.scale = shownModel.scale - Vector3(scaleFactor, scaleFactor, scaleFactor)
 			shownModel.position.y = shownModel.position.y + (scaleFactor / 2)
 
 
 func _load_model():
-	var start = Time.get_ticks_usec()
 	gltfDocument = GLTFDocument.new()
 	gltfState = GLTFState.new()
 
@@ -138,6 +139,17 @@ func _load_model():
 
 func _generate_scene():
 	loadedModel = gltfDocument.generate_scene(gltfState)
+	
+	var size:Vector3
+	for n in loadedModel.get_children().size():
+		var mesh:MeshInstance3D = loadedModel.get_child(n)
+		size = mesh.get_aabb().size
+		break;
+	var targetSizeInM = 50 / 100.0 # Size should initially be 50cm.
+	var currentSizeInM = size.x
+	var scaleFactor = targetSizeInM / currentSizeInM
+	loadedModel.scale = Vector3(scaleFactor, scaleFactor, scaleFactor)
+
 	modelLoaded = true
 
 
