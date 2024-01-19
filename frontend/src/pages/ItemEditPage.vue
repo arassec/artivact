@@ -53,11 +53,7 @@
             class="q-mb-sm"
           />
 
-          <q-separator
-            :class="
-            tagsDataRef && tagsDataRef.tags.length > 0 ? 'q-mb-sm' : 'q-mb-lg'
-          "
-          />
+          <q-separator :class="tagsDataRef && tagsDataRef.tags.length > 0 ? 'q-mb-sm' : 'q-mb-lg'"/>
 
           <div
             class="q-mb-sm row"
@@ -85,6 +81,7 @@
                 />
               </q-badge>
               <q-btn
+                v-if="itemDataRef.tags.length < tagsDataRef.tags.length"
                 class="vertical-middle"
                 round
                 dense
@@ -108,7 +105,7 @@
                   <q-select
                     v-model="tagValueRef"
                     autofocus
-                    :options="tagsDataRef.tags"
+                    :options="availableTags"
                     option-value="id"
                     option-label="translatedValue"
                     label="Tag"
@@ -264,13 +261,13 @@
 // noinspection ES6UnusedImports
 import draggable from 'vuedraggable';
 import {useQuasar} from 'quasar';
-import {onMounted, ref} from 'vue';
+import {computed, onMounted, ref} from 'vue';
 import {useRoute, useRouter} from 'vue-router';
 import {api} from 'boot/axios';
 import ArtivactContent from 'components/ArtivactContent.vue';
 import ArtivactRestrictionsEditor from 'components/ArtivactRestrictionsEditor.vue';
 import {useLocaleStore} from 'stores/locale';
-import {Asset, ImageSet, Tag} from 'components/models';
+import {Asset, ImageSet, ItemDetails, Tag, TagsConfiguration} from 'components/models';
 import ArtivactPropertyCategoryEditor from 'components/ArtivactPropertyCategoryEditor.vue';
 import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
 import {useBreadcrumbsStore} from 'stores/breadcrumbs';
@@ -289,9 +286,9 @@ const breadcrumbsStore = useBreadcrumbsStore();
 const userdataStore = useUserdataStore();
 const desktopStore = useDesktopStore();
 
-const itemDataRef = ref();
+const itemDataRef = ref<ItemDetails>();
 const propertiesDataRef = ref();
-const tagsDataRef = ref();
+const tagsDataRef = ref<TagsConfiguration>();
 
 const confirmDeleteRef = ref(false);
 
@@ -301,6 +298,20 @@ let addTagRef = ref(false);
 const tagValueRef = ref(null);
 
 let savedItemId;
+
+const availableTags = computed(() => {
+  return tagsDataRef.value?.tags.filter((tag: Tag) => {
+    if (itemDataRef.value) {
+      for (let i = 0; i < itemDataRef.value.tags.length; i++) {
+        let usedTag = itemDataRef.value.tags[i];
+        if (tag.id == usedTag.id) {
+          return false;
+        }
+      }
+    }
+    return true;
+  })
+})
 
 function addTag() {
   tagValueRef.value = null;

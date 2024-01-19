@@ -18,6 +18,7 @@ config/icon="res://icon.svg"
 [autoload]
 
 SignalBus="*res://scripts/signal_bus.gd"
+ArtivactSettings="*res://scripts/artivact_settings.gd"
 
 [editor_plugins]
 
@@ -37,6 +38,7 @@ textures/vram_compression/import_etc2_astc=true
 [xr]
 
 openxr/enabled=true
-openxr/foveation_level=0
+openxr/foveation_level=3
+openxr/foveation_dynamic=true
 openxr/startup_alert=false
 shaders/enabled=true

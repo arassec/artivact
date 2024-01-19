@@ -13,4 +13,7 @@ func _enter_tree():
 	var currentTool = load("res://scenes/default_multi_tool.tscn").instantiate()
 	# TODO: Implement switching tools!
 	currentTool.setup(zipReader, topicData.tools[1])
+	
+	$TopicTitle.text = topicData.title.value
+
 	add_child(currentTool)

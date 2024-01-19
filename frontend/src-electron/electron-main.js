@@ -90,8 +90,8 @@ function createWindow() {
 
   // Artivact: +++
   let splash = new BrowserWindow({
-    width: 1100,
-    height: 300,
+    width: 850,
+    height: 310,
     transparent: true,
     frame: false,
     alwaysOnTop: true,

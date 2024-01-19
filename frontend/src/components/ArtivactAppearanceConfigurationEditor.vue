@@ -5,7 +5,9 @@
     </div>
 
     <q-list bordered class="rounded-borders q-mb-lg">
-      <q-expansion-item v-if="!desktopStore.isDesktopModeEnabled"
+      <q-expansion-item
+        group="appearanceConfig"
+        v-if="!desktopStore.isDesktopModeEnabled"
         header-class="bg-primary text-white"
         class="list-entry"
         expand-separator
@@ -31,6 +33,7 @@
       </q-expansion-item>
 
       <q-expansion-item
+        group="appearanceConfig"
         header-class="bg-primary text-white"
         class="list-entry"
         expand-separator
@@ -59,6 +62,7 @@
       </q-expansion-item>
 
       <q-expansion-item
+        group="appearanceConfig"
         header-class="bg-primary text-white"
         class="list-entry"
         expand-separator
@@ -143,7 +147,9 @@
         </q-card>
       </q-expansion-item>
 
-      <q-expansion-item v-if="!desktopStore.isDesktopModeEnabled"
+      <q-expansion-item
+        group="appearanceConfig"
+        v-if="!desktopStore.isDesktopModeEnabled"
         header-class="bg-primary text-white"
         class="list-entry"
         expand-separator

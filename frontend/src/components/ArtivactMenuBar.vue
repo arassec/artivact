@@ -11,10 +11,7 @@
         class="q-mr-md"
         @click="gotoPage(menu.targetPageId, menu.translatedValue, null, null)"
       >
-        <q-icon v-if="userdataStore.isAdmin" name="more_vert" />
-        <q-tooltip v-if="userdataStore.isAdmin"
-          >Right click to edit menu</q-tooltip
-        >
+        <q-tooltip v-if="userdataStore.isAdmin">Right click to edit menu</q-tooltip>
         <q-menu
           v-model="showMenuRef[menu.id]"
           :context-menu="true"
@@ -114,7 +111,8 @@
         :label="translate(menu)"
       >
         <q-tooltip v-if="userdataStore.isAdmin"
-          >Right click to edit menu</q-tooltip
+        >Right click to edit menu
+        </q-tooltip
         >
         <q-menu anchor="bottom middle" self="top middle">
           <q-list>
@@ -239,7 +237,7 @@
             </template>
           </q-list>
         </q-menu>
-        <q-icon v-if="userdataStore.isAdmin" name="more_vert" size="sm" />
+        <q-icon v-if="userdataStore.isAdmin" name="more_vert" size="sm"/>
         <q-menu
           v-model="showMenuRef[menu.id]"
           v-if="userdataStore.isAdmin"
@@ -258,15 +256,15 @@
               "
             >
               <q-item-section
-                ><label class="menu-label">
-                  <q-icon
-                    name="add"
-                    size="xs"
-                    color="primary"
-                    class="q-mr-sm"
-                  ></q-icon>
-                  Add Page</label
-                >
+              ><label class="menu-label">
+                <q-icon
+                  name="add"
+                  size="xs"
+                  color="primary"
+                  class="q-mr-sm"
+                ></q-icon>
+                Add Page</label
+              >
               </q-item-section>
             </q-item>
             <q-item
@@ -277,15 +275,15 @@
               v-if="!menu.targetPageId && userdataStore.isAdmin"
             >
               <q-item-section
-                ><label class="menu-label">
-                  <q-icon
-                    name="add"
-                    size="xs"
-                    color="primary"
-                    class="q-mr-sm"
-                  ></q-icon>
-                  Add Entry</label
-                >
+              ><label class="menu-label">
+                <q-icon
+                  name="add"
+                  size="xs"
+                  color="primary"
+                  class="q-mr-sm"
+                ></q-icon>
+                Add Entry</label
+              >
               </q-item-section>
             </q-item>
             <q-item
@@ -438,7 +436,7 @@
         </q-card-section>
 
         <q-card-section>
-          <q-btn flat label="Cancel" color="primary" v-close-popup />
+          <q-btn flat label="Cancel" color="primary" v-close-popup/>
           <q-btn
             v-if="!menuRef.parentId"
             flat
@@ -462,7 +460,7 @@
     </q-dialog>
   </div>
 
-  <q-btn flat icon="menu" class="lt-md">
+  <q-btn flat icon="menu" class="lt-md" v-if="menuStore.menus.length > 0">
     <q-menu anchor="bottom middle" self="top middle">
       <q-list>
         <q-item

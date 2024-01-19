@@ -1,6 +1,18 @@
-[gd_scene load_steps=2 format=3 uid="uid://bssxk2sniv84g"]
+[gd_scene load_steps=4 format=3 uid="uid://bssxk2sniv84g"]
 
 [ext_resource type="Script" path="res://scenes/default_topic.gd" id="1_44bx5"]
+[ext_resource type="PackedScene" uid="uid://clujaf3u776a3" path="res://addons/godot-xr-tools/objects/viewport_2d_in_3d.tscn" id="2_n7o4f"]
+[ext_resource type="PackedScene" uid="uid://cg1has3rykocw" path="res://scenes/default_topic_ui.tscn" id="3_imiiv"]
 
 [node name="DefaultTopic" type="Node3D"]
 script = ExtResource("1_44bx5")
+
+[node name="Viewport2Din3D" parent="." instance=ExtResource("2_n7o4f")]
+transform = Transform3D(0.001, 0, 0, 0, 0.00093666, 0.00035024, 0, -0.00035024, 0.00093666, -1.04614, 1.68017, -1)
+screen_size = Vector2(1024, 768)
+scene = ExtResource("3_imiiv")
+viewport_size = Vector2(1024, 768)
+
+[node name="TopicTitle" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, -3)
+text = "Topic Title"

@@ -12,7 +12,7 @@
             }}
           </div>
         </q-img>
-        <div class="absolute-bottom text-h6" v-if="!artivactCardData.imageUrl && artivactCardData.title">
+        <div class="absolute-bottom text-h6 q-ml-sm" v-if="!artivactCardData.imageUrl && artivactCardData.title">
           {{
             artivactCardData.title ? translate(artivactCardData.title) : "?"
           }}

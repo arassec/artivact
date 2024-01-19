@@ -12,11 +12,11 @@ import com.arassec.artivact.backend.service.util.FileUtil;
 import com.arassec.artivact.backend.service.util.ProgressMonitor;
 import com.arassec.artivact.backend.service.util.ProjectRootProvider;
 import jakarta.annotation.PreDestroy;
-import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -76,6 +77,9 @@ public class MediaCreationService {
                 item.getMediaCreationContent().getImageSets().addAll(creationImageSets);
                 itemService.save(item);
 
+                // Sleep some time to avoid frontend update without recognizing the new image set(s)...
+                TimeUnit.MILLISECONDS.sleep(500);
+
                 progressMonitor = null;
             } catch (Exception e) {
                 progressMonitor = null;
@@ -116,6 +120,7 @@ public class MediaCreationService {
 
                 progressMonitor = null;
             } catch (Exception e) {
+                progressMonitor = null;
                 log.error("Error during background removal!", e);
             }
         });
@@ -149,6 +154,7 @@ public class MediaCreationService {
 
                 progressMonitor = null;
             } catch (Exception e) {
+                progressMonitor = null;
                 log.error("Error during background removal!", e);
             }
         });
@@ -185,6 +191,7 @@ public class MediaCreationService {
 
                 progressMonitor = null;
             } catch (Exception e) {
+                progressMonitor = null;
                 log.error("Error during background removal!", e);
             }
         });
@@ -210,6 +217,7 @@ public class MediaCreationService {
 
                 progressMonitor = null;
             } catch (Exception e) {
+                progressMonitor = null;
                 log.error("Error during background removal!", e);
             }
         });

@@ -17,10 +17,6 @@
 
     <properties>
         <sonar.skip>true</sonar.skip>
-
-        <windows.jre.url>adoptium/temurin21-binaries/releases/download/jdk-21.0.1+12/OpenJDK21U-jre_x64_windows_hotspot_21.0.1_12.zip</windows.jre.url>
-        <linux.jre.url>adoptium/temurin21-binaries/releases/download/jdk-21.0.1+12/OpenJDK21U-jre_x64_linux_hotspot_21.0.1_12.tar.gz</linux.jre.url>
-        <jre.folder>jdk-21.0.1+12-jre</jre.folder>
     </properties>
 
     <profiles>
@@ -28,45 +24,6 @@
             <id>release-desktop-windows</id>
             <build>
                 <plugins>
-                    <!-- Download JRE -->
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>wagon-maven-plugin</artifactId>
-                        <version>2.0.2</version>
-                        <executions>
-                            <execution>
-                                <id>download-jre</id>
-                                <phase>generate-sources</phase>
-                                <goals>
-                                    <goal>download-single</goal>
-                                </goals>
-                                <configuration>
-                                    <url>https://github.com</url>
-                                    <fromFile>${windows.jre.url}</fromFile>
-                                    <toFile>${project.build.directory}/jre.zip</toFile>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <!-- Unzip JRE -->
-                    <plugin>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <version>3.1.0</version>
-                        <executions>
-                            <execution>
-                                <id>unzip-jre</id>
-                                <phase>generate-resources</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <target>
-                                        <unzip src="${project.build.directory}/jre.zip" dest="${project.build.directory}" />
-                                    </target>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
                     <!-- Copy frontend, project-setup and JRE -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
@@ -122,7 +79,7 @@
                                     <overwrite>true</overwrite>
                                     <resources>
                                         <resource>
-                                            <directory>${project.build.directory}/${jre.folder}</directory>
+                                            <directory>${java.home}</directory>
                                             <includes>
                                                 <include>**</include>
                                             </includes>
@@ -179,46 +136,6 @@
             <id>release-desktop-linux</id>
             <build>
                 <plugins>
-                    <!-- Download JRE -->
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>wagon-maven-plugin</artifactId>
-                        <version>2.0.2</version>
-                        <executions>
-                            <execution>
-                                <id>download-jre</id>
-                                <phase>generate-sources</phase>
-                                <goals>
-                                    <goal>download-single</goal>
-                                </goals>
-                                <configuration>
-                                    <url>https://github.com</url>
-                                    <fromFile>${linux.jre.url}</fromFile>
-                                    <toFile>${project.build.directory}/jre.tar.gz</toFile>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <!-- Unzip JRE -->
-                    <plugin>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <version>3.1.0</version>
-                        <executions>
-                            <execution>
-                                <id>unzip-jre</id>
-                                <phase>generate-resources</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <target>
-                                        <gunzip src="${project.build.directory}/jre.tar.gz"/>
-                                        <untar src="${project.build.directory}/jre.tar" dest="${project.build.directory}"/>
-                                    </target>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
                     <!-- Copy frontend, project-setup and JRE -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
@@ -274,7 +191,7 @@
                                     <overwrite>true</overwrite>
                                     <resources>
                                         <resource>
-                                            <directory>${project.build.directory}/${jre.folder}</directory>
+                                            <directory>${java.home}</directory>
                                             <includes>
                                                 <include>**</include>
                                             </includes>
@@ -327,6 +244,5 @@
             </build>
         </profile>
     </profiles>
-
 
 </project>

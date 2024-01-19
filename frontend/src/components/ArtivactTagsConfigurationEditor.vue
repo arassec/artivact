@@ -2,6 +2,7 @@
   <div v-if="tagsConfiguration && locales">
     <q-list bordered class="rounded-borders q-mb-lg">
       <q-expansion-item
+        group="tags"
         v-for="(tagEntry, index) of tagsConfiguration.tags"
         :key="index"
         header-class="bg-primary text-white"

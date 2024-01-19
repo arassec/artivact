@@ -22,7 +22,7 @@
                   <q-icon
                     name="drag_indicator"
                     class="category-move-icon"
-                    size="lg"
+                    size="md"
                   ></q-icon>
                 </div>
               </q-item-section>
@@ -46,7 +46,7 @@
             </template>
 
             <q-card class="q-mb-lg">
-              <q-separator />
+              <q-separator/>
 
               <q-card-section>
                 <artivact-restricted-translatable-item-editor
@@ -58,7 +58,7 @@
                 />
               </q-card-section>
 
-              <q-separator />
+              <q-separator/>
 
               <q-card-section>
                 <h2 class="av-text-h2">Properties</h2>
@@ -76,30 +76,12 @@
                     size="md"
                     @click="deleteProperty(element, index)"
                   ></q-btn>
-                  <q-btn
-                    round
-                    dense
-                    flat
-                    class="float-right"
-                    icon="swap_vertical_circle"
-                    size="md"
-                  >
+                  <q-btn round dense flat class="float-right" icon="swap_vertical_circle" size="md"
+                         v-if="propertiesConfigurationProp.categories.length > 1">
                     <q-menu>
                       <q-list>
-                        <template
-                          v-for="(
-                            category, categoryIndex
-                          ) in propertiesConfiguration.categories"
-                          :key="categoryIndex"
-                        >
-                          <q-item
-                            v-if="category.id !== element.id"
-                            clickable
-                            v-close-popup
-                            @click="
-                              switchCategory(property, index, element, category)
-                            "
-                          >
+                        <template v-for="(category, categoryIndex) in propertiesConfiguration.categories" :key="categoryIndex">
+                          <q-item clickable v-close-popup @click="switchCategory(property, index, element, category)">
                             {{ category.value }}
                           </q-item>
                         </template>
@@ -140,14 +122,14 @@
                     />
                   </artivact-restricted-translatable-item-editor>
 
-                  <q-separator class="q-mt-sm q-mb-lg" />
+                  <q-separator class="q-mt-sm q-mb-lg"/>
                 </div>
               </q-card-section>
 
               <q-card-section>
                 <div class="row">
                   <q-space></q-space>
-                  <q-btn label="Add Property" @click="addProperty(element)" />
+                  <q-btn label="Add Property" @click="addProperty(element)"/>
                 </div>
               </q-card-section>
             </q-card>
@@ -158,7 +140,7 @@
 
     <div class="row">
       <q-space></q-space>
-      <q-btn label="Add Category" @click="addCategory" color="primary" />
+      <q-btn label="Add Category" @click="addCategory" color="primary"/>
     </div>
   </div>
 </template>
@@ -166,7 +148,7 @@
 <script setup lang="ts">
 // noinspection ES6UnusedImports
 import draggable from 'vuedraggable';
-import {PropType, toRef} from 'vue';
+import {computed, PropType, toRef} from 'vue';
 import {PropertiesConfiguration, Property, PropertyCategory,} from 'components/models';
 import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
 import ArtivactPropertyValueRangeEditor from 'components/ArtivactPropertyValueRangeEditor.vue';

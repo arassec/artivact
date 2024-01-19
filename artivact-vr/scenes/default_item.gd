@@ -50,12 +50,10 @@ func setup(zipReaderInput: ZIPReader, itemIdInput: String):
 	SignalBus.register(SignalBus.SignalType.ZOOM_MODEL_OUT, zoom_out)
 	SignalBus.register(SignalBus.SignalType.ZOOM_MODEL_STOP, zoom_stop)
 
+
 func next_model():
-	SignalBus.trigger_with_payload(SignalBus.SignalType.DEBUG, "next_model()")
-	
 	if models.size() == 1:
 		return
-		
 	modelIndex = modelIndex + 1
 	if modelIndex > maxModelIndex:
 		modelIndex = 0
@@ -84,6 +82,10 @@ func _enter_tree():
 		updateModel = true
 
 
+func _ready():
+		SignalBus.trigger_with_payload(SignalBus.SignalType.UPDATE_ITEM_DATA, itemData)
+
+
 func _exit_tree():
 	SignalBus.deregister(SignalBus.SignalType.NEXT_MODEL, next_model)
 	SignalBus.deregister(SignalBus.SignalType.ZOOM_MODEL_IN, zoom_in)
@@ -94,8 +96,6 @@ func _exit_tree():
 	
 
 func _process(delta: float):
-	rotate(Vector3(0, 1, 0), 0.5 * delta)
-	
 	if updateModel:
 		updateModel = false
 		if modelLoaderThread.is_started():
@@ -111,14 +111,15 @@ func _process(delta: float):
 		_add_model()
 		
 	var scaleFactor = 10 * delta
+	var model = $Turntable
 	if zoomIn:
-		if (shownModel.scale.x < 2):
-			shownModel.scale = shownModel.scale + Vector3(scaleFactor, scaleFactor, scaleFactor)
-			shownModel.position.y = shownModel.position.y - (scaleFactor / 2)
+		if (model.scale.x < 2):
+			model.scale = model.scale + Vector3(scaleFactor, scaleFactor, scaleFactor)
+			model.position.y = model.position.y - (scaleFactor / 2)
 	if zoomOut:
-		if (shownModel.scale.x > 0.1):
-			shownModel.scale = shownModel.scale - Vector3(scaleFactor, scaleFactor, scaleFactor)
-			shownModel.position.y = shownModel.position.y + (scaleFactor / 2)
+		if (model.scale.x > 0.5):
+			model.scale = model.scale - Vector3(scaleFactor, scaleFactor, scaleFactor)
+			model.position.y = model.position.y + (scaleFactor / 2)
 
 
 func _load_model():
@@ -161,6 +162,6 @@ func _remove_model():
 
 
 func _add_model():
-	call_deferred("add_child", loadedModel)
+	find_child("Turntable").call_deferred("add_child", loadedModel)
 	shownModel = loadedModel
 	modelShown = true

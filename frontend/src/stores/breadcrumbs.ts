@@ -14,7 +14,9 @@ export const useBreadcrumbsStore = defineStore('breadcrumbs', {
 
   actions: {
     addBreadcrumb (breadcrumbData: BreadcrumbData) {
-      this.breadcrumbsData.push(breadcrumbData);
+      if (this.breadcrumbsData[this.breadcrumbsData.length -1] !== breadcrumbData) {
+        this.breadcrumbsData.push(breadcrumbData);
+      }
     },
     resetBreadcrumbs () {
       this.breadcrumbsData.length = 0;

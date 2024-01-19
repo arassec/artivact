@@ -1,5 +1,6 @@
 <template>
   <div class="row gt-sm">
+
     <!-- LOCALE SELECTION -->
     <q-btn
       flat
@@ -19,11 +20,10 @@
             clickable
             v-close-popup
             @click="changeLocale(null)"
-            class="menu-entry"
-          >
-            <q-item-section
-            ><label class="menu-label">Default</label></q-item-section
-            >
+            class="menu-entry">
+            <q-item-section>
+              <label class="menu-label">Default</label>
+            </q-item-section>
           </q-item>
           <template v-for="locale in localeStore.locales" :key="locale">
             <q-item
@@ -37,6 +37,63 @@
               >
             </q-item>
           </template>
+        </q-list>
+      </q-menu>
+    </q-btn>
+
+    <!-- ITEM SETTINGS-->
+    <q-btn
+      flat
+      color="white"
+      icon="view_in_ar"
+      v-if="userdataStore.isUserOrAdmin"
+    >
+      <q-tooltip v-if="!itemMenuOpen">Item Settings</q-tooltip>
+      <q-menu
+        anchor="bottom middle"
+        self="top middle"
+        @before-show="itemMenuOpen = true"
+        @before-hide="itemMenuOpen = false"
+      >
+        <q-list>
+          <q-item
+            clickable
+            v-close-popup
+            @click="createItem"
+            class="menu-entry"
+            v-if="userdataStore.isUserOrAdmin"
+          >
+            <q-item-section
+            ><label class="menu-label">
+              <q-icon
+                name="add"
+                size="xs"
+                color="primary"
+                class="q-mr-sm"
+              ></q-icon>
+              Create Item</label
+            >
+            </q-item-section>
+          </q-item>
+          <q-item
+            clickable
+            v-close-popup
+            @click="gotoItemImportPage"
+            class="menu-entry"
+            v-if="userdataStore.isAdmin"
+          >
+            <q-item-section
+            ><label class="menu-label">
+              <q-icon
+                name="import_export"
+                size="xs"
+                color="primary"
+                class="q-mr-sm"
+              ></q-icon>
+              Import Items</label
+            >
+            </q-item-section>
+          </q-item>
         </q-list>
       </q-menu>
     </q-btn>
@@ -157,63 +214,6 @@
       </q-menu>
     </q-btn>
 
-    <!-- ITEM SETTINGS-->
-    <q-btn
-      flat
-      color="white"
-      icon="view_in_ar"
-      v-if="userdataStore.isUserOrAdmin"
-    >
-      <q-tooltip v-if="!itemMenuOpen">Item Settings</q-tooltip>
-      <q-menu
-        anchor="bottom middle"
-        self="top middle"
-        @before-show="itemMenuOpen = true"
-        @before-hide="itemMenuOpen = false"
-      >
-        <q-list>
-          <q-item
-            clickable
-            v-close-popup
-            @click="createItem"
-            class="menu-entry"
-            v-if="userdataStore.isUserOrAdmin"
-          >
-            <q-item-section
-            ><label class="menu-label">
-              <q-icon
-                name="add"
-                size="xs"
-                color="primary"
-                class="q-mr-sm"
-              ></q-icon>
-              Create Item</label
-            >
-            </q-item-section>
-          </q-item>
-          <q-item
-            clickable
-            v-close-popup
-            @click="gotoItemImportPage"
-            class="menu-entry"
-            v-if="userdataStore.isAdmin"
-          >
-            <q-item-section
-            ><label class="menu-label">
-              <q-icon
-                name="import_export"
-                size="xs"
-                color="primary"
-                class="q-mr-sm"
-              ></q-icon>
-              Import Items</label
-            >
-            </q-item-section>
-          </q-item>
-        </q-list>
-      </q-menu>
-    </q-btn>
-
     <!-- ACCOUNT SETTINGS -->
     <q-btn
       flat
@@ -316,6 +316,57 @@
           </q-menu>
         </q-item>
 
+        <!-- ITEM SETTINGS -->
+        <q-item clickable class="menu-entry" v-if="userdataStore.isUserOrAdmin">
+          <q-item-section>
+            <label class="menu-label">
+              <q-icon name="view_in_ar" size="sm" class="q-mr-sm"/>
+              <label>Items</label>
+            </label>
+          </q-item-section>
+          <q-menu anchor="top end" self="top start">
+            <q-list>
+              <q-item
+                clickable
+                v-close-popup
+                @click="createItem"
+                class="menu-entry"
+                v-if="userdataStore.isUserOrAdmin">
+                <q-item-section>
+                  <label class="menu-label">
+                    <q-icon
+                      name="add"
+                      size="xs"
+                      color="primary"
+                      class="q-mr-sm"
+                    ></q-icon>
+                    Create Item</label
+                  >
+                </q-item-section>
+              </q-item>
+              <q-item
+                clickable
+                v-close-popup
+                @click="gotoItemImportPage"
+                class="menu-entry"
+                v-if="userdataStore.isAdmin"
+              >
+                <q-item-section
+                ><label class="menu-label">
+                  <q-icon
+                    name="import_export"
+                    size="xs"
+                    color="primary"
+                    class="q-mr-sm"
+                  ></q-icon>
+                  Import Items</label
+                >
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </q-item>
+
         <!-- EXHIBITION CONFIGURATION -->
         <q-item clickable v-close-popup @click="gotoExhibitionsConfigurationPage"
                 class="menu-entry" v-if="userdataStore.isUserOrAdmin">
@@ -410,58 +461,6 @@
                     class="q-mr-sm"
                   ></q-icon>
                   Appearance</label
-                >
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </q-menu>
-        </q-item>
-
-        <!-- ITEM SETTINGS -->
-        <q-item clickable class="menu-entry" v-if="userdataStore.isUserOrAdmin">
-          <q-item-section>
-            <label class="menu-label">
-              <q-icon name="add" size="sm" class="q-mr-sm"/>
-              <label>Items</label>
-            </label>
-          </q-item-section>
-          <q-menu anchor="top end" self="top start">
-            <q-list>
-              <q-item
-                clickable
-                v-close-popup
-                @click="createItem"
-                class="menu-entry"
-                v-if="userdataStore.isUserOrAdmin"
-              >
-                <q-item-section
-                ><label class="menu-label">
-                  <q-icon
-                    name="add"
-                    size="xs"
-                    color="primary"
-                    class="q-mr-sm"
-                  ></q-icon>
-                  Create Item</label
-                >
-                </q-item-section>
-              </q-item>
-              <q-item
-                clickable
-                v-close-popup
-                @click="gotoItemImportPage"
-                class="menu-entry"
-                v-if="userdataStore.isAdmin"
-              >
-                <q-item-section
-                ><label class="menu-label">
-                  <q-icon
-                    name="import_export"
-                    size="xs"
-                    color="primary"
-                    class="q-mr-sm"
-                  ></q-icon>
-                  Import Items</label
                 >
                 </q-item-section>
               </q-item>

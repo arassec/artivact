@@ -7,6 +7,7 @@
 
     <q-list bordered class="rounded-borders q-mb-lg">
       <q-expansion-item
+        group="peripherals"
         header-class="bg-primary text-white"
         class="list-entry"
         expand-separator
@@ -52,6 +53,7 @@
       </q-expansion-item>
 
       <q-expansion-item
+        group="peripherals"
         header-class="bg-primary text-white"
         class="list-entry"
         expand-separator
@@ -100,6 +102,7 @@
       </q-expansion-item>
 
       <q-expansion-item
+        group="peripherals"
         header-class="bg-primary text-white"
         class="list-entry"
         expand-separator
@@ -114,7 +117,8 @@
           <q-card-section>
             <div class="q-mb-md">
               Automatic background removal of captured images is implemented using the open source tool 'rembg' by
-              Daniel Gatis (https://github.com/danielgatis/rembg).
+              Daniel Gatis (https://github.com/danielgatis/rembg). You can e.g. provide it with docker by running
+              <pre>docker run -d -p 5000:5000 --name=rembg --restart=always danielgatis/rembg s</pre>
             </div>
             <q-select
               class="q-mb-md"
@@ -136,6 +140,7 @@
       </q-expansion-item>
 
       <q-expansion-item
+        group="peripherals"
         header-class="bg-primary text-white"
         class="list-entry"
         expand-separator
@@ -177,6 +182,7 @@
       </q-expansion-item>
 
       <q-expansion-item
+        group="peripherals"
         header-class="bg-primary text-white"
         class="list-entry"
         expand-separator

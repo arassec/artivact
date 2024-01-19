@@ -28,11 +28,6 @@ func update_debug_panel(message: String):
 		$DebugPanel.text = message
 	
 
-func _on_right_controller_button_pressed(eventName):
-	if eventName == "trigger_click":
-		SignalBus.trigger(SignalBus.SignalType.NEXT_MODEL)
-
-
 func _on_right_controller_input_vector_2_changed(eventName, value):
 	if eventName == "primary" and value.x == 1:
 		SignalBus.trigger(SignalBus.SignalType.NEXT_ITEM)

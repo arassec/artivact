@@ -28,6 +28,7 @@ func setup(exhibitionIdInput: String):
 		return
 
 	exhibitionData = exhibitionJson.data
+	ArtivactSettings.setup(exhibitionData)
 
 
 func _enter_tree():
