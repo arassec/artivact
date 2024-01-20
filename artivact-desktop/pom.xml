@@ -83,6 +83,28 @@
                                             <includes>
                                                 <include>**</include>
                                             </includes>
+                                            <excludes>
+                                                <exclude>**/security/cacerts</exclude>
+                                            </excludes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-cacerts</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}/artivact-desktop-windows-v${revision}/lib/security</outputDirectory>
+                                    <overwrite>true</overwrite>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.basedir}/src/main/resources/</directory>
+                                            <includes>
+                                                <include>cacerts</include>
+                                            </includes>
                                         </resource>
                                     </resources>
                                 </configuration>
@@ -194,6 +216,28 @@
                                             <directory>${java.home}</directory>
                                             <includes>
                                                 <include>**</include>
+                                            </includes>
+                                            <excludes>
+                                                <exclude>cacerts</exclude>
+                                            </excludes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-cacerts</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}/artivact-desktop-windows-v${revision}/lib/security</outputDirectory>
+                                    <overwrite>true</overwrite>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.basedir}/src/main/resources/</directory>
+                                            <includes>
+                                                <include>cacerts</include>
                                             </includes>
                                         </resource>
                                     </resources>
