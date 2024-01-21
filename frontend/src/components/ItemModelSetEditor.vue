@@ -68,21 +68,17 @@
   </div>
 
   <!-- MODEL-SET DETAILS -->
-  <q-dialog v-model="showModelSetDetailsModalRef" persistent v-if="showModelSetDetailsModalRef && modelSetFiles">
-    <q-card class="q-mb-lg image-set-modal">
-      <q-card-section class="bg-primary text-white">
-        <div class="row">
-          <div class="text-h6">Model-Set Details</div>
-          <q-space/>
-          <q-btn
-            icon="close"
-            flat
-            rounded
-            dense
-            @click="showModelSetDetailsModalRef = false"
-          />
-        </div>
-      </q-card-section>
+  <artivact-dialog :dialog-model="showModelSetDetailsModalRef"
+                   v-if="showModelSetDetailsModalRef && modelSetFiles"
+                   :hide-buttons="true"
+                   :show-close-button="true"
+                   :min-width="50"
+                   @close-dialog="showModelSetDetailsModalRef = false">
+    <template v-slot:header>
+      Model-Set Details
+    </template>
+
+    <template v-slot:body>
       <q-card-section>
         <div class="row">
           <q-card v-for="(file, index) in modelSetFiles" :key="index" class="image-set-card q-mr-md q-mb-md">
@@ -109,50 +105,39 @@
           </q-card>
         </div>
       </q-card-section>
-    </q-card>
-  </q-dialog>
+    </template>
+  </artivact-dialog>
 
   <!-- LONG-RUNNING OPERATION -->
-  <q-dialog v-model="showOperationInProgressModalRef" persistent>
-    <q-card class="q-mb-lg image-set-modal">
-      <q-card-section class="bg-primary text-white">
-        <div class="text-h6">Operation in Progress</div>
-      </q-card-section>
-      <q-card-section>
-        {{ progressMonitorRef?.progress }}
-      </q-card-section>
-    </q-card>
-  </q-dialog>
+  <artivact-operation-in-progress-dialog :dialog-model="showOperationInProgressModalRef"
+                                         :progress-monitor-ref="progressMonitorRef"/>
 
   <!-- DELETE CONFIRMATION DIALOG -->
-  <q-dialog v-model="confirmDeleteRef" persistent>
-    <q-card>
-      <q-card-section class="row items-center">
-        <q-icon
-          name="warning"
-          size="md"
-          color="warning"
-          class="q-mr-md"
-        ></q-icon>
-        <h3 class="av-text-h3">Delete Model-Set?</h3>
-        <div class="q-ml-sm">
-          Are you sure you want to delete this Model-Set and all its files?
-          This action cannot be undone!
-        </div>
-      </q-card-section>
+  <artivact-dialog :dialog-model="confirmDeleteRef" :warn="true">
+    <template v-slot:header>
+      Delete Model-Set?
+    </template>
+
+    <template v-slot:body>
       <q-card-section>
-        <q-btn flat label="Cancel" color="primary" v-close-popup/>
-        <q-btn
-          flat
-          label="Delete Model-Set"
-          color="primary"
-          v-close-popup
-          @click="deleteModelSet"
-          class="float-right"
-        />
+        Are you sure you want to delete this Model-Set and all its files?
+        This action cannot be undone!
       </q-card-section>
-    </q-card>
-  </q-dialog>
+    </template>
+
+    <template v-slot:cancel>
+      <q-btn label="Cancel" color="primary" @click="confirmDeleteRef = false"/>
+    </template>
+
+    <template v-slot:approve>
+      <q-btn
+        label="Delete Model-Set"
+        color="primary"
+        @click="deleteModelSet"
+      />
+    </template>
+  </artivact-dialog>
+
 </template>
 
 <script setup lang="ts">
@@ -161,6 +146,8 @@ import {PropType, ref} from 'vue';
 import {Asset, ModelSet, OperationProgress} from 'components/models';
 import {api} from 'boot/axios';
 import {useQuasar} from 'quasar';
+import ArtivactDialog from 'components/ArtivactDialog.vue';
+import ArtivactOperationInProgressDialog from 'components/ArtivactOperationInProgressDialog.vue';
 
 const quasar = useQuasar();
 
@@ -305,6 +292,7 @@ function showDeleteModelSetConfirm(modelSetIndex: number) {
 }
 
 function deleteModelSet() {
+  confirmDeleteRef.value = false;
   api
     .delete('/api/media-creation/' + props.itemId + '/model-set/' + selectedModelSetIndex)
     .then((response) => {

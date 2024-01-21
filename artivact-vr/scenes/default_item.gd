@@ -143,9 +143,10 @@ func _generate_scene():
 	
 	var size:Vector3
 	for n in loadedModel.get_children().size():
-		var mesh:MeshInstance3D = loadedModel.get_child(n)
-		size = mesh.get_aabb().size
-		break;
+		if "MeshInstance3D"	== loadedModel.get_child(n).get_class():
+			var mesh:MeshInstance3D = loadedModel.get_child(n)
+			size = mesh.get_aabb().size
+			break;
 	var targetSizeInM = 50 / 100.0 # Size should initially be 50cm.
 	var currentSizeInM = size.x
 	var scaleFactor = targetSizeInM / currentSizeInM

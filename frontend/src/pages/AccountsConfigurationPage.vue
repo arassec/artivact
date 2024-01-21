@@ -70,12 +70,12 @@
       />
     </div>
 
-    <q-dialog v-model="showCreateModalRef" persistent>
-      <q-card class="q-mb-lg artivact-modal-content">
-        <q-card-section class="bg-primary text-white">
-          <div class="text-h6">Create Account</div>
-        </q-card-section>
+    <artivact-dialog :dialog-model="showCreateModalRef">
+      <template v-slot:header>
+        Create Account
+      </template>
 
+      <template v-slot:body>
         <q-card-section>
           <q-input
             outlined
@@ -133,34 +133,31 @@
             />
           </div>
         </q-card-section>
+      </template>
 
-        <q-card-section>
-          <q-btn
-            label="Cancel"
-            color="primary"
-            @click="showCreateModalRef = false"
-          />
-          <q-btn
-            label="Save"
-            color="primary"
-            class="float-right"
-            @click="showCreateModalRef = !createAccount()"
-          />
-        </q-card-section>
-      </q-card>
-    </q-dialog>
+      <template v-slot:cancel>
+        <q-btn
+          label="Cancel"
+          color="primary"
+          @click="showCreateModalRef = false"
+        />
+      </template>
 
-    <q-dialog
-      v-model="showEditModalRef"
-      persistent
-      v-if="editAccountRef"
-      class="artivact-modal"
-    >
-      <q-card class="q-mb-lg artivact-modal-content">
-        <q-card-section class="bg-primary text-white">
-          <div class="text-h6">Edit Account</div>
-        </q-card-section>
+      <template v-slot:approve>
+        <q-btn
+          label="Save"
+          color="primary"
+          @click="showCreateModalRef = !createAccount()"
+        />
+      </template>
+    </artivact-dialog>
 
+    <artivact-dialog :dialog-model="showEditModalRef">
+      <template v-slot:header>
+        Edit Account
+      </template>
+
+      <template v-slot:body>
         <q-card-section>
           <q-input
             outlined
@@ -218,52 +215,50 @@
             />
           </div>
         </q-card-section>
+      </template>
 
+      <template v-slot:cancel>
+        <q-btn
+          label="Cancel"
+          color="primary"
+          @click="showEditModalRef = false"
+        />
+      </template>
+
+      <template v-slot:approve>
+        <q-btn
+          label="Save"
+          color="primary"
+          @click="showEditModalRef = !updateAccount()"
+        />
+      </template>
+    </artivact-dialog>
+
+    <artivact-dialog :dialog-model="showDeleteModalRef" :warn="true">
+      <template v-slot:header>
+        Delete Account?
+      </template>
+
+      <template v-slot:body>
         <q-card-section>
-          <q-btn
-            label="Cancel"
-            color="primary"
-            @click="showEditModalRef = false"
-          />
-          <q-btn
-            label="Save"
-            color="primary"
-            class="float-right"
-            @click="showEditModalRef = !updateAccount()"
-          />
+          Are you sure you want to delete this account? This action cannot be
+          undone!
         </q-card-section>
-      </q-card>
-    </q-dialog>
+      </template>
 
-    <q-dialog v-model="showDeleteModalRef" persistent class="artivact-modal">
-      <q-card class="artivact-modal-content">
-        <q-card-section class="row items-center">
-          <q-icon
-            name="warning"
-            size="md"
-            color="warning"
-            class="q-mr-md"
-          ></q-icon>
-          <h3 class="av-text-h3">Delete Account?</h3>
-          <div class="q-ml-sm">
-            Are you sure you want to delete this account? This action cannot be
-            undone!
-          </div>
-        </q-card-section>
+      <template v-slot:cancel>
+        <q-btn label="Cancel" color="primary" @click="showDeleteModalRef = false"/>
+      </template>
 
-        <q-card-section>
-          <q-btn flat label="Cancel" color="primary" v-close-popup />
-          <q-btn
-            flat
-            label="Delete Account"
-            color="primary"
-            v-close-popup
-            @click="deleteAccount(deleteAccountIdRef)"
-            class="float-right"
-          />
-        </q-card-section>
-      </q-card>
-    </q-dialog>
+      <template v-slot:approve>
+        <q-btn
+          label="Delete Account"
+          color="primary"
+          @click="deleteAccount(deleteAccountIdRef)"
+        />
+      </template>
+    </artivact-dialog>
+
   </ArtivactContent>
 </template>
 
@@ -273,6 +268,7 @@ import {api} from 'boot/axios';
 import {onMounted, Ref, ref} from 'vue';
 import {Account} from 'components/models';
 import ArtivactContent from 'components/ArtivactContent.vue';
+import ArtivactDialog from 'components/ArtivactDialog.vue';
 
 const quasar = useQuasar();
 
@@ -401,10 +397,17 @@ function updateAccount(): boolean {
 }
 
 function deleteAccount(id: number) {
+  showDeleteModalRef.value = false;
   api
     .delete('/api/account/' + id)
     .then(() => {
       loadAccounts();
+      quasar.notify({
+        color: 'positive',
+        position: 'bottom',
+        message: 'Account deleted',
+        icon: 'check',
+      });
     })
     .catch(() => {
       quasar.notify({

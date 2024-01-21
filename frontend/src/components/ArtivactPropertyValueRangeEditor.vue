@@ -46,16 +46,13 @@
       />
     </div>
 
-    <q-dialog
-      v-model="addValueRef"
-      persistent
-      transition-show="scale"
-      transition-hide="scale"
-      class="justify-center"
-    >
-      <q-card class="value-range-dialog">
-        <q-card-section> Configure Value </q-card-section>
-        <q-card-section class="column-lg q-ma-md items-center">
+    <artivact-dialog :dialog-model="addValueRef">
+      <template v-slot:header>
+        Configure Value
+      </template>
+
+      <template v-slot:body>
+        <q-card-section>
           <artivact-restricted-translatable-item-editor
             :translatable-string="valueRef"
             :restricted-item="valueRef"
@@ -64,13 +61,17 @@
             :show-separator="false"
           />
         </q-card-section>
-        <q-card-actions>
-          <q-btn flat label="Cancel" v-close-popup />
-          <q-space />
-          <q-btn flat label="Save" v-close-popup @click="saveValue" />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
+      </template>
+
+      <template v-slot:cancel>
+        <q-btn color="primary" label="Cancel" @click="addValueRef = false"/>
+      </template>
+
+      <template v-slot:approve>
+        <q-btn color="primary" label="Save" @click="saveValue" />
+      </template>
+    </artivact-dialog>
+
   </div>
 </template>
 
@@ -79,6 +80,7 @@ import {PropType, ref, toRef} from 'vue';
 import {BaseTranslatableRestrictedItem} from 'components/models';
 import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
 import {translate} from './utils';
+import ArtivactDialog from 'components/ArtivactDialog.vue';
 
 const props = defineProps({
   valueRange: {
@@ -144,6 +146,7 @@ function saveValue() {
     };
     valueRangeProp.value.push(item);
   }
+  addValueRef.value = false;
 }
 
 function deleteValue(index: number) {

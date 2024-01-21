@@ -369,23 +369,23 @@
       <q-icon name="add" color="white"></q-icon>
     </q-btn>
 
-    <q-dialog v-model="showMenuModal" persistent>
-      <q-card class="q-mb-lg artivact-modal-content">
-        <q-card-section class="bg-primary text-white">
-          <div class="text-h6" v-if="!menuRef.id && !menuRef.parentId">
-            Add Menu
-          </div>
-          <div class="text-h6" v-if="menuRef.id && !menuRef.parentId">
-            Edit Menu
-          </div>
-          <div class="text-h6" v-if="!menuRef.id && menuRef.parentId">
-            Add Menu Entry
-          </div>
-          <div class="text-h6" v-if="menuRef.id && menuRef.parentId">
-            Edit Menu Entry
-          </div>
-        </q-card-section>
+    <artivact-dialog :dialog-model="showMenuModal">
+      <template v-slot:header>
+        <div class="text-h6" v-if="!menuRef.id && !menuRef.parentId">
+          Add Menu
+        </div>
+        <div class="text-h6" v-if="menuRef.id && !menuRef.parentId">
+          Edit Menu
+        </div>
+        <div class="text-h6" v-if="!menuRef.id && menuRef.parentId">
+          Add Menu Entry
+        </div>
+        <div class="text-h6" v-if="menuRef.id && menuRef.parentId">
+          Edit Menu Entry
+        </div>
+      </template>
 
+      <template v-slot:body>
         <q-card-section>
           <div class="q-mb-xs" v-if="!menu.parentId">
             Enter the menu's name.
@@ -401,63 +401,51 @@
             :show-separator="false"
           />
         </q-card-section>
+      </template>
 
+      <template v-slot:cancel>
+        <q-btn
+          label="Cancel"
+          color="primary"
+          @click="showMenuModal = false"
+        />
+      </template>
+
+      <template v-slot:approve>
+        <q-btn
+          label="Save"
+          color="primary"
+          @click="saveMenu(menuRef)"
+        />
+      </template>
+    </artivact-dialog>
+
+    <artivact-dialog :dialog-model="confirmDeleteRef" :warn="true">
+      <template v-slot:header>
+        <h3 class="av-text-h3" v-if="!menuRef.parentId">Delete Menu?</h3>
+        <h3 class="av-text-h3" v-if="menuRef.parentId">Delete Menu Entry?</h3>
+      </template>
+
+      <template v-slot:body>
         <q-card-section>
-          <q-btn
-            label="Cancel"
-            color="primary"
-            @click="showMenuModal = false"
-          />
-          <q-btn
-            label="Save"
-            color="primary"
-            class="float-right"
-            @click="saveMenu(menuRef)"
-          />
+          Are you sure you want to delete this menu including its page and
+          menu entries? This action cannot be undone!
         </q-card-section>
-      </q-card>
-    </q-dialog>
+      </template>
 
-    <q-dialog v-model="confirmDeleteRef" persistent>
-      <q-card>
-        <q-card-section class="row items-center">
-          <q-icon
-            name="warning"
-            size="md"
-            color="warning"
-            class="q-mr-md"
-          ></q-icon>
-          <h3 class="av-text-h3" v-if="!menuRef.parentId">Delete Menu?</h3>
-          <h3 class="av-text-h3" v-if="menuRef.parentId">Delete Menu Entry?</h3>
-          <div class="q-ml-sm">
-            Are you sure you want to delete this menu including its page and
-            menu entries? This action cannot be undone!
-          </div>
-        </q-card-section>
+      <template v-slot:cancel>
+        <q-btn label="Cancel" color="primary" @click="confirmDeleteRef = false"/>
+      </template>
 
-        <q-card-section>
-          <q-btn flat label="Cancel" color="primary" v-close-popup/>
-          <q-btn
-            v-if="!menuRef.parentId"
-            flat
-            label="Delete Menu"
-            color="primary"
-            v-close-popup
-            @click="deleteMenu"
-            class="float-right"
-          />
-          <q-btn
-            v-if="menuRef.parentId"
-            flat
-            label="Delete Menu Entry"
-            color="primary"
-            v-close-popup
-            @click="deleteMenu"
-            class="float-right"
-          />
-        </q-card-section>
-      </q-card>
-    </q-dialog>
+      <template v-slot:approve>
+        <q-btn
+          :label="menuRef.parentId ? 'Delete Menu Entry' : 'Delete Menu'"
+          color="primary"
+          @click="deleteMenu"
+        />
+      </template>
+    </artivact-dialog>
+
   </div>
 
   <q-btn flat icon="menu" class="lt-md" v-if="menuStore.menus.length > 0">
@@ -527,6 +515,7 @@ import {useLocaleStore} from 'stores/locale';
 import {moveDown, moveUp, translate} from 'components/utils';
 import {Menu} from 'components/models';
 import {useBreadcrumbsStore} from 'stores/breadcrumbs';
+import ArtivactDialog from 'components/ArtivactDialog.vue';
 
 const quasar = useQuasar();
 const router = useRouter();

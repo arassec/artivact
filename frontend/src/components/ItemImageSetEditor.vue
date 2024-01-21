@@ -77,21 +77,12 @@
   </div>
 
   <!-- CAPTURE PHOTOS -->
-  <q-dialog v-model="showCapturePhotosModalRef" persistent>
-    <q-card class="artivact-fixed-modal-content">
-      <q-card-section class="bg-primary text-white">
-        <div class="row">
-          <div class="text-h6">Photo-Capture Parameters</div>
-          <q-space/>
-          <q-btn
-            icon="close"
-            flat
-            round
-            dense
-            @click="showCapturePhotosModalRef = false"
-          />
-        </div>
-      </q-card-section>
+  <artivact-dialog :dialog-model="showCapturePhotosModalRef">
+    <template v-slot:header>
+      Photo-Capture Parameters
+    </template>
+
+    <template v-slot:body>
       <q-card-section>
         <q-input
           outlined
@@ -101,8 +92,6 @@
           name="numPhotos"
           label="Number of Photos"
         />
-      </q-card-section>
-      <q-card-section>
         <q-checkbox
           v-model="capturePhotosParamsRef.useTurnTable"
           class="col-5"
@@ -117,8 +106,6 @@
           name="turntableDelay"
           label="Turntable Delay"
         />
-      </q-card-section>
-      <q-card-section>
         <q-checkbox
           v-model="capturePhotosParamsRef.removeBackgrounds"
           class="col-5"
@@ -126,65 +113,56 @@
           label="Remove Image Backgrounds?"
         />
       </q-card-section>
-      <q-card-actions>
-        <div class="row full-width">
-          <q-space/>
-          <q-btn label="Start Capturing" icon="camera" @click="capturePhotos"/>
-        </div>
-      </q-card-actions>
-    </q-card>
-  </q-dialog>
+    </template>
+
+    <template v-slot:cancel>
+      <q-btn color="primary" label="Cancel" @click="showCapturePhotosModalRef = false"/>
+    </template>
+
+    <template v-slot:approve>
+      <q-btn color="primary" label="Start Capturing" icon="camera" @click="capturePhotos"/>
+    </template>
+  </artivact-dialog>
 
   <!-- UPLOAD FILES -->
-  <q-dialog v-model="showUploadFilesModalRef" persistent>
-    <q-card class="artivact-fixed-modal-content">
-      <q-card-section class="bg-primary text-white">
-        <div class="row">
-          <div class="text-h6">Upload Files to new Image-Set</div>
-          <q-space/>
-          <q-btn
-            icon="close"
-            flat
-            round
-            dense
-            @click="showUploadFilesModalRef = false"
-          />
-        </div>
-      </q-card-section>
+  <artivact-dialog :dialog-model="showUploadFilesModalRef" :hide-buttons="true"
+                   :show-close-button="true" @close-dialog="showUploadFilesModalRef = false">
+    <template v-slot:header>
+      Upload Files to new Image-Set
+    </template>
+
+    <template v-slot:body>
       <q-card-section>
         <q-uploader
           :url="'/api/item/' + itemId + '/image?uploadOnly=true'"
           label="Add Images"
           multiple
-          class="uploader q-mb-md col-12"
+          class="full-width q-mt-md q-mb-md"
           accept=".jpg, image/*"
           field-name="file"
           :no-thumbnails="true"
           @finish="createImageSet"
         />
       </q-card-section>
-    </q-card>
-  </q-dialog>
+    </template>
+  </artivact-dialog>
 
   <!-- IMAGE-SET DETAILS -->
-  <q-dialog v-model="showImageSetDetailsModalRef" persistent v-if="showImageSetDetailsModalRef && selectedImageSet">
-    <q-card class="q-mb-lg image-set-modal">
-      <q-card-section class="bg-primary text-white">
-        <div class="row">
-          <div class="text-h6">Image-Set Details</div>
-          <q-space/>
-          <q-btn
-            icon="close"
-            flat
-            round
-            dense
-            @click="showImageSetDetailsModalRef = false"
-          />
-        </div>
-      </q-card-section>
+  <artivact-dialog :dialog-model="showImageSetDetailsModalRef"
+                   v-if="showImageSetDetailsModalRef && selectedImageSet"
+                   :hide-buttons="true"
+                   :show-close-button="true"
+                   :min-width="50"
+                   @close-dialog="showImageSetDetailsModalRef = false">
+    <template v-slot:header>
+      Image-Set Details
+    </template>
+
+    <template v-slot:body>
       <q-card-section>
-        <div class="row">
-          <q-card v-for="(image, index) in selectedImageSet.images" :key="index" class="image-set-card q-mr-md q-mb-md">
+        <div class="row q-ml-md">
+          <q-card v-for="(image, index) in imagePageRef" :key="index"
+                  class="image-set-card q-mr-md q-mb-md">
             <q-img :src="image.url + '?imageSize=ITEM_CARD'">
               <div class="absolute-bottom">
                 <div class="text-h6">{{ image.fileName }}</div>
@@ -216,51 +194,49 @@
             </q-card-actions>
           </q-card>
         </div>
-      </q-card-section>
-    </q-card>
-  </q-dialog>
-
-  <!-- LONG-RUNNING OPERATION -->
-  <q-dialog v-model="showOperationInProgressModalRef" persistent>
-    <q-card class="q-mb-lg image-set-modal">
-      <q-card-section class="bg-primary text-white">
-        <div class="text-h6">Operation in Progress</div>
-      </q-card-section>
-      <q-card-section>
-        {{ progressMonitorRef?.progress }}
-      </q-card-section>
-    </q-card>
-  </q-dialog>
-
-  <!-- DELETE CONFIRMATION DIALOG -->
-  <q-dialog v-model="confirmDeleteRef" persistent>
-    <q-card>
-      <q-card-section class="row items-center">
-        <q-icon
-          name="warning"
-          size="md"
-          color="warning"
-          class="q-mr-md"
-        ></q-icon>
-        <h3 class="av-text-h3">Delete Image-Set?</h3>
-        <div class="q-ml-sm">
-          Are you sure you want to delete this Image-Set and all its files?
-          This action cannot be undone!
+        <div class="row justify-center items-center">
+        <q-pagination
+          class="gt-xs"
+          v-model="pageData.cur"
+          :max="pageData.max"
+          input
+          @update:model-value="updateImagesPage(pageData.cur - 1)"
+        />
         </div>
       </q-card-section>
+    </template>
+  </artivact-dialog>
+
+  <!-- LONG-RUNNING OPERATION -->
+  <artivact-operation-in-progress-dialog :progress-monitor-ref="progressMonitorRef"
+                                         :dialog-model="showOperationInProgressModalRef"/>
+
+  <!-- DELETE CONFIRMATION DIALOG -->
+  <artivact-dialog :dialog-model="confirmDeleteRef" :warn="true">
+    <template v-slot:header>
+      Delete Image-Set?
+    </template>
+
+    <template v-slot:body>
       <q-card-section>
-        <q-btn flat label="Cancel" color="primary" v-close-popup/>
-        <q-btn
-          flat
-          label="Delete Image-Set"
-          color="primary"
-          v-close-popup
-          @click="deleteImageSet"
-          class="float-right"
-        />
+        Are you sure you want to delete this Image-Set and all its files?
+        This action cannot be undone!
       </q-card-section>
-    </q-card>
-  </q-dialog>
+    </template>
+
+    <template v-slot:cancel>
+      <q-btn label="Cancel" color="primary" @click="confirmDeleteRef = false"/>
+    </template>
+
+    <template v-slot:approve>
+      <q-btn
+        label="Delete Image-Set"
+        color="primary"
+        @click="deleteImageSet"
+      />
+    </template>
+  </artivact-dialog>
+
 </template>
 
 <script setup lang="ts">
@@ -269,6 +245,8 @@ import {api} from 'boot/axios';
 import {Asset, CapturePhotosParams, ImageSet, OperationProgress} from 'components/models';
 import {useQuasar} from 'quasar';
 import {PropType, ref} from 'vue';
+import ArtivactDialog from 'components/ArtivactDialog.vue';
+import ArtivactOperationInProgressDialog from 'components/ArtivactOperationInProgressDialog.vue';
 
 const quasar = useQuasar();
 
@@ -298,7 +276,7 @@ const capturePhotosParamsRef = ref({
 } as CapturePhotosParams);
 
 const showImageSetDetailsModalRef = ref(false);
-let selectedImageSet;
+let selectedImageSet: ImageSet;
 
 const showUploadFilesModalRef = ref(false);
 const showOperationInProgressModalRef = ref(false);
@@ -308,8 +286,30 @@ const progressMonitorRef = ref<OperationProgress>();
 const confirmDeleteRef = ref(false);
 let selectedImageSetIndex = -1;
 
+const pageData = {
+  cur: 1,
+  max: 0,
+  min: 0
+}
+const imagePageRef = ref([] as Asset[])
+
+function updateImagesPage(page: number) {
+  let start = page * 9;
+  let end = start + 9;
+  if (end > selectedImageSet.images.length) {
+    end = selectedImageSet.images.length;
+  }
+  imagePageRef.value = []
+  for (let i = start; i < end; i++) {
+    imagePageRef.value.push(selectedImageSet.images[i]);
+  }
+}
+
 function showImageDetails(imageSet: ImageSet) {
   selectedImageSet = imageSet;
+  pageData.max = (imageSet.images.length / 9) + (imageSet.images.length % 9 > 0 ? 1 : 0);
+  pageData.cur = 1;
+  updateImagesPage(0);
   showImageSetDetailsModalRef.value = true;
 }
 
@@ -418,6 +418,7 @@ function showDeleteImageSetConfirm(imageSetIndex: number) {
 }
 
 function deleteImageSet() {
+  confirmDeleteRef.value = false;
   api
     .delete('/api/media-creation/' + props.itemId + '/image-set/' + selectedImageSetIndex)
     .then((response) => {
@@ -498,10 +499,6 @@ function updateOperationProgress() {
 .image-set-card-img {
   width: 200px;
   height: 200px;
-}
-
-.image-set-modal {
-  min-width: 70em;
 }
 
 </style>

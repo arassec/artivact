@@ -92,16 +92,14 @@
                 @click="addTag"
               />
             </div>
-            <q-dialog
-              v-model="addTagRef"
-              persistent
-              transition-show="scale"
-              transition-hide="scale"
-              class="justify-center"
-            >
-              <q-card class="dialog-card">
-                <q-card-section> Add Tag</q-card-section>
-                <q-card-section class="column-lg q-ma-md items-center">
+
+            <artivact-dialog :dialog-model="addTagRef">
+              <template v-slot:header>
+                Add Tag
+              </template>
+
+              <template v-slot:body>
+                <q-card-section>
                   <q-select
                     v-model="tagValueRef"
                     autofocus
@@ -111,19 +109,22 @@
                     label="Tag"
                   />
                 </q-card-section>
-                <q-card-actions>
-                  <q-btn flat label="Cancel" v-close-popup/>
-                  <q-space/>
-                  <q-btn
-                    flat
-                    label="Save"
-                    v-close-popup
-                    @click="saveSelectedTag"
-                  />
-                </q-card-actions>
-              </q-card>
-            </q-dialog>
+              </template>
+
+              <template v-slot:cancel>
+                <q-btn color="primary" label="Cancel" @click="addTagRef = false"/>
+              </template>
+
+              <template v-slot:approve>
+                <q-btn
+                  color="primary"
+                  label="Save"
+                  @click="saveSelectedTag"
+                />
+              </template>
+            </artivact-dialog>
           </div>
+
           <q-separator
             v-if="tagsDataRef"
             v-show="tagsDataRef.tags.length > 0"
@@ -225,35 +226,31 @@
       </div>
     </div>
 
-    <q-dialog v-model="confirmDeleteRef" persistent>
-      <q-card>
-        <q-card-section class="row items-center">
-          <q-icon
-            name="warning"
-            size="md"
-            color="warning"
-            class="q-mr-md"
-          ></q-icon>
-          <h3 class="av-text-h3">Delete Artivact?</h3>
-          <div class="q-ml-sm">
-            Are you sure you want to delete this Artivact and all its files?
-            This action cannot be undone!
-          </div>
-        </q-card-section>
+    <artivact-dialog :dialog-model="confirmDeleteRef" :warn="true">
+      <template v-slot:header>
+        Delete Item?
+      </template>
 
+      <template v-slot:body>
         <q-card-section>
-          <q-btn flat label="Cancel" color="primary" v-close-popup/>
-          <q-btn
-            flat
-            label="Delete Artivact"
-            color="primary"
-            v-close-popup
-            @click="deleteItem"
-            class="float-right"
-          />
+          Are you sure you want to delete this item and all its files?
+          This action cannot be undone!
         </q-card-section>
-      </q-card>
-    </q-dialog>
+      </template>
+
+      <template v-slot:cancel>
+        <q-btn label="Cancel" color="primary" @click="confirmDeleteRef = false"/>
+      </template>
+
+      <template v-slot:approve>
+        <q-btn
+          label="Delete Item"
+          color="primary"
+          @click="deleteItem"
+        />
+      </template>
+    </artivact-dialog>
+
   </ArtivactContent>
 </template>
 
@@ -276,6 +273,7 @@ import {useDesktopStore} from 'stores/desktop';
 import ItemImageEditor from 'components/ItemImageEditor.vue';
 import ItemImageSetEditor from 'components/ItemImageSetEditor.vue';
 import ItemModelSetEditor from 'components/ItemModelSetEditor.vue';
+import ArtivactDialog from 'components/ArtivactDialog.vue';
 
 const quasar = useQuasar();
 const route = useRoute();
@@ -337,6 +335,7 @@ function loadItemData(itemId: string | string[]) {
 
 function saveSelectedTag() {
   itemDataRef.value?.tags.push(tagValueRef.value);
+  addTagRef.value = false;
 }
 
 function loadItemMediaData(itemId: string | string[]) {
@@ -443,6 +442,7 @@ function saveItem() {
 
 function deleteItem() {
   let item = itemDataRef.value;
+  confirmDeleteRef.value = false;
   api
     .delete('/api/item/' + item.id)
     .then(() => {

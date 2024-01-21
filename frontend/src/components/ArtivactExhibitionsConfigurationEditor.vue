@@ -32,43 +32,13 @@
       </q-expansion-item>
     </q-list>
 
-    <!-- DELETE CONFIRMATION DIALOG -->
-    <q-dialog v-model="showDeleteExhibitionConfirmModalRef" persistent>
-      <q-card>
-        <q-card-section class="row items-center">
-          <q-icon
-            name="warning"
-            size="md"
-            color="warning"
-            class="q-mr-md"
-          ></q-icon>
-          <h3 class="av-text-h3">Delete Exhibition?</h3>
-          <div class="q-ml-sm">
-            Are you sure you want to delete this Exhibition and all its files?
-            This action cannot be undone!
-          </div>
-        </q-card-section>
-        <q-card-section>
-          <q-btn flat label="Cancel" color="primary" v-close-popup/>
-          <q-btn
-            flat
-            label="Delete Exhibition"
-            color="primary"
-            v-close-popup
-            @click="deleteExhibition"
-            class="float-right"
-          />
-        </q-card-section>
-      </q-card>
-    </q-dialog>
+    <!-- CREATE/EDIT EXHIBITION -->
+    <artivact-dialog :dialog-model="showExhibitionConfigurationModalRef">
+      <template v-slot:header>
+        {{ selectedExhibitionRef.exhibitionId === null ? 'Add' : 'Edit' }} Exhibition
+      </template>
 
-    <!-- ADD / UPDATE EXHIBITION -->
-    <q-dialog v-model="showExhibitionConfigurationModalRef" persistent>
-      <q-card class="q-mb-lg artivact-modal-content">
-        <q-card-section class="bg-primary text-white">
-          <div class="text-h6">{{ selectedExhibitionRef.exhibitionId === null ? 'Add' : 'Edit' }} Exhibition</div>
-        </q-card-section>
-
+      <template v-slot:body>
         <q-card-section>
           <artivact-restricted-translatable-item-editor
             :locales="localeStore.locales"
@@ -100,34 +70,55 @@
             />
           </div>
         </q-card-section>
+      </template>
 
-        <q-card-section>
-          <q-btn
-            label="Cancel"
-            color="primary"
-            @click="showExhibitionConfigurationModalRef = false"
-          />
-          <q-btn
-            label="Save"
-            color="primary"
-            class="float-right"
-            @click="saveOrUpdateExhibitionSummary(selectedExhibitionRef)"
-          />
+      <template v-slot:cancel>
+        <q-btn
+          label="Cancel"
+          color="primary"
+          @click="showExhibitionConfigurationModalRef = false"
+        />
+      </template>
+
+      <template v-slot:approve>
+        <q-btn
+          label="Save"
+          color="primary"
+          @click="saveOrUpdateExhibitionSummary(selectedExhibitionRef)"
+        />
+      </template>
+    </artivact-dialog>
+
+    <!-- DELETE CONFIRMATION DIALOG -->
+    <artivact-dialog :dialog-model="showDeleteExhibitionConfirmModalRef" :warn="true">
+      <template v-slot:header>
+        Delete Exhibition?
+      </template>
+
+      <template v-slot:body>
+        <q-card-section class="full-heights">
+          Are you sure you want to delete this Exhibition and all its files?
+          This action cannot be undone!
         </q-card-section>
-      </q-card>
-    </q-dialog>
+      </template>
+
+      <template v-slot:cancel>
+        <q-btn label="Cancel" color="primary"
+               @click="showDeleteExhibitionConfirmModalRef = false"/>
+      </template>
+
+      <template v-slot:approve>
+        <q-btn
+          label="Delete Exhibition"
+          color="primary"
+          @click="deleteExhibition"
+        />
+      </template>
+    </artivact-dialog>
 
     <!-- LONG-RUNNING OPERATION -->
-    <q-dialog v-model="showOperationInProgressModalRef" persistent>
-      <q-card class="q-mb-lg image-set-modal">
-        <q-card-section class="bg-primary text-white">
-          <div class="text-h6">Operation in Progress</div>
-        </q-card-section>
-        <q-card-section>
-          <q-spinner size="2em" class="q-mr-md"/> {{ progressMonitorRef?.progress }}
-        </q-card-section>
-      </q-card>
-    </q-dialog>
+    <artivact-operation-in-progress-dialog
+      :progress-monitor-ref="progressMonitorRef" :dialog-model="showOperationInProgressModalRef"/>
 
     <div class="row">
       <q-space></q-space>
@@ -147,6 +138,8 @@ import {translate} from './utils';
 import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
 import {useLocaleStore} from 'stores/locale';
 import {useMenuStore} from 'stores/menu';
+import ArtivactDialog from 'components/ArtivactDialog.vue';
+import ArtivactOperationInProgressDialog from 'components/ArtivactOperationInProgressDialog.vue';
 
 const quasar = useQuasar();
 const localeStore = useLocaleStore();

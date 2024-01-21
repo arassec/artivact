@@ -160,16 +160,12 @@
       />
     </template>
 
-    <q-dialog
-      v-model="showAddWidgetDialogRef"
-      persistent
-      v-if="userdataStore.isUserOrAdmin && inEditMode"
-    >
-      <q-card>
-        <q-card-section class="bg-primary text-white">
-          <div class="text-h6">Widget Selection</div>
-        </q-card-section>
+    <artivact-dialog :dialog-model="showAddWidgetDialogRef" v-if="userdataStore.isUserOrAdmin && inEditMode">
+      <template v-slot:header>
+        Widget Selection
+      </template>
 
+      <template v-slot:body>
         <q-card-section>
           <div class="q-mb-lg">
             {{ $t("addWidgetWarn") }}
@@ -185,18 +181,21 @@
             {{ $t(selectedWidgetTypeRef + "_DESCRIPTION") }}
           </div>
         </q-card-section>
+      </template>
 
-        <q-card-actions>
-          <q-btn
-            label="Cancel"
-            color="primary"
-            @click="showAddWidgetDialogRef = false"
-          />
-          <q-space />
-          <q-btn label="Add" color="primary" @click="addWidget()" />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
+      <template v-slot:cancel>
+        <q-btn
+          label="Cancel"
+          color="primary"
+          @click="showAddWidgetDialogRef = false"
+        />
+      </template>
+
+      <template v-slot:approve>
+        <q-btn label="Add" color="primary" @click="addWidget()" />
+      </template>
+    </artivact-dialog>
+
   </div>
 </template>
 
@@ -224,6 +223,7 @@ import InfoBoxWidget from 'components/widgets/InfoBoxWidget.vue';
 import AvatarWidget from 'components/widgets/AvatarWidget.vue';
 import SpaceWidget from 'components/widgets/SpaceWidget.vue';
 import ImageTextWidget from 'components/widgets/ImageTextWidget.vue';
+import ArtivactDialog from 'components/ArtivactDialog.vue';
 
 const props = defineProps({
   pageId: {
