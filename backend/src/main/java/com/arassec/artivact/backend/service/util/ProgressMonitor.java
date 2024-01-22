@@ -5,13 +5,18 @@ import lombok.Getter;
 /**
  * Simple container for progress to show to the user.
  */
+@Getter
 public class ProgressMonitor {
 
     /**
      * The progress string to show.
      */
-    @Getter
     private String progress = "Starting";
+
+    /**
+     * An exception that occurred during processing.
+     */
+    private Exception exception;
 
     /**
      * Creates a new instance.
@@ -26,6 +31,17 @@ public class ProgressMonitor {
      */
     public void updateProgress(String progress) {
         this.progress = progress;
+    }
+
+    /**
+     * Updates the progress string.
+     *
+     * @param progress The progress to set.
+     * @param exception An exception that occurred during processing.
+     */
+    public void updateProgress(String progress, Exception exception) {
+        this.progress = progress;
+        this.exception = exception;
     }
 
 }

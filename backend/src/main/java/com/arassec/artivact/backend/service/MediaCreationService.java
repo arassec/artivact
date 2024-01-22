@@ -58,7 +58,7 @@ public class MediaCreationService {
 
     public synchronized ProgressMonitor capturePhotos(String itemId, CapturePhotosParams capturePhotosParams) {
 
-        if (progressMonitor != null) {
+        if (progressMonitor != null && progressMonitor.getException() == null) {
             return progressMonitor;
         }
 
@@ -82,7 +82,7 @@ public class MediaCreationService {
 
                 progressMonitor = null;
             } catch (Exception e) {
-                progressMonitor = null;
+                progressMonitor.updateProgress("Error during photo capturing!", e);
                 log.error("Error during photo capturing!", e);
             }
         });
@@ -92,7 +92,7 @@ public class MediaCreationService {
 
     public synchronized ProgressMonitor removeBackgrounds(String itemId, int imageSetIndex) {
 
-        if (progressMonitor != null) {
+        if (progressMonitor != null && progressMonitor.getException() == null) {
             return progressMonitor;
         }
 
@@ -120,7 +120,7 @@ public class MediaCreationService {
 
                 progressMonitor = null;
             } catch (Exception e) {
-                progressMonitor = null;
+                progressMonitor.updateProgress("Error during background removal!", e);
                 log.error("Error during background removal!", e);
             }
         });
@@ -130,7 +130,7 @@ public class MediaCreationService {
 
     public synchronized ProgressMonitor createImageSetFromDanglingImages(String itemId) {
 
-        if (progressMonitor != null) {
+        if (progressMonitor != null && progressMonitor.getException() == null) {
             return progressMonitor;
         }
 
@@ -154,8 +154,8 @@ public class MediaCreationService {
 
                 progressMonitor = null;
             } catch (Exception e) {
-                progressMonitor = null;
-                log.error("Error during background removal!", e);
+                progressMonitor.updateProgress("Error during image-set creation!", e);
+                log.error("Error during image-set creation!", e);
             }
         });
 
@@ -163,7 +163,7 @@ public class MediaCreationService {
     }
 
     public synchronized ProgressMonitor createModel(String itemId, String pipeline) {
-        if (progressMonitor != null) {
+        if (progressMonitor != null && progressMonitor.getException() == null) {
             return progressMonitor;
         }
 
@@ -191,17 +191,16 @@ public class MediaCreationService {
 
                 progressMonitor = null;
             } catch (Exception e) {
-                progressMonitor = null;
-                log.error("Error during background removal!", e);
+                progressMonitor.updateProgress("Error during model creation!", e);
+                log.error("Error during model creation!", e);
             }
         });
 
         return progressMonitor;
     }
 
-
-    public ProgressMonitor editModel(String itemId, int modelSetIndex) {
-        if (progressMonitor != null) {
+    public synchronized ProgressMonitor editModel(String itemId, int modelSetIndex) {
+        if (progressMonitor != null && progressMonitor.getException() == null) {
             return progressMonitor;
         }
 
@@ -217,8 +216,8 @@ public class MediaCreationService {
 
                 progressMonitor = null;
             } catch (Exception e) {
-                progressMonitor = null;
-                log.error("Error during background removal!", e);
+                progressMonitor.updateProgress("Error during model editing!", e);
+                log.error("Error during model editing!", e);
             }
         });
 

@@ -13,4 +13,6 @@ public class OperationProgress {
 
     private String progress;
 
+    private String error;
+
 }

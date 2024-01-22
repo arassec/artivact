@@ -1,21 +1,43 @@
 <template>
-  <artivact-dialog :dialog-model="dialogModelRef" :hide-buttons="true" v-if="progressMonitorRef">
-    <template v-slot:header>
-      Operation in Progress
-    </template>
+  <div v-if="progressMonitorRef">
+    <artivact-dialog :dialog-model="dialogModelRef && progressMonitorRef?.error == null" :hide-buttons="true">
+      <template v-slot:header>
+        Operation in Progress
+      </template>
 
-    <template v-slot:body>
-      <q-card-section>
-        <q-spinner size="2em" class="q-mr-md"/>
-        {{ progressMonitorRef?.progress }}
-      </q-card-section>
-    </template>
-  </artivact-dialog>
+      <template v-slot:body>
+        <q-card-section>
+          <q-spinner size="2em" class="q-mr-md"/>
+          {{ progressMonitorRef?.progress }}
+        </q-card-section>
+      </template>
+    </artivact-dialog>
+
+    <artivact-dialog :dialog-model="dialogModelRef && progressMonitorRef?.error != null"
+                     :hide-buttons="true" :show-close-button="true" :error="true"
+                     @close-dialog="$emit('close-dialog')">
+      <template v-slot:header>
+        Operation Failed
+      </template>
+
+      <template v-slot:body>
+        <q-card-section>
+          {{ progressMonitorRef?.progress }}
+          <q-separator class="q-mt-lg q-mb-xs"/>
+          <q-expansion-item :v-model="showDetailsRef" label="Details">
+            <q-scroll-area style="height: 25em; max-width: 35em;">
+              <pre>{{ progressMonitorRef?.error }}</pre>
+            </q-scroll-area>
+          </q-expansion-item>
+        </q-card-section>
+      </template>
+    </artivact-dialog>
+  </div>
 </template>
 
 <script setup lang="ts">
 
-import {PropType, toRef} from 'vue';
+import {PropType, ref, toRef} from 'vue';
 import ArtivactDialog from 'components/ArtivactDialog.vue';
 import {OperationProgress} from 'components/models';
 
@@ -29,7 +51,10 @@ const props = defineProps({
   }
 });
 
+defineEmits(['close-dialog'])
+
 const dialogModelRef = toRef(props, 'dialogModel');
+const showDetailsRef = ref(false);
 
 </script>
 

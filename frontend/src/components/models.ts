@@ -199,6 +199,7 @@ export interface CapturePhotosParams {
 
 export interface OperationProgress {
   progress: string;
+  error: string;
 }
 
 export interface ExhibitionSummary {

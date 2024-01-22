@@ -110,7 +110,8 @@
 
   <!-- LONG-RUNNING OPERATION -->
   <artivact-operation-in-progress-dialog :dialog-model="showOperationInProgressModalRef"
-                                         :progress-monitor-ref="progressMonitorRef"/>
+                                         :progress-monitor-ref="progressMonitorRef"
+                                          @close-dialog="showOperationInProgressModalRef = false"/>
 
   <!-- DELETE CONFIRMATION DIALOG -->
   <artivact-dialog :dialog-model="confirmDeleteRef" :warn="true">
@@ -322,7 +323,9 @@ function updateOperationProgress() {
     .then((response) => {
       if (response.data) {
         progressMonitorRef.value = response.data;
-        setTimeout(() => updateOperationProgress(), 1000);
+        if (!progressMonitorRef.value?.error) {
+          setTimeout(() => updateOperationProgress(), 1000);
+        }
       } else {
         progressMonitorRef.value = undefined;
         showOperationInProgressModalRef.value = false;
@@ -333,7 +336,7 @@ function updateOperationProgress() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Background removal failed!',
+        message: 'Operation failed!',
         icon: 'report_problem',
       });
     });

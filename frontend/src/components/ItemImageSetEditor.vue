@@ -209,7 +209,8 @@
 
   <!-- LONG-RUNNING OPERATION -->
   <artivact-operation-in-progress-dialog :progress-monitor-ref="progressMonitorRef"
-                                         :dialog-model="showOperationInProgressModalRef"/>
+                                         :dialog-model="showOperationInProgressModalRef"
+                                         @close-dialog="showOperationInProgressModalRef = false"/>
 
   <!-- DELETE CONFIRMATION DIALOG -->
   <artivact-dialog :dialog-model="confirmDeleteRef" :warn="true">

@@ -7,6 +7,7 @@ import com.arassec.artivact.backend.service.creator.CapturePhotosParams;
 import com.arassec.artivact.backend.service.util.ProgressMonitor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,30 +24,35 @@ public class MediaCreationController {
     private final MediaCreationService mediaCreationService;
 
     @PostMapping("/{itemId}/capture-photos")
-    public ResponseEntity<ProgressMonitor> capturePhotos(@PathVariable String itemId,
+    public ResponseEntity<OperationProgress> capturePhotos(@PathVariable String itemId,
                                                          @RequestBody CapturePhotosParams capturePhotosParams) {
-        return ResponseEntity.ok(mediaCreationService.capturePhotos(itemId, capturePhotosParams));
+        mediaCreationService.capturePhotos(itemId, capturePhotosParams);
+        return getProgress();
     }
 
     @PostMapping("/{itemId}/remove-backgrounds")
-    public ResponseEntity<ProgressMonitor> capturePhotos(@PathVariable String itemId,
+    public ResponseEntity<OperationProgress> capturePhotos(@PathVariable String itemId,
                                                          @RequestParam int imageSetIndex) {
-        return ResponseEntity.ok(mediaCreationService.removeBackgrounds(itemId, imageSetIndex));
+        mediaCreationService.removeBackgrounds(itemId, imageSetIndex);
+        return getProgress();
     }
 
     @PostMapping("/{itemId}/create-image-set")
-    public ResponseEntity<ProgressMonitor> createImageSet(@PathVariable String itemId) {
-        return ResponseEntity.ok(mediaCreationService.createImageSetFromDanglingImages(itemId));
+    public ResponseEntity<OperationProgress> createImageSet(@PathVariable String itemId) {
+        mediaCreationService.createImageSetFromDanglingImages(itemId);
+        return getProgress();
     }
 
     @PostMapping("/{itemId}/create-model-set/{pipeline}")
-    public ResponseEntity<ProgressMonitor> createModelSet(@PathVariable String itemId, @PathVariable String pipeline) {
-        return ResponseEntity.ok(mediaCreationService.createModel(itemId, pipeline));
+    public ResponseEntity<OperationProgress> createModelSet(@PathVariable String itemId, @PathVariable String pipeline) {
+        mediaCreationService.createModel(itemId, pipeline);
+        return getProgress();
     }
 
     @PostMapping("/{itemId}/edit-model/{modelSetIndex}")
-    public ResponseEntity<ProgressMonitor> openModelEditor(@PathVariable String itemId, @PathVariable int modelSetIndex) {
-        return ResponseEntity.ok(mediaCreationService.editModel(itemId, modelSetIndex));
+    public ResponseEntity<OperationProgress> openModelEditor(@PathVariable String itemId, @PathVariable int modelSetIndex) {
+        mediaCreationService.editModel(itemId, modelSetIndex);
+        return getProgress();
     }
 
     @GetMapping("/{itemId}/model-set-files/{modelSetIndex}")
@@ -63,7 +69,12 @@ public class MediaCreationController {
     public ResponseEntity<OperationProgress> getProgress() {
         ProgressMonitor progressMonitor = mediaCreationService.getProgressMonitor();
         if (progressMonitor != null) {
-            return ResponseEntity.ok(new OperationProgress(progressMonitor.getProgress()));
+            OperationProgress operationProgress = new OperationProgress();
+            operationProgress.setProgress(progressMonitor.getProgress());
+            if (progressMonitor.getException() != null) {
+                operationProgress.setError(ExceptionUtils.getStackTrace(progressMonitor.getException()));
+            }
+            return ResponseEntity.ok(operationProgress);
         }
         return ResponseEntity.ok().build();
     }
@@ -114,6 +125,17 @@ public class MediaCreationController {
     public ResponseEntity<Void> toggleModelInput(@PathVariable String itemId, @PathVariable int imageSetIndex) {
         mediaCreationService.toggleModelInput(itemId, imageSetIndex);
         return ResponseEntity.ok().build();
+    }
+
+    private OperationProgress convert(ProgressMonitor progressMonitor) {
+        OperationProgress operationProgress = new OperationProgress();
+        if (progressMonitor != null) {
+            operationProgress.setProgress(progressMonitor.getProgress());
+            if (progressMonitor.getException() != null) {
+                operationProgress.setError(ExceptionUtils.getStackTrace(progressMonitor.getException()));
+            }
+        }
+        return operationProgress;
     }
 
 }
