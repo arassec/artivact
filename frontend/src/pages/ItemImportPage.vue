@@ -1,16 +1,33 @@
 <template>
   <ArtivactContent>
-    <div class="col">
+
+    <div class="full-width">
       <h1 class="av-text-h1">Item Import</h1>
-      <label>Scans the data directory for new or updated items.</label>
+      <div class="q-mb-lg">
+        Scans the data directory for new or updated items.
+        <q-btn
+          label="Scan"
+          color="primary"
+          class="float-right q-mb-lg"
+          @click="scanItems()"
+        />
+      </div>
 
-      <q-btn
-        label="Scan"
-        color="primary"
-        class="float-right q-mb-lg"
-        @click="scanItems()"
-      />
+      <div>
+        Imports a previously exported item.
+        <q-uploader
+          :url="'/api/exchange/item/import'"
+          label="Import Item"
+          class="q-mt-md q-mb-md"
+          accept=".artivact.item.zip"
+          field-name="file"
+          :no-thumbnails="true"
+          @finish="itemUploaded"
+        />
+      </div>
+    </div>
 
+    <div>
       <h1 class="av-text-h1">Create Search Index</h1>
       <label>(Re-)Creates the search index.</label>
 
@@ -21,12 +38,13 @@
         @click="recreateSearchIndex()"
       />
     </div>
+
   </ArtivactContent>
 </template>
 
 <script setup lang="ts">
-import { api } from 'boot/axios';
-import { useQuasar } from 'quasar';
+import {api} from 'boot/axios';
+import {useQuasar} from 'quasar';
 import ArtivactContent from 'components/ArtivactContent.vue';
 
 const quasar = useQuasar();
@@ -50,6 +68,15 @@ function scanItems() {
         icon: 'report_problem',
       });
     });
+}
+
+function itemUploaded() {
+  quasar.notify({
+    color: 'positive',
+    position: 'bottom',
+    message: 'Item uploaded',
+    icon: 'check',
+  });
 }
 
 function recreateSearchIndex() {

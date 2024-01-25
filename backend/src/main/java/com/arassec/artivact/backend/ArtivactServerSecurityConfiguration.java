@@ -36,6 +36,8 @@ public class ArtivactServerSecurityConfiguration {
 
     private static final String API_EXHIBITION_PATTERN = "/api/exhibition";
 
+    private static final String API_EXCHANGE_PATTERN = "/api/exchange";
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
@@ -46,6 +48,7 @@ public class ArtivactServerSecurityConfiguration {
                         .requestMatchers(API_SEARCH_INDEX_PATTERN).hasRole(Roles.ADMIN)
                         .requestMatchers(API_ACCOUNT_PATTERN).hasRole(Roles.ADMIN)
                         .requestMatchers(API_CONFIGURATION_PATTERN).hasRole(Roles.ADMIN)
+                        .requestMatchers(API_EXCHANGE_PATTERN).hasRole(Roles.ADMIN)
                         .requestMatchers(API_MEDIA_CREATION_PATTERN).hasAnyRole(Roles.ADMIN, Roles.USER)
                         .requestMatchers(API_EXHIBITION_PATTERN).hasAnyRole(Roles.ADMIN, Roles.USER)
                         .requestMatchers(HttpMethod.POST, API_ITEM_PATTERN).hasAnyRole(Roles.ADMIN, Roles.USER)

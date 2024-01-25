@@ -25,6 +25,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -237,14 +238,15 @@ public class ItemService extends BaseFileService {
             throw new IllegalArgumentException("No item with ID " + itemId + " found!");
         }
 
-        item.getMediaContent().getImages().add(
-                saveFile(itemId, file, IMAGES_DIR, null)
-        );
-        save(item);
-    }
+        try {
+            item.getMediaContent().getImages().add(
+                    saveFile(itemId, file.getOriginalFilename(), file.getInputStream(), IMAGES_DIR, null, false)
+            );
+        } catch (IOException e) {
+            throw new ArtivactException("Could not add image!", e);
+        }
 
-    public void saveImage(String itemId, MultipartFile file) {
-        saveFile(itemId, file, IMAGES_DIR, null);
+        save(item);
     }
 
     /**
@@ -258,10 +260,23 @@ public class ItemService extends BaseFileService {
             throw new IllegalArgumentException("No item with ID " + itemId + " found!");
         }
 
-        item.getMediaContent().getModels().add(
-                saveFile(itemId, file, MODELS_DIR, "glb")
-        );
+        try {
+            item.getMediaContent().getModels().add(
+                    saveFile(itemId, file.getOriginalFilename(), file.getInputStream(), MODELS_DIR, "glb", false)
+            );
+        } catch (IOException e) {
+            throw new ArtivactException("Could not add model!", e);
+        }
+
         save(item);
+    }
+
+    public void saveImage(String itemId, String filename, InputStream data, boolean keepAssetNumber) {
+        saveFile(itemId, filename, data, IMAGES_DIR, null, keepAssetNumber);
+    }
+
+    public void saveModel(String itemId, String filename, InputStream data, boolean keepAssetNumber) {
+        saveFile(itemId, filename, data, MODELS_DIR, null, keepAssetNumber);
     }
 
     public void copyFile(String itemId, String filename, String subDir, Path targetDir) {
@@ -274,22 +289,25 @@ public class ItemService extends BaseFileService {
         }
     }
 
-    private String saveFile(String itemId, MultipartFile file, String subDir, String requiredFileExtension) {
+    private String saveFile(String itemId, String filename, InputStream data, String subDir, String requiredFileExtension, boolean keepAssetNumber) {
         Path targetDir = getSubdirFilePath(itemsDir, itemId, subDir);
 
-        int nextAssetNumber = getNextAssetNumber(targetDir);
-        String fileExtension = getExtension(file.getOriginalFilename()).orElseThrow();
+        int assetNumber = getNextAssetNumber(targetDir);
+        if (keepAssetNumber) {
+            assetNumber = Integer.parseInt(getFilenameWithoutExtension(filename).orElseThrow());
+        }
+        String fileExtension = getExtension(filename).orElseThrow();
 
         if (StringUtils.hasText(requiredFileExtension) && !requiredFileExtension.equals(fileExtension)) {
             throw new ArtivactException("Unsupported file format. Files must be in '" + requiredFileExtension + "' format!");
         }
 
-        String assetName = getAssetName(nextAssetNumber, fileExtension);
+        String assetName = getAssetName(assetNumber, fileExtension);
 
         Path targetPath = targetDir.resolve(assetName);
 
         try {
-            Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(data, targetPath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             throw new ArtivactException("Could not save file!", e);
         }
@@ -335,6 +353,12 @@ public class ItemService extends BaseFileService {
         return Optional.ofNullable(filename)
                 .filter(f -> f.contains("."))
                 .map(f -> f.substring(filename.lastIndexOf(".") + 1));
+    }
+
+    private Optional<String> getFilenameWithoutExtension(String filename) {
+        return Optional.ofNullable(filename)
+                .filter(f -> f.contains("."))
+                .map(f -> f.substring(0, filename.indexOf(".")));
     }
 
     private String getAssetName(int assetNumber, String extension) {

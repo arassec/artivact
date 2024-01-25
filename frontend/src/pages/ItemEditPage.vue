@@ -10,6 +10,14 @@
         color="primary"
         class="q-ml-sm"
       />
+      <q-form :action="'/api/exchange/item/' + itemDataRef.id + '/export'" method="get">
+        <q-btn
+          label="Export"
+          color="primary"
+          type="submit"
+          class="q-ml-sm"
+        />
+      </q-form>
       <q-space/>
       <q-btn label="Save" @click="saveItem" color="primary" :disable="tabRef == 'creation'"/>
     </q-toolbar>
@@ -27,6 +35,17 @@
         size="lg"
         class="q-ml-sm"
       />
+      <q-form :action="'/api/exchange/item/' + itemDataRef.id + '/export'" method="get">
+        <q-btn
+          icon="download"
+          flat
+          dense
+          round
+          size="lg"
+          type="submit"
+          class="q-ml-sm"
+        />
+      </q-form>
       <q-space/>
       <q-btn icon="save" @click="saveItem" flat dense round size="lg" :disable="tabRef == 'creation'"/>
     </q-toolbar>

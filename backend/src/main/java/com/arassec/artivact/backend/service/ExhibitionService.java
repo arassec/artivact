@@ -3,7 +3,6 @@ package com.arassec.artivact.backend.service;
 import com.arassec.artivact.backend.persistence.ExhibitionEntityRepository;
 import com.arassec.artivact.backend.persistence.model.ExhibitionEntity;
 import com.arassec.artivact.backend.service.exception.ArtivactException;
-import com.arassec.artivact.backend.service.mapper.ToolDeserializer;
 import com.arassec.artivact.backend.service.model.BaseRestrictedItem;
 import com.arassec.artivact.backend.service.model.TranslatableString;
 import com.arassec.artivact.backend.service.model.exhibition.Exhibition;
@@ -18,15 +17,10 @@ import com.arassec.artivact.backend.service.model.page.widget.PageTitleWidget;
 import com.arassec.artivact.backend.service.model.page.widget.SearchBasedWidget;
 import com.arassec.artivact.backend.service.util.FileUtil;
 import com.arassec.artivact.backend.service.util.ProjectRootProvider;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -73,7 +67,7 @@ public class ExhibitionService extends BaseFileService {
                              PageService pageService,
                              ItemService itemService,
                              FileUtil fileUtil,
-                             Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder,
+                             @Qualifier("exportObjectMapper") ObjectMapper exportObjectMapper,
                              ProjectRootProvider projectRootProvider) {
         this.exhibitionEntityRepository = exhibitionEntityRepository;
         this.configurationService = configurationService;
@@ -81,16 +75,7 @@ public class ExhibitionService extends BaseFileService {
         this.pageService = pageService;
         this.itemService = itemService;
         this.fileUtil = fileUtil;
-
-        var mapperModule = new SimpleModule();
-        mapperModule.addDeserializer(Tool.class, new ToolDeserializer());
-
-        this.objectMapper = jackson2ObjectMapperBuilder
-                .modules(mapperModule, new JavaTimeModule())
-                .serializationInclusion(JsonInclude.Include.NON_NULL)
-                .featuresToDisable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-                .featuresToEnable(SerializationFeature.INDENT_OUTPUT)
-                .build();
+        this.objectMapper = exportObjectMapper;
 
         this.exhibitionsDir = projectRootProvider.getProjectRoot().resolve(EXHIBITIONS_DIR);
         if (!Files.exists(exhibitionsDir)) {

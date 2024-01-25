@@ -40,15 +40,15 @@ public class ImportService extends BaseFileService {
         this.itemsFileDir = projectRootProvider.getProjectRoot().resolve(ITEMS_DIR);
     }
 
-    public void importCreatorItems() {
+    public void importItems() {
         log.info("Importing from directory: {}", itemsFileDir.toAbsolutePath());
         getItemIdsFromCreatorExport().forEach(itemPath -> {
             String itemId = itemPath.getFileName().toString();
-            var vaultItem = itemService.load(itemId);
-            if (vaultItem == null) {
+            var item = itemService.load(itemId);
+            if (item == null) {
                 processNewEntity(itemPath);
             } else {
-                updateExistingEntity(itemPath, vaultItem);
+                updateExistingEntity(itemPath, item);
             }
         });
         log.info("Import finished.");

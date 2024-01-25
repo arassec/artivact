@@ -1,6 +1,6 @@
 <template>
   <ArtivactContent>
-    <div class="col">
+    <div>
       <h1 class="av-text-h1">Tags Configuration</h1>
       <div class="q-mb-lg">
         Tags can be used to categorize items beyond their properties. They
@@ -28,6 +28,38 @@
         @click="saveTagsConfiguration()"
       />
     </div>
+
+    <div>
+      <h1 class="av-text-h1">Tags Import/Export</h1>
+
+      <div class="q-mb-md">
+        You can export the current tags configuration with the button below. A JSON file containing the
+        current configuration will be created.
+        <q-form :action="'/api/exchange/tags/export'" method="get">
+          <q-btn
+            icon="download"
+            label="Export Tags"
+            color="primary"
+            type="submit"
+            class="q-mt-md"
+          />
+        </q-form>
+      </div>
+
+      <div>
+        You can upload a previously created tags export here and OVERWRITE the current tags with it.
+        <q-uploader
+          :url="'/api/exchange/tags/import'"
+          label="Import Tags"
+          class="q-mt-md q-mb-md"
+          accept=".artivact.tags-configuration.json"
+          field-name="file"
+          :no-thumbnails="true"
+          @finish="tagsUploaded"
+        />
+      </div>
+    </div>
+
   </ArtivactContent>
 </template>
 
@@ -98,6 +130,16 @@ function saveTagsConfiguration() {
         icon: 'report_problem',
       });
     });
+}
+
+function tagsUploaded() {
+  loadTagsConfiguration();
+  quasar.notify({
+    color: 'positive',
+    position: 'bottom',
+    message: 'Properties uploaded',
+    icon: 'check',
+  });
 }
 
 onMounted(() => {

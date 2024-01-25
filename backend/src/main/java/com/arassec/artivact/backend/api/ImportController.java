@@ -17,8 +17,8 @@ public class ImportController {
     private final ImportService importService;
 
     @PostMapping
-    public ResponseEntity<String> importCreatorItems() {
-        importService.importCreatorItems();
+    public ResponseEntity<String> importItems() {
+        importService.importItems();
         return ResponseEntity.ok("scanned");
     }
 

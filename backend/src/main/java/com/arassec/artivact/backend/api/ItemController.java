@@ -238,7 +238,11 @@ public class ItemController extends BaseFileController {
                                               @RequestParam(defaultValue = "false", required = false) Boolean uploadOnly) {
         synchronized (this) {
             if (uploadOnly) {
-                itemService.saveImage(itemId, file);
+                try {
+                    itemService.saveImage(itemId, file.getOriginalFilename(), file.getInputStream(), false);
+                } catch (IOException e) {
+                    throw new ArtivactException("Could not save uploaded image!", e);
+                }
             } else {
                 itemService.addImage(itemId, file);
             }
