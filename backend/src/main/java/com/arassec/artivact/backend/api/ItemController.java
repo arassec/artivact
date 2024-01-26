@@ -31,7 +31,7 @@ import java.util.zip.ZipOutputStream;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/item")
-public class ItemController extends BaseFileController {
+public class ItemController extends BaseController {
 
     private final ItemService itemService;
 

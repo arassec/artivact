@@ -4,10 +4,8 @@ import com.arassec.artivact.backend.api.model.Asset;
 import com.arassec.artivact.backend.api.model.OperationProgress;
 import com.arassec.artivact.backend.service.MediaCreationService;
 import com.arassec.artivact.backend.service.creator.CapturePhotosParams;
-import com.arassec.artivact.backend.service.util.ProgressMonitor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +17,7 @@ import java.util.List;
 @RestController
 @Profile("desktop")
 @RequestMapping("/api/media-creation")
-public class MediaCreationController {
+public class MediaCreationController extends BaseController {
 
     private final MediaCreationService mediaCreationService;
 
@@ -67,16 +65,7 @@ public class MediaCreationController {
 
     @GetMapping("/progress")
     public ResponseEntity<OperationProgress> getProgress() {
-        ProgressMonitor progressMonitor = mediaCreationService.getProgressMonitor();
-        if (progressMonitor != null) {
-            OperationProgress operationProgress = new OperationProgress();
-            operationProgress.setProgress(progressMonitor.getProgress());
-            if (progressMonitor.getException() != null) {
-                operationProgress.setError(ExceptionUtils.getStackTrace(progressMonitor.getException()));
-            }
-            return ResponseEntity.ok(operationProgress);
-        }
-        return ResponseEntity.ok().build();
+        return convert(mediaCreationService.getProgressMonitor());
     }
 
     @PutMapping("/{itemId}/open-images-dir")
@@ -125,17 +114,6 @@ public class MediaCreationController {
     public ResponseEntity<Void> toggleModelInput(@PathVariable String itemId, @PathVariable int imageSetIndex) {
         mediaCreationService.toggleModelInput(itemId, imageSetIndex);
         return ResponseEntity.ok().build();
-    }
-
-    private OperationProgress convert(ProgressMonitor progressMonitor) {
-        OperationProgress operationProgress = new OperationProgress();
-        if (progressMonitor != null) {
-            operationProgress.setProgress(progressMonitor.getProgress());
-            if (progressMonitor.getException() != null) {
-                operationProgress.setError(ExceptionUtils.getStackTrace(progressMonitor.getException()));
-            }
-        }
-        return operationProgress;
     }
 
 }

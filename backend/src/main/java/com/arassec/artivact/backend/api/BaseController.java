@@ -1,6 +1,10 @@
 package com.arassec.artivact.backend.api;
 
+import com.arassec.artivact.backend.api.model.OperationProgress;
 import com.arassec.artivact.backend.service.model.item.Item;
+import com.arassec.artivact.backend.service.util.ProgressMonitor;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -8,11 +12,11 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
 
-public abstract class BaseFileController {
+public abstract class BaseController {
 
     protected String createMainImageUrl(Item item) {
         if (!item.getMediaContent().getImages().isEmpty()) {
-            return createImageUrl(item.getId(), item.getMediaContent().getImages().get(0));
+            return createImageUrl(item.getId(), item.getMediaContent().getImages().getFirst());
         }
         return null;
     }
@@ -48,6 +52,18 @@ public abstract class BaseFileController {
 
     protected String createUrl(String itemId, String fileName, String fileType) {
         return "/api/item/" + itemId + "/" + fileType + "/" + fileName;
+    }
+
+    protected ResponseEntity<OperationProgress> convert(ProgressMonitor progressMonitor) {
+        if (progressMonitor != null) {
+            OperationProgress operationProgress = new OperationProgress();
+            operationProgress.setProgress(progressMonitor.getProgress());
+            if (progressMonitor.getException() != null) {
+                operationProgress.setError(ExceptionUtils.getStackTrace(progressMonitor.getException()));
+            }
+            return ResponseEntity.ok(operationProgress);
+        }
+        return ResponseEntity.ok().build();
     }
 
 }

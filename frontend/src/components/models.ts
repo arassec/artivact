@@ -103,6 +103,7 @@ export interface Account {
   username: string;
   password: string;
   email: string;
+  apiToken: string;
   user: boolean | undefined;
   admin: boolean | undefined;
 }
@@ -112,6 +113,11 @@ export interface LicenseConfiguration {
   licenseLabel: TranslatableString;
   suffix: TranslatableString;
   licenseUrl: string;
+}
+
+export interface ExchangeConfiguration {
+  remoteServer: string;
+  apiToken: string;
 }
 
 export interface ColorTheme {

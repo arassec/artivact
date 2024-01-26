@@ -14,7 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/search")
-public class SearchController extends BaseFileController {
+public class SearchController extends BaseController {
 
     private final SearchService searchService;
 

@@ -215,6 +215,15 @@ public class ConfigurationService extends BaseService {
         saveEntity(ConfigurationType.ADAPTER, toJson(adapterConfiguration));
     }
 
+    public ExchangeConfiguration loadExchangeConfiguration() {
+        ConfigurationEntity entity = loadOrCreateEntity(ConfigurationType.EXCHANGE.name());
+        return fromJson(entity.getContentJson(), ExchangeConfiguration.class);
+    }
+
+    public void saveExchangeConfiguration(ExchangeConfiguration exchangeConfiguration) {
+        saveEntity(ConfigurationType.EXCHANGE, toJson(exchangeConfiguration));
+    }
+
     @RestrictResult
     @TranslateResult
     public List<Menu> loadTranslatedMenus() {

@@ -14,7 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/exhibition")
-public class ExhibitionController extends BaseFileController {
+public class ExhibitionController extends BaseController {
 
     private final ExhibitionService exhibitionService;
 

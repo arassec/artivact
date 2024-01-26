@@ -210,6 +210,25 @@
             >
             </q-item-section>
           </q-item>
+          <q-item
+            clickable
+            v-close-popup
+            @click="gotoExchangeConfigurationPage"
+            v-if="userdataStore.isAdmin && desktopStore.isDesktopModeEnabled"
+            class="menu-entry"
+          >
+            <q-item-section
+            ><label class="menu-label">
+              <q-icon
+                name="import_export"
+                size="xs"
+                color="primary"
+                class="q-mr-sm"
+              ></q-icon>
+              Exchange</label
+            >
+            </q-item-section>
+          </q-item>
         </q-list>
       </q-menu>
     </q-btn>
@@ -464,6 +483,25 @@
                 >
                 </q-item-section>
               </q-item>
+              <q-item
+                clickable
+                v-close-popup
+                @click="gotoExchangeConfigurationPage"
+                v-if="userdataStore.isAdmin && desktopStore.isDesktopModeEnabled"
+                class="menu-entry"
+              >
+                <q-item-section
+                ><label class="menu-label">
+                  <q-icon
+                    name="import_export"
+                    size="xs"
+                    color="primary"
+                    class="q-mr-sm"
+                  ></q-icon>
+                  Exchange</label
+                >
+                </q-item-section>
+              </q-item>
             </q-list>
           </q-menu>
         </q-item>
@@ -565,6 +603,10 @@ function gotoAppearanceConfigurationPage() {
 
 function gotoPeripheralsConfigurationPage() {
   route.push('/administration/configuration/peripherals');
+}
+
+function gotoExchangeConfigurationPage() {
+  route.push('/administration/configuration/exchange');
 }
 
 function gotoExhibitionsConfigurationPage() {

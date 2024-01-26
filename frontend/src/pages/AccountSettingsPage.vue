@@ -55,6 +55,17 @@
               label="E-Mail"
             />
           </q-card-section>
+
+          <q-card-section>
+            <q-input
+              outlined
+              v-model="apiTokenRef"
+              class="col-5"
+              type="text"
+              name="email"
+              label="API Token"
+            />
+          </q-card-section>
         </q-card>
 
         <q-btn
@@ -82,6 +93,7 @@ const passwordRef = ref('');
 const passwordRepeatRef = ref('');
 const passwordValidationFailedRef = ref(false);
 const emailRef = ref('');
+const apiTokenRef = ref('');
 
 const quasar = useQuasar();
 
@@ -95,6 +107,7 @@ function loadAccount() {
       accountRef.value = account;
       usernameRef.value = account.username;
       emailRef.value = account.email;
+      apiTokenRef.value = account.apiToken;
     })
     .catch(() => {
       quasar.notify({
@@ -120,6 +133,7 @@ function saveAccount() {
     username: usernameRef.value,
     password: passwordRef.value,
     email: emailRef.value,
+    apiToken: apiTokenRef.value,
     user: undefined,
     admin: undefined,
   };
@@ -131,6 +145,7 @@ function saveAccount() {
       accountRef.value = account;
       usernameRef.value = account.username;
       emailRef.value = account.email;
+      apiTokenRef.value = account.apiToken;
       quasar.notify({
         color: 'positive',
         position: 'bottom',

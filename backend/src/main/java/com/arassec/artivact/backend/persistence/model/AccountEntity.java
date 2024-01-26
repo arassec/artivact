@@ -21,6 +21,9 @@ public class AccountEntity {
 
     private String email;
 
+    @Column(name = "api_token")
+    private String apiToken;
+
     private String roles;
 
 }

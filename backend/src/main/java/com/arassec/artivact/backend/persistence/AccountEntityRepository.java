@@ -9,4 +9,6 @@ public interface AccountEntityRepository extends CrudRepository<AccountEntity, I
 
     Optional<AccountEntity> findByUsername(String username);
 
+    Optional<AccountEntity> findByApiToken(String apiToken);
+
 }

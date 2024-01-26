@@ -22,17 +22,27 @@
     <div class="col-12">
       <div class="col items-center">
 
-        <!-- EDIT ITEM BUTTON -->
-        <router-link
-          :to="'/administration/configuration/item/' + itemDataDetailsRef.id"
-          v-if="userdataStore.authenticated">
+        <div class="absolute-top-right">
+          <!-- SYNC UP BUTTON -->
           <q-btn
             round
             color="primary"
-            icon="edit"
-            class="absolute-top-right q-ma-md edit-page-button"
+            icon="cloud_upload"
+            class="edit-page-button"
+            @click="synchronizeUp()"
           />
-        </router-link>
+          <!-- EDIT ITEM BUTTON -->
+          <router-link
+            :to="'/administration/configuration/item/' + itemDataDetailsRef.id"
+            v-if="userdataStore.authenticated">
+            <q-btn
+              round
+              color="primary"
+              icon="edit"
+              class=" q-ma-md edit-page-button"
+            />
+          </router-link>
+        </div>
 
         <!-- TITLE -->
         <div v-if="itemDataDetailsRef.title.translatedValue" class="q-mb-sm">
@@ -77,9 +87,9 @@
 
         <!-- MEDIA-CAROUSEL -->
         <item-media-carousel :show-images="!openModelRef"
-          v-if=" itemDataDetailsRef.images.length > 0 ||
+                             v-if=" itemDataDetailsRef.images.length > 0 ||
             itemDataDetailsRef.models.length > 0"
-          :item-details="itemDataDetailsRef"
+                             :item-details="itemDataDetailsRef"
         />
       </div>
     </div>
@@ -160,6 +170,23 @@ function loadPropertiesData() {
         color: 'negative',
         position: 'bottom',
         message: 'Loading properties failed',
+        icon: 'report_problem',
+      });
+    });
+}
+
+function synchronizeUp() {
+  api
+    .post('/api/exchange/item/' + itemDataDetailsRef.value.id + '/sync-up')
+    .then((response) => {
+      // TODO ProgressMonitor!
+      console.log(response);
+    })
+    .catch(() => {
+      quasar.notify({
+        color: 'negative',
+        position: 'bottom',
+        message: 'Synchronization failed',
         icon: 'report_problem',
       });
     });

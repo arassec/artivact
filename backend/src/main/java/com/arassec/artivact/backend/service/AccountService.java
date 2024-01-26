@@ -85,6 +85,14 @@ public class AccountService implements UserDetailsService {
         return Optional.empty();
     }
 
+    public Optional<Account> loadByApiToken(String apiToken) {
+        if (!StringUtils.hasText(apiToken)) {
+            return Optional.empty();
+        }
+        Optional<AccountEntity> accountEntityOptional = accountEntityRepository.findByApiToken(apiToken);
+        return accountEntityOptional.map(this::mapEntity);
+    }
+
     public Account updateOwnAccount(String originalUsername, Account account) {
         AccountEntity accountEntity = accountEntityRepository.findById(account.getId()).orElseThrow();
 
@@ -101,6 +109,7 @@ public class AccountService implements UserDetailsService {
         }
 
         accountEntity.setEmail(account.getEmail());
+        accountEntity.setApiToken(account.getApiToken());
 
         AccountEntity savedAccountEntity = accountEntityRepository.save(accountEntity);
 
@@ -132,6 +141,7 @@ public class AccountService implements UserDetailsService {
         }
 
         accountEntity.setEmail(account.getEmail());
+        accountEntity.setApiToken(account.getApiToken());
         accountEntity.setRoles(getRoles(account));
 
         AccountEntity savedAccountEntity = accountEntityRepository.save(accountEntity);
@@ -147,6 +157,7 @@ public class AccountService implements UserDetailsService {
         accountEntity.setUsername(account.getUsername());
         accountEntity.setPassword(passwordEncoder.encode(account.getPassword()));
         accountEntity.setEmail(account.getEmail());
+        accountEntity.setApiToken(account.getApiToken());
         accountEntity.setRoles(getRoles(account));
 
         AccountEntity savedAccountEntity = accountEntityRepository.save(accountEntity);
@@ -168,6 +179,7 @@ public class AccountService implements UserDetailsService {
                 .version(accountEntity.getVersion())
                 .username(accountEntity.getUsername())
                 .email(accountEntity.getEmail())
+                .apiToken(accountEntity.getApiToken())
                 .user(hasRole(accountEntity.getRoles(), Roles.USER))
                 .admin(hasRole(accountEntity.getRoles(), Roles.ADMIN))
                 .build();

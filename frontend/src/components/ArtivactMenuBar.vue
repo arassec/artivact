@@ -137,11 +137,6 @@
                   <div class="row">
                     <label class="menu-label">{{ translate(menuEntry) }}</label>
                     <q-space></q-space>
-                    <q-icon
-                      v-if="userdataStore.isAdmin"
-                      name="more_vert"
-                      size="sm"
-                    />
                     <q-menu
                       v-model="showMenuRef[menuEntry.id]"
                       :context-menu="true"
@@ -237,7 +232,6 @@
             </template>
           </q-list>
         </q-menu>
-        <q-icon v-if="userdataStore.isAdmin" name="more_vert" size="sm"/>
         <q-menu
           v-model="showMenuRef[menu.id]"
           v-if="userdataStore.isAdmin"

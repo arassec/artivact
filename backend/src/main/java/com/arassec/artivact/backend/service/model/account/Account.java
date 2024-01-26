@@ -21,6 +21,8 @@ public class Account {
 
     private String email;
 
+    private String apiToken;
+
     private Boolean user;
 
     private Boolean admin;

@@ -7,12 +7,13 @@ CREATE TABLE av_configuration
 
 CREATE TABLE av_account
 (
-    id       SERIAL       NOT NULL PRIMARY KEY,
-    version  INTEGER,
-    username VARCHAR(50)  NOT NULL,
-    password VARCHAR(500) NOT NULL,
-    email    VARCHAR(128),
-    roles    VARCHAR(500)
+    id        SERIAL       NOT NULL PRIMARY KEY,
+    version   INTEGER,
+    username  VARCHAR(50)  NOT NULL,
+    password  VARCHAR(500) NOT NULL,
+    email     VARCHAR(128),
+    api_token VARCHAR(128),
+    roles     VARCHAR(500)
 );
 
 CREATE UNIQUE INDEX ix_account_username ON av_account (username);

@@ -191,6 +191,16 @@ public class ConfigurationController {
         configurationService.saveAdapterConfiguration(adapterConfiguration);
     }
 
+    @GetMapping(value = "/exchange")
+    public ExchangeConfiguration getExchangeConfig() {
+        return configurationService.loadExchangeConfiguration();
+    }
+
+    @PostMapping(value = "/exchange")
+    public void saveExchangeConfiguration(@RequestBody ExchangeConfiguration exchangeConfiguration) {
+        configurationService.saveExchangeConfiguration(exchangeConfiguration);
+    }
+
     @PostMapping("/menu")
     public ResponseEntity<List<Menu>> saveMenu(@RequestBody Menu menu) {
         return ResponseEntity.ok(configurationService.saveMenu(menu));
