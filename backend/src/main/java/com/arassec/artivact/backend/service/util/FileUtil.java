@@ -1,7 +1,9 @@
 package com.arassec.artivact.backend.service.util;
 
 import com.arassec.artivact.backend.service.exception.ArtivactException;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FileUtils;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -14,7 +16,10 @@ import java.util.stream.Stream;
  * Utility for file handling.
  */
 @Component
+@RequiredArgsConstructor
 public class FileUtil {
+
+    private final Environment environment;
 
     /**
      * Initializes or updates the project directory by copying project files from the classpath and updating necessary
@@ -24,6 +29,11 @@ public class FileUtil {
      * @param fileModifications List of file modifications to perform during project setup.
      */
     public void updateProjectDirectory(Path projectRoot, List<FileModification> fileModifications) {
+
+        if (!environment.matchesProfiles("desktop")) {
+            return;
+        }
+
         Path projectSetupDir = Path.of("resources/project-setup");
         if (!Files.exists(projectSetupDir)) {
             projectSetupDir = Path.of("backend/src/main/resources/project-setup");
