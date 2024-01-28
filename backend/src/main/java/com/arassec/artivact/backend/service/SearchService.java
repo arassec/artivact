@@ -12,12 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.TextField;
-import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.index.StoredFields;
+import org.apache.lucene.index.*;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.IndexSearcher;
@@ -64,14 +60,15 @@ public class SearchService extends BaseService {
         log.info("Recreating search index.");
         prepareIndexing(false);
         itemEntityRepository.findAll()
-                .forEach(vaultItemEntity -> updateIndexInternal(fromJson(vaultItemEntity.getContentJson(), Item.class)));
+                .forEach(vaultItemEntity
+                        -> updateIndexInternal(fromJson(vaultItemEntity.getContentJson(), Item.class), false));
         finalizeIndexing();
         log.info("Search index created.");
     }
 
     public synchronized void updateIndex(Item item) {
         prepareIndexing(true);
-        updateIndexInternal(item);
+        updateIndexInternal(item, true);
         finalizeIndexing();
     }
 
@@ -123,12 +120,16 @@ public class SearchService extends BaseService {
         }
     }
 
-    private void updateIndexInternal(Item item) {
+    private void updateIndexInternal(Item item, boolean updateDoc) {
         try {
             Document luceneDocument = new Document();
             StringBuffer fulltext = new StringBuffer();
 
-            luceneDocument.add(new StoredField("id", item.getId()));
+            // Lucene doesn't like "-" in the UUIDs, so wie store the ID for search with Lucene without them:
+            String preparedItemId = item.getId().replace("-", "");
+            luceneDocument.add(new TextField("preparedItemId", preparedItemId, Field.Store.YES));
+
+            luceneDocument.add(new TextField("id", item.getId(), Field.Store.YES));
             appendField(fulltext, "id", item.getId());
 
             if (StringUtils.hasText(item.getTitle().getValue())) {
@@ -153,7 +154,12 @@ public class SearchService extends BaseService {
 
             luceneDocument.add(new TextField("fulltext", fulltext.toString(), Field.Store.YES));
 
-            indexWriter.addDocument(luceneDocument);
+            if (updateDoc) {
+                indexWriter.updateDocument(new Term("preparedItemId", preparedItemId), luceneDocument);
+            } else {
+                indexWriter.addDocument(luceneDocument);
+            }
+
             indexWriter.commit();
         } catch (IOException e) {
             throw new ArtivactException("Could not write to search index!", e);

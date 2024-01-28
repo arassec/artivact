@@ -22,7 +22,7 @@
     <div class="col-12">
       <div class="col items-center">
 
-        <div class="absolute-top-right">
+        <div class="absolute-top-right" v-if="userdataStore.authenticated">
           <!-- SYNC UP BUTTON -->
           <q-btn
             round
@@ -32,9 +32,7 @@
             @click="synchronizeUp()"
           />
           <!-- EDIT ITEM BUTTON -->
-          <router-link
-            :to="'/administration/configuration/item/' + itemDataDetailsRef.id"
-            v-if="userdataStore.authenticated">
+          <router-link :to="'/administration/configuration/item/' + itemDataDetailsRef.id">
             <q-btn
               round
               color="primary"
@@ -104,6 +102,12 @@
         />
       </div>
     </div>
+
+    <!-- LONG-RUNNING OPERATION -->
+    <artivact-operation-in-progress-dialog :progress-monitor-ref="progressMonitorRef"
+                                           :dialog-model="showOperationInProgressModalRef"
+                                           @close-dialog="showOperationInProgressModalRef = false"/>
+
   </ArtivactContent>
 </template>
 
@@ -119,6 +123,8 @@ import {useBreadcrumbsStore} from 'stores/breadcrumbs';
 import {translate} from 'components/utils';
 import ArtivactPropertyCategoryViewer from 'components/ArtivactPropertyCategoryViewer.vue';
 import {useDesktopStore} from 'stores/desktop';
+import ArtivactOperationInProgressDialog from 'components/ArtivactOperationInProgressDialog.vue';
+import {OperationProgress} from 'components/models';
 
 const quasar = useQuasar();
 const route = useRoute();
@@ -131,6 +137,9 @@ const itemDataDetailsRef = ref();
 const propertiesDataRef = ref();
 
 const openModelRef = ref(false);
+
+const progressMonitorRef = ref<OperationProgress>();
+const showOperationInProgressModalRef = ref(false);
 
 function loadData(itemId: string | string[]) {
   api
@@ -179,14 +188,43 @@ function synchronizeUp() {
   api
     .post('/api/exchange/item/' + itemDataDetailsRef.value.id + '/sync-up')
     .then((response) => {
-      // TODO ProgressMonitor!
-      console.log(response);
+      showOperationInProgressModalRef.value = true;
+      progressMonitorRef.value = response.data;
+      updateOperationProgress();
     })
     .catch(() => {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
         message: 'Synchronization failed',
+        icon: 'report_problem',
+      });
+    });
+}
+
+function updateOperationProgress() {
+  api
+    .get('/api/exchange/progress')
+    .then((response) => {
+      if (response.data) {
+        progressMonitorRef.value = response.data;
+        setTimeout(() => updateOperationProgress(), 1000);
+      } else {
+        progressMonitorRef.value = undefined;
+        showOperationInProgressModalRef.value = false;
+        quasar.notify({
+          color: 'positive',
+          position: 'bottom',
+          message: 'Item uploaded!',
+          icon: 'check',
+        });
+      }
+    })
+    .catch(() => {
+      quasar.notify({
+        color: 'negative',
+        position: 'bottom',
+        message: 'Background removal failed!',
         icon: 'report_problem',
       });
     });

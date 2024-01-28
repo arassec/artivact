@@ -46,10 +46,8 @@ export interface ModelSet {
   modelFiles: Asset[];
 }
 
-export interface ItemDetails {
-  id: string;
+export interface ItemDetails extends BaseRestrictedItem {
   version: number;
-  restrictions: string[];
   title: TranslatableString;
   description: TranslatableString;
   images: Asset[];

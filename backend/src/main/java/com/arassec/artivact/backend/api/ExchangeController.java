@@ -158,9 +158,8 @@ public class ExchangeController extends BaseController {
     }
 
     @PostMapping(value = "/item/{itemId}/sync-up")
-    public ResponseEntity<String> syncItemUp(@PathVariable String itemId) {
-        exchangeService.syncItemUp(itemId);
-        return ResponseEntity.ok("Synchronizing item");
+    public ResponseEntity<OperationProgress> syncItemUp(@PathVariable String itemId) {
+        return convert(exchangeService.syncItemUp(itemId));
     }
 
     @GetMapping("/progress")

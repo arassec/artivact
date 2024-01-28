@@ -1,5 +1,5 @@
 <template>
-  <div :class="!offerDetails() ? 'q-mb-md' : ''">
+  <div :class="!restrictedItemRef ? 'q-mb-md' : ''">
     <!-- Default value if locale is selected -->
     <label v-if="translatableStringRef && localeStore.selectedLocale !== null">
       Default: {{ translatableStringRef.value }}
@@ -31,7 +31,7 @@
         showDetailsRef = true;
         $emit('show-details');
       "
-      v-if="offerDetails() && !showDetailsRef"
+      v-if="restrictedItemRef && !showDetailsRef"
     />
     <q-btn
       rounded
@@ -44,10 +44,10 @@
         showDetailsRef = false;
         $emit('hide-details');
       "
-      v-if="offerDetails() && showDetailsRef"
+      v-if="restrictedItem && showDetailsRef"
     />
 
-    <div v-if="offerDetails()" v-show="showDetailsRef">
+    <div v-if="restrictedItem" v-show="showDetailsRef">
       <!-- Restrictions -->
       <artivact-restrictions-editor
         v-if="restrictedItemRef"
@@ -108,10 +108,6 @@ const slots = useSlots();
 const translatableStringRef = toRef(props, 'translatableString');
 const restrictedItemRef = toRef(props, 'restrictedItem');
 const showDetailsRef = ref(false);
-
-function offerDetails() {
-  return !!slots['default'] && restrictedItemRef;
-}
 
 function addRestriction(value: string) {
   if (restrictedItemRef.value) {

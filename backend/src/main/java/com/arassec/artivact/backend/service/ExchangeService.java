@@ -29,6 +29,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -49,6 +51,8 @@ public class ExchangeService {
 
     @Getter
     private ProgressMonitor progressMonitor;
+
+    private final ExecutorService executorService = Executors.newFixedThreadPool(1);
 
     public ExchangeService(AccountService accountService,
                            ConfigurationService configurationService,
@@ -148,48 +152,70 @@ public class ExchangeService {
         }
     }
 
-    public synchronized void syncItemUp(String itemId) {
-        File exportFile = projectRootProvider.getProjectRoot()
-                .resolve("temp")
-                .resolve(itemId + ".artivact.item.zip")
-                .toAbsolutePath()
-                .toFile();
+    public synchronized ProgressMonitor syncItemUp(String itemId) {
 
-        try (FileOutputStream fileOutputStream = new FileOutputStream(exportFile)) {
-            StreamingResponseBody streamingResponseBody = createItemExportFile(itemId);
-            streamingResponseBody.writeTo(fileOutputStream);
-        } catch (IOException e) {
-            progressMonitor.updateProgress("Could not create export file to upload item to remote server!", e);
-            log.error("Could not create export file to upload item to remote server!", e);
-            return;
+        if (progressMonitor != null && progressMonitor.getException() == null) {
+            return progressMonitor;
         }
 
-        ExchangeConfiguration exchangeConfiguration = configurationService.loadExchangeConfiguration();
+        progressMonitor = new ProgressMonitor("Packaging item for upload.");
 
-        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
-            HttpPost httpPost = new HttpPost(exchangeConfiguration.getRemoteServer()
-                    + "/api/exchange/sync/item/import/"
-                    + exchangeConfiguration.getApiToken());
+        executorService.submit(() -> {
+            File exportFile = projectRootProvider.getProjectRoot()
+                    .resolve("temp")
+                    .resolve(itemId + ".artivact.item.zip")
+                    .toAbsolutePath()
+                    .toFile();
 
-            HttpEntity entity = MultipartEntityBuilder.create()
-                    .setMode(HttpMultipartMode.STRICT)
-                    .addPart("file", new FileBody(exportFile))
-                    .build();
-            httpPost.setEntity(entity);
+            try (FileOutputStream fileOutputStream = new FileOutputStream(exportFile)) {
+                StreamingResponseBody streamingResponseBody = createItemExportFile(itemId);
+                streamingResponseBody.writeTo(fileOutputStream);
+            } catch (IOException e) {
+                progressMonitor.updateProgress("Could not create export file to upload item to remote server!", e);
+                log.error("Could not create export file to upload item to remote server!", e);
+            }
 
-            httpclient.execute(httpPost, response -> {
-                if (response.getCode() != 200) {
-                    progressMonitor.updateProgress("Could not upload item file to remote server!",
-                            new ArtivactException("HTTP result code: " + response.getCode()));
-                    log.error("Could not upload item file to remote server: HTTP result code " + response.getCode());
-                }
-                return response;
-            });
+            ExchangeConfiguration exchangeConfiguration = configurationService.loadExchangeConfiguration();
+            String remoteServer = exchangeConfiguration.getRemoteServer();
+            if (!StringUtils.hasText(remoteServer)) {
+                progressMonitor.updateProgress("Exchange configuration is missing a remote server to synchronize with!",
+                        new ArtivactException("Configuration missing!"));
+            }
+            if (!remoteServer.endsWith("/")) {
+                remoteServer += "/";
+            }
 
-        } catch (Exception e) {
-            progressMonitor.updateProgress("Could not upload item file to remote server!", e);
-            log.error("Could not upload item file to remote server!", e);
-        }
+            progressMonitor.updateProgress("Uploading item to " + remoteServer);
+
+            try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+                HttpPost httpPost = new HttpPost(remoteServer
+                        + "api/exchange/sync/item/import/"
+                        + exchangeConfiguration.getApiToken());
+
+                HttpEntity entity = MultipartEntityBuilder.create()
+                        .setMode(HttpMultipartMode.STRICT)
+                        .addPart("file", new FileBody(exportFile))
+                        .build();
+                httpPost.setEntity(entity);
+
+                httpclient.execute(httpPost, response -> {
+                    if (response.getCode() != 200) {
+                        progressMonitor.updateProgress("Could not upload item file to remote server!",
+                                new ArtivactException("HTTP result code: " + response.getCode()));
+                        log.error("Could not upload item file to remote server: HTTP result code " + response.getCode());
+                        return progressMonitor;
+                    }
+                    return response;
+                });
+
+                progressMonitor = null;
+            } catch (Exception e) {
+                progressMonitor.updateProgress("Could not upload item file to remote server!", e);
+                log.error("Could not upload item file to remote server!", e);
+            }
+        });
+
+        return progressMonitor;
     }
 
 }

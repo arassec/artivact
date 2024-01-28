@@ -16,7 +16,7 @@
         :label="$t('ROLE_ADMIN')"
         v-model="adminRef"
         size="xs"
-        class="first-role"
+        class="first-role q-mr-sm"
         @click="
           adminRef
             ? $emit('add-restriction', 'ROLE_ADMIN')
@@ -28,7 +28,7 @@
         v-model="userRef"
         size="xs"
         @click="
-          adminRef
+          userRef
             ? $emit('add-restriction', 'ROLE_USER')
             : $emit('delete-restriction', 'ROLE_USER')
         "

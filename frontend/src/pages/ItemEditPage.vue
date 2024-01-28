@@ -238,8 +238,8 @@
           </div>
 
           <h2 class="av-text-h2">3D Models</h2>
-            <item-model-set-editor  :item-id="savedItemId" :creation-model-sets="itemDataRef.creationModelSets"
-                                    @update-item="loadItemData(itemDataRef.id)"/>
+          <item-model-set-editor :item-id="savedItemId" :creation-model-sets="itemDataRef.creationModelSets"
+                                 @update-item="loadItemData(itemDataRef.id)"/>
         </div>
 
       </div>
@@ -407,20 +407,24 @@ function loadTagsData() {
 }
 
 function removeTag(tag: Tag) {
-  itemDataRef.value.tags = (itemDataRef.value?.tags as Tag[]).filter(
-    (item) => item !== tag
-  );
+  if (itemDataRef.value) {
+    itemDataRef.value.tags = (itemDataRef.value?.tags as Tag[]).filter(
+      (item) => item !== tag
+    );
+  }
 }
 
 function removeRestriction(role: string) {
-  const index = itemDataRef.value.restrictions.indexOf(role);
-  if (index > -1) {
-    itemDataRef.value.restrictions.splice(index, 1);
+  if (itemDataRef.value) {
+    const index = itemDataRef.value.restrictions.indexOf(role);
+    if (index > -1) {
+      itemDataRef.value?.restrictions.splice(index, 1);
+    }
   }
 }
 
 function addRestriction(role: string) {
-  itemDataRef.value.restrictions.push(role);
+  itemDataRef.value?.restrictions.push(role);
 }
 
 function deleteModel(element: Asset) {

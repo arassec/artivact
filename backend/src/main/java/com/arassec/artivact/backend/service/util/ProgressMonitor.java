@@ -25,6 +25,15 @@ public class ProgressMonitor {
     }
 
     /**
+     * Creates a new instance.
+     *
+     * @param progress The initial progress to use.
+     */
+    public ProgressMonitor(String progress) {
+        this.progress = progress;
+    }
+
+    /**
      * Updates the progress string.
      *
      * @param progress The progress to set.
