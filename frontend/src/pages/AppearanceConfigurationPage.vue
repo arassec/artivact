@@ -1,14 +1,14 @@
 <template>
   <ArtivactContent>
     <div class="full-width">
-      <h1 class="av-text-h1">Appearance Configuration</h1>
+      <h1 class="av-text-h1">{{$t('AppearanceConfigurationPage.heading')}}</h1>
       <artivact-appearance-configuration-editor
         :appearance-configuration="appearanceConfigurationRef"
         @color-changed="updateColor"
         @favicon-uploaded="loadAppearanceConfiguration"
       />
       <q-btn
-        label="Save Configuration"
+        :label="$t('save')"
         color="primary"
         class="q-mb-lg float-right"
         @click="saveAppearanceConfiguration()"
@@ -25,8 +25,11 @@ import { onMounted, ref, Ref } from 'vue';
 import { AppearanceConfiguration } from 'components/models';
 import ArtivactAppearanceConfigurationEditor from 'components/ArtivactAppearanceConfigurationEditor.vue';
 import { useLocaleStore } from 'stores/locale';
+import {useI18n} from 'vue-i18n';
 
 const quasar = useQuasar();
+const i18n = useI18n();
+
 const appearanceConfigurationRef: Ref<AppearanceConfiguration | null> =
   ref(null);
 
@@ -42,7 +45,7 @@ function loadAppearanceConfiguration() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Appearance configuration loading failed',
+        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.configuration.appearance')}),
         icon: 'report_problem',
       });
     });
@@ -64,7 +67,7 @@ function saveAppearanceConfiguration() {
             quasar.notify({
               color: 'negative',
               position: 'bottom',
-              message: 'Loading locales failed',
+              message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.locales')}),
               icon: 'report_problem',
             });
           });
@@ -97,7 +100,7 @@ function saveAppearanceConfiguration() {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: 'Appearance configuration saved',
+        message: i18n.t('Common.messages.saving.success', { item: i18n.t('Common.items.configuration.appearance')}),
         icon: 'check',
       });
     })
@@ -105,14 +108,13 @@ function saveAppearanceConfiguration() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Saving failed',
+        message: i18n.t('Common.messages.saving.failed', { item: i18n.t('Common.items.configuration.appearance')}),
         icon: 'report_problem',
       });
     });
 }
 
 function updateColor(colorKey: string, colorValue: string) {
-  console.log('UPDATE COLOR: ' + colorKey + '=' + colorValue);
   if (appearanceConfigurationRef.value?.colorTheme) {
     if (colorKey === 'primary') {
       appearanceConfigurationRef.value.colorTheme.primary = colorValue;

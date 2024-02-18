@@ -18,7 +18,7 @@
           class="menu-entry-link q-mt-xs q-mb-xs"
         >
           <q-btn flat color="white" icon="login" size="md">
-            <q-tooltip>Login</q-tooltip>
+            <q-tooltip>{{$t("MainLayout.login")}}</q-tooltip>
           </q-btn>
         </router-link>
 
@@ -38,7 +38,7 @@
             <label class="q-mr-sm cursor-pointer">
               {{ userdataStore.username }}
             </label>
-            <q-tooltip>Logout</q-tooltip>
+            <q-tooltip>{{$t("MainLayout.logout")}}</q-tooltip>
           </q-btn>
         </router-link>
       </q-toolbar>

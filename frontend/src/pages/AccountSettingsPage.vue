@@ -2,12 +2,12 @@
   <ArtivactContent>
     <div class="col">
       <div>
-        <h1 class="av-text-h1">Account Settings</h1>
-        <div class="q-mb-lg">Here you can configure your account settings.</div>
+        <h1 class="av-text-h1">{{$t('AccountSettingsPage.heading')}}</h1>
+        <div class="q-mb-lg">{{$t('AccountSettingsPage.description')}}</div>
 
         <q-card class="q-mb-lg">
           <q-card-section class="bg-primary text-white">
-            <div class="text-h6">Account</div>
+            <div class="text-h6">{{$t('AccountSettingsPage.card.heading')}}</div>
           </q-card-section>
 
           <q-card-section>
@@ -17,7 +17,7 @@
               class="col-5"
               type="text"
               name="username"
-              label="Username"
+              :label="$t('Common.username')"
             />
           </q-card-section>
 
@@ -28,7 +28,7 @@
               class="col-5"
               type="password"
               name="password"
-              label="Password"
+              :label="$t('Common.password')"
               :error="passwordValidationFailedRef"
             />
           </q-card-section>
@@ -40,7 +40,7 @@
               class="col-5"
               type="password"
               name="password"
-              label="Password (repeat)"
+              :label="$t('Common.passwordRepeat')"
               :error="passwordValidationFailedRef"
             />
           </q-card-section>
@@ -51,7 +51,7 @@
               v-model="emailRef"
               class="col-5"
               type="text"
-              name="email"
+              :label="$t('Common.email')"
               label="E-Mail"
             />
           </q-card-section>
@@ -62,14 +62,14 @@
               v-model="apiTokenRef"
               class="col-5"
               type="text"
-              name="email"
-              label="API Token"
+              name="apiToken"
+              :label="$t('AccountSettingsPage.apiToken')"
             />
           </q-card-section>
         </q-card>
 
         <q-btn
-          label="Save"
+          :label="$t('Common.save')"
           color="primary"
           class="float-right q-mb-lg"
           @click="saveAccount()"
@@ -85,6 +85,9 @@ import {api} from 'boot/axios';
 import {onMounted, ref} from 'vue';
 import {Account} from 'components/models';
 import ArtivactContent from 'components/ArtivactContent.vue';
+import {useI18n} from 'vue-i18n';
+
+const i18n = useI18n();
 
 const accountRef = ref({} as Account);
 
@@ -113,7 +116,7 @@ function loadAccount() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Loading failed',
+        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.account')}),
         icon: 'report_problem',
       });
     });
@@ -149,7 +152,7 @@ function saveAccount() {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: 'Account saved',
+        message: i18n.t('Common.messages.saving.success', { item: i18n.t('Common.items.account')}),
         icon: 'check',
       });
     })
@@ -157,7 +160,7 @@ function saveAccount() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Saving failed',
+        message: i18n.t('Common.messages.saving.failed', { item: i18n.t('Common.items.account')}),
         icon: 'report_problem',
       });
     });

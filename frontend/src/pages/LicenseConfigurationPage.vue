@@ -1,13 +1,13 @@
 <template>
   <ArtivactContent>
     <div>
-      <h1 class="av-text-h1">License Configuration</h1>
+      <h1 class="av-text-h1">{{ $t('LicenseConfigurationPage.heading') }}</h1>
       <artivact-license-configuration-editor
         :license-configuration="licenseConfigurationRef"
         :locales="localesRef"
       />
       <q-btn
-        label="Save License"
+        :label="$t('Common.save')"
         color="primary"
         class="q-mb-lg float-right"
         @click="saveLicenseConfiguration()"
@@ -23,8 +23,10 @@ import { onMounted, Ref, ref } from 'vue';
 import { LicenseConfiguration } from 'components/models';
 import ArtivactLicenseConfigurationEditor from 'components/ArtivactLicenseConfigurationEditor.vue';
 import ArtivactContent from 'components/ArtivactContent.vue';
+import {useI18n} from 'vue-i18n';
 
 const quasar = useQuasar();
+const i18n = useI18n();
 
 const localesRef = ref([]);
 const licenseConfigurationRef: Ref<LicenseConfiguration | null> = ref(null);
@@ -42,7 +44,7 @@ function loadLicenseConfiguration() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'License configuration loading failed',
+        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.configuration.license') }),
         icon: 'report_problem',
       });
     });
@@ -58,7 +60,7 @@ function loadLocales() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Loading locales failed',
+        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.locales') }),
         icon: 'report_problem',
       });
     });
@@ -71,7 +73,7 @@ function saveLicenseConfiguration() {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: 'License configuration saved',
+        message: i18n.t('Common.messages.saving.success', { item: i18n.t('Common.items.configuration.license') }),
         icon: 'check',
       });
     })
@@ -79,7 +81,7 @@ function saveLicenseConfiguration() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Saving failed',
+        message: i18n.t('Common.messages.saving.failed', { item: i18n.t('Common.items.configuration.license') }),
         icon: 'report_problem',
       });
     });

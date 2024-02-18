@@ -17,9 +17,11 @@ import ArtivactPage from 'components/ArtivactPage.vue';
 import { PageContent, Widget } from 'components/models';
 import { useBreadcrumbsStore } from 'stores/breadcrumbs';
 import {useMenuStore} from 'stores/menu';
+import {useI18n} from 'vue-i18n';
 
 const quasar = useQuasar();
 const route = useRoute();
+const i18n = useI18n();
 
 const breadcrumbsStore = useBreadcrumbsStore();
 const menuStore = useMenuStore();
@@ -54,7 +56,7 @@ function loadPage(pageId: string | string[]) {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Loading failed',
+        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.page')}),
         icon: 'report_problem',
       });
     });
@@ -93,7 +95,7 @@ function fileAdded(widgetId: string, propertyName: string) {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Loading failed',
+        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.page')}),
         icon: 'report_problem',
       });
     });

@@ -3,7 +3,7 @@
     <div class="col">
       <q-form @submit="onSubmit">
         <div class="row justify-center">
-          <h1 class="av-text-h1 col-5">Login</h1>
+          <h1 class="av-text-h1 col-5">{{ $t('LoginPage.login') }}</h1>
         </div>
         <div class="row justify-center">
           <q-input
@@ -12,7 +12,7 @@
             class="col-5"
             type="text"
             name="username"
-            label="Username"
+            :label="$t('Common.username')"
           ></q-input>
         </div>
         <div class="row justify-center">
@@ -21,12 +21,12 @@
             class="col-5"
             type="password"
             name="password"
-            label="Password"
+            :label="$t('Common.password')"
           ></q-input>
         </div>
         <div class="row justify-center q-mt-lg">
           <div class="col-5">
-            <q-btn type="submit" class="float-right" outline label="Login" />
+            <q-btn type="submit" class="float-right" outline :label="$t('LoginPage.login')" />
           </div>
         </div>
       </q-form>
@@ -42,9 +42,11 @@ import {useUserdataStore} from 'stores/userdata';
 import {useRouter} from 'vue-router';
 import ArtivactContent from 'components/ArtivactContent.vue';
 import {useMenuStore} from 'stores/menu';
+import {useI18n} from 'vue-i18n';
 
 const quasar = useQuasar();
 const route = useRouter();
+const i18n = useI18n();
 
 const usernameRef = ref('');
 const passwordRef = ref('');
@@ -62,8 +64,7 @@ function loadMenus() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Loading menus failed',
-        icon: 'report_problem',
+        message: i18n.t('LoginPage.messages.loadingMenusFailed'),
       });
     });
 }
@@ -84,7 +85,7 @@ function onSubmit() {
           quasar.notify({
             color: 'positive',
             position: 'bottom',
-            message: 'Login successful',
+            message: i18n.t('LoginPage.messages.loginSuccessful'),
             icon: 'check',
           });
           route.push('/');
@@ -93,7 +94,7 @@ function onSubmit() {
           quasar.notify({
             color: 'negative',
             position: 'bottom',
-            message: 'Loading UserData failed',
+            message: i18n.t('LoginPage.messages.loadingUserdataFailed'),
             icon: 'report_problem',
           });
         });
@@ -102,7 +103,7 @@ function onSubmit() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Login failed',
+        message: i18n.t('LoginPage.messages.loginFailed'),
         icon: 'report_problem',
       });
     });

@@ -14,6 +14,7 @@ import com.arassec.artivact.backend.service.model.ProjectDir;
 import com.arassec.artivact.backend.service.model.configuration.AdapterConfiguration;
 import com.arassec.artivact.backend.service.model.item.CreationImageSet;
 import com.arassec.artivact.backend.service.util.DirectoryWatcher;
+import com.arassec.artivact.backend.service.util.FileUtil;
 import com.arassec.artivact.backend.service.util.ProgressMonitor;
 import com.arassec.artivact.backend.service.util.ProjectRootProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -73,6 +74,8 @@ public class ImageCreator extends BaseCreator {
     @Getter
     private final List<Adapter<?, ?>> adapters;
 
+    private final FileUtil fileUtil;
+
     /**
      * Captures photos using adapters and adds them to a new image set of the currently active item.
      *
@@ -92,6 +95,7 @@ public class ImageCreator extends BaseCreator {
         CreationImageSet captureResult = new CreationImageSet();
 
         Path targetDir = getImagesDir(itemId, true);
+        fileUtil.createDirIfRequired(targetDir);
 
         AdapterConfiguration adapterConfiguration = configurationService.loadAdapterConfiguration();
 
@@ -141,6 +145,7 @@ public class ImageCreator extends BaseCreator {
 
         // Add new images to active item:
         addCapturedImagesToImageSet(itemId, capturedImages, progressMonitor, captureResult);
+        captureResult.setModelInput(!removeBackgrounds);
         result.add(captureResult);
 
         // Teardown adapters:
@@ -148,7 +153,9 @@ public class ImageCreator extends BaseCreator {
         cameraAdapter.teardown();
         Optional<List<Path>> imagesWithoutBackground = backgroundRemovalAdapter.teardown();
         if (removeBackgrounds && imagesWithoutBackground.isPresent()) {
-            CreationImageSet bgRemovalResult = new CreationImageSet();
+            CreationImageSet bgRemovalResult = CreationImageSet.builder()
+                    .modelInput(true)
+                    .build();
             addCapturedImagesToImageSet(itemId, imagesWithoutBackground.get(), progressMonitor, bgRemovalResult);
             result.add(bgRemovalResult);
         }

@@ -1,7 +1,7 @@
 <template>
   <artivact-content>
     <div class="full-width">
-      <h1 class="av-text-h1">Artivact Exhibitions</h1>
+      <h1 class="av-text-h1">{{$t('ExhibitionsConfigurationPage.heading')}}</h1>
       <artivact-exhibitions-configuration-editor/>
     </div>
   </artivact-content>

@@ -1,14 +1,13 @@
 <template>
   <ArtivactContent>
     <div class="col">
-      <h1 class="av-text-h1">Accounts Administration</h1>
+      <h1 class="av-text-h1">{{$t("AccountsConfigurationPage.heading")}}</h1>
       <div class="q-mb-lg">
-        All system accounts can be configured on this page.
+        {{$t("AccountsConfigurationPage.description")}}
       </div>
-
       <q-card>
         <q-card-section class="bg-primary text-white">
-          <div class="text-h6">Accounts</div>
+          <div class="text-h6">{{$t("AccountsConfigurationPage.card.heading")}}</div>
         </q-card-section>
 
         <q-list class="rounded-borders q-mb-lg" v-if="accountsRef">
@@ -16,20 +15,7 @@
             <q-item>
               <q-item-section class="account-label">
                 {{ account.username }}
-                {{ account.email !== "" ? "(" + account.email + ")" : "" }}
-              </q-item-section>
-
-              <q-item-section side>
-                <q-btn
-                  round
-                  dense
-                  flat
-                  class="float-right"
-                  color="white"
-                  icon="delete"
-                  size="md"
-                  @click="deleteAccount(index)"
-                ></q-btn>
+                {{ account.email ? "(" + account.email + ")" : "" }}
               </q-item-section>
 
               <div class="float-right">
@@ -42,8 +28,9 @@
                   @click="
                     editAccountRef = account;
                     showEditModalRef = true;
-                  "
-                ></q-btn>
+                  ">
+                  <q-tooltip>{{$t("AccountsConfigurationPage.card.button.tooltip.edit")}}</q-tooltip>
+                </q-btn>
                 <q-btn
                   round
                   dense
@@ -53,8 +40,9 @@
                   @click="
                     deleteAccountIdRef = account.id;
                     showDeleteModalRef = true;
-                  "
-                ></q-btn>
+                  ">
+                  <q-tooltip>{{$t("AccountsConfigurationPage.card.button.tooltip.delete")}}</q-tooltip>
+                </q-btn>
               </div>
             </q-item>
             <q-separator></q-separator>
@@ -63,7 +51,7 @@
       </q-card>
 
       <q-btn
-        label="Add Account"
+        :label="$t('AccountsConfigurationPage.button.addAccount')"
         @click="openCreateAccountModal()"
         color="primary"
         class="float-right q-mb-lg"
@@ -72,7 +60,7 @@
 
     <artivact-dialog :dialog-model="showCreateModalRef">
       <template v-slot:header>
-        Create Account
+        {{$t("AccountsConfigurationPage.dialog.create.heading")}}
       </template>
 
       <template v-slot:body>
@@ -83,7 +71,7 @@
             class="col-5 q-mb-lg"
             type="text"
             name="username"
-            label="Username"
+            :label="$t('Common.username')"
           />
 
           <q-input
@@ -92,7 +80,7 @@
             class="col-5"
             type="password"
             name="password"
-            label="Password"
+            :label="$t('Common.password')"
             :error="passwordValidationFailedRef"
           />
 
@@ -102,7 +90,7 @@
             class="col-5"
             type="password"
             name="password"
-            label="Password (repeat)"
+            :label="$t('Common.passwordRepeat')"
             :error="passwordValidationFailedRef"
           />
 
@@ -112,7 +100,7 @@
             class="col-5 q-mb-md"
             type="text"
             name="email"
-            label="E-Mail"
+            :label="$t('Common.email')"
           />
 
           <div>
@@ -120,7 +108,7 @@
               v-model="userRef"
               class="col-5"
               name="user"
-              label="User?"
+              :label="$t('AccountsConfigurationPage.dialog.user')"
             />
           </div>
 
@@ -129,7 +117,7 @@
               v-model="adminRef"
               class="col-5"
               name="admin"
-              label="Admin?"
+              :label="$t('AccountsConfigurationPage.dialog.admin')"
             />
           </div>
         </q-card-section>
@@ -137,7 +125,7 @@
 
       <template v-slot:cancel>
         <q-btn
-          label="Cancel"
+          :label="$t('Common.cancel')"
           color="primary"
           @click="showCreateModalRef = false"
         />
@@ -145,7 +133,7 @@
 
       <template v-slot:approve>
         <q-btn
-          label="Save"
+          :label="$t('Common.save')"
           color="primary"
           @click="showCreateModalRef = !createAccount()"
         />
@@ -154,7 +142,7 @@
 
     <artivact-dialog :dialog-model="showEditModalRef">
       <template v-slot:header>
-        Edit Account
+        {{$t('AccountsConfigurationPage.dialog.edit.heading')}}
       </template>
 
       <template v-slot:body>
@@ -165,7 +153,7 @@
             class="col-5 q-mb-lg"
             type="text"
             name="username"
-            label="Username"
+            :label="$t('Common.username')"
           />
 
           <q-input
@@ -174,7 +162,7 @@
             class="col-5"
             type="password"
             name="password"
-            label="Password"
+            :label="$t('Common.password')"
             :error="passwordValidationFailedRef"
           />
 
@@ -184,7 +172,7 @@
             class="col-5"
             type="password"
             name="password"
-            label="Password (repeat)"
+            :label="$t('Common.passwordRepeat')"
             :error="passwordValidationFailedRef"
           />
 
@@ -194,7 +182,7 @@
             class="col-5 q-mb-md"
             type="text"
             name="email"
-            label="E-Mail"
+            :label="$t('Common.email')"
           />
 
           <div>
@@ -202,7 +190,7 @@
               v-model="editAccountRef.user"
               class="col-5"
               name="user"
-              label="User?"
+              :label="$t('AccountsConfigurationPage.dialog.user')"
             />
           </div>
 
@@ -211,7 +199,7 @@
               v-model="editAccountRef.admin"
               class="col-5"
               name="admin"
-              label="Admin?"
+              :label="$t('AccountsConfigurationPage.dialog.admin')"
             />
           </div>
         </q-card-section>
@@ -219,7 +207,7 @@
 
       <template v-slot:cancel>
         <q-btn
-          label="Cancel"
+          :label="$t('Common.cancel')"
           color="primary"
           @click="showEditModalRef = false"
         />
@@ -227,7 +215,7 @@
 
       <template v-slot:approve>
         <q-btn
-          label="Save"
+          :label="$t('Common.save')"
           color="primary"
           @click="showEditModalRef = !updateAccount()"
         />
@@ -236,23 +224,22 @@
 
     <artivact-dialog :dialog-model="showDeleteModalRef" :warn="true">
       <template v-slot:header>
-        Delete Account?
+        {{$t('AccountsConfigurationPage.dialog.delete.heading')}}
       </template>
 
       <template v-slot:body>
         <q-card-section>
-          Are you sure you want to delete this account? This action cannot be
-          undone!
+          {{$t('AccountsConfigurationPage.dialog.delete.description')}}
         </q-card-section>
       </template>
 
       <template v-slot:cancel>
-        <q-btn label="Cancel" color="primary" @click="showDeleteModalRef = false"/>
+        <q-btn :label="$t('Common.cancel')" color="primary" @click="showDeleteModalRef = false"/>
       </template>
 
       <template v-slot:approve>
         <q-btn
-          label="Delete Account"
+          :label="$t('AccountsConfigurationPage.dialog.delete.button')"
           color="primary"
           @click="deleteAccount(deleteAccountIdRef)"
         />
@@ -269,8 +256,10 @@ import {onMounted, Ref, ref} from 'vue';
 import {Account} from 'components/models';
 import ArtivactContent from 'components/ArtivactContent.vue';
 import ArtivactDialog from 'components/ArtivactDialog.vue';
+import {useI18n} from 'vue-i18n';
 
 const quasar = useQuasar();
+const i18n = useI18n();
 
 const showCreateModalRef = ref(false);
 const showEditModalRef = ref(false);
@@ -300,7 +289,7 @@ function loadAccounts() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Loading accounts failed',
+        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.accounts')}),
         icon: 'report_problem',
       });
     });
@@ -333,7 +322,7 @@ function createAccount(): boolean {
     password: passwordRef.value,
     email: emailRef.value,
     user: userRef.value,
-    admin: adminRef.value,
+    admin: adminRef.value
   };
 
   api
@@ -343,7 +332,7 @@ function createAccount(): boolean {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: 'Account created',
+        message: i18n.t('Common.messages.creating.success', { item: i18n.t('Common.items.account')}),
         icon: 'done',
       });
     })
@@ -351,7 +340,7 @@ function createAccount(): boolean {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Loading accounts failed',
+        message: i18n.t('Common.messages.creating.failure', { item: i18n.t('Common.items.account')}),
         icon: 'report_problem',
       });
     });
@@ -380,7 +369,7 @@ function updateAccount(): boolean {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: 'Account saved',
+        message: i18n.t('Common.messages.saving.success', { item: i18n.t('Common.items.account')}),
         icon: 'done',
       });
     })
@@ -388,7 +377,7 @@ function updateAccount(): boolean {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Loading accounts failed',
+        message: i18n.t('Common.messages.saving.failure', { item: i18n.t('Common.items.account')}),
         icon: 'report_problem',
       });
     });
@@ -405,7 +394,7 @@ function deleteAccount(id: number) {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: 'Account deleted',
+        message: i18n.t('Common.messages.deleting.success', { item: i18n.t('Common.items.account')}),
         icon: 'check',
       });
     })
@@ -413,7 +402,7 @@ function deleteAccount(id: number) {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Deleting failed',
+        message: i18n.t('Common.messages.deleting.failed', { item: i18n.t('Common.items.account')}),
         icon: 'report_problem',
       });
     });

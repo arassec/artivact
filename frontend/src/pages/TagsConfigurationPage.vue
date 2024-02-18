@@ -1,17 +1,16 @@
 <template>
   <ArtivactContent>
     <div>
-      <h1 class="av-text-h1">Tags Configuration</h1>
+      <h1 class="av-text-h1">{{ $t('TagsConfigurationPage.heading') }}</h1>
       <div class="q-mb-lg">
-        Tags can be used to categorize items beyond their properties. They
-        should be considered meta-data and not be used to replace properties.
+        {{ $t('TagsConfigurationPage.description') }}
       </div>
 
       <div
         v-if="!tagsConfigurationRef || tagsConfigurationRef.tags.length == 0"
         class="q-mb-md"
       >
-        There are currently no tags defined.
+        {{ $t('TagsConfigurationPage.noTagsDefined') }}
       </div>
 
       <artivact-tags-configuration-editor
@@ -22,7 +21,7 @@
       <q-separator class="q-mt-md q-mb-md" />
 
       <q-btn
-        label="Save"
+        :label="$t('Common.save')"
         color="primary"
         class="float-right q-mb-lg"
         @click="saveTagsConfiguration()"
@@ -30,15 +29,14 @@
     </div>
 
     <div>
-      <h1 class="av-text-h1">Tags Import/Export</h1>
+      <h1 class="av-text-h1">{{ $t('TagsConfigurationPage.importexport.heading') }}</h1>
 
       <div class="q-mb-md">
-        You can export the current tags configuration with the button below. A JSON file containing the
-        current configuration will be created.
+        {{ $t('TagsConfigurationPage.importexport.export') }}
         <q-form :action="'/api/exchange/tags/export'" method="get">
           <q-btn
             icon="download"
-            label="Export Tags"
+            :label="$t('TagsConfigurationPage.importexport.button.export')"
             color="primary"
             type="submit"
             class="q-mt-md"
@@ -47,10 +45,10 @@
       </div>
 
       <div>
-        You can upload a previously created tags export here and OVERWRITE the current tags with it.
+        {{ $t('TagsConfigurationPage.importexport.import') }}
         <q-uploader
           :url="'/api/exchange/tags/import'"
-          label="Import Tags"
+          :label="$t('TagsConfigurationPage.importexport.button.import')"
           class="q-mt-md q-mb-md"
           accept=".artivact.tags-configuration.json"
           field-name="file"
@@ -70,8 +68,10 @@ import { onMounted, Ref, ref } from 'vue';
 import { TagsConfiguration } from 'components/models';
 import ArtivactTagsConfigurationEditor from 'components/ArtivactTagsConfigurationEditor.vue';
 import ArtivactContent from 'components/ArtivactContent.vue';
+import {useI18n} from 'vue-i18n';
 
 const quasar = useQuasar();
+const i18n = useI18n();
 
 const localesRef = ref([]);
 const tagsConfigurationRef: Ref<TagsConfiguration | null> = ref(null);
@@ -88,7 +88,7 @@ function loadLocales() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Loading locales failed',
+        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.locales')}),
         icon: 'report_problem',
       });
     });
@@ -105,7 +105,7 @@ function loadTagsConfiguration() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Loading failed',
+        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.configuration.tags')}),
         icon: 'report_problem',
       });
     });
@@ -118,7 +118,7 @@ function saveTagsConfiguration() {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: 'Tags saved',
+        message: i18n.t('Common.messages.saving.success', { item: i18n.t('Common.items.configuration.tags')}),
         icon: 'check',
       });
     })
@@ -126,7 +126,7 @@ function saveTagsConfiguration() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Saving failed',
+        message: i18n.t('Common.messages.saving.failed', { item: i18n.t('Common.items.configuration.tags')}),
         icon: 'report_problem',
       });
     });
@@ -137,7 +137,7 @@ function tagsUploaded() {
   quasar.notify({
     color: 'positive',
     position: 'bottom',
-    message: 'Properties uploaded',
+    message: i18n.t('TagsConfigurationPage.messages.uploadSuccess'),
     icon: 'check',
   });
 }

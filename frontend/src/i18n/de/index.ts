@@ -1,9 +1,33 @@
 export default {
+
+  cancel: 'Abbrechen',
+  save: 'Speichern',
+
+  MainLayout_Login: 'Login',
+  MainLayout_Logout: 'Logout',
+
+  AccountsConfigurationPage_Heading: 'Benutzerkonten Verwalten',
+  AccountsConfigurationPage_Description: 'Alle Benutzerkonten können auf dieser Seite verwaltet werden.',
+  AccountsConfigurationPage_Tooltip_Delete: 'Benutzerkonto löschen',
+  AccountsConfigurationPage_Tooltip_Edit: 'Benutzerkonto bearbeiten',
+  AccountsConfigurationPage_Card_Heading: 'Benutzerkonten',
+  AccountsConfigurationPage_Add_Account: 'Benutzerkonto hinzufügen',
+  AccountsConfigurationPage_Dialog_Create_Heading: 'Benutzerkonto Erstellen',
+  AccountsConfigurationPage_Dialog_Edit_Heading: 'Benutzerkonto Bearbeiten',
+  AccountsConfigurationPage_Dialog_Username: 'Benutzername',
+  AccountsConfigurationPage_Dialog_Password: 'Passwort',
+  AccountsConfigurationPage_Dialog_Password_Repeat: 'Passwort (wdh.)',
+  AccountsConfigurationPage_Dialog_Email: 'E-Mail',
+  AccountsConfigurationPage_Dialog_User: 'Hat \'User\'-Berechtigungen?',
+  AccountsConfigurationPage_Dialog_Admin: 'Hat \'Administrator\'-Berechtigungen?',
+  AccountsConfigurationPage_Dialog_Delete_Heading: 'Benutzerkonto löschen?',
+  AccountsConfigurationPage_Dialog_Delete_Description: 'Sind Sie sicher, dass Sie das Benutzerkonto löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden!',
+  AccountsConfigurationPage_Dialog_Delete_Button: 'Benutzerkonto löschen',
+
+  ItemModelViewer_downloadModelButtonLabel: 'Modell Herunterladen',
+
   ROLE_ADMIN: 'Admin',
   ROLE_USER: 'Benutzer',
-
-  downloadMediaFilesButtonLabel: 'Dateien Herunterladen',
-  downloadModelButtonLabel: 'Modell Herunterladen',
 
   widgetType: 'Widget Typ',
   addWidgetWarn: 'WARNUNG: Durch hinzufügen eines neuen Widgets wird der aktuelle Zustand der Seite gespeichert!',

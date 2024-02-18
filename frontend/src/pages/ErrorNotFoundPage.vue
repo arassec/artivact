@@ -1,9 +1,9 @@
 <template>
   <ArtivactContent>
     <div class="col">
-      <h1 class="av-text-h1">404</h1>
+      <h1 class="av-text-h1">{{$t('ErrorNotFoundPage.heading')}}</h1>
 
-      <div class="text-h2" style="opacity: 0.4">Page not found...</div>
+      <div class="text-h2" style="opacity: 0.4">{{$t('ErrorNotFoundPage.description')}}</div>
     </div>
   </ArtivactContent>
 </template>

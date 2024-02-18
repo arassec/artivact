@@ -1,12 +1,9 @@
 <template>
   <ArtivactContent>
     <div>
-      <h1 class="av-text-h1">Properties Configuration</h1>
+      <h1 class="av-text-h1">{{ $t('PropertiesConfigurationPage.heading') }}</h1>
       <div class="q-mb-lg">
-        Here the properties of items can be configured. They are organized in
-        categories, which can be ordered by drag & drop. The categories, with
-        their respective properties, are shown at the bottom of the item
-        details page.
+        {{ $t('PropertiesConfigurationPage.description') }}
       </div>
 
       <div
@@ -17,7 +14,7 @@
           propertiesConfigurationRef.categories.length == 0
         "
       >
-        There are currently no properties defined.
+        {{ $t('PropertiesConfigurationPage.noPropertiesDefined') }}
       </div>
 
       <artivact-properties-configuration-editor
@@ -29,7 +26,7 @@
       <q-separator class="q-mt-md q-mb-md" />
 
       <q-btn
-        label="Save"
+        :label="$t('Common.save')"
         color="primary"
         class="float-right q-mb-lg"
         @click="saveProperties()"
@@ -37,15 +34,14 @@
     </div>
 
     <div>
-      <h1 class="av-text-h1">Properties Import/Export</h1>
+      <h1 class="av-text-h1">{{ $t('PropertiesConfigurationPage.importexport.heading') }}</h1>
 
       <div class="q-mb-md">
-        You can export the current properties configuration with the button below. A JSON file containing the
-        current configuration will be created.
+        {{ $t('PropertiesConfigurationPage.importexport.export') }}
         <q-form :action="'/api/exchange/properties/export'" method="get">
           <q-btn
             icon="download"
-            label="Export Properties"
+            :label="$t('PropertiesConfigurationPage.importexport.button.export')"
             color="primary"
             type="submit"
             class="q-mt-md"
@@ -54,10 +50,10 @@
       </div>
 
       <div>
-        You can upload a previously created properties export here and OVERWRITE the current properties with it.
+        {{ $t('PropertiesConfigurationPage.importexport.import') }}
         <q-uploader
           :url="'/api/exchange/properties/import'"
-          label="Import Properties"
+          :label="$t('PropertiesConfigurationPage.importexport.button.import')"
           class="q-mt-md q-mb-md"
           accept=".artivact.properties-configuration.json"
           field-name="file"
@@ -76,8 +72,10 @@ import {api} from 'boot/axios';
 import ArtivactContent from 'components/ArtivactContent.vue';
 import {useLocaleStore} from 'stores/locale';
 import ArtivactPropertiesConfigurationEditor from 'components/ArtivactPropertiesConfigurationEditor.vue';
+import {useI18n} from 'vue-i18n';
 
 const quasar = useQuasar();
+const i18n = useI18n();
 
 const localeStore = useLocaleStore();
 
@@ -93,7 +91,7 @@ function loadPropertyConfiguration() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Loading failed',
+        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.configuration.properties')}),
         icon: 'report_problem',
       });
     });
@@ -106,7 +104,7 @@ function saveProperties() {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: 'Properties saved',
+        message: i18n.t('Common.messages.saving.success', { item: i18n.t('Common.items.configuration.properties')}),
         icon: 'check',
       });
     })
@@ -114,7 +112,7 @@ function saveProperties() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Saving failed',
+        message: i18n.t('Common.messages.saving.failed', { item: i18n.t('Common.items.configuration.properties')}),
         icon: 'report_problem',
       });
     });
@@ -125,7 +123,7 @@ function propertiesUploaded() {
   quasar.notify({
     color: 'positive',
     position: 'bottom',
-    message: 'Properties uploaded',
+    message: i18n.t('PropertiesConfigurationPage.messages.uploadSuccess'),
     icon: 'check',
   });
 }

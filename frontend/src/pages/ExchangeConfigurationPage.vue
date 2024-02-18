@@ -1,14 +1,14 @@
 <template>
   <artivact-content>
     <div class="full-width">
-      <h1 class="av-text-h1">Exchange Configuration</h1>
+      <h1 class="av-text-h1">{{$t('ExchangeConfigurationPage.heading')}}</h1>
       <div class="q-mb-lg">
-        On this page you can configure exchange parameters.
+        {{$t('ExchangeConfigurationPage.description')}}
       </div>
       <artivact-exchange-configuration-editor :exchange-configuration="exchangeConfigurationRef"
                                               v-if="exchangeConfigurationRef"/>
       <q-btn
-        label="Save Configuration"
+        :label="$t('Common.save')"
         color="primary"
         class="q-mb-lg float-right"
         @click="saveExchangeConfiguration()"
@@ -24,8 +24,11 @@ import {useQuasar} from 'quasar';
 import {onMounted, ref, Ref} from 'vue';
 import {ExchangeConfiguration} from 'components/models';
 import {api} from 'boot/axios';
+import {useI18n} from 'vue-i18n';
 
 const quasar = useQuasar();
+const i18n = useI18n();
+
 const exchangeConfigurationRef: Ref<ExchangeConfiguration | null> =
   ref(null);
 
@@ -39,7 +42,7 @@ function loadExchangeConfiguration() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Exchange configuration loading failed',
+        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.configuration.exchange')}),
         icon: 'report_problem',
       });
     });
@@ -52,7 +55,7 @@ function saveExchangeConfiguration() {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: 'Exchange configuration saved',
+        message: i18n.t('Common.messages.saving.success', { item: i18n.t('Common.items.configuration.exchange')}),
         icon: 'check',
       });
     })
@@ -60,7 +63,7 @@ function saveExchangeConfiguration() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Saving failed',
+        message: i18n.t('Common.messages.saving.failed', { item: i18n.t('Common.items.configuration.exchange')}),
         icon: 'report_problem',
       });
     });

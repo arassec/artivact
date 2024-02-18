@@ -1,10 +1,10 @@
 <template>
   <ArtivactContent>
     <div class="full-width">
-      <h1 class="av-text-h1">Peripherals Configuration</h1>
+      <h1 class="av-text-h1">{{ $t('PeripheralsConfigurationPage.heading') }}</h1>
       <artivact-peripherals-configuration-editor :adapter-configuration="adapterConfigurationRef" v-if="adapterConfigurationRef"/>
       <q-btn
-        label="Save Configuration"
+        :label="$t('Common.save')"
         color="primary"
         class="q-mb-lg float-right"
         @click="saveAdapterConfiguration()"
@@ -21,8 +21,11 @@ import {onMounted, ref, Ref} from 'vue';
 import {AdapterConfiguration} from 'components/models';
 import {useLocaleStore} from 'stores/locale';
 import ArtivactPeripheralsConfigurationEditor from 'components/ArtivactPeripheralsConfigurationEditor.vue';
+import {useI18n} from 'vue-i18n';
 
 const quasar = useQuasar();
+const i18n = useI18n();
+
 const adapterConfigurationRef: Ref<AdapterConfiguration | null> =
   ref(null);
 
@@ -38,7 +41,7 @@ function loadAdapterConfiguration() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Peripherals configuration loading failed',
+        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.configuration.peripherals') }),
         icon: 'report_problem',
       });
     });
@@ -51,7 +54,7 @@ function saveAdapterConfiguration() {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: 'Peripherals configuration saved',
+        message: i18n.t('Common.messages.saving.success', { item: i18n.t('Common.items.configuration.peripherals') }),
         icon: 'check',
       });
     })
@@ -59,7 +62,7 @@ function saveAdapterConfiguration() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Saving failed',
+        message: i18n.t('Common.messages.saving.failed', { item: i18n.t('Common.items.configuration.peripherals') }),
         icon: 'report_problem',
       });
     });

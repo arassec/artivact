@@ -1,65 +1,53 @@
 <template>
-  <template v-if="itemDataRef">
-    <q-toolbar class="sticky-toolbar gt-sm">
-      <router-link :to="'/item/' + itemDataRef.id">
-        <q-btn label="Cancel" color="primary" @click="cancel"/>
-      </router-link>
-      <q-btn
-        label="Delete"
-        @click="confirmDeleteRef = true"
-        color="primary"
-        class="q-ml-sm"
-      />
-      <q-form :action="'/api/exchange/item/' + itemDataRef.id + '/export'" method="get">
-        <q-btn
-          label="Export"
-          color="primary"
-          type="submit"
-          class="q-ml-sm"
-        />
-      </q-form>
-      <q-space/>
-      <q-btn label="Save" @click="saveItem" color="primary" :disable="tabRef == 'creation'"/>
-    </q-toolbar>
-
-    <q-toolbar class="sticky-toolbar lt-md">
-      <router-link :to="'/item/' + itemDataRef.id">
-        <q-btn icon="cancel" @click="cancel" flat dense round size="lg"/>
-      </router-link>
-      <q-btn
-        icon="delete"
-        @click="confirmDeleteRef = true"
-        flat
-        dense
-        round
-        size="lg"
-        class="q-ml-sm"
-      />
-      <q-form :action="'/api/exchange/item/' + itemDataRef.id + '/export'" method="get">
-        <q-btn
-          icon="download"
-          flat
-          dense
-          round
-          size="lg"
-          type="submit"
-          class="q-ml-sm"
-        />
-      </q-form>
-      <q-space/>
-      <q-btn icon="save" @click="saveItem" flat dense round size="lg" :disable="tabRef == 'creation'"/>
-    </q-toolbar>
-  </template>
-
   <ArtivactContent v-if="itemDataRef && userdataStore.isUserOrAdmin">
     <div class="col-12">
+
+      <div class="col items-center">
+        <div class="absolute-top-left q-ma-md">
+          <router-link :to="'/item/' + itemDataRef.id">
+            <q-btn
+              round
+              color="primary"
+              icon="close"
+              class="main-nav-button"
+              @click="cancel">
+              <q-tooltip>{{$t('ItemEditPage.button.tooltip.close')}}</q-tooltip>
+            </q-btn>
+          </router-link>
+        </div>
+
+        <div class="absolute-top-right q-ma-md">
+          <q-form :action="'/api/exchange/item/' + itemDataRef.id + '/export'" method="get">
+            <q-btn
+              round
+              color="primary"
+              icon="download"
+              type="submit"
+              class="q-mr-sm main-nav-button">
+            <q-tooltip>{{$t('ItemEditPage.button.tooltip.download')}}</q-tooltip>
+            </q-btn>
+            <q-btn :disable="tabRef == 'creation'"
+                   round
+                   color="primary"
+                   icon="save"
+                   class="main-nav-button"
+                   @click="saveItem">
+              <q-tooltip>{{ $t('ItemEditPage.button.tooltip.save')}}</q-tooltip>
+            </q-btn>
+          </q-form>
+        </div>
+
+      </div>
+
+      <div class="col q-mt-xl lt-md"/> <!-- Space on mobile resolution -->
+
       <div class="col items-center">
 
         <q-tabs v-model="tabRef" class="q-mb-lg">
-          <q-tab name="base" icon="text_snippet" label="Base Data" class="nav-tab"/>
-          <q-tab name="media" icon="image" label="Media" class="nav-tab"/>
-          <q-tab name="properties" icon="library_books" label="Properties" class="nav-tab"/>
-          <q-tab name="creation" icon="auto_awesome" label="Creation" class="nav-tab"
+          <q-tab name="base" icon="text_snippet" :label="$t('ItemEditPage.tab.base')" class="nav-tab"/>
+          <q-tab name="media" icon="image" :label="$t('ItemEditPage.tab.media')" class="nav-tab"/>
+          <q-tab name="properties" icon="library_books" :label="$t('ItemEditPage.tab.properties')" class="nav-tab"/>
+          <q-tab name="creation" icon="auto_awesome" :label="$t('ItemEditPage.tab.creation')" class="nav-tab"
                  v-if="desktopStore.isDesktopModeEnabled"/>
         </q-tabs>
 
@@ -79,7 +67,7 @@
             v-if="tagsDataRef"
             v-show="tagsDataRef.tags.length > 0">
             <div class="editor-label">
-              <label class="q-mr-xs q-mt-xs vertical-middle">Tags:</label>
+              <label class="q-mr-xs q-mt-xs vertical-middle">{{$t('ItemEditPage.label.tags')}}</label>
             </div>
 
             <div>
@@ -96,8 +84,9 @@
                   color="primary"
                   size="xs"
                   icon="close"
-                  @click="removeTag(tag)"
-                />
+                  @click="removeTag(tag)">
+                  <q-tooltip>{{$t('ItemEditPage.button.tooltip.removeTag')}}</q-tooltip>
+                </q-btn>
               </q-badge>
               <q-btn
                 v-if="itemDataRef.tags.length < tagsDataRef.tags.length"
@@ -108,13 +97,14 @@
                 color="secondary"
                 size="xs"
                 icon="add"
-                @click="addTag"
-              />
+                @click="addTag">
+                <q-tooltip>{{ $t('ItemEditPage.button.tooltip.addTag')}}</q-tooltip>
+              </q-btn>
             </div>
 
             <artivact-dialog :dialog-model="addTagRef">
               <template v-slot:header>
-                Add Tag
+                {{ $t('ItemEditPage.dialog.addTag.heading') }}
               </template>
 
               <template v-slot:body>
@@ -125,19 +115,19 @@
                     :options="availableTags"
                     option-value="id"
                     option-label="translatedValue"
-                    label="Tag"
+                    :label="$t('Common.items.tag')"
                   />
                 </q-card-section>
               </template>
 
               <template v-slot:cancel>
-                <q-btn color="primary" label="Cancel" @click="addTagRef = false"/>
+                <q-btn color="primary" :label="$t('Common.cancel')" @click="addTagRef = false"/>
               </template>
 
               <template v-slot:approve>
                 <q-btn
                   color="primary"
-                  label="Save"
+                  :label="$t('Common.save')"
                   @click="saveSelectedTag"
                 />
               </template>
@@ -153,13 +143,13 @@
           <artivact-restricted-translatable-item-editor
             :translatable-string="itemDataRef.title"
             :locales="localeStore.locales"
-            label="Title"
+            :label="$t('ItemEditPage.editor.title')"
             :show-separator="false"
           />
           <artivact-restricted-translatable-item-editor
             :translatable-string="itemDataRef.description"
             :locales="localeStore.locales"
-            label="Description"
+            :label="$t('ItemEditPage.editor.description')"
             :textarea="true"
             :show-separator="false"
           />
@@ -167,16 +157,15 @@
 
         <!-- MEDIA -->
         <div v-show="tabRef == 'media'">
-          <h2 class="av-text-h2">Images</h2>
+          <h2 class="av-text-h2">{{ $t('ItemEditPage.label.images') }}</h2>
           <div>
             <item-image-editor
               :images="itemDataRef.images"
-              :models="itemDataRef.models"
               :item-id="itemDataRef.id"
               @uploaded="loadItemMediaData(itemDataRef.id)"
             />
           </div>
-          <h2 class="av-text-h2">3D Models</h2>
+          <h2 class="av-text-h2">{{ $t('ItemEditPage.label.models') }}</h2>
           <div class="row">
             <q-uploader
               :url="'/api/item/' + itemDataRef.id + '/model'"
@@ -198,12 +187,13 @@
                 <q-card class="model-card q-mr-md">
                   <q-btn
                     icon="delete"
-                    class="absolute-top-right"
+                    class="absolute-top-right q-ma-sm"
                     rounded
                     dense
                     color="primary"
-                    @click="deleteModel(element)"
-                  ></q-btn>
+                    @click="deleteModel(element)">
+                    <q-tooltip>{{ $t('ItemEditPage.button.tooltip.deleteModel') }}</q-tooltip>
+                  </q-btn>
                   <q-card-section class="absolute-center text-h5">
                     {{ element.fileName }}
                   </q-card-section>
@@ -224,51 +214,26 @@
             />
           </div>
           <label v-if="!propertiesDataRef || propertiesDataRef.length === 0">
-            There are currently no property definitions for items available.
-            Go to the configuration page and add properties.</label>
+            {{ $t('ItemEditPage.label.noProperties') }}
+          </label>
         </div>
 
         <!-- MEDIA-CREATION -->
         <div v-if="desktopStore.isDesktopModeEnabled" v-show="tabRef == 'creation'">
-          <h2 class="av-text-h2">Images</h2>
+          <h2 class="av-text-h2">{{ $t('ItemEditPage.label.images') }}</h2>
           <div class="q-mb-lg">
             <item-image-set-editor :item-id="savedItemId" :creation-image-sets="itemDataRef.creationImageSets"
                                    @delete-image="(imageSet, asset) => deleteImageFromImageSet(imageSet, asset)"
                                    @update-item="loadItemData(itemDataRef.id)"/>
           </div>
 
-          <h2 class="av-text-h2">3D Models</h2>
+          <h2 class="av-text-h2">{{ $t('ItemEditPage.label.models') }}</h2>
           <item-model-set-editor :item-id="savedItemId" :creation-model-sets="itemDataRef.creationModelSets"
                                  @update-item="loadItemData(itemDataRef.id)"/>
         </div>
 
       </div>
     </div>
-
-    <artivact-dialog :dialog-model="confirmDeleteRef" :warn="true">
-      <template v-slot:header>
-        Delete Item?
-      </template>
-
-      <template v-slot:body>
-        <q-card-section>
-          Are you sure you want to delete this item and all its files?
-          This action cannot be undone!
-        </q-card-section>
-      </template>
-
-      <template v-slot:cancel>
-        <q-btn label="Cancel" color="primary" @click="confirmDeleteRef = false"/>
-      </template>
-
-      <template v-slot:approve>
-        <q-btn
-          label="Delete Item"
-          color="primary"
-          @click="deleteItem"
-        />
-      </template>
-    </artivact-dialog>
 
   </ArtivactContent>
 </template>
@@ -306,8 +271,6 @@ const desktopStore = useDesktopStore();
 const itemDataRef = ref<ItemDetails>();
 const propertiesDataRef = ref();
 const tagsDataRef = ref<TagsConfiguration>();
-
-const confirmDeleteRef = ref(false);
 
 let tabRef = ref('base');
 
@@ -444,8 +407,6 @@ function saveItem() {
   api
     .put('/api/item', item)
     .then(() => {
-      breadcrumbsStore.removeLastBreadcrumb();
-      router.push('/item/' + item.id);
       quasar.notify({
         color: 'positive',
         position: 'bottom',
@@ -463,31 +424,6 @@ function saveItem() {
     });
 }
 
-function deleteItem() {
-  let item = itemDataRef.value;
-  confirmDeleteRef.value = false;
-  api
-    .delete('/api/item/' + item.id)
-    .then(() => {
-      breadcrumbsStore.removeLastBreadcrumb();
-      router.push('/');
-      quasar.notify({
-        color: 'positive',
-        position: 'bottom',
-        message: 'Item deleted',
-        icon: 'done',
-      });
-    })
-    .catch(() => {
-      quasar.notify({
-        color: 'negative',
-        position: 'bottom',
-        message: 'Item deletion failed',
-        icon: 'report_problem',
-      });
-    });
-}
-
 function cancel() {
   breadcrumbsStore.removeLastBreadcrumb();
 }
@@ -500,13 +436,12 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.main-nav-button {
+  z-index: 2;
+}
 
 .nav-tab {
   min-width: 8em;
-}
-
-.dialog-card {
-  min-width: 25em;
 }
 
 .model-card {
@@ -514,11 +449,4 @@ onMounted(() => {
   height: 150px;
 }
 
-.sticky-toolbar {
-  position: sticky;
-  top: 44px;
-  background-color: white;
-  z-index: 15;
-  border-bottom: 1px solid var(--q-primary);
-}
 </style>

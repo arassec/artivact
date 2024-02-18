@@ -20,7 +20,18 @@
     </div>
 
     <div class="col-12">
+
       <div class="col items-center">
+        <div class="absolute-top-left" v-if="userdataStore.authenticated">
+          <q-btn
+            round
+            color="primary"
+            icon="delete"
+            class="q-ma-md edit-page-button"
+            @click="confirmDeleteRef = true">
+            <q-tooltip>{{ $t('ItemDetailsPage.button.tooltip.delete') }}</q-tooltip>
+          </q-btn>
+        </div>
 
         <div class="absolute-top-right" v-if="userdataStore.authenticated">
           <!-- SYNC UP BUTTON -->
@@ -29,18 +40,22 @@
             color="primary"
             icon="cloud_upload"
             class="edit-page-button"
-            @click="synchronizeUp()"
-          />
+            @click="synchronizeUp()">
+            <q-tooltip>{{ $t('ItemDetailsPage.button.tooltip.sync') }}</q-tooltip>
+          </q-btn>
           <!-- EDIT ITEM BUTTON -->
           <router-link :to="'/administration/configuration/item/' + itemDataDetailsRef.id">
             <q-btn
               round
               color="primary"
               icon="edit"
-              class=" q-ma-md edit-page-button"
-            />
+              class="q-ma-md edit-page-button">
+              <q-tooltip>{{ $t('ItemDetailsPage.button.tooltip.edit') }}</q-tooltip>
+            </q-btn>
           </router-link>
         </div>
+
+        <div class="col q-mt-xl lt-md"/> <!-- Space on mobile resolution -->
 
         <!-- TITLE -->
         <div v-if="itemDataDetailsRef.title.translatedValue" class="q-mb-sm">
@@ -108,13 +123,39 @@
                                            :dialog-model="showOperationInProgressModalRef"
                                            @close-dialog="showOperationInProgressModalRef = false"/>
 
+
+    <!-- DELETE CONFIRMATION -->
+    <artivact-dialog :dialog-model="confirmDeleteRef" :warn="true">
+      <template v-slot:header>
+        {{$t('ItemDetailsPage.dialog.delete.heading')}}
+      </template>
+
+      <template v-slot:body>
+        <q-card-section>
+          {{$t('ItemDetailsPage.dialog.delete.description')}}
+        </q-card-section>
+      </template>
+
+      <template v-slot:cancel>
+        <q-btn :label="$t('Common.cancel')" color="primary" @click="confirmDeleteRef = false"/>
+      </template>
+
+      <template v-slot:approve>
+        <q-btn
+          :label="$t('ItemDetailsPage.dialog.delete.button')"
+          color="primary"
+          @click="deleteItem"
+        />
+      </template>
+    </artivact-dialog>
+
   </ArtivactContent>
 </template>
 
 <script setup lang="ts">
 import {useQuasar} from 'quasar';
 import {api} from 'boot/axios';
-import {useRoute} from 'vue-router';
+import {useRoute, useRouter} from 'vue-router';
 import {onMounted, ref} from 'vue';
 import {useUserdataStore} from 'stores/userdata';
 import ArtivactContent from 'components/ArtivactContent.vue';
@@ -125,9 +166,13 @@ import ArtivactPropertyCategoryViewer from 'components/ArtivactPropertyCategoryV
 import {useDesktopStore} from 'stores/desktop';
 import ArtivactOperationInProgressDialog from 'components/ArtivactOperationInProgressDialog.vue';
 import {OperationProgress} from 'components/models';
+import ArtivactDialog from 'components/ArtivactDialog.vue';
+import {useI18n} from 'vue-i18n';
 
 const quasar = useQuasar();
 const route = useRoute();
+const router = useRouter();
+const i18n = useI18n();
 
 const userdataStore = useUserdataStore();
 const breadcrumbsStore = useBreadcrumbsStore();
@@ -140,6 +185,8 @@ const openModelRef = ref(false);
 
 const progressMonitorRef = ref<OperationProgress>();
 const showOperationInProgressModalRef = ref(false);
+
+const confirmDeleteRef = ref(false);
 
 function loadData(itemId: string | string[]) {
   api
@@ -162,7 +209,7 @@ function loadData(itemId: string | string[]) {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Loading failed',
+        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.item')}),
         icon: 'report_problem',
       });
     });
@@ -178,7 +225,7 @@ function loadPropertiesData() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Loading properties failed',
+        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.properties')}),
         icon: 'report_problem',
       });
     });
@@ -196,7 +243,7 @@ function synchronizeUp() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Synchronization failed',
+        message: i18n.t('ItemDetailsPage.messages.sync.failed'),
         icon: 'report_problem',
       });
     });
@@ -215,7 +262,7 @@ function updateOperationProgress() {
         quasar.notify({
           color: 'positive',
           position: 'bottom',
-          message: 'Item uploaded!',
+          message: i18n.t('ItemDetailsPage.messages.sync.success'),
           icon: 'check',
         });
       }
@@ -224,7 +271,32 @@ function updateOperationProgress() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Background removal failed!',
+        message: i18n.t('ItemDetailsPage.messages.sync.failed'),
+        icon: 'report_problem',
+      });
+    });
+}
+
+function deleteItem() {
+  let item = itemDataDetailsRef.value;
+  confirmDeleteRef.value = false;
+  api
+    .delete('/api/item/' + item.id)
+    .then(() => {
+      breadcrumbsStore.removeLastBreadcrumb();
+      router.push('/');
+      quasar.notify({
+        color: 'positive',
+        position: 'bottom',
+        message: i18n.t('Common.messages.deleting.success', { item: i18n.t('Common.items.item')}),
+        icon: 'done',
+      });
+    })
+    .catch(() => {
+      quasar.notify({
+        color: 'negative',
+        position: 'bottom',
+        message: i18n.t('Common.messages.deleting.failed', { item: i18n.t('Common.items.item')}),
         icon: 'report_problem',
       });
     });

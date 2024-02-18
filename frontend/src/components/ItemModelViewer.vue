@@ -13,7 +13,7 @@
       class="download-div row justify-center items-center"
     >
       <q-btn icon="download" class="column" @click="reveal = 'auto'">{{
-        $t("downloadModelButtonLabel")
+        $t("ItemModelViewer_downloadModelButtonLabel")
       }}</q-btn>
     </div>
   </model-viewer>
