@@ -68,6 +68,7 @@ function calcOptions() {
     options.push({
       label: translate(translatedItem),
       value: translatedItem.value,
+      disable: false
     });
   });
   return options;
@@ -79,6 +80,7 @@ const availableOptions = computed(() => {
     options.push({
       label: translate(translatedItem),
       value: translatedItem.value,
+      disable: false
     });
   });
   return options;

@@ -2,7 +2,7 @@
   <div class="row">
     <q-uploader
       :url="'/api/item/' + itemId + '/image'"
-      label="Add Images"
+      :label="$t('ItemImageEditor.addImages')"
       multiple
       class="uploader q-mb-md col-12"
       accept=".jpg, image/*"
@@ -23,8 +23,9 @@
             rounded
             dense
             color="primary"
-            @click="deleteImage(element)"
-          ></q-btn>
+            @click="deleteImage(element)">
+            <q-tooltip>{{ $t('ItemImageEditor.deleteImage') }}</q-tooltip>
+          </q-btn>
         </span>
       </template>
     </draggable>

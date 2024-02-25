@@ -84,8 +84,9 @@
         dense
         color="primary"
         @click="showImagesRef = true"
-        class="q-mr-sm"
-      />
+        class="q-mr-sm">
+        <q-tooltip>{{ $t('ItemMediaCarousel.tooltip.image') }}</q-tooltip>
+      </q-btn>
       <q-btn
         v-if="itemDetailsRef.models.length > 0"
         icon="3d_rotation"
@@ -93,8 +94,9 @@
         dense
         color="primary"
         @click="showImagesRef = false"
-        class="q-mr-sm"
-      />
+        class="q-mr-sm">
+        <q-tooltip>{{ $t('ItemMediaCarousel.tooltip.model') }}</q-tooltip>
+      </q-btn>
       <q-form :action="'/api/item/' + itemDetailsRef.id + '/media'" method="get">
         <q-btn
           v-if="itemDetailsRef.images.length > 0 || itemDetailsRef.models.length > 0"
@@ -102,8 +104,9 @@
           round
           dense
           color="primary"
-          type="submit"
-        />
+          type="submit">
+          <q-tooltip>{{ $t('ItemMediaCarousel.tooltip.download') }}</q-tooltip>
+        </q-btn>
       </q-form>
     </div>
 

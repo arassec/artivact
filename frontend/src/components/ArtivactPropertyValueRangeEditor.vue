@@ -1,9 +1,9 @@
 <template>
   <div class="q-ml-sm row">
     <div class="editor-label q-mt-xs">
-      <label class="q-mr-xs text-grey vertical-middle badge-container-label"
-        >Range of values:</label
-      >
+      <label class="q-mr-xs text-grey vertical-middle badge-container-label">
+        {{ $t('ArtivactPropertyValueRangeEditor.label') }}
+      </label>
     </div>
 
     <div>
@@ -22,8 +22,9 @@
           color="accent"
           size="xs"
           icon="edit"
-          @click="editValue(value)"
-        />
+          @click="editValue(value)">
+          <q-tooltip>{{ $t('ArtivactPropertyValueRangeEditor.tooltip.edit') }}</q-tooltip>
+        </q-btn>
         <q-btn
           rounded
           dense
@@ -31,8 +32,9 @@
           color="accent"
           size="xs"
           icon="close"
-          @click="deleteValue(key)"
-        />
+          @click="deleteValue(key)">
+          <q-tooltip>{{ $t('ArtivactPropertyValueRangeEditor.tooltip.delete') }}</q-tooltip>
+        </q-btn>
       </q-badge>
       <q-btn
         class="vertical-middle"
@@ -42,13 +44,14 @@
         color="secondary"
         size="xs"
         icon="add"
-        @click="addValue"
-      />
+        @click="addValue">
+        <q-tooltip>{{ $t('ArtivactPropertyValueRangeEditor.tooltip.add') }}</q-tooltip>
+      </q-btn>
     </div>
 
     <artivact-dialog :dialog-model="addValueRef">
       <template v-slot:header>
-        Configure Value
+        {{ $t('ArtivactPropertyValueRangeEditor.dialog.heading') }}
       </template>
 
       <template v-slot:body>
@@ -56,7 +59,7 @@
           <artivact-restricted-translatable-item-editor
             :translatable-string="valueRef"
             :restricted-item="valueRef"
-            label="Value"
+            :label="$t('ArtivactPropertyValueRangeEditor.dialog.label')"
             :locales="locales"
             :show-separator="false"
           />
@@ -64,11 +67,11 @@
       </template>
 
       <template v-slot:cancel>
-        <q-btn color="primary" label="Cancel" @click="addValueRef = false"/>
+        <q-btn color="primary" :label="$t('Common.cancel')" @click="addValueRef = false"/>
       </template>
 
       <template v-slot:approve>
-        <q-btn color="primary" label="Save" @click="saveValue" />
+        <q-btn color="primary" :label="$t('Common.save')" @click="saveValue" />
       </template>
     </artivact-dialog>
 
@@ -81,6 +84,9 @@ import {BaseTranslatableRestrictedItem} from 'components/models';
 import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
 import {translate} from './utils';
 import ArtivactDialog from 'components/ArtivactDialog.vue';
+import {useI18n} from 'vue-i18n';
+
+const i18n = useI18n();
 
 const props = defineProps({
   valueRange: {
@@ -96,7 +102,7 @@ const valueRangeProp = toRef(props, 'valueRange');
 
 const value: BaseTranslatableRestrictedItem = {
   id: '',
-  value: 'New Value',
+  value: i18n.t('ArtivactPropertyValueRangeEditor.newValue'),
   translatedValue: '',
   translations: {},
   restrictions: [],
@@ -111,7 +117,7 @@ function addValue() {
   editedItem = null;
   valueRef.value = {
     id: '',
-    value: 'New Value',
+    value: i18n.t('ArtivactPropertyValueRangeEditor.newValue'),
     translatedValue: '',
     translations: {},
     restrictions: [],
