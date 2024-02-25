@@ -52,7 +52,6 @@
               class="col-5"
               type="text"
               :label="$t('Common.email')"
-              label="E-Mail"
             />
           </q-card-section>
 

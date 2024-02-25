@@ -258,10 +258,12 @@ import ItemImageEditor from 'components/ItemImageEditor.vue';
 import ItemImageSetEditor from 'components/ItemImageSetEditor.vue';
 import ItemModelSetEditor from 'components/ItemModelSetEditor.vue';
 import ArtivactDialog from 'components/ArtivactDialog.vue';
+import {useI18n} from 'vue-i18n';
 
 const quasar = useQuasar();
 const route = useRoute();
 const router = useRouter();
+const i18n = useI18n();
 
 const localeStore = useLocaleStore();
 const breadcrumbsStore = useBreadcrumbsStore();
@@ -309,7 +311,7 @@ function loadItemData(itemId: string | string[]) {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Loading artivact failed',
+        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.item') }),
         icon: 'report_problem',
       });
     });
@@ -331,7 +333,7 @@ function loadItemMediaData(itemId: string | string[]) {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Loading artivact failed',
+        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.item') }),
         icon: 'report_problem',
       });
     });
@@ -347,7 +349,7 @@ function loadPropertiesData() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Loading properties failed',
+        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.properties') }),
         icon: 'report_problem',
       });
     });
@@ -363,7 +365,7 @@ function loadTagsData() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Loading tags failed',
+        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.tags') }),
         icon: 'report_problem',
       });
     });
@@ -410,7 +412,7 @@ function saveItem() {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: 'Item saved',
+        message: i18n.t('Common.messages.saving.success', { item: i18n.t('Common.items.item') }),
         icon: 'done',
       });
     })
@@ -418,7 +420,7 @@ function saveItem() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Saving failed',
+        message: i18n.t('Common.messages.saving.failed', { item: i18n.t('Common.items.item') }),
         icon: 'report_problem',
       });
     });

@@ -7,8 +7,9 @@
     dense
     color="accent"
     icon="camera"
-    @click="showCapturePhotosModalRef = true"
-  />
+    @click="showCapturePhotosModalRef = true">
+    <q-tooltip>{{ $t('ItemImageSetEditor.tooltip.capture') }}</q-tooltip>
+  </q-btn>
   <q-btn
     text-color="primary"
     class="q-mr-md"
@@ -16,16 +17,18 @@
     dense
     color="accent"
     icon="folder"
-    @click="openImagesDir()"
-  />
+    @click="openImagesDir()">
+    <q-tooltip>{{ $t('ItemImageSetEditor.tooltip.open') }}</q-tooltip>
+  </q-btn>
   <q-btn
     text-color="primary"
     round
     dense
     color="accent"
     icon="upload_file"
-    @click="showUploadFilesModalRef = true"
-  />
+    @click="showUploadFilesModalRef = true">
+    <q-tooltip>{{ $t('ItemImageSetEditor.tooltip.upload') }}</q-tooltip>
+  </q-btn>
 
   <div class="row">
     <q-card v-for="(imageSet, index) in creationImageSets" :key="index" class="image-set-card q-mr-md q-mt-md">
@@ -50,8 +53,9 @@
           flat
           size="md"
           color="primary"
-          @click="showImageDetails(imageSet)"
-        />
+          @click="showImageDetails(imageSet)">
+          <q-tooltip>{{ $t('ItemImageSetEditor.tooltip.details') }}</q-tooltip>
+        </q-btn>
         <q-btn
           icon="content_cut"
           round
@@ -60,8 +64,9 @@
           size="md"
           color="primary"
           @click="removeBackgrounds(index)"
-          v-if="!imageSet.backgroundRemoved"
-        />
+          v-if="!imageSet.backgroundRemoved">
+          <q-tooltip>{{ $t('ItemImageSetEditor.tooltip.backgrounds') }}</q-tooltip>
+        </q-btn>
         <q-space/>
         <q-btn
           icon="delete"
@@ -70,8 +75,9 @@
           flat
           size="md"
           color="primary"
-          @click="showDeleteImageSetConfirm(index)"
-        />
+          @click="showDeleteImageSetConfirm(index)">
+          <q-tooltip>{{ $t('ItemImageSetEditor.tooltip.delete') }}</q-tooltip>
+        </q-btn>
       </q-card-actions>
     </q-card>
   </div>
@@ -79,7 +85,7 @@
   <!-- CAPTURE PHOTOS -->
   <artivact-dialog :dialog-model="showCapturePhotosModalRef">
     <template v-slot:header>
-      Photo-Capture Parameters
+      {{ $t('ItemImageSetEditor.captureParameters') }}
     </template>
 
     <template v-slot:body>
@@ -90,13 +96,13 @@
           class="col-5"
           type="text"
           name="numPhotos"
-          label="Number of Photos"
+          :label="$t('ItemImageSetEditor.label.numPhotos')"
         />
         <q-checkbox
           v-model="capturePhotosParamsRef.useTurnTable"
           class="col-5"
           name="useTurntable"
-          label="Use Turntable?"
+          :label="$t('ItemImageSetEditor.label.turntable')"
         />
         <q-input
           outlined
@@ -104,23 +110,23 @@
           class="col-5"
           type="text"
           name="turntableDelay"
-          label="Turntable Delay"
+          :label="$t('ItemImageSetEditor.label.delay')"
         />
         <q-checkbox
           v-model="capturePhotosParamsRef.removeBackgrounds"
           class="col-5"
           name="removeBackgrounds"
-          label="Remove Image Backgrounds?"
+          :label="$t('ItemImageSetEditor.label.backgrounds')"
         />
       </q-card-section>
     </template>
 
     <template v-slot:cancel>
-      <q-btn color="primary" label="Cancel" @click="showCapturePhotosModalRef = false"/>
+      <q-btn color="primary" :label="$t('Common.cancel')" @click="showCapturePhotosModalRef = false"/>
     </template>
 
     <template v-slot:approve>
-      <q-btn color="primary" label="Start Capturing" icon="camera" @click="capturePhotos"/>
+      <q-btn color="primary" :label="$t('ItemImageSetEditor.startCapturing')" icon="camera" @click="capturePhotos"/>
     </template>
   </artivact-dialog>
 
@@ -128,14 +134,14 @@
   <artivact-dialog :dialog-model="showUploadFilesModalRef" :hide-buttons="true"
                    :show-close-button="true" @close-dialog="showUploadFilesModalRef = false">
     <template v-slot:header>
-      Upload Files to new Image-Set
+      {{ $t('ItemImageSetEditor.dialog.upload.heading') }}
     </template>
 
     <template v-slot:body>
       <q-card-section>
         <q-uploader
           :url="'/api/item/' + itemId + '/image?uploadOnly=true'"
-          label="Add Images"
+          :label="$t('ItemImageSetEditor.dialog.upload.label')"
           multiple
           class="full-width q-mt-md q-mb-md"
           accept=".jpg, image/*"
@@ -155,7 +161,7 @@
                    :min-width="50"
                    @close-dialog="showImageSetDetailsModalRef = false">
     <template v-slot:header>
-      Image-Set Details
+      {{ $t('ItemImageSetEditor.dialog.details.heading') }}
     </template>
 
     <template v-slot:body>
@@ -178,8 +184,9 @@
                   flat
                   size="md"
                   color="primary"
-                  @click="transferImageToMedia(image)"
-                />
+                  @click="transferImageToMedia(image)">
+                  <q-tooltip>{{ $t('ItemImageSetEditor.dialog.details.transfer') }}</q-tooltip>
+                </q-btn>
                 <q-space/>
                 <q-btn
                   icon="delete"
@@ -188,8 +195,9 @@
                   flat
                   size="md"
                   color="primary"
-                  @click="$emit('delete-image', selectedImageSet, image)"
-                />
+                  @click="$emit('delete-image', selectedImageSet, image)">
+                  <q-tooltip>{{ $t('ItemImageSetEditor.dialog.details.deleteImage') }}</q-tooltip>
+                </q-btn>
               </div>
             </q-card-actions>
           </q-card>
@@ -215,23 +223,22 @@
   <!-- DELETE CONFIRMATION DIALOG -->
   <artivact-dialog :dialog-model="confirmDeleteRef" :warn="true">
     <template v-slot:header>
-      Delete Image-Set?
+      {{ $t('ItemImageSetEditor.dialog.delete.heading') }}
     </template>
 
     <template v-slot:body>
       <q-card-section>
-        Are you sure you want to delete this Image-Set and all its files?
-        This action cannot be undone!
+        {{ $t('ItemImageSetEditor.dialog.delete.description') }}
       </q-card-section>
     </template>
 
     <template v-slot:cancel>
-      <q-btn label="Cancel" color="primary" @click="confirmDeleteRef = false"/>
+      <q-btn :label="$t('Common.cancel')" color="primary" @click="confirmDeleteRef = false"/>
     </template>
 
     <template v-slot:approve>
       <q-btn
-        label="Delete Image-Set"
+        :label="$t('ItemImageSetEditor.dialog.delete.approve')"
         color="primary"
         @click="deleteImageSet"
       />
@@ -248,8 +255,10 @@ import {useQuasar} from 'quasar';
 import {PropType, ref} from 'vue';
 import ArtivactDialog from 'components/ArtivactDialog.vue';
 import ArtivactOperationInProgressDialog from 'components/ArtivactOperationInProgressDialog.vue';
+import {useI18n} from 'vue-i18n';
 
 const quasar = useQuasar();
+const i18n = useI18n();
 
 const props = defineProps({
   itemId: {
@@ -329,7 +338,7 @@ function capturePhotos() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Capturing photos failed!',
+        message: i18n.t('ItemImageSetEditor.messages.capturingFailed'),
         icon: 'report_problem',
       });
     });
@@ -349,7 +358,7 @@ function removeBackgrounds(imageSetIndex: number) {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Background removal failed!',
+        message: i18n.t('ItemImageSetEditor.messages.backgroundFailed'),
         icon: 'report_problem',
       });
     });
@@ -370,7 +379,7 @@ function createImageSet() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Background removal failed!',
+        message: i18n.t('ItemImageSetEditor.messages.imageSetFailed'),
         icon: 'report_problem',
       });
     });
@@ -383,7 +392,7 @@ function openImagesDir() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Opening directory failed!',
+        message: i18n.t('ItemImageSetEditor.messages.openingFailed'),
         icon: 'report_problem',
       });
     });
@@ -398,7 +407,7 @@ function transferImageToMedia(image: Asset) {
         quasar.notify({
           color: 'positive',
           position: 'bottom',
-          message: 'Image transferred!',
+          message: i18n.t('ItemImageSetEditor.messages.transferred'),
           icon: 'check',
         });
       }
@@ -407,7 +416,7 @@ function transferImageToMedia(image: Asset) {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Transfer failed!',
+        message: i18n.t('ItemImageSetEditor.messages.transferFailed'),
         icon: 'report_problem',
       });
     });
@@ -428,7 +437,7 @@ function deleteImageSet() {
         quasar.notify({
           color: 'positive',
           position: 'bottom',
-          message: 'Image set deleted!',
+          message: i18n.t('ItemImageSetEditor.messages.imageSetDeleted'),
           icon: 'check',
         });
       }
@@ -437,7 +446,7 @@ function deleteImageSet() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Deletion failed!',
+        message: i18n.t('ItemImageSetEditor.messages.imageSetDeletionFailed'),
         icon: 'report_problem',
       });
     });
@@ -452,7 +461,7 @@ function toggleModelInput(imageSetIndex: number) {
         quasar.notify({
           color: 'positive',
           position: 'bottom',
-          message: 'Item saved!',
+          message: i18n.t('ItemImageSetEditor.messages.operationSuccess'),
           icon: 'check',
         });
       }
@@ -461,7 +470,7 @@ function toggleModelInput(imageSetIndex: number) {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Operation failed!',
+        message: i18n.t('ItemImageSetEditor.messages.operationFailed'),
         icon: 'report_problem',
       });
     });
@@ -484,7 +493,7 @@ function updateOperationProgress() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Background removal failed!',
+        message: i18n.t('ItemImageSetEditor.messages.operationFailed'),
         icon: 'report_problem',
       });
     });

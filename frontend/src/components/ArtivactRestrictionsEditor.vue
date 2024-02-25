@@ -6,9 +6,9 @@
     <div class="editor-label q-mt-xs">
       <label
         class="q-mr-xs vertical-middle badge-container-label editor-label"
-        :class="inDetailsViewProp ? ' text-grey' : ''"
-        >Restrictions:</label
-      >
+        :class="inDetailsViewProp ? ' text-grey' : ''">
+        {{ $t('ArtivactRestrictionsEditor.restrictions') }}
+      </label>
     </div>
 
     <div>

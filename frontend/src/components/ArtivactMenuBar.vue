@@ -11,7 +11,7 @@
         class="q-mr-md"
         @click="gotoPage(menu.targetPageId, menu.translatedValue, null, null)"
       >
-        <q-tooltip v-if="userdataStore.isAdmin">Right click to edit menu</q-tooltip>
+        <q-tooltip v-if="userdataStore.isAdmin">{{ $t('ArtivactMenuBar.tooltip.edit') }}</q-tooltip>
         <q-menu
           v-model="showMenuRef[menu.id]"
           :context-menu="true"
@@ -32,7 +32,7 @@
                     color="primary"
                     class="q-mr-sm"
                   />
-                  Edit Menu</label
+                  {{ $t('ArtivactMenuBar.label.edit') }}</label
                 >
               </q-item-section>
             </q-item>
@@ -50,7 +50,7 @@
                     color="primary"
                     class="q-mr-sm"
                   />
-                  Delete Menu</label
+                  {{ $t('ArtivactMenuBar.label.delete') }}</label
                 >
               </q-item-section>
             </q-item>
@@ -69,7 +69,7 @@
                     color="primary"
                     class="q-mr-sm"
                   />
-                  Move Left</label
+                  {{ $t('ArtivactMenuBar.label.left') }}</label
                 >
               </q-item-section>
             </q-item>
@@ -88,7 +88,7 @@
                     color="primary"
                     class="q-mr-sm"
                   />
-                  Move Right</label
+                  {{ $t('ArtivactMenuBar.label.right') }}</label
                 >
               </q-item-section>
             </q-item>
@@ -110,8 +110,8 @@
         :color="menu.menuEntries.length == 0 && !menu.targetPageId ? 'negative' : 'white'"
         :label="translate(menu)"
       >
-        <q-tooltip v-if="userdataStore.isAdmin"
-        >Right click to edit menu
+        <q-tooltip v-if="userdataStore.isAdmin">
+          {{ $t('ArtivactMenuBar.tooltip.edit') }}
         </q-tooltip
         >
         <q-menu anchor="bottom middle" self="top middle">
@@ -157,7 +157,7 @@
                                 color="primary"
                                 class="q-mr-sm"
                               />
-                              Edit Menu Entry</label
+                              {{ $t('ArtivactMenuBar.label.editEntry') }}</label
                             >
                           </q-item-section>
                         </q-item>
@@ -177,7 +177,7 @@
                                 color="primary"
                                 class="q-mr-sm"
                               />
-                              Delete Menu Entry</label
+                              {{ $t('ArtivactMenuBar.label.deleteEntry') }}</label
                             >
                           </q-item-section>
                         </q-item>
@@ -196,7 +196,7 @@
                                 color="primary"
                                 class="q-mr-sm"
                               />
-                              Move Up</label
+                              {{ $t('ArtivactMenuBar.label.up') }}</label
                             >
                           </q-item-section>
                         </q-item>
@@ -220,7 +220,7 @@
                                 color="primary"
                                 class="q-mr-sm"
                               />
-                              Move Down</label
+                              {{ $t('ArtivactMenuBar.label.down') }}</label
                             >
                           </q-item-section>
                         </q-item>
@@ -257,7 +257,7 @@
                   color="primary"
                   class="q-mr-sm"
                 ></q-icon>
-                Add Page</label
+                {{ $t('ArtivactMenuBar.label.add') }}</label
               >
               </q-item-section>
             </q-item>
@@ -276,7 +276,7 @@
                   color="primary"
                   class="q-mr-sm"
                 ></q-icon>
-                Add Entry</label
+                {{ $t('ArtivactMenuBar.label.addEntry') }}</label
               >
               </q-item-section>
             </q-item>
@@ -294,7 +294,7 @@
                     color="primary"
                     class="q-mr-sm"
                   />
-                  Edit Menu</label
+                  {{ $t('ArtivactMenuBar.label.edit') }}</label
                 >
               </q-item-section>
             </q-item>
@@ -312,7 +312,7 @@
                     color="primary"
                     class="q-mr-sm"
                   />
-                  Delete Menu</label
+                  {{ $t('ArtivactMenuBar.label.delete') }}</label
                 >
               </q-item-section>
             </q-item>
@@ -331,7 +331,7 @@
                     color="primary"
                     class="q-mr-sm"
                   />
-                  Move Left</label
+                  {{ $t('ArtivactMenuBar.label.left') }}</label
                 >
               </q-item-section>
             </q-item>
@@ -350,7 +350,7 @@
                     color="primary"
                     class="q-mr-sm"
                   />
-                  Move Right</label
+                  {{ $t('ArtivactMenuBar.label.right') }}</label
                 >
               </q-item-section>
             </q-item>
@@ -366,26 +366,26 @@
     <artivact-dialog :dialog-model="showMenuModal">
       <template v-slot:header>
         <div class="text-h6" v-if="!menuRef.id && !menuRef.parentId">
-          Add Menu
+          {{ $t('ArtivactMenuBar.dialog.add') }}
         </div>
         <div class="text-h6" v-if="menuRef.id && !menuRef.parentId">
-          Edit Menu
+          {{ $t('ArtivactMenuBar.dialog.edit') }}
         </div>
         <div class="text-h6" v-if="!menuRef.id && menuRef.parentId">
-          Add Menu Entry
+          {{ $t('ArtivactMenuBar.dialog.addEntry') }}
         </div>
         <div class="text-h6" v-if="menuRef.id && menuRef.parentId">
-          Edit Menu Entry
+          {{ $t('ArtivactMenuBar.dialog.editEntry') }}
         </div>
       </template>
 
       <template v-slot:body>
         <q-card-section>
           <div class="q-mb-xs" v-if="!menu.parentId">
-            Enter the menu's name.
+            {{ $t('ArtivactMenuBar.dialog.description') }}
           </div>
           <div class="q-mb-xs" v-if="menu.parentId">
-            Enter the menu entry's name.
+            {{ $t('ArtivactMenuBar.dialog.descriptionEntry') }}
           </div>
           <artivact-restricted-translatable-item-editor
             :locales="localeStore.locales"
@@ -399,7 +399,7 @@
 
       <template v-slot:cancel>
         <q-btn
-          label="Cancel"
+          :label="$t('Common.cancel')"
           color="primary"
           @click="showMenuModal = false"
         />
@@ -407,7 +407,7 @@
 
       <template v-slot:approve>
         <q-btn
-          label="Save"
+          :label="$t('Common.save')"
           color="primary"
           @click="saveMenu(menuRef)"
         />
@@ -416,24 +416,23 @@
 
     <artivact-dialog :dialog-model="confirmDeleteRef" :warn="true">
       <template v-slot:header>
-        <h3 class="av-text-h3" v-if="!menuRef.parentId">Delete Menu?</h3>
-        <h3 class="av-text-h3" v-if="menuRef.parentId">Delete Menu Entry?</h3>
+        <h3 class="av-text-h3" v-if="!menuRef.parentId">{{ $t('ArtivactMenuBar.dialog.delete') }}</h3>
+        <h3 class="av-text-h3" v-if="menuRef.parentId">{{ $t('ArtivactMenuBar.dialog.deleteEntry') }}</h3>
       </template>
 
       <template v-slot:body>
         <q-card-section>
-          Are you sure you want to delete this menu including its page and
-          menu entries? This action cannot be undone!
+          {{ $t('ArtivactMenuBar.dialog.deleteDescription') }}
         </q-card-section>
       </template>
 
       <template v-slot:cancel>
-        <q-btn label="Cancel" color="primary" @click="confirmDeleteRef = false"/>
+        <q-btn :label="$t('Common.cancel')" color="primary" @click="confirmDeleteRef = false"/>
       </template>
 
       <template v-slot:approve>
         <q-btn
-          :label="menuRef.parentId ? 'Delete Menu Entry' : 'Delete Menu'"
+          :label="menuRef.parentId ? $t('ArtivactMenuBar.dialog.deleteApproveEntry') : $t('ArtivactMenuBar.dialog.deleteApprove')"
           color="primary"
           @click="deleteMenu"
         />
@@ -510,9 +509,11 @@ import {moveDown, moveUp, translate} from 'components/utils';
 import {Menu} from 'components/models';
 import {useBreadcrumbsStore} from 'stores/breadcrumbs';
 import ArtivactDialog from 'components/ArtivactDialog.vue';
+import {useI18n} from 'vue-i18n';
 
 const quasar = useQuasar();
 const router = useRouter();
+const i18n = useI18n();
 
 const menuStore = useMenuStore();
 const userdataStore = useUserdataStore();
@@ -590,7 +591,7 @@ function saveMenu(menu: Menu) {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: 'Menu saved',
+        message: i18n.t('Common.messages.saving.success', { item: i18n.t('Common.items.menu') }),
         icon: 'check',
       });
     })
@@ -598,7 +599,7 @@ function saveMenu(menu: Menu) {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Saving Menu failed',
+        message: i18n.t('Common.messages.saving.failed', { item: i18n.t('Common.items.menu') }),
         icon: 'report_problem',
       });
     });
@@ -624,7 +625,7 @@ function deleteMenu() {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: 'Menu deleted',
+        message: i18n.t('Common.messages.deleting.success', { item: i18n.t('Common.items.menu') }),
         icon: 'check',
       });
     })
@@ -632,7 +633,7 @@ function deleteMenu() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Deleting Menu failed',
+        message: i18n.t('Common.messages.deleting.failed', { item: i18n.t('Common.items.menu') }),
         icon: 'report_problem',
       });
     });
@@ -657,7 +658,7 @@ function addPage(menu: Menu) {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: 'Page created',
+        message: i18n.t('Common.messages.creating.success', { item: i18n.t('Common.items.page') }),
         icon: 'check',
       });
     })
@@ -665,7 +666,7 @@ function addPage(menu: Menu) {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Page creation failed',
+        message: i18n.t('Common.messages.creating.failed', { item: i18n.t('Common.items.page') }),
         icon: 'report_problem',
       });
     });
@@ -683,7 +684,7 @@ function moveMenuUp(array: [Menu], index: number) {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Moving failed',
+        message: i18n.t('ArtivactMenuBar.messages.movingFailed'),
         icon: 'report_problem',
       });
     });
@@ -701,7 +702,7 @@ function moveMenuDown(array: [Menu], index: number) {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Moving failed',
+        message: i18n.t('ArtivactMenuBar.messages.movingFailed'),
         icon: 'report_problem',
       });
     });

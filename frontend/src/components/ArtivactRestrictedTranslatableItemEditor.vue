@@ -2,7 +2,7 @@
   <div :class="!restrictedItemRef ? 'q-mb-md' : ''">
     <!-- Default value if locale is selected -->
     <label v-if="translatableStringRef && localeStore.selectedLocale !== null">
-      Default: {{ translatableStringRef.value }}
+      {{ $t('ArtivactRestrictedTranslatableItemEditor.default') }} {{ translatableStringRef.value }}
     </label>
     <!-- Input field -->
     <q-input
@@ -31,8 +31,9 @@
         showDetailsRef = true;
         $emit('show-details');
       "
-      v-if="restrictedItemRef && !showDetailsRef"
-    />
+      v-if="restrictedItemRef && !showDetailsRef">
+      <q-tooltip>{{ $t('ArtivactRestrictedTranslatableItemEditor.tooltip.more') }}</q-tooltip>
+    </q-btn>
     <q-btn
       rounded
       dense
@@ -44,8 +45,9 @@
         showDetailsRef = false;
         $emit('hide-details');
       "
-      v-if="restrictedItem && showDetailsRef"
-    />
+      v-if="restrictedItem && showDetailsRef">
+      <q-tooltip>{{ $t('ArtivactRestrictedTranslatableItemEditor.tooltip.less') }}</q-tooltip>
+    </q-btn>
 
     <div v-if="restrictedItem" v-show="showDetailsRef">
       <!-- Restrictions -->
