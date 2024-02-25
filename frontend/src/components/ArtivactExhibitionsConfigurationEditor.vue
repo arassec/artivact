@@ -1,8 +1,7 @@
 <template>
   <div v-if="exhibitionsRef">
     <div class="q-mb-lg">
-      Configures exhibitions of items. Exhibitions are published as ZIP files and can be downloaded and experienced
-      in an Artivact viewer application.
+      {{ $t('ArtivactExhibitionsConfigurationEditor.description') }}
     </div>
 
     <q-list bordered class="rounded-borders q-mb-lg">
@@ -25,8 +24,12 @@
           <q-space/>
           <div class="q-mt-md q-mr-md">
             <q-btn class="q-mr-xs" round flat icon="delete"
-                   @click="openDeleteExhibitionConfirmModal(exhibition)"></q-btn>
-            <q-btn round flat icon="edit" @click="createOrEditExhibition(exhibition)"></q-btn>
+                   @click="openDeleteExhibitionConfirmModal(exhibition)">
+              <q-tooltip>{{ $t('ArtivactExhibitionsConfigurationEditor.button.delete') }}</q-tooltip>
+            </q-btn>
+            <q-btn round flat icon="edit" @click="createOrEditExhibition(exhibition)">
+              <q-tooltip>{{ $t('ArtivactExhibitionsConfigurationEditor.button.edit') }}</q-tooltip>
+            </q-btn>
           </div>
         </div>
       </q-expansion-item>
@@ -43,7 +46,7 @@
           <artivact-restricted-translatable-item-editor
             :locales="localeStore.locales"
             :translatable-string="selectedExhibitionRef.title"
-            label="Title"
+            :label="$t('ArtivactExhibitionsConfigurationEditor.dialog.title')"
             :show-separator="false"
           />
         </q-card-section>
@@ -51,14 +54,14 @@
           <artivact-restricted-translatable-item-editor
             :locales="localeStore.locales"
             :translatable-string="selectedExhibitionRef.description"
-            label="Description"
+            :label="$t('ArtivactExhibitionsConfigurationEditor.dialog.description')"
             :show-separator="false"
             :textarea="true"
           />
         </q-card-section>
         <q-card-section>
           <div class="q-card--bordered q-pa-sm q-mb-md">
-            <div class="q-mb-sm">Create Exhibition from Page(s)</div>
+            <div class="q-mb-sm">{{ $t('ArtivactExhibitionsConfigurationEditor.dialog.pages') }}</div>
             <q-tree text-color="primary" control-color="primary"
                     :nodes="menuStore.menus"
                     node-key="id"
@@ -74,7 +77,7 @@
 
       <template v-slot:cancel>
         <q-btn
-          label="Cancel"
+          :label="$t('Common.cancel')"
           color="primary"
           @click="showExhibitionConfigurationModalRef = false"
         />
@@ -82,7 +85,7 @@
 
       <template v-slot:approve>
         <q-btn
-          label="Save"
+          :label="$t('Common.save')"
           color="primary"
           @click="saveOrUpdateExhibitionSummary(selectedExhibitionRef)"
         />
@@ -92,24 +95,23 @@
     <!-- DELETE CONFIRMATION DIALOG -->
     <artivact-dialog :dialog-model="showDeleteExhibitionConfirmModalRef" :warn="true">
       <template v-slot:header>
-        Delete Exhibition?
+        {{ $t('ArtivactExhibitionsConfigurationEditor.dialog.deleteExhibition') }}
       </template>
 
       <template v-slot:body>
         <q-card-section class="full-heights">
-          Are you sure you want to delete this Exhibition and all its files?
-          This action cannot be undone!
+          {{ $t('ArtivactExhibitionsConfigurationEditor.dialog.deleteDescription') }}
         </q-card-section>
       </template>
 
       <template v-slot:cancel>
-        <q-btn label="Cancel" color="primary"
+        <q-btn :label="$t('Common.cancel')" color="primary"
                @click="showDeleteExhibitionConfirmModalRef = false"/>
       </template>
 
       <template v-slot:approve>
         <q-btn
-          label="Delete Exhibition"
+          :label="$t('ArtivactExhibitionsConfigurationEditor.dialog.deleteLabel')"
           color="primary"
           @click="deleteExhibition"
         />
@@ -122,7 +124,7 @@
 
     <div class="row">
       <q-space></q-space>
-      <q-btn label="Add Exhibition" @click="createOrEditExhibition(null)" color="primary"/>
+      <q-btn :label="$t('ArtivactExhibitionsConfigurationEditor.add')" @click="createOrEditExhibition(null)" color="primary"/>
     </div>
   </div>
 </template>
@@ -140,8 +142,10 @@ import {useLocaleStore} from 'stores/locale';
 import {useMenuStore} from 'stores/menu';
 import ArtivactDialog from 'components/ArtivactDialog.vue';
 import ArtivactOperationInProgressDialog from 'components/ArtivactOperationInProgressDialog.vue';
+import {useI18n} from 'vue-i18n';
 
 const quasar = useQuasar();
+const i18n = useI18n();
 const localeStore = useLocaleStore();
 const menuStore = useMenuStore();
 
@@ -155,7 +159,8 @@ const menuTreeRef = ref([] as MenuTreeNode[])
 
 const showOperationInProgressModalRef = ref(false);
 const progressMonitorRef = ref<OperationProgress>({
-  progress: 'Creating exhibition file...'
+  progress: i18n.t('ArtivactExhibitionsConfigurationEditor.dialog.progress'),
+  error: ''
 });
 
 function createMenuTree() {
@@ -180,7 +185,7 @@ function loadExhibitionSummaries() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Loading exhibitions failed',
+        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.exhibition') }),
         icon: 'report_problem',
       });
     });
@@ -197,7 +202,7 @@ function saveOrUpdateExhibitionSummary(exhibition: ExhibitionSummary) {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: 'Exhibition saved',
+        message: i18n.t('Common.messages.saving.success', { item: i18n.t('Common.items.exhibition') }),
         icon: 'report',
       });
     })
@@ -205,7 +210,7 @@ function saveOrUpdateExhibitionSummary(exhibition: ExhibitionSummary) {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Saving exhibition failed',
+        message: i18n.t('Common.messages.saving.failed', { item: i18n.t('Common.items.exhibition') }),
         icon: 'report_problem',
       });
     });
@@ -231,7 +236,7 @@ function deleteExhibition() {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: 'Exhibition deleted',
+        message: i18n.t('Common.messages.deleting.success', { item: i18n.t('Common.items.exhibition') }),
         icon: 'report',
       });
     })
@@ -239,7 +244,7 @@ function deleteExhibition() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Deleting exhibition failed',
+        message: i18n.t('Common.messages.deleting.failed', { item: i18n.t('Common.items.exhibition') }),
         icon: 'report_problem',
       });
     });

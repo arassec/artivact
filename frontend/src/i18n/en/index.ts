@@ -30,9 +30,16 @@ export default {
       account: 'Account',
       locales: 'Locales',
       page: 'Page',
+      items: 'Items',
       item: 'Item',
+      category: 'Category',
       properties: 'Properties',
+      property: 'Property',
+      tags: 'Tags',
       tag: 'Tag',
+      exhibitions: 'Exhibitions',
+      exhibition: 'Exhibition',
+      menu: 'Menu',
       configuration: {
         appearance: 'Appearance configuration',
         exchange: 'Exchange configuration',
@@ -92,10 +99,7 @@ export default {
   },
 
   AppearanceConfigurationPage: {
-    heading: 'Appearance Configuration',
-    messages: {
-      loadingLocalesFailed: 'Loading locales failed'
-    }
+    heading: 'Appearance Configuration'
   },
 
   ErrorNotFoundPage: {
@@ -109,7 +113,7 @@ export default {
   },
 
   ExhibitionsConfigurationPage: {
-    heading: 'Artivact Exhibitions'
+    heading: 'Item Exhibitions'
   },
 
   ItemDetailsPage: {
@@ -240,13 +244,349 @@ export default {
     }
   },
 
-  ItemModelViewer_downloadModelButtonLabel: 'Download Model',
+  ArtivactAppearanceConfigurationEditor: {
+    description: 'Configures the appearance of the Artivact application.',
+    list: {
+      title: {
+        heading: 'Application Title',
+        description: 'The title is displayed in the browser tab on every page.',
+        label: 'Application Title'
+      },
+      locales: {
+        heading: 'Supported Locales',
+        description: 'Comma-separated list of locales supported by this installation. E.g. \'de,nl,ja\'. Those locales can be maintained in addition to the default locale by choosing it from the settings menu and editing translatable strings e.g. on pages.',
+        label: 'Locales'
+      },
+      colors: {
+        heading: 'Color Theme',
+        description: 'The color theme can be customized with the following settings.',
+      },
+      favicon: {
+        heading: 'Favicon',
+        descriptionPrefix: 'A custom Favicon can be uploaded here in sizes of 16x16 and 32x32 pixels.',
+        description: 'The uploaded file is directly installed as favicon!',
+        descriptionSuffix: 'Due to browser caching the newly uploaded favicon might not directly be visible in your browser tab.',
+        saved: 'Favicon saved'
+      }
+    }
+  },
+
+  ArtivactExchangeConfigurationEditor: {
+    synchronization: {
+      heading: 'Synchronization Configuration',
+      server: {
+        description: 'URL of the remote Artivact server you want to use to synchronize items.',
+        label: 'Remote Artivact Server'
+      },
+      token: {
+        description: 'API token to use for synchronization. The token configured here must also be configured for a user account on the remote server. This user will be used on the remote side for authentication and authorization.',
+        label: 'API Token'
+      }
+    }
+  },
+
+  ArtivactExhibitionsConfigurationEditor: {
+    description: 'Configures exhibitions of items. Exhibitions are published as ZIP files and can be downloaded and experienced in an Artivact viewer application.',
+    add: 'Add Exhibition',
+    button: {
+      delete: 'Delete exhibition',
+      edit: 'Edit exhibition'
+    },
+    dialog: {
+      addExhibition: 'Add Exhibition',
+      editExhibition: 'Edit Exhibition',
+      title: 'Title',
+      description: 'Description',
+      pages: 'Create Exhibition from Page(s)',
+      deleteExhibition: 'Delete Exhibition?',
+      deleteDescription: 'Are you sure you want to delete this Exhibition and all its files? This action cannot be undone!',
+      deleteLabel: 'Delete Exhibition',
+      progress: 'Creating exhibition file...'
+    }
+  },
+
+  ArtivactLicenseConfigurationEditor: {
+    description: 'Configures the license string displayed on the artivacts details-page. The license is composed of a prefix, the actual license and a suffix. If an URL is configured, the license will be rendered as link to the provided URL.',
+    descriptionSuffix: 'The final license text might look like: "Media files are provided under \'CC BY-SA\' license."',
+    card: {
+      heading: 'License',
+      prefixDescription: 'The first part of the license text, e.g. \'Media files are provided under\'.',
+      prefixLabel: 'Prefix',
+      licenseDescription: 'The name of the license, e.g. \'MIT\' or \'CC BY-SA\'.',
+      licenseLabel: 'License',
+      suffixDescription: 'The last part of the license text, e.g. \'license\'.',
+      suffixLabel: 'Suffix',
+      urlDescription: 'If provided, this URL will be used to make the license text into a link.',
+      urlLabel: 'License-URL'
+    }
+  },
+
+  ArtivactMenuBar: {
+    tooltip: {
+      edit: 'Right click to edit menu'
+    },
+    label: {
+      edit: 'Edit Menu',
+      delete: 'Delete Menu',
+      left: 'Move Left',
+      right: 'Move Right',
+      editEntry: 'Edit Menu Entry',
+      deleteEntry: 'Delete Menu Entry',
+      up: 'Move Up',
+      down: 'Move Down',
+      add: 'Add Page',
+      addEntry: 'Add Entry'
+    },
+    dialog: {
+      add: 'Add Menu',
+      edit: 'Edit Menu',
+      addEntry: 'Add Menu Entry',
+      editEntry: 'Edit Menu Entry',
+      description: 'Enter the menu\'s name.',
+      descriptionEntry: 'Enter the menu entry\'s name.',
+      delete: 'Delete Menu?',
+      deleteEntry: 'Delete Menu Entry?',
+      deleteDescription: 'Are you sure you want to delete this menu including its page and menu entries? This action cannot be undone!',
+      deleteApprove: 'Delete Menu',
+      deleteApproveEntry: 'Delete Menu Entry'
+    },
+    messages: {
+      movingFailed: 'Moving failed'
+    }
+  },
+
+  ArtivactOperationInProgressDialog: {
+    heading: 'Operation in Progress',
+    failedHeading: 'Operation Failed',
+    details: 'Details'
+  },
+
+  ArtivactPage: {
+    tooltip: {
+      edit: 'Edit page',
+      cancel: 'Leave Edit Mode',
+      add: 'Add Widget'
+    },
+    label: {
+      indexPage: 'Is this the index page?',
+      indexPageShort: 'Index Page?',
+      addWidget: 'Add Widget'
+    },
+    dialog: {
+      heading: 'Widget Selection',
+      description: 'WARNING: Adding a new widget will save the current page configuration!',
+      type: 'Widget Type'
+    }
+  },
+
+  ArtivactPeripheralsConfigurationEditor: {
+    description: 'Configures the peripherals for 3D model creation of the Artivact application. Fallback-Options can be used if the peripheral or external software can not be used at all.',
+    turntable: {
+      heading: 'Turntable Configuration',
+      description: 'Automatic rotation of captured items via turntables can be configured here. Currently only the open source Artivact turntable is supported. If you use a turntable manually you can configure the fallback option and set a delay to give you time to rotate the turntable by hand.',
+      label: 'Turntable to use',
+      delay: 'Turntable delay in milliseconds'
+    },
+    camera: {
+      heading: 'Camera Configuration',
+      description: 'Images are captured with third party applications, which can be configured here. On Windows, DigiCamControl is supported. On Linux, gphoto2 must be used.',
+      label: 'Photo-Capture Software to use',
+      digiCamControlExe: 'DigiCamControl Executable',
+      digiCamControlUrl: 'DigiCamControl Webserver URL',
+      gphotoExe: 'gphoto2 Executable'
+    },
+    background: {
+      heading: 'Background Removal',
+      description: 'Automatic background removal of captured images is implemented using the open source tool \'rembg\' by Daniel Gatis (https://github.com/danielgatis/rembg). You can e.g. provide it with docker by running',
+      dockerCmd: 'docker run -d -p 5000:5000 --name=rembg --restart=always danielgatis/rembg s',
+      label: 'Background-Removal Software to use',
+      rembg: 'rembg Webserver URL'
+    },
+    creator: {
+      heading: '3D Model-Creator',
+      description: 'For 3D model creation currently "Metashape" and "Meshroom" are supported.',
+      label: 'Photogrammetry Software to use',
+      meshroom: 'Meshroom Executable',
+      metashape: 'Metashape Executable'
+    },
+    editor: {
+      heading: '3D Model-Editor',
+      description: 'For editing created 3D models, Blender3D can be configured here.',
+      label: '3D Model Editor to use',
+      blender: 'Blender3D Executable'
+    }
+  },
+
+  ArtivactPropertiesConfigurationEditor: {
+    tooltip: {
+      delete: 'Delete Category',
+      deleteProperty: 'Delete Property',
+      switchCategory: 'Move property to a different category',
+      up: 'Move property up',
+      down: 'Move property down'
+    },
+    button: {
+      addProperty: 'Add Property',
+      addCategory: 'Add Category'
+    },
+    newCategory: 'New Category',
+    newProperty: 'New Property'
+  },
+
+  ArtivactPropertyValueRangeEditor: {
+    label: 'Range of values:',
+    tooltip: {
+      edit: 'Edit value',
+      delete: 'Delete value',
+      add: 'Add value'
+    },
+    dialog: {
+      heading: 'Configure Value',
+      label: 'Value'
+    },
+    newValue: 'New Value'
+  },
+
+  ArtivactRestrictedTranslatableItemEditor: {
+    default: 'Default: ',
+    tooltip: {
+      more: 'Show details',
+      less: 'Hide details'
+    }
+  },
+
+  ArtivactRestrictionsEditor: {
+    restrictions: 'Restrictions:'
+  },
+
+  ArtivactSettingsBar: {
+    tooltip: {
+      locales: 'Locale Selection',
+      systemSettings: 'System Settings',
+      account: 'Account Settings'
+    },
+    default: 'Default',
+    itemSettings: 'Item Settings',
+    createItem: 'Create Item',
+    importItems: 'Import Items',
+    license: 'License',
+    appearance: 'Appearance',
+    peripherals: 'Peripherals',
+    exchange: 'Exchange',
+    locale: 'Locale',
+    exhib: 'Exhib.',
+    system: 'System'
+  },
+
+  ArtivactTagsConfigurationEditor: {
+    tooltip: {
+      delete: 'Delete Tag',
+    },
+    url: 'URL',
+    addTag: 'Add Tag',
+    newTag: 'New Tag'
+  },
+
+  ItemImageEditor: {
+    addImages: 'Add Images',
+    deleteImage: 'Delete Image'
+  },
+
+  ItemImageSetEditor: {
+    tooltip: {
+      capture: 'Capture photos into new image set',
+      open: 'Open directory containing images',
+      upload: 'Upload existing images into new image set',
+      details: 'Show image set details',
+      backgrounds: 'Remove image backgrounds',
+      delete: 'Delete image set',
+    },
+    label: {
+      numPhotos: 'Number of photos',
+      turntable: 'Use Turntable?',
+      delay: 'Turntable Delay',
+      backgrounds: 'Remove image backgrounds?'
+    },
+    captureParameters: 'Photo-Capture Parameters',
+    startCapturing: 'Start Capturing',
+    dialog: {
+      upload: {
+        heading: 'Upload Files to new Image-Set',
+        label: 'Add Images'
+      },
+      details: {
+        heading: 'Image-Set Details',
+        transfer: 'Transfer image to item media',
+        deleteImage: 'Delete image'
+      },
+      delete: {
+        heading: 'Delete Image-Set?',
+        description: 'Are you sure you want to delete this Image-Set and all its files? This action cannot be undone!',
+        approve: 'Delete Image-Set'
+      }
+    },
+    messages: {
+      capturingFailed: 'Capturing photos failed!',
+      backgroundFailed: 'Background removal failed!',
+      imageSetFailed: 'Image-Set creation failed!',
+      openingFailed: 'Opening directory failed!',
+      transferred: 'Image transferred',
+      transferFailed: 'Image transfer failed!',
+      imageSetDeleted: 'Image-Set deleted',
+      imageSetDeletionFailed: 'Image-Set deletion failed!',
+      operationSuccess: 'Item saved',
+      operationFailed: 'Operation failed!'
+    }
+  },
+
+  ItemMediaCarousel: {
+    tooltip: {
+      image: 'Show images',
+      model: 'Show 3D models',
+      download: 'Download media files'
+    }
+  },
+
+  ItemModelSetEditor: {
+    tooltip: {
+      create: 'Create model from image sets',
+      open: 'Open directory containing model directories',
+      details: 'Show model files',
+      openModel: 'Open directory containing model files',
+      edit: 'Edit 3D model in editor',
+      delete: 'Delete 3D model'
+    },
+    dialog: {
+      details: {
+        heading: 'Model-Set Details',
+        transfer: 'Transfer 3D model to item media'
+      },
+      delete: {
+        heading: 'Delete Model-Set?',
+        description: 'Are you sure you want to delete this Model-Set and all its files? This action cannot be undone!',
+        approve: 'Delete Model-Set'
+      }
+    },
+    messages: {
+      loadingFailed: 'Loading Model-Set failed!',
+      creationFailed: 'Creating Model-Set failed!',
+      openFailed: 'Opening directory failed!',
+      editingFailed: 'Editing 3D model failed!',
+      transferSuccess: 'Model transferred',
+      transferFailed: 'Model transfer failed!',
+      deleteSuccess: 'Model-Set deleted',
+      deleteFailed: 'Model-Set deletion failed!',
+      operationFailed: 'Operation failed'
+    }
+  },
+
+  ItemModelViewer: {
+    downloadModelButtonLabel: 'Download Model',
+  },
 
   ROLE_ADMIN: 'Admin',
   ROLE_USER: 'User',
 
-  widgetType: 'Widget Type',
-  addWidgetWarn: 'WARNING: Adding a new widget will save the current page configuration!',
   PAGE_TITLE: 'Page Title',
   PAGE_TITLE_DESCRIPTION: 'Page title with hero image and heading.',
   TEXT: 'Text',

@@ -2,7 +2,7 @@
   <div v-if="progressMonitorRef">
     <artivact-dialog :dialog-model="dialogModelRef && progressMonitorRef?.error == null" :hide-buttons="true">
       <template v-slot:header>
-        Operation in Progress
+        {{ $t('ArtivactOperationInProgressDialog.heading') }}
       </template>
 
       <template v-slot:body>
@@ -17,14 +17,14 @@
                      :hide-buttons="true" :show-close-button="true" :error="true"
                      @close-dialog="$emit('close-dialog')">
       <template v-slot:header>
-        Operation Failed
+        {{ $t('ArtivactOperationInProgressDialog.failedHeading') }}
       </template>
 
       <template v-slot:body>
         <q-card-section>
           {{ progressMonitorRef?.progress }}
           <q-separator class="q-mt-lg q-mb-xs"/>
-          <q-expansion-item :v-model="showDetailsRef" label="Details">
+          <q-expansion-item :v-model="showDetailsRef" :label="$t('ArtivactOperationInProgressDialog.details')">
             <q-scroll-area style="height: 25em; max-width: 35em;">
               <pre>{{ progressMonitorRef?.error }}</pre>
             </q-scroll-area>

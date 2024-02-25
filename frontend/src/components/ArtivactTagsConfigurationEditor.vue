@@ -24,8 +24,9 @@
               color="white"
               icon="delete"
               size="md"
-              @click="deleteTag(index)"
-            ></q-btn>
+              @click="deleteTag(index)">
+              <q-tooltip>{{ $t('ArtivactTagsConfigurationEditor.tooltip.delete') }}</q-tooltip>
+            </q-btn>
           </q-item-section>
         </template>
 
@@ -35,13 +36,13 @@
               :locales="locales"
               :translatable-string="tagEntry"
               :restricted-item="tagEntry"
-              label="Tag"
+              :label="$t('Common.items.tag')"
               :show-separator="false"
             />
             <q-input
               outlined
               v-model="tagEntry.url"
-              label="URL"
+              :label="$t('ArtivactTagsConfigurationEditor.url')"
               class="q-mb-sm"
             />
             <q-checkbox
@@ -55,7 +56,7 @@
 
     <div class="row">
       <q-space></q-space>
-      <q-btn label="Add Tag" @click="addTag" color="primary" />
+      <q-btn :label="$t('ArtivactTagsConfigurationEditor.addTag')" @click="addTag" color="primary" />
     </div>
   </div>
 </template>
@@ -64,6 +65,9 @@
 import {PropType, toRef} from 'vue';
 import {Tag, TagsConfiguration} from 'components/models';
 import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
+import {useI18n} from 'vue-i18n';
+
+const i18n = useI18n();
 
 const props = defineProps({
   tagsConfiguration: {
@@ -82,7 +86,7 @@ function addTag() {
   if (tagsConfigurationRef.value) {
     let tag: Tag = {
       id: '',
-      value: 'New Tag',
+      value: i18n.t('ArtivactTagsConfigurationEditor.newTag'),
       translations: {},
       restrictions: [],
       translatedValue: '',

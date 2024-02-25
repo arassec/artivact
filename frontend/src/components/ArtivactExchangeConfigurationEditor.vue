@@ -10,28 +10,27 @@
       >
         <template v-slot:header>
           <q-item-section class="list-entry-label">
-            Synchronization Configuration
+            {{ $t('ArtivactExchangeConfigurationEditor.synchronization.heading') }}
           </q-item-section>
         </template>
         <q-card>
           <q-card-section>
             <div class="q-mb-md">
-              URL of the remote Artivact server you want to use to synchronize items.
+              {{ $t('ArtivactExchangeConfigurationEditor.synchronization.server.description') }}
             </div>
             <q-input
               outlined
-              label="Remote Artivact Server"
+              :label="$t('ArtivactExchangeConfigurationEditor.synchronization.server.label')"
               v-model="exchangeConfigurationRef.remoteServer"
             />
           </q-card-section>
           <q-card-section>
             <div class="q-mb-md">
-              API token to use for synchronization. The token configured here must also be configured for a user
-              account on the remote server. This user will be used on the remote side for authentication and authorization.
+              {{ $t('ArtivactExchangeConfigurationEditor.synchronization.token.description') }}
             </div>
             <q-input
               outlined
-              label="API Token"
+              :label="$t('ArtivactExchangeConfigurationEditor.synchronization.token.label')"
               v-model="exchangeConfigurationRef.apiToken"
             />
           </q-card-section>
