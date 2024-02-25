@@ -6,8 +6,9 @@
     dense
     color="accent"
     icon="add_circle"
-    @click="createModel"
-  />
+    @click="createModel">
+    <q-tooltip>{{ $t('ItemModelSetEditor.tooltip.create') }}</q-tooltip>
+  </q-btn>
   <q-btn
     text-color="primary"
     class="q-mr-md"
@@ -15,8 +16,9 @@
     dense
     color="accent"
     icon="folder"
-    @click="openModelsDir"
-  />
+    @click="openModelsDir">
+    <q-tooltip>{{ $t('ItemModelSetEditor.tooltip.open') }}</q-tooltip>
+  </q-btn>
 
   <div class="row">
     <q-card v-for="(modelSet, index) in creationModelSets" :key="index" class="model-set-card q-mr-md q-mt-md">
@@ -33,8 +35,9 @@
           flat
           size="md"
           color="primary"
-          @click="showModelSetDetails(modelSet, index)"
-        />
+          @click="showModelSetDetails(modelSet, index)">
+          <q-tooltip>{{ $t('ItemModelSetEditor.tooltip.details') }}</q-tooltip>
+        </q-btn>
         <q-btn
           icon="folder"
           round
@@ -42,8 +45,9 @@
           flat
           size="md"
           color="primary"
-          @click="openModelDir(index)"
-        />
+          @click="openModelDir(index)">
+          <q-tooltip>{{ $t('ItemModelSetEditor.tooltip.openModel') }}</q-tooltip>
+        </q-btn>
         <q-btn
           icon="edit"
           round
@@ -51,8 +55,9 @@
           flat
           size="md"
           color="primary"
-          @click="editModel(index)"
-        />
+          @click="editModel(index)">
+          <q-tooltip>{{ $t('ItemModelSetEditor.tooltip.edit') }}</q-tooltip>
+        </q-btn>
         <q-space/>
         <q-btn
           icon="delete"
@@ -61,8 +66,9 @@
           flat
           size="md"
           color="primary"
-          @click="showDeleteModelSetConfirm(index)"
-        ></q-btn>
+          @click="showDeleteModelSetConfirm(index)">
+          <q-tooltip>{{ $t('ItemModelSetEditor.tooltip.delete') }}</q-tooltip>
+        </q-btn>
       </q-card-actions>
     </q-card>
   </div>
@@ -75,7 +81,7 @@
                    :min-width="50"
                    @close-dialog="showModelSetDetailsModalRef = false">
     <template v-slot:header>
-      Model-Set Details
+      {{ $t('ItemModelSetEditor.dialog.details.heading') }}
     </template>
 
     <template v-slot:body>
@@ -97,8 +103,9 @@
                   flat
                   size="md"
                   color="primary"
-                  @click="transferModel(file, selectedModelSetIndex)"
-                />
+                  @click="transferModel(file, selectedModelSetIndex)">
+                  <q-tooltip>{{ $t('ItemModelSetEditor.dialog.details.transfer') }}</q-tooltip>
+                </q-btn>
                 <q-space/>
               </div>
             </q-card-actions>
@@ -116,23 +123,22 @@
   <!-- DELETE CONFIRMATION DIALOG -->
   <artivact-dialog :dialog-model="confirmDeleteRef" :warn="true">
     <template v-slot:header>
-      Delete Model-Set?
+      {{ $t('ItemModelSetEditor.dialog.delete.heading') }}
     </template>
 
     <template v-slot:body>
       <q-card-section>
-        Are you sure you want to delete this Model-Set and all its files?
-        This action cannot be undone!
+        {{ $t('ItemModelSetEditor.dialog.delete.description') }}
       </q-card-section>
     </template>
 
     <template v-slot:cancel>
-      <q-btn label="Cancel" color="primary" @click="confirmDeleteRef = false"/>
+      <q-btn :label="$t('Common.cancel')" color="primary" @click="confirmDeleteRef = false"/>
     </template>
 
     <template v-slot:approve>
       <q-btn
-        label="Delete Model-Set"
+        :label="$t('ItemModelSetEditor.dialog.delete.approve')"
         color="primary"
         @click="deleteModelSet"
       />
@@ -149,8 +155,10 @@ import {api} from 'boot/axios';
 import {useQuasar} from 'quasar';
 import ArtivactDialog from 'components/ArtivactDialog.vue';
 import ArtivactOperationInProgressDialog from 'components/ArtivactOperationInProgressDialog.vue';
+import {useI18n} from 'vue-i18n';
 
 const quasar = useQuasar();
+const i18n = useI18n();
 
 const props = defineProps({
   itemId: {
@@ -191,7 +199,7 @@ function showModelSetDetails(modelSet: ModelSet, modelSetIndex: number) {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Loading failed!',
+        message: i18n.t('ItemModelSetEditor.messages.loadingFailed'),
         icon: 'report_problem',
       });
     });
@@ -211,7 +219,7 @@ function createModel() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Model creation failed!',
+        message: i18n.t('ItemModelSetEditor.messages.creationFailed'),
         icon: 'report_problem',
       });
     });
@@ -224,7 +232,7 @@ function openModelsDir() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Opening directory failed!',
+        message: i18n.t('ItemModelSetEditor.messages.openFailed'),
         icon: 'report_problem',
       });
     });
@@ -244,7 +252,7 @@ function editModel(index: number) {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Editing model failed!',
+        message: i18n.t('ItemModelSetEditor.messages.editingFailed'),
         icon: 'report_problem',
       });
     });
@@ -257,7 +265,7 @@ function openModelDir(index: number) {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Opening model directory failed!',
+        message: i18n.t('ItemModelSetEditor.messages.openFailed'),
         icon: 'report_problem',
       });
     });
@@ -272,7 +280,7 @@ function transferModel(file: Asset, modelSetIndex: number) {
         quasar.notify({
           color: 'positive',
           position: 'bottom',
-          message: 'Model transferred!',
+          message: i18n.t('ItemModelSetEditor.messages.transferSuccess'),
           icon: 'check',
         });
       }
@@ -281,7 +289,7 @@ function transferModel(file: Asset, modelSetIndex: number) {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Transfer failed!',
+        message: i18n.t('ItemModelSetEditor.messages.transferFailed'),
         icon: 'report_problem',
       });
     });
@@ -302,7 +310,7 @@ function deleteModelSet() {
         quasar.notify({
           color: 'positive',
           position: 'bottom',
-          message: 'Model set deleted!',
+          message: i18n.t('ItemModelSetEditor.messages.deleteSuccess'),
           icon: 'check',
         });
       }
@@ -311,7 +319,7 @@ function deleteModelSet() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Deletion failed!',
+        message: i18n.t('ItemModelSetEditor.messages.deleteFailed'),
         icon: 'report_problem',
       });
     });
@@ -336,7 +344,7 @@ function updateOperationProgress() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Operation failed!',
+        message: i18n.t('ItemModelSetEditor.messages.operationFailed'),
         icon: 'report_problem',
       });
     });

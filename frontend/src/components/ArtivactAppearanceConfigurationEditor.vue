@@ -1,7 +1,7 @@
 <template>
   <div v-if="appearanceConfigurationRef">
     <div class="q-mb-lg">
-      Configures the appearance of the Artivact application.
+      {{ $t('ArtivactAppearanceConfigurationEditor.description') }}
     </div>
 
     <q-list bordered class="rounded-borders q-mb-lg">
@@ -15,17 +15,17 @@
       >
         <template v-slot:header>
           <q-item-section class="list-entry-label">
-            Application Title
+            {{ $t('ArtivactAppearanceConfigurationEditor.list.title.heading') }}
           </q-item-section>
         </template>
         <q-card class="q-mb-lg">
           <q-card-section>
             <div class="q-mb-md">
-              The title is displayed in the browser tab on every page.
+              {{ $t('ArtivactAppearanceConfigurationEditor.list.title.description') }}
             </div>
             <q-input
               outlined
-              label="Application Title"
+              :label="$t('ArtivactAppearanceConfigurationEditor.list.title.label')"
               v-model="appearanceConfigurationRef.applicationTitle"
             ></q-input>
           </q-card-section>
@@ -41,20 +41,17 @@
       >
         <template v-slot:header>
           <q-item-section class="list-entry-label">
-            Supported Locales
+            {{ $t('ArtivactAppearanceConfigurationEditor.list.locales.heading') }}
           </q-item-section>
         </template>
         <q-card class="q-mb-lg">
           <q-card-section>
             <div class="q-mb-md">
-              Comma-separated list of locales supported by this installation.
-              E.g. 'de,nl,ja'. Those locales can be maintained in addition to
-              the default locale by choosing it from the settings menu and
-              editing translatable strings e.g. on pages.
+              {{ $t('ArtivactAppearanceConfigurationEditor.list.locales.description') }}
             </div>
             <q-input
               outlined
-              label="Locales"
+              :label="$t('ArtivactAppearanceConfigurationEditor.list.locales.label')"
               v-model="appearanceConfigurationRef.availableLocales"
             ></q-input>
           </q-card-section>
@@ -70,13 +67,13 @@
       >
         <template v-slot:header>
           <q-item-section class="list-entry-label">
-            Color Theme
+            {{ $t('ArtivactAppearanceConfigurationEditor.list.colors.heading') }}
           </q-item-section>
         </template>
         <q-card class="q-mb-lg">
           <q-card-section>
             <div class="q-mb-md">
-              The color theme can be customized with the following settings.
+              {{ $t('ArtivactAppearanceConfigurationEditor.list.colors.description') }}
             </div>
 
             <artivact-theme-color-editor
@@ -156,18 +153,16 @@
         expand-icon-class="text-white"
       >
         <template v-slot:header>
-          <q-item-section class="list-entry-label"> Favicon </q-item-section>
+          <q-item-section class="list-entry-label">
+            {{ $t('ArtivactAppearanceConfigurationEditor.list.favicon.heading') }}
+          </q-item-section>
         </template>
         <q-card class="q-mb-lg">
           <q-card-section>
             <div class="q-mb-md">
-              A custom Favicon can be uploaded here in sizes of 16x16 and 32x32
-              pixels.
-              <strong
-                >The uploaded file is directly installed as favicon!</strong
-              >
-              Due to browser caching the newly uploaded favicon might not
-              directly be visible in your browser tab.
+              {{ $t('ArtivactAppearanceConfigurationEditor.list.favicon.descriptionPrefix') }}
+              <strong>{{ $t('ArtivactAppearanceConfigurationEditor.list.favicon.description') }}</strong>
+              {{ $t('ArtivactAppearanceConfigurationEditor.list.favicon.descriptionSuffix') }}
             </div>
             <div class="row">
               <q-uploader
@@ -217,6 +212,7 @@ import {AppearanceConfiguration} from 'components/models';
 import ArtivactThemeColorEditor from 'components/ArtivactThemeColorEditor.vue';
 import {QUploader, useQuasar} from 'quasar';
 import {useDesktopStore} from 'stores/desktop';
+import {useI18n} from 'vue-i18n';
 
 const props = defineProps({
   appearanceConfiguration: {
@@ -226,6 +222,8 @@ const props = defineProps({
 });
 
 const quasar = useQuasar();
+const i18n = useI18n();
+
 const desktopStore = useDesktopStore();
 
 const appearanceConfigurationRef = toRef(props, 'appearanceConfiguration');
@@ -234,7 +232,7 @@ function uploadComplete() {
   quasar.notify({
     color: 'positive',
     position: 'bottom',
-    message: 'Favicon saved',
+    message: i18n.t('ArtivactAppearanceConfigurationEditor.list.favicon.saved'),
     icon: 'check',
   });
 }
