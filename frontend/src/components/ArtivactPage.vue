@@ -7,27 +7,29 @@
       class="absolute-top-right q-ma-md edit-page-button"
       @click="inEditMode = true"
       v-if="userdataStore.isUserOrAdmin && pageId !== 'INDEX' && !inEditMode"
-    />
+    >
+      <q-tooltip>{{ $t('ArtivactPage.tooltip.edit') }}</q-tooltip>
+    </q-btn>
 
     <q-toolbar
       v-if="userdataStore.isUserOrAdmin && inEditMode"
       class="sticky-toolbar gt-sm"
     >
-      <q-btn label="Cancel" color="primary" @click="inEditMode = false" />
+      <q-btn :label="$t('Common.cancel')" color="primary" @click="inEditMode = false" />
       <q-checkbox
         v-model="pageContentRef.indexPage"
         class="col-5 q-ml-lg"
         name="user"
-        label="Is this the index page?"
+        :label="$t('ArtivactPage.label.indexPage')"
       />
       <q-space />
       <q-btn
-        label="Add Widget"
+        :label="$t('ArtivactPage.label.addWidget')"
         @click="showAddWidgetDialogRef = true"
         color="primary"
         class="q-mr-lg"
       />
-      <q-btn label="Save" @click="savePage(true)" color="primary" />
+      <q-btn :label="$t('Common.save')" @click="savePage(true)" color="primary" />
     </q-toolbar>
 
     <q-toolbar
@@ -40,13 +42,14 @@
         flat
         dense
         round
-        size="lg"
-      />
+        size="lg">
+        <q-tooltip>{{$t('ArtivactPage.tooltip.cancel')}}</q-tooltip>
+      </q-btn>
       <q-checkbox
         v-model="pageContentRef.indexPage"
         class="col-5 q-ml-lg"
         name="user"
-        label="Index page?"
+        :label="$t('ArtivactPage.label.indexPageShort')"
       />
       <q-space />
       <q-btn
@@ -56,9 +59,12 @@
         dense
         round
         size="lg"
-        class="q-mr-lg"
-      />
-      <q-btn icon="save" @click="savePage(true)" flat dense round size="lg" />
+        class="q-mr-lg">
+        <q-tooltip>{{$t('ArtivactPage.tooltip.add')}}</q-tooltip>
+      </q-btn>
+      <q-btn icon="save" @click="savePage(true)" flat dense round size="lg">
+        <q-tooltip>{{ $t('Common.save') }}</q-tooltip>
+      </q-btn>
     </q-toolbar>
 
     <template
@@ -162,20 +168,20 @@
 
     <artivact-dialog :dialog-model="showAddWidgetDialogRef" v-if="userdataStore.isUserOrAdmin && inEditMode">
       <template v-slot:header>
-        Widget Selection
+        {{ $t('ArtivactPage.dialog.heading') }}
       </template>
 
       <template v-slot:body>
         <q-card-section>
           <div class="q-mb-lg">
-            {{ $t("addWidgetWarn") }}
+            {{ $t('ArtivactPage.dialog.description') }}
           </div>
           <q-select
             outlined
             v-model="selectedWidgetTypeRef"
             :options="availableWidgetTypes"
             :option-label="(option) => $t(option)"
-            :label="$t('widgetType')"
+            :label="$t('ArtivactPage.dialog.type')"
           />
           <div class="q-mt-md" style="overflow-wrap: break-word">
             {{ $t(selectedWidgetTypeRef + "_DESCRIPTION") }}
@@ -185,14 +191,14 @@
 
       <template v-slot:cancel>
         <q-btn
-          label="Cancel"
+          :label="$t('Common.cancel')"
           color="primary"
           @click="showAddWidgetDialogRef = false"
         />
       </template>
 
       <template v-slot:approve>
-        <q-btn label="Add" color="primary" @click="addWidget()" />
+        <q-btn :label="$t('ArtivactPage.label.addWidget')" color="primary" @click="addWidget()" />
       </template>
     </artivact-dialog>
 
@@ -224,6 +230,7 @@ import AvatarWidget from 'components/widgets/AvatarWidget.vue';
 import SpaceWidget from 'components/widgets/SpaceWidget.vue';
 import ImageTextWidget from 'components/widgets/ImageTextWidget.vue';
 import ArtivactDialog from 'components/ArtivactDialog.vue';
+import {useI18n} from 'vue-i18n';
 
 const props = defineProps({
   pageId: {
@@ -242,6 +249,7 @@ const emit = defineEmits<{
 }>();
 
 const quasar = useQuasar();
+const i18n = useI18n();
 
 const userdataStore = useUserdataStore();
 
@@ -365,7 +373,7 @@ function savePage(leaveEditMode: boolean) {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: 'Page saved',
+        message: i18n.t('Common.messages.saving.success', { item: i18n.t('Common.items.page') }),
         icon: 'check',
       });
       emit('update-page-content', response.data);
@@ -377,7 +385,7 @@ function savePage(leaveEditMode: boolean) {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Saving failed',
+        message: i18n.t('Common.messages.saving.failed', { item: i18n.t('Common.items.page') }),
         icon: 'report_problem',
       });
     });

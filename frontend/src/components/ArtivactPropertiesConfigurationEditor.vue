@@ -40,8 +40,9 @@
                   color="white"
                   icon="delete"
                   size="md"
-                  @click="deleteCategory(element)"
-                ></q-btn>
+                  @click="deleteCategory(element)">
+                  <q-tooltip>{{ $t('ArtivactPropertiesConfigurationEditor.tooltip.delete') }}</q-tooltip>
+                </q-btn>
               </q-item-section>
             </template>
 
@@ -53,7 +54,7 @@
                   :translatable-string="element"
                   :restricted-item="element"
                   :locales="locales"
-                  label="Category"
+                  :label="$t('Common.items.category')"
                   :show-separator="false"
                 />
               </q-card-section>
@@ -61,7 +62,7 @@
               <q-separator/>
 
               <q-card-section>
-                <h2 class="av-text-h2">Properties</h2>
+                <h2 class="av-text-h2">{{ $t('Common.items.properties') }}</h2>
 
                 <div
                   v-for="(property, index) in element.properties"
@@ -74,10 +75,12 @@
                     class="float-right"
                     icon="delete"
                     size="md"
-                    @click="deleteProperty(element, index)"
-                  ></q-btn>
+                    @click="deleteProperty(element, index)">
+                    <q-tooltip>{{ $t('ArtivactPropertiesConfigurationEditor.tooltip.deleteProperty') }}</q-tooltip>
+                  </q-btn>
                   <q-btn round dense flat class="float-right" icon="swap_vertical_circle" size="md"
                          v-if="propertiesConfigurationProp.categories.length > 1">
+                    <q-tooltip>{{ $t('ArtivactPropertiesConfigurationEditor.tooltip.switchCategory') }}</q-tooltip>
                     <q-menu>
                       <q-list>
                         <template v-for="(category, categoryIndex) in propertiesConfiguration.categories" :key="categoryIndex">
@@ -96,8 +99,9 @@
                     v-if="index > 0"
                     icon="arrow_upward"
                     size="md"
-                    @click="moveUp(element, index)"
-                  ></q-btn>
+                    @click="moveUp(element, index)">
+                    <q-tooltip>{{ $t('ArtivactPropertiesConfigurationEditor.tooltip.up') }}</q-tooltip>
+                  </q-btn>
                   <q-btn
                     round
                     dense
@@ -106,14 +110,15 @@
                     v-if="index < element.properties.length - 1"
                     icon="arrow_downward"
                     size="md"
-                    @click="moveDown(element, index)"
-                  ></q-btn>
+                    @click="moveDown(element, index)">
+                    <q-tooltip>{{ $t('ArtivactPropertiesConfigurationEditor.tooltip.down') }}</q-tooltip>
+                  </q-btn>
 
                   <artivact-restricted-translatable-item-editor
                     :translatable-string="property"
                     :restricted-item="property"
                     :locales="locales"
-                    label="Property"
+                    :label="$t('Common.items.property')"
                     :show-separator="false"
                   >
                     <artivact-property-value-range-editor
@@ -129,7 +134,7 @@
               <q-card-section>
                 <div class="row">
                   <q-space></q-space>
-                  <q-btn label="Add Property" @click="addProperty(element)"/>
+                  <q-btn :label="$t('ArtivactPropertiesConfigurationEditor.button.addProperty')" @click="addProperty(element)"/>
                 </div>
               </q-card-section>
             </q-card>
@@ -140,7 +145,7 @@
 
     <div class="row">
       <q-space></q-space>
-      <q-btn label="Add Category" @click="addCategory" color="primary"/>
+      <q-btn :label="$t('ArtivactPropertiesConfigurationEditor.button.addCategory')" @click="addCategory" color="primary"/>
     </div>
   </div>
 </template>
@@ -148,11 +153,14 @@
 <script setup lang="ts">
 // noinspection ES6UnusedImports
 import draggable from 'vuedraggable';
-import {computed, PropType, toRef} from 'vue';
+import {PropType, toRef} from 'vue';
 import {PropertiesConfiguration, Property, PropertyCategory,} from 'components/models';
 import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
 import ArtivactPropertyValueRangeEditor from 'components/ArtivactPropertyValueRangeEditor.vue';
 import {translate} from './utils';
+import {useI18n} from 'vue-i18n';
+
+const i18n = useI18n();
 
 const props = defineProps({
   propertiesConfiguration: {
@@ -169,7 +177,7 @@ const propertiesConfigurationProp = toRef(props, 'propertiesConfiguration');
 function addCategory() {
   let category: PropertyCategory = {
     id: '',
-    value: 'New Category',
+    value: i18n.t('ArtivactPropertiesConfigurationEditor.newCategory'),
     translatedValue: '',
     translations: {},
     restrictions: [],
@@ -181,7 +189,7 @@ function addCategory() {
 function addProperty(category: PropertyCategory) {
   let property: Property = {
     id: '',
-    value: 'New Property',
+    value: i18n.t('ArtivactPropertiesConfigurationEditor.newProperty'),
     translatedValue: '',
     translations: {},
     restrictions: [],

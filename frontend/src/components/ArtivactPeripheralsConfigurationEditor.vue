@@ -1,8 +1,7 @@
 <template>
   <div v-if="adapterConfigurationRef">
     <div class="q-mb-lg">
-      Configures the peripherals for 3D model creation of the Artivact application. Fallback-Options can be used if the
-      peripheral or external software can not be used at all.
+      {{ $t('ArtivactPeripheralsConfigurationEditor.description') }}
     </div>
 
     <q-list bordered class="rounded-borders q-mb-lg">
@@ -15,15 +14,13 @@
       >
         <template v-slot:header>
           <q-item-section class="list-entry-label">
-            Turntable Configuration
+            {{ $t('ArtivactPeripheralsConfigurationEditor.turntable.heading') }}
           </q-item-section>
         </template>
         <q-card>
           <q-card-section>
             <div class="q-mb-md">
-              Automatic rotation of captured items via turntables can be configured here. Currently only the open source
-              Artivact turntable is supported. If you use a turntable manually you can configure the fallback option and
-              set a delay to give you time to rotate the turntable by hand.
+              {{ $t('ArtivactPeripheralsConfigurationEditor.turntable.description') }}
             </div>
             <q-select
               class="q-mb-md"
@@ -32,20 +29,20 @@
               v-model="adapterConfigurationRef.turntableAdapterImplementation"
               :options="availableTurntableOptions"
               :option-label="opt => opt.label ? $t(opt.label) : $t(opt)"
-              label="Turntable to use"
+              :label="$t('ArtivactPeripheralsConfigurationEditor.turntable.label')"
             />
             <q-input
               v-if="adapterConfigurationRef.turntableAdapterImplementation.toString() === AdapterImplementation[AdapterImplementation.FALLBACK_TURNTABLE_ADAPTER]"
               outlined
               type="number"
-              label="Turntable delay in milliseconds"
+              :label="$t('ArtivactPeripheralsConfigurationEditor.turntable.delay')"
               v-model.number="adapterConfigurationRef.configValues['FALLBACK_TURNTABLE_ADAPTER']"
             />
             <q-input
               v-if="adapterConfigurationRef.turntableAdapterImplementation.toString() === AdapterImplementation[AdapterImplementation.ARTIVACT_TURNTABLE_ADAPTER]"
               outlined
               type="number"
-              label="Turntable delay in milliseconds"
+              :label="$t('ArtivactPeripheralsConfigurationEditor.turntable.delay')"
               v-model.number="adapterConfigurationRef.configValues['ARTIVACT_TURNTABLE_ADAPTER']"
             />
           </q-card-section>
@@ -61,14 +58,13 @@
       >
         <template v-slot:header>
           <q-item-section class="list-entry-label">
-            Camera Configuration
+            {{ $t('ArtivactPeripheralsConfigurationEditor.camera.heading') }}
           </q-item-section>
         </template>
         <q-card>
           <q-card-section>
             <div class="q-mb-md">
-              Images are captured with third party applications, which can be configured here. On Windows,
-              DigiCamControl is supported. On Linux, gphoto2 must be used.
+              {{ $t('ArtivactPeripheralsConfigurationEditor.camera.description') }}
             </div>
             <q-select
               class="q-mb-md"
@@ -77,24 +73,24 @@
               v-model="adapterConfigurationRef.cameraAdapterImplementation"
               :options="availableCameraOptions"
               :option-label="opt => opt.label ? $t(opt.label) : $t(opt)"
-              label="Photo-Capture Software to use"
+              :label="$t('ArtivactPeripheralsConfigurationEditor.camera.label')"
             />
             <q-input
               v-if="adapterConfigurationRef.cameraAdapterImplementation.toString() === AdapterImplementation[AdapterImplementation.DIGI_CAM_CONTROL_CAMERA_ADAPTER]"
               outlined
-              label="DigiCamControl Executable"
+              :label="$t('ArtivactPeripheralsConfigurationEditor.camera.digiCamControlExe')"
               v-model="adapterConfigurationRef.configValues['DIGI_CAM_CONTROL_CAMERA_ADAPTER']"
             />
             <q-input
               v-if="adapterConfigurationRef.cameraAdapterImplementation.toString() === AdapterImplementation[AdapterImplementation.DIGI_CAM_CONTROL_REMOTE_CAMERA_ADAPTER]"
               outlined
-              label="DigiCamControl Webserver URL"
+              label="$t('ArtivactPeripheralsConfigurationEditor.camera.digiCamControlUrl')"
               v-model="adapterConfigurationRef.configValues['DIGI_CAM_CONTROL_REMOTE_CAMERA_ADAPTER']"
             />
             <q-input
               v-if="adapterConfigurationRef.cameraAdapterImplementation.toString() === AdapterImplementation[AdapterImplementation.GPHOTO_TWO_CAMERA_ADAPTER]"
               outlined
-              label="gphoto Executable"
+              label="$t('ArtivactPeripheralsConfigurationEditor.camera.gphotoExe')"
               v-model="adapterConfigurationRef.configValues['GPHOTO_TWO_CAMERA_ADAPTER']"
             />
           </q-card-section>
@@ -110,15 +106,14 @@
       >
         <template v-slot:header>
           <q-item-section class="list-entry-label">
-            Background Removal
+            {{ $t('ArtivactPeripheralsConfigurationEditor.background.heading') }}
           </q-item-section>
         </template>
         <q-card>
           <q-card-section>
             <div class="q-mb-md">
-              Automatic background removal of captured images is implemented using the open source tool 'rembg' by
-              Daniel Gatis (https://github.com/danielgatis/rembg). You can e.g. provide it with docker by running
-              <pre>docker run -d -p 5000:5000 --name=rembg --restart=always danielgatis/rembg s</pre>
+              {{ $t('ArtivactPeripheralsConfigurationEditor.background.description') }}
+              <pre>{{ $t('ArtivactPeripheralsConfigurationEditor.background.dockerCmd') }}</pre>
             </div>
             <q-select
               class="q-mb-md"
@@ -127,12 +122,12 @@
               v-model="adapterConfigurationRef.backgroundRemovalAdapterImplementation"
               :options="availableBackgroundRemovalOptions"
               :option-label="opt => opt.label ? $t(opt.label) : $t(opt)"
-              label="Background-Removal Software to use"
+              :label="$t('ArtivactPeripheralsConfigurationEditor.background.label')"
             />
             <q-input
               v-if="adapterConfigurationRef.backgroundRemovalAdapterImplementation.toString() === AdapterImplementation[AdapterImplementation.REMBG_REMOTE_BACKGROUND_REMOVAL_ADAPTER]"
               outlined
-              label="rembg Webserver URL"
+              :label="$t('ArtivactPeripheralsConfigurationEditor.background.rembg')"
               v-model="adapterConfigurationRef.configValues['REMBG_REMOTE_BACKGROUND_REMOVAL_ADAPTER']"
             />
           </q-card-section>
@@ -148,13 +143,13 @@
       >
         <template v-slot:header>
           <q-item-section class="list-entry-label">
-            3D Model-Creator
+            {{ $t('ArtivactPeripheralsConfigurationEditor.creator.heading') }}
           </q-item-section>
         </template>
         <q-card>
           <q-card-section>
             <div class="q-mb-md">
-              For 3D model creation currently "Metashape" and "Meshroom" are supported.
+              {{ $t('ArtivactPeripheralsConfigurationEditor.creator.description') }}
             </div>
             <q-select
               class="q-mb-md"
@@ -163,18 +158,18 @@
               v-model="adapterConfigurationRef.modelCreatorImplementation"
               :options="availableModelCreatorOptions"
               :option-label="opt => opt.label ? $t(opt.label) : $t(opt)"
-              label="Photogrammetry Software to use"
+              :label="$t('ArtivactPeripheralsConfigurationEditor.creator.label')"
             />
             <q-input
               v-if="adapterConfigurationRef.modelCreatorImplementation.toString() === AdapterImplementation[AdapterImplementation.MESHROOM_MODEL_CREATOR_ADAPTER]"
               outlined
-              label="Meshroom Executable"
+              :label="$t('ArtivactPeripheralsConfigurationEditor.creator.meshroom')"
               v-model="adapterConfigurationRef.configValues['MESHROOM_MODEL_CREATOR_ADAPTER']"
             />
             <q-input
               v-if="adapterConfigurationRef.modelCreatorImplementation.toString() === AdapterImplementation[AdapterImplementation.METASHAPE_MODEL_CREATOR_ADAPTER]"
               outlined
-              label="Metashape Executable"
+              :label="$t('ArtivactPeripheralsConfigurationEditor.creator.metashape')"
               v-model="adapterConfigurationRef.configValues['METASHAPE_MODEL_CREATOR_ADAPTER']"
             />
           </q-card-section>
@@ -190,13 +185,13 @@
       >
         <template v-slot:header>
           <q-item-section class="list-entry-label">
-            3D Model-Editor
+            {{ $t('ArtivactPeripheralsConfigurationEditor.editor.heading') }}
           </q-item-section>
         </template>
         <q-card>
           <q-card-section>
             <div class="q-mb-md">
-              For editing created 3D models, Blender3D can be configured here.
+              {{ $t('ArtivactPeripheralsConfigurationEditor.editor.description') }}
             </div>
             <q-select
               class="q-mb-md"
@@ -205,12 +200,12 @@
               v-model="adapterConfigurationRef.modelEditorImplementation"
               :options="availableModelEditorOptions"
               :option-label="opt => opt.label ? $t(opt.label) : $t(opt)"
-              label="3D Model Editor to use"
+              :label="$t('ArtivactPeripheralsConfigurationEditor.editor.label')"
             />
             <q-input
               v-if="adapterConfigurationRef.modelEditorImplementation.toString() === AdapterImplementation[AdapterImplementation.BLENDER_MODEL_EDITOR_ADAPTER]"
               outlined
-              label="Blender3D Executable"
+              :label="$t('ArtivactPeripheralsConfigurationEditor.editor.blender')"
               v-model="adapterConfigurationRef.configValues['BLENDER_MODEL_EDITOR_ADAPTER']"
             />
           </q-card-section>
@@ -238,7 +233,7 @@ function isDisabled(availableOptions: AdapterImplementation[] | undefined, optio
     return true;
   }
 
-  for (let i=0; i < availableOptions.length; i++) {
+  for (let i = 0; i < availableOptions.length; i++) {
     if (availableOptions[i] === option) {
       return false;
     }

@@ -1,62 +1,52 @@
 <template>
   <div v-if="licenseConfiguration != null && locales != null">
     <div class="q-mb-lg">
-      Configures the license string displayed on the artivacts details-page. The
-      license is composed of a prefix, the actual license and a suffix. If an
-      URL is configured, the license will be rendered as link to the provided
-      URL.
+      {{ $t('ArtivactLicenseConfigurationEditor.description') }}
       <br class="q-mb-sm" />
-      The final license text might look like: "Media files are provided under
-      'CC BY-SA' license."
+      {{ $t('ArtivactLicenseConfigurationEditor.descriptionSuffix') }}
     </div>
 
     <q-card class="q-mb-lg">
       <q-card-section class="bg-primary text-white">
-        <div class="text-h6">License</div>
+        <div class="text-h6">{{ $t('ArtivactLicenseConfigurationEditor.card.heading') }}</div>
       </q-card-section>
 
       <q-card-section>
-        <label
-          >The first part of the license text, e.g. 'Media files are provided
-          under'.</label
-        >
+        <label>{{ $t('ArtivactLicenseConfigurationEditor.card.prefixDescription') }}</label>
         <artivact-restricted-translatable-item-editor
           :locales="locales"
           :translatable-string="licenseConfiguration.prefix"
-          label="Prefix"
+          :label="$t('ArtivactLicenseConfigurationEditor.card.prefixLabel')"
           :show-separator="false"
         />
       </q-card-section>
 
       <q-card-section>
-        <label>The name of the license, e.g. 'MIT' or 'CC BY-SA'.</label>
+        <label>{{ $t('ArtivactLicenseConfigurationEditor.card.licenseDescription') }}</label>
         <artivact-restricted-translatable-item-editor
           :locales="locales"
           :translatable-string="licenseConfiguration.licenseLabel"
-          label="License"
+          :label="$t('ArtivactLicenseConfigurationEditor.card.licenseLabel')"
           :show-separator="false"
         />
       </q-card-section>
 
       <q-card-section>
-        <label>The last part of the license text, e.g. 'license'.</label>
+        <label>{{ $t('ArtivactLicenseConfigurationEditor.card.suffixDescription') }}</label>
         <artivact-restricted-translatable-item-editor
           :locales="locales"
           :translatable-string="licenseConfiguration.suffix"
-          label="Suffix"
+          :label="$t('ArtivactLicenseConfigurationEditor.card.suffixLabel')"
           :show-separator="false"
         />
       </q-card-section>
 
       <q-card-section>
-        <label
-          >If provided, this URL will be used to make the license text into a
-          link.</label
-        >
+        <label>{{ $t('ArtivactLicenseConfigurationEditor.card.urlDescription') }}</label>
         <q-input
           outlined
           v-model="licenseConfigurationRef.licenseUrl"
-          label="License-URL"
+          :label="$t('ArtivactLicenseConfigurationEditor.card.urlLabel')"
         />
       </q-card-section>
     </q-card>
