@@ -278,7 +278,7 @@ function addWidget() {
       id: '',
       restrictions: [] as string[],
       title: {
-        value: 'Page Title',
+        value: i18n.t('ArtivactPage.label.pageTitle'),
       } as TranslatableString,
       backgroundImage: '',
     } as PageTitleWidgetData);
@@ -288,7 +288,7 @@ function addWidget() {
       id: '',
       restrictions: [] as string[],
       heading: {
-        value: 'Text Title',
+        value: i18n.t('ArtivactPage.label.textTitle'),
       } as TranslatableString,
       content: {
         value: 'Text content',
@@ -300,7 +300,7 @@ function addWidget() {
       id: '',
       restrictions: [] as string[],
       text: {
-        value: 'Text',
+        value: i18n.t('ArtivactPage.label.text'),
       } as TranslatableString,
     } as ImageTextWidgetData);
   } else if (selectedWidgetTypeRef.value === 'ITEM_SEARCH') {
@@ -325,10 +325,10 @@ function addWidget() {
       id: '',
       restrictions: [] as string[],
       heading: {
-        value: 'Info-Box Title',
+        value: i18n.t('ArtivactPage.label.infoBoxTitle'),
       } as TranslatableString,
       content: {
-        value: 'Info-Box content',
+        value: i18n.t('ArtivactPage.label.infoBoxContent'),
       } as TranslatableString,
       boxType: 'INFO',
     } as InfoBoxWidgetData);
@@ -339,7 +339,7 @@ function addWidget() {
       restrictions: [] as string[],
       avatarImage: '',
       avatarSubtext: {
-        value: 'Avatar Subtext',
+        value: i18n.t('ArtivactPage.label.avatarSubtext'),
       } as TranslatableString,
     } as AvatarWidgetData);
   } else if (selectedWidgetTypeRef.value === 'SPACE') {

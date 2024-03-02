@@ -179,7 +179,7 @@
       <artivact-content>
         <div class="column full-width">
           <q-uploader
-            label="Image"
+            :label="$t('ImageTextWidget.label.image')"
             auto-upload
             field-name="file"
             :no-thumbnails="true"
@@ -193,7 +193,7 @@
             :locales="localeStore.locales"
             :translatable-string="widgetDataRef.text"
             :textarea="true"
-            label="Text"
+            :label="$t('ImageTextWidget.label.text')"
             :show-separator="false"
           />
         </div>

@@ -21,8 +21,9 @@
           icon="edit"
           class="widget-editor-edit-button"
           @click="showDetailsRef = true"
-          v-if="!showDetailsRef"
-        />
+          v-if="!showDetailsRef">
+          <q-tooltip>{{ $t('WidgetTemplate.tooltip.edit') }}</q-tooltip>
+        </q-btn>
         <q-btn
           rounded
           dense
@@ -31,8 +32,9 @@
           icon="expand_less"
           class="widget-editor-edit-button"
           @click="showDetailsRef = false"
-          v-if="showDetailsRef"
-        />
+          v-if="showDetailsRef">
+          <q-tooltip>{{ $t('WidgetTemplate.tooltip.close') }}</q-tooltip>
+        </q-btn>
 
         <slot name="widget-editor-preview"></slot>
 
@@ -56,8 +58,9 @@
                   class="widget-editor-content"
                   icon="arrow_upward"
                   @click="$emit('move-widget-up')"
-                  v-if="moveUpEnabled"
-                />
+                  v-if="moveUpEnabled">
+                  <q-tooltip>{{ $t('WidgetTemplate.tooltip.moveUp') }}</q-tooltip>
+                </q-btn>
                 <q-btn
                   rounded
                   dense
@@ -65,15 +68,17 @@
                   class="widget-editor-content"
                   icon="arrow_downward"
                   @click="$emit('move-widget-down')"
-                  v-if="moveDownEnabled"
-                />
+                  v-if="moveDownEnabled">
+                  <q-tooltip>{{ $t('WidgetTemplate.tooltip.moveDown') }}</q-tooltip>
+                </q-btn>
                 <q-btn
                   dense
                   flat
                   class="widget-editor-content"
                   icon="delete"
-                  @click="$emit('delete-widget')"
-                />
+                  @click="$emit('delete-widget')">
+                  <q-tooltip>{{ $t('WidgetTemplate.tooltip.delete') }}</q-tooltip>
+                </q-btn>
               </div>
             </artivact-content>
 

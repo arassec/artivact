@@ -79,9 +79,8 @@
             (!searchResultRef ||
               !searchResultRef.data ||
               searchResultRef.data.length === 0)
-          "
-        >
-          No search results available!
+          ">
+          {{ $t('SearchWidget.label.noSearchResults') }}
         </label>
 
         <div class="col">
@@ -158,6 +157,7 @@ import ItemCard from 'components/ItemCard.vue';
 import WidgetTemplate from 'components/widgets/WidgetTemplate.vue';
 import {useWidgetdataStore} from 'stores/widgetdata';
 import ArtivactItemSearchInput from 'components/widgets/util/ArtivactItemSearchInput.vue';
+import {useI18n} from 'vue-i18n';
 
 const props = defineProps({
   inEditMode: {
@@ -178,9 +178,10 @@ const props = defineProps({
   },
 });
 
-const widgetDataRef = toRef(props, 'widgetData');
-
 const quasar = useQuasar();
+const i18n = useI18n();
+
+const widgetDataRef = toRef(props, 'widgetData');
 
 const widgetDataStore = useWidgetdataStore();
 
@@ -217,7 +218,7 @@ function search(page: number) {
         quasar.notify({
           color: 'warning',
           position: 'bottom',
-          message: 'No search results found!',
+          message: i18n.t('SearchWidget.messages.noSearchResults'),
           icon: 'report_problem',
         });
       }
@@ -226,7 +227,7 @@ function search(page: number) {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Search failed',
+        message: i18n.t('SearchWidget.messages.searchFailed'),
         icon: 'report_problem',
       });
     });

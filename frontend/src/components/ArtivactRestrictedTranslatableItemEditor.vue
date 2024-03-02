@@ -69,7 +69,7 @@
 </template>
 
 <script setup lang="ts">
-import {PropType, ref, toRef, useSlots} from 'vue';
+import {PropType, ref, toRef} from 'vue';
 import ArtivactRestrictionsEditor from 'components/ArtivactRestrictionsEditor.vue';
 import {BaseRestrictedItem, TranslatableString} from 'components/models';
 import {useLocaleStore} from 'stores/locale';
@@ -105,7 +105,6 @@ const props = defineProps({
 });
 
 const localeStore = useLocaleStore();
-const slots = useSlots();
 
 const translatableStringRef = toRef(props, 'translatableString');
 const restrictedItemRef = toRef(props, 'restrictedItem');

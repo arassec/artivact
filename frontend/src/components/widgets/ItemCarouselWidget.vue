@@ -197,6 +197,7 @@ import {api} from 'boot/axios';
 import ItemCard from 'components/ItemCard.vue';
 import WidgetTemplate from 'components/widgets/WidgetTemplate.vue';
 import ArtivactItemSearchInput from 'components/widgets/util/ArtivactItemSearchInput.vue';
+import {useI18n} from 'vue-i18n';
 
 const props = defineProps({
   inEditMode: {
@@ -217,9 +218,10 @@ const props = defineProps({
   },
 });
 
-const widgetDataRef = toRef(props, 'widgetData');
-
 const quasar = useQuasar();
+const i18n = useI18n();
+
+const widgetDataRef = toRef(props, 'widgetData');
 
 const slideRef = ref(0);
 const searchResultRef = ref({} as SearchResult);
@@ -245,7 +247,7 @@ function search() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Search failed',
+        message: i18n.t('ItemCarouselWidget.messages.searchFailed'),
         icon: 'report_problem',
       });
     });

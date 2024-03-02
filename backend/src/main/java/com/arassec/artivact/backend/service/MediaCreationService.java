@@ -56,13 +56,13 @@ public class MediaCreationService {
         executorService.shutdownNow();
     }
 
-    public synchronized ProgressMonitor capturePhotos(String itemId, CapturePhotosParams capturePhotosParams) {
+    public synchronized void capturePhotos(String itemId, CapturePhotosParams capturePhotosParams) {
 
         if (progressMonitor != null && progressMonitor.getException() == null) {
-            return progressMonitor;
+            return;
         }
 
-        progressMonitor = new ProgressMonitor();
+        progressMonitor = new ProgressMonitor(getClass(), "captureStart");
 
         executorService.submit(() -> {
             try {
@@ -82,21 +82,19 @@ public class MediaCreationService {
 
                 progressMonitor = null;
             } catch (Exception e) {
-                progressMonitor.updateProgress("Error during photo capturing!", e);
+                progressMonitor.updateProgress("captureFailed", e);
                 log.error("Error during photo capturing!", e);
             }
         });
-
-        return progressMonitor;
     }
 
-    public synchronized ProgressMonitor removeBackgrounds(String itemId, int imageSetIndex) {
+    public synchronized void removeBackgrounds(String itemId, int imageSetIndex) {
 
         if (progressMonitor != null && progressMonitor.getException() == null) {
-            return progressMonitor;
+            return;
         }
 
-        progressMonitor = new ProgressMonitor();
+        progressMonitor = new ProgressMonitor(getClass(), "rembgStart");
 
         executorService.submit(() -> {
             try {
@@ -120,21 +118,19 @@ public class MediaCreationService {
 
                 progressMonitor = null;
             } catch (Exception e) {
-                progressMonitor.updateProgress("Error during background removal!", e);
+                progressMonitor.updateProgress("rembgFailed", e);
                 log.error("Error during background removal!", e);
             }
         });
-
-        return progressMonitor;
     }
 
-    public synchronized ProgressMonitor createImageSetFromDanglingImages(String itemId) {
+    public synchronized void createImageSetFromDanglingImages(String itemId) {
 
         if (progressMonitor != null && progressMonitor.getException() == null) {
-            return progressMonitor;
+            return;
         }
 
-        progressMonitor = new ProgressMonitor();
+        progressMonitor = new ProgressMonitor(getClass(), "imageSetStart");
 
         executorService.submit(() -> {
             try {
@@ -154,17 +150,16 @@ public class MediaCreationService {
 
                 progressMonitor = null;
             } catch (Exception e) {
-                progressMonitor.updateProgress("Error during image-set creation!", e);
+                progressMonitor.updateProgress("imageSetFailed", e);
                 log.error("Error during image-set creation!", e);
             }
         });
-
-        return progressMonitor;
     }
 
-    public synchronized ProgressMonitor createModel(String itemId, String pipeline) {
+    public synchronized void createModel(String itemId, String pipeline) {
+
         if (progressMonitor != null && progressMonitor.getException() == null) {
-            return progressMonitor;
+            return;
         }
 
         if (!StringUtils.hasText(pipeline)) {
@@ -172,7 +167,7 @@ public class MediaCreationService {
         }
         final String selectedPipeline = pipeline;
 
-        progressMonitor = new ProgressMonitor();
+        progressMonitor = new ProgressMonitor(getClass(), "createModelStart");
 
         executorService.submit(() -> {
             try {
@@ -191,20 +186,18 @@ public class MediaCreationService {
 
                 progressMonitor = null;
             } catch (Exception e) {
-                progressMonitor.updateProgress("Error during model creation!", e);
+                progressMonitor.updateProgress("createModelFailed", e);
                 log.error("Error during model creation!", e);
             }
         });
-
-        return progressMonitor;
     }
 
-    public synchronized ProgressMonitor editModel(String itemId, int modelSetIndex) {
+    public synchronized void editModel(String itemId, int modelSetIndex) {
         if (progressMonitor != null && progressMonitor.getException() == null) {
-            return progressMonitor;
+            return;
         }
 
-        progressMonitor = new ProgressMonitor();
+        progressMonitor = new ProgressMonitor(getClass(), "editModelStart");
 
         executorService.submit(() -> {
             try {
@@ -216,12 +209,10 @@ public class MediaCreationService {
 
                 progressMonitor = null;
             } catch (Exception e) {
-                progressMonitor.updateProgress("Error during model editing!", e);
+                progressMonitor.updateProgress("editModelFailed", e);
                 log.error("Error during model editing!", e);
             }
         });
-
-        return progressMonitor;
     }
 
     public List<String> getPipelines() {

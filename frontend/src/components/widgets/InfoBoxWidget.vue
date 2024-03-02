@@ -86,14 +86,14 @@
           <artivact-restricted-translatable-item-editor
             :locales="localeStore.locales"
             :translatable-string="widgetDataRef.heading"
-            label="Heading"
+            :label="$t('InfoBoxWidget.label.heading')"
             :show-separator="false"
             class="q-mb-sm"
           />
           <artivact-restricted-translatable-item-editor
             :locales="localeStore.locales"
             :translatable-string="widgetDataRef.content"
-            label="Content"
+            :label="$t('InfoBoxWidget.label.content')"
             :textarea="true"
             :show-separator="false"
           />
@@ -101,7 +101,7 @@
             outlined
             v-model="widgetDataRef.boxType"
             :options="infoBoxTypes"
-            label="Outlined"
+            :label="$t('InfoBoxWidget.label.outlined')"
           />
         </div>
       </artivact-content>

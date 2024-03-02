@@ -10,19 +10,19 @@ export default {
     messages: {
       creating: {
         success: '{item} erzeugt',
-        failed: 'Erzeugung von {item} fehlgeschlagen'
+        failed: 'Erzeugung von \'{item}\' fehlgeschlagen'
       },
       loading: {
         success: '{item} geladen',
-        failed: 'Laden von {item} fehlgeschlagen',
+        failed: 'Laden von \'{item}\' fehlgeschlagen',
       },
       saving: {
         success: '{item} gespeichert',
-        failed: 'Speichern von {item} fehlgeschlagen'
+        failed: 'Speichern von \'{item}\' fehlgeschlagen'
       },
       deleting: {
         success: '{item} gelöscht',
-        failed: 'Löschen von {item} fehlgeschlagen'
+        failed: 'Löschen von \'{item}\' fehlgeschlagen'
       }
     },
     items: {
@@ -39,12 +39,14 @@ export default {
       tag: 'Tag',
       exhibitions: 'Ausstellungen',
       exhibition: 'Ausstellung',
-      menu: 'Menu',
+      menus: 'Menüs',
+      menu: 'Menü',
+      applicationLocale: 'Anwendungssprache',
       configuration: {
-        appearance: 'Darstellungs-Konfiguration',
+        appearance: 'Darstellungskonfiguration',
         exchange: 'Austausch-Konfiguration',
         exhibitions: 'Ausstellung-Konfiguration',
-        license: 'Lizenz-Konfiguration',
+        license: 'Lizenzkonfiguration',
         peripherals: 'Peripheriegeräte-Konfiguration',
         properties: 'Eigenschaften-Konfiguration',
         tags: 'Tags-Konfiguration'
@@ -54,7 +56,15 @@ export default {
 
   MainLayout: {
     login: 'Login',
-    logout: 'Logout'
+    logout: 'Logout',
+    messages: {
+      colorThemeFailed: 'Laden des Farbschemas fehlgeschlagen!',
+      rolesFailed: 'Laden von Benutzerrollen fehlgeschlagen!',
+      titleFailed: 'Laden des Anwendungstitels fehlgeschlagen!',
+      userDataFailed: 'Laden der Benutzerdaten fehlgeschlagen!',
+      licenseFailed: 'Laden von Lizenzinformationen fehlgeschlagen!',
+      logoutFailed: 'Logout fehlgeschlagen!'
+    }
   },
 
   AccountsConfigurationPage: {
@@ -257,6 +267,14 @@ export default {
         description: 'Kommaseparierte Liste mit Sprachcodes die von der Anwendung unterstützt werden. Beispiel: \'de,nl,ja\'. Die Sprachen können zusätzlich zur Standardsprache verwaltet werden, indem sie über die Sprachwahl in der Menuleiste ausgewählt, und anschließend die entsprechenden Texte editiert werden.',
         label: 'Sprachen'
       },
+      applicationLocale: {
+        heading: 'Anwendungssprache',
+        description: 'Hier kann die Sprache der Anwendung konfiguriert werden, d.h. die Sprache der Texte innerhalb der Anwendung, die nicht vom Benutzer erzeugt werden. Ohne konfiguration wird die Systemsprache verwendet, falls diese unterstützt wird, oder Englisch bei nicht unterstützten Systemsprachen.',
+        label: 'Sprache',
+        de: 'Deutsch',
+        en: 'Englisch',
+        system: 'Systemsprache'
+      },
       colors: {
         heading: 'Farbschema',
         description: 'Das Farbschema der Anwendung kann über die folgenden Einstellungen angepasst werden.',
@@ -370,7 +388,13 @@ export default {
     label: {
       indexPage: 'Ist dies die Hauptseite?',
       indexPageShort: 'Hauptseite?',
-      addWidget: 'Widget hinzufügen'
+      addWidget: 'Widget hinzufügen',
+      pageTitle: 'Seitentitel',
+      textTitle: 'Texttitel',
+      text: 'Text',
+      infoBoxTitle: 'Info-Box Titel',
+      infoBoxContent: 'Info-Box Inhalt',
+      avatarSubtext: 'Avatar Untertitel'
     },
     dialog: {
       heading: 'Widget-Auswahl',
@@ -582,6 +606,112 @@ export default {
 
   ItemModelViewer: {
     downloadModelButtonLabel: '3D-Modell herunterladen',
+  },
+
+  ArtivactItemSearchInput: {
+    error: 'Bitte geben Sie eine Suchabfrage ein.',
+    label: {
+      maxResults: 'Max Ergebnisse',
+      term: 'Suchbegriff',
+      fulltext: 'Syntax zur Suche von Eigenschaftswerten mit Volltextsuche: "PROPERTY_ID=[SEARCH_TERM]"',
+      property: 'Syntax zur direkten Suche von Eigenschaftswerten: PROPERTY_ID:"[SEARCH_TERM]"',
+      addTag: 'Tag hinzufügen',
+      addProperty: 'Eigenschaft hinzufügen'
+    }
+  },
+
+  AvatarWidget: {
+    label: {
+      image: 'Avatar Bild',
+      subtext: 'Avatar Untertitel'
+    }
+  },
+
+  ImageTextWidget: {
+    label: {
+      image: 'Bild',
+      text: 'Text'
+    }
+  },
+
+  InfoBoxWidget: {
+    label: {
+      heading: 'Überschrift',
+      content: 'Inhalt',
+      outlined: 'Umriss'
+    }
+  },
+
+  ItemCarouselWidget: {
+    messages: {
+      searchFailed: 'Suche fehlgeschlagen!'
+    }
+  },
+
+  PageTitleWidget: {
+    label: {
+      bgImage: 'Hintergrundbild',
+      title: 'Titel'
+    }
+  },
+
+  SearchWidget: {
+    label: {
+      noSearchResults: 'Keine Suchergebnisse verfügbar!'
+    },
+    messages: {
+      noSearchResults: 'Keine Suchergebnisse verfügbar!',
+      searchFailed: 'Suche fehlgeschlagen!'
+    }
+  },
+
+  SpaceWidget: {
+    label: {
+      spaceUnits: 'Anzahl Abstände'
+    }
+  },
+
+  TextWidget: {
+    label: {
+      heading: 'Überschrift',
+      content: 'Inhalt'
+    }
+  },
+
+  WidgetTemplate: {
+    tooltip: {
+      edit: 'Widget bearbeiten',
+      close: 'Widget Editor schließen',
+      moveUp: 'Widget nach oben bewegen',
+      moveDown: 'Widget nach unten bewegen',
+      delete: 'Widget löschen'
+    }
+  },
+
+  Progress: {
+    ExchangeService: {
+      packaging: 'Erstelle Exportdatei für Upload.',
+      exportFileCreationFailed: 'Konnte Exportdatei für Upload nicht erstellen!',
+      configMissing: 'Austausch-Konfiguration für Upload zu entferntem Artivact- Server fehlt!',
+      uploading: 'Lade Exportdatei zu entferntem Artivact-Server hoch.',
+      uploadFailed: 'Konnte Exportdatei nicht zu entferntem Artivact-Server hochladen!',
+    },
+    MediaCreationService: {
+      captureStart: 'Starte Fotoaufnahmen.',
+      captureInProgress: 'Nehme Fotos auf...',
+      captureFailed: 'Fotoaufnahme fehlgeschlagen!',
+      rembgStart: 'Starte freistellen der Aufnahmen.',
+      rembgInProgress: 'Stelle Aufnahmen frei...',
+      rembgFailed: 'Freistellen von Aufnahmen fehlgeschlagen!',
+      imageSetStart: 'Starte Import von Bildern in Bilder-Set.',
+      imageSetInProgress: 'Füge Bilder zu Bilder-Set hinzu...',
+      imageSetFailed: 'Fehler beim Hinzufügen von Bildern zu Bilder-Set!',
+      createModelStart: 'Erstelle 3D-Modell in externem Editor.',
+      createModelFailed: 'Fehler bei der Erstellung des 3D-Modells!',
+      editModelStart: 'Bearbeite 3D-Modell in externem Editor.',
+      editModelFailed: 'Fehler bei der Bearbeitung des 3D-Modells!',
+      copyImages: 'Kopiere Bilder...'
+    }
   },
 
   ROLE_ADMIN: 'Admin',

@@ -190,7 +190,7 @@
       <artivact-content>
         <div class="column full-width">
           <q-uploader
-            label="Background Image"
+            :label="$t('PageTitleWidget.label.bgImage')"
             auto-upload
             field-name="file"
             :no-thumbnails="true"
@@ -203,7 +203,7 @@
           <artivact-restricted-translatable-item-editor
             :locales="localeStore.locales"
             :translatable-string="widgetDataRef.title"
-            label="Title"
+            :label="$t('PageTitleWidget.label.title')"
             :show-separator="false"
           />
         </div>

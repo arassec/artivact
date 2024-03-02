@@ -3,16 +3,10 @@ package com.arassec.artivact.backend.service.creator.adapter.image.camera;
 import com.arassec.artivact.backend.service.creator.adapter.AdapterImplementation;
 import com.arassec.artivact.backend.service.exception.ArtivactException;
 import com.arassec.artivact.backend.service.model.configuration.AdapterConfiguration;
-import com.arassec.artivact.backend.service.util.ProjectRootProvider;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 
 /**
  * Fallback camera adapter in case no real camera can/should be used.
@@ -31,27 +25,16 @@ public class FallbackCameraAdapter extends BaseCameraAdapter {
     private final AdapterImplementation supportedImplementation = AdapterImplementation.FALLBACK_CAMERA_ADAPTER;
 
     /**
-     * The project root dir provider.
-     */
-    private final ProjectRootProvider projectRootProvider;
-
-    /**
      * {@inheritDoc}
      */
     @Override
     public void captureImage(String filename) {
-        Path targetFile = initParams.getTargetDir().resolve(filename + ".jpg");
         log.info("Fallback camera adapter called with 'targetDir' {} and 'filename' {}", initParams.getTargetDir(), filename);
         try {
-            Files.copy(projectRootProvider.getProjectRoot().resolve("/utils/fallback-image.jpg"),
-                    initParams.getTargetDir().getParent());
-            Files.move(initParams.getTargetDir().getParent().resolve("fallback-image.jpg"), targetFile, StandardCopyOption.REPLACE_EXISTING);
             Thread.sleep(1000);
-        } catch (IOException e) {
-            throw new ArtivactException("Could not create fallback image!", e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new ArtivactException("Could not create fallback image!", e);
+            throw new ArtivactException("Interrupted during sleep while simulating photo capture!", e);
         }
     }
 

@@ -8,7 +8,7 @@
       <template v-slot:body>
         <q-card-section>
           <q-spinner size="2em" class="q-mr-md"/>
-          {{ progressMonitorRef?.progress }}
+          {{ $t(progressMonitorRef?.key) }} <template v-if="progressMonitorRef.currentAmount">{{ ' (' + progressMonitorRef.currentAmount + '/' + progressMonitorRef.targetAmount + ')'}}</template>
         </q-card-section>
       </template>
     </artivact-dialog>
@@ -22,7 +22,7 @@
 
       <template v-slot:body>
         <q-card-section>
-          {{ progressMonitorRef?.progress }}
+          {{ $t(progressMonitorRef?.key) }}
           <q-separator class="q-mt-lg q-mb-xs"/>
           <q-expansion-item :v-model="showDetailsRef" :label="$t('ArtivactOperationInProgressDialog.details')">
             <q-scroll-area style="height: 25em; max-width: 35em;">

@@ -3,7 +3,7 @@
     <q-input
       outlined
       v-model="widgetDataRef.maxResults"
-      label="Max Results"
+      :label="$t('ArtivactItemSearchInput.label.maxResults')"
       type="number"
       class="q-mb-md"
     />
@@ -11,21 +11,21 @@
     <q-input
       outlined
       v-model="widgetDataRef.searchTerm"
-      label="Search Term"
+      :label="$t('ArtivactItemSearchInput.label.term')"
       :error="searchTermRequired && widgetDataRef.searchTerm.length === 0"
-      error-message="Please enter a search query."
+      :error-message="$t('ArtivactItemSearchInput.error')"
     />
 
     <div class="full-width">
-      <label>Syntax for searching property values in fulltext search: "PROPERTY_ID=[SEARCH_TERM]"</label>
+      <label>{{ $t('ArtivactItemSearchInput.label.fulltext') }}</label>
     </div>
 
     <div class="full-width q-mb-md">
-      <label>Syntax for searching property values only: PROPERTY_ID:"[SEARCH_TERM]"</label>
+      <label>{{ $t('ArtivactItemSearchInput.label.property') }}</label>
     </div>
 
     <div class="full-width">
-      <q-btn-dropdown label="Add Tag" small dense flat>
+      <q-btn-dropdown :label="$t('ArtivactItemSearchInput.label.addTag')" small dense flat>
         <q-list>
           <q-item
             v-for="tag in tagsConfigurationRef.tags"
@@ -41,7 +41,7 @@
         </q-list>
       </q-btn-dropdown>
 
-      <q-btn-dropdown class="q-ml-md" label="Add Property" small dense flat>
+      <q-btn-dropdown class="q-ml-md" :label="$t('ArtivactItemSearchInput.label.addProperty')" small dense flat>
         <q-list>
           <template v-for="category in propertiesConfigurationRef.categories">
             <q-item
@@ -78,6 +78,7 @@ import {SearchBasedWidgetData} from 'components/widgets/widget-models';
 import {api} from 'boot/axios';
 import {PropertiesConfiguration, TagsConfiguration} from 'components/models';
 import {useQuasar} from 'quasar';
+import {useI18n} from 'vue-i18n';
 
 const props = defineProps({
   widgetData: {
@@ -92,6 +93,7 @@ const props = defineProps({
 });
 
 const quasar = useQuasar();
+const i18n = useI18n();
 
 const widgetDataRef = toRef(props, 'widgetData');
 
@@ -110,7 +112,7 @@ function loadTagsConfiguration() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Loading tags failed',
+        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.tags') }),
         icon: 'report_problem',
       });
     });
@@ -126,7 +128,7 @@ function loadPropertyConfiguration() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Loading failed',
+        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.properties') }),
         icon: 'report_problem',
       });
     });

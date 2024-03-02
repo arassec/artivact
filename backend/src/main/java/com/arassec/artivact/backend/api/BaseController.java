@@ -57,7 +57,9 @@ public abstract class BaseController {
     protected ResponseEntity<OperationProgress> convert(ProgressMonitor progressMonitor) {
         if (progressMonitor != null) {
             OperationProgress operationProgress = new OperationProgress();
-            operationProgress.setProgress(progressMonitor.getProgress());
+            operationProgress.setKey(progressMonitor.getLabelKey());
+            operationProgress.setCurrentAmount(progressMonitor.getCurrentAmount());
+            operationProgress.setTargetAmount(progressMonitor.getTargetAmount());
             if (progressMonitor.getException() != null) {
                 operationProgress.setError(ExceptionUtils.getStackTrace(progressMonitor.getException()));
             }

@@ -58,6 +58,10 @@ function saveAppearanceConfiguration() {
       if (appearanceConfigurationRef.value) {
         document.title = appearanceConfigurationRef.value?.applicationTitle;
 
+        if (appearanceConfigurationRef.value?.applicationLocale) {
+          i18n.locale.value = appearanceConfigurationRef.value?.applicationLocale;
+        }
+
         api
           .get('/api/configuration/public/locale')
           .then((response) => {

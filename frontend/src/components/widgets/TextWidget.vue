@@ -78,14 +78,14 @@
           <artivact-restricted-translatable-item-editor
             :locales="localeStore.locales"
             :translatable-string="widgetDataRef.heading"
-            label="Heading"
+            :label="$t('TextWidget.label.heading')"
             :show-separator="false"
             class="q-mb-sm"
           />
           <artivact-restricted-translatable-item-editor
             :locales="localeStore.locales"
             :translatable-string="widgetDataRef.content"
-            label="Content"
+            :label="$t('TextWidget.label.content')"
             :textarea="true"
             :show-separator="false"
           />

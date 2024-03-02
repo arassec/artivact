@@ -132,6 +132,7 @@ export interface ColorTheme {
 export interface AppearanceConfiguration {
   applicationTitle: string,
   availableLocales: string,
+  applicationLocale: string,
   colorTheme: ColorTheme,
   encodedFaviconSmall: string,
   encodedFaviconLarge: string
@@ -202,7 +203,9 @@ export interface CapturePhotosParams {
 }
 
 export interface OperationProgress {
-  progress: string;
+  key: string;
+  currentAmount: number;
+  targetAmount: number;
   error: string;
 }
 

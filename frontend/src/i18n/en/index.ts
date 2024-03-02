@@ -10,19 +10,19 @@ export default {
     messages: {
       creating: {
         success: '{item} created',
-        failed: 'Creating {item} failed'
+        failed: 'Creating \'{item}\' failed'
       },
       loading: {
         success: '{item} loaded',
-        failed: 'Loading {item} failed',
+        failed: 'Loading \'{item}\' failed',
       },
       saving: {
         success: '{item} saved',
-        failed: 'Saving {item} failed'
+        failed: 'Saving \'{item}\' failed'
       },
       deleting: {
         success: '{item} deleted',
-        failed: 'Deleting {item} failed'
+        failed: 'Deleting \'{item}\' failed'
       }
     },
     items: {
@@ -39,7 +39,9 @@ export default {
       tag: 'Tag',
       exhibitions: 'Exhibitions',
       exhibition: 'Exhibition',
+      menus: 'Menus',
       menu: 'Menu',
+      applicationLocale: 'Application Locale',
       configuration: {
         appearance: 'Appearance configuration',
         exchange: 'Exchange configuration',
@@ -54,7 +56,15 @@ export default {
 
   MainLayout: {
     login: 'Login',
-    logout: 'Logout'
+    logout: 'Logout',
+    messages: {
+      colorThemeFailed: 'Loading color theme failed!',
+      rolesFailed: 'Loading user roles failed!',
+      titleFailed: 'Loading application title failed!',
+      userDataFailed: 'Loading user data failed!',
+      licenseFailed: 'Loading license information failed!',
+      logoutFailed: 'Logout failed!'
+    }
   },
 
   AccountsConfigurationPage: {
@@ -257,6 +267,14 @@ export default {
         description: 'Comma-separated list of locales supported by this installation. E.g. \'de,nl,ja\'. Those locales can be maintained in addition to the default locale by choosing it from the settings menu and editing translatable strings e.g. on pages.',
         label: 'Locales'
       },
+      applicationLocale: {
+        heading: 'Application Locale',
+        description: 'Here you can select the locale used by the application, i.e. the language of all texts of the application, that are not edited by the user. By default, the system locale is used if it is supported by the application, or english if it isn\'t supported.',
+        label: 'Locale',
+        de: 'German',
+        en: 'English',
+        system: 'System language'
+      },
       colors: {
         heading: 'Color Theme',
         description: 'The color theme can be customized with the following settings.',
@@ -370,7 +388,13 @@ export default {
     label: {
       indexPage: 'Is this the index page?',
       indexPageShort: 'Index Page?',
-      addWidget: 'Add Widget'
+      addWidget: 'Add Widget',
+      pageTitle: 'Page Title',
+      textTitle: 'Text Title',
+      text: 'Text',
+      infoBoxTitle: 'Info-Box Title',
+      infoBoxContent: 'Info-Box Content',
+      avatarSubtext: 'Avatar Subtext'
     },
     dialog: {
       heading: 'Widget Selection',
@@ -582,6 +606,112 @@ export default {
 
   ItemModelViewer: {
     downloadModelButtonLabel: 'Download Model',
+  },
+
+  ArtivactItemSearchInput: {
+    error: 'Please enter a search query.',
+    label: {
+      maxResults: 'Max Results',
+      term: 'Search Term',
+      fulltext: 'Syntax for searching property values in fulltext search: "PROPERTY_ID=[SEARCH_TERM]"',
+      property: 'Syntax for searching property values only: PROPERTY_ID:"[SEARCH_TERM]"',
+      addTag: 'Add Tag',
+      addProperty: 'Add Property'
+    }
+  },
+
+  AvatarWidget: {
+    label: {
+      image: 'Avatar Image',
+      subtext: 'Avatar Subtext'
+    }
+  },
+
+  ImageTextWidget: {
+    label: {
+      image: 'Image',
+      text: 'Text'
+    }
+  },
+
+  InfoBoxWidget: {
+    label: {
+      heading: 'Heading',
+      content: 'Content',
+      outlined: 'Outlined'
+    }
+  },
+
+  ItemCarouselWidget: {
+    messages: {
+      searchFailed: 'Search failed!'
+    }
+  },
+
+  PageTitleWidget: {
+    label: {
+      bgImage: 'Background Image',
+      title: 'Title'
+    }
+  },
+
+  SearchWidget: {
+    label: {
+      noSearchResults: 'No search results available!'
+    },
+    messages: {
+      noSearchResults: 'No search results found!',
+      searchFailed: 'Search failed!'
+    }
+  },
+
+  SpaceWidget: {
+    label: {
+      spaceUnits: 'Space Units'
+    }
+  },
+
+  TextWidget: {
+    label: {
+      heading: 'Heading',
+      content: 'Content'
+    }
+  },
+
+  WidgetTemplate: {
+    tooltip: {
+      edit: 'Edit Widget',
+      close: 'Close Widget Editor',
+      moveUp: 'Move Widget Up',
+      moveDown: 'Move Widget Down',
+      delete: 'Delete Widget'
+    }
+  },
+
+  Progress: {
+    ExchangeService: {
+      packaging: 'Packaging item for upload.',
+      exportFileCreationFailed: 'Could not create export file to upload item to remote server!',
+      configMissing: 'Exchange configuration is missing a remote server to synchronize with!',
+      uploading: 'Uploading file to remote Artivact server.',
+      uploadFailed: 'Could not upload item file to remote server!',
+    },
+    MediaCreationService: {
+      captureStart: 'Start capturing photos.',
+      captureInProgress: 'Capturing photos...',
+      captureFailed: 'Capturing photos failed!',
+      rembgStart: 'Start removing backgrounds from images.',
+      rembgInProgress: 'Removing backgrounds from images...',
+      rembgFailed: 'Removing backgrounds from images failed!',
+      imageSetStart: 'Start importing images to new image-set.',
+      imageSetInProgress: 'Adding images to image-set...',
+      imageSetFailed: 'Error during image-set creation!',
+      createModelStart: 'Creating model in external editor.',
+      createModelFailed: 'Error during model creation!',
+      editModelStart: 'Editing model in external editor.',
+      editModelFailed: 'Error during model editing!',
+      copyImages: 'Copying images...'
+    }
   },
 
   ROLE_ADMIN: 'Admin',

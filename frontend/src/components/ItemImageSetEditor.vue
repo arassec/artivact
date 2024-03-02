@@ -482,7 +482,9 @@ function updateOperationProgress() {
     .then((response) => {
       if (response.data) {
         progressMonitorRef.value = response.data;
-        setTimeout(() => updateOperationProgress(), 1000);
+        if (!progressMonitorRef.value?.error) {
+          setTimeout(() => updateOperationProgress(), 1000);
+        }
       } else {
         progressMonitorRef.value = undefined;
         showOperationInProgressModalRef.value = false;

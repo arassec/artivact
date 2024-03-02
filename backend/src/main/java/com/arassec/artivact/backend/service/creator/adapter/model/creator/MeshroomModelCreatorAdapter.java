@@ -8,12 +8,10 @@ import com.arassec.artivact.backend.service.util.FileUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.exec.CommandLine;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 /**
@@ -65,11 +63,6 @@ public class MeshroomModelCreatorAdapter extends BaseModelCreatorAdapter {
     private final FileUtil fileUtil;
 
     /**
-     * Message source for I18N.
-     */
-    private final MessageSource messageSource;
-
-    /**
      * {@inheritDoc}
      */
     @Override
@@ -101,8 +94,7 @@ public class MeshroomModelCreatorAdapter extends BaseModelCreatorAdapter {
         fileUtil.emptyDir(resultDir);
         fileUtil.emptyDir(cacheDir);
 
-        copyImages(images, tempDir, progressMonitor,
-                messageSource.getMessage("base-adapter.copy-images.progress.prefix", null, Locale.getDefault()));
+        copyImages(images, tempDir, progressMonitor);
 
         var cmdLine = new CommandLine(initParams.getAdapterConfiguration().getConfigValue(getSupportedImplementation()));
         cmdLine.addArgument("-i");
@@ -113,8 +105,6 @@ public class MeshroomModelCreatorAdapter extends BaseModelCreatorAdapter {
         cmdLine.addArgument(resultDir.toAbsolutePath().toString());
         cmdLine.addArgument("--cache");
         cmdLine.addArgument(cacheDir.toAbsolutePath().toString());
-
-        progressMonitor.updateProgress(messageSource.getMessage("model-creator-adapter.meshroom.progress.prefix", null, Locale.getDefault()));
 
         cmdUtil.execute(cmdLine);
 

@@ -9,12 +9,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.exec.CommandLine;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 /**
@@ -40,11 +38,6 @@ public class MetashapeModelCreatorAdapter extends BaseModelCreatorAdapter {
      * The file util.
      */
     private final FileUtil fileUtil;
-
-    /**
-     * Message source for I18N.
-     */
-    private final MessageSource messageSource;
 
     /**
      * {@inheritDoc}
@@ -73,16 +66,11 @@ public class MetashapeModelCreatorAdapter extends BaseModelCreatorAdapter {
 
         fileUtil.emptyDir(tempDir);
 
-        copyImages(images, tempDir, progressMonitor,
-                messageSource.getMessage("base-adapter.copy-images.progress.prefix", null, Locale.getDefault()));
+        copyImages(images, tempDir, progressMonitor);
 
         fileUtil.openDirInOs(tempDir);
 
-        progressMonitor.updateProgress(messageSource.getMessage("model-creator-adapter.metashape.progress.prefix", null, Locale.getDefault()));
-
         cmdUtil.execute(new CommandLine(initParams.getAdapterConfiguration().getConfigValue(getSupportedImplementation())));
-
-        progressMonitor.updateProgress(messageSource.getMessage("model-creator-adapter.metashape.import.progress.prefix", null, Locale.getDefault()));
 
         return new ModelCreationResult(resultDir, "metashape");
     }

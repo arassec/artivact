@@ -28,7 +28,7 @@
           <q-input
             outlined
             v-model="widgetDataRef.size"
-            label="Space Units"
+            :label="$t('SpaceWidget.label.spaceUnits')"
             type="number"
           />
         </div>

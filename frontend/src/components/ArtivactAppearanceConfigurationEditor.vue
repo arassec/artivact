@@ -64,6 +64,33 @@
         class="list-entry"
         expand-separator
         expand-icon-class="text-white"
+        v-if="desktopStore.isDesktopModeEnabled"
+      >
+        <template v-slot:header>
+          <q-item-section class="list-entry-label">
+            {{ $t('ArtivactAppearanceConfigurationEditor.list.applicationLocale.heading') }}
+          </q-item-section>
+        </template>
+        <q-card class="q-mb-lg">
+          <q-card-section>
+            <div class="q-mb-md">
+              {{ $t('ArtivactAppearanceConfigurationEditor.list.applicationLocale.description') }}
+            </div>
+            <q-select
+              outlined
+              emit-value
+              v-model="appearanceConfigurationRef.applicationLocale"
+              :options="availableApplicationLocaleOptions"/>
+          </q-card-section>
+        </q-card>
+      </q-expansion-item>
+
+      <q-expansion-item
+        group="appearanceConfig"
+        header-class="bg-primary text-white"
+        class="list-entry"
+        expand-separator
+        expand-icon-class="text-white"
       >
         <template v-slot:header>
           <q-item-section class="list-entry-label">
@@ -208,7 +235,7 @@
 
 <script setup lang="ts">
 import {PropType, toRef} from 'vue';
-import {AppearanceConfiguration} from 'components/models';
+import {AdapterImplementation, AppearanceConfiguration, SelectboxModel} from 'components/models';
 import ArtivactThemeColorEditor from 'components/ArtivactThemeColorEditor.vue';
 import {QUploader, useQuasar} from 'quasar';
 import {useDesktopStore} from 'stores/desktop';
@@ -227,6 +254,24 @@ const i18n = useI18n();
 const desktopStore = useDesktopStore();
 
 const appearanceConfigurationRef = toRef(props, 'appearanceConfiguration');
+
+const availableApplicationLocaleOptions: SelectboxModel[] = [
+  {
+    label: i18n.t('ArtivactAppearanceConfigurationEditor.list.applicationLocale.system'),
+    value: '',
+    disable: false
+  },
+  {
+    label: i18n.t('ArtivactAppearanceConfigurationEditor.list.applicationLocale.en'),
+    value: 'en',
+    disable: false
+  },
+  {
+    label: i18n.t('ArtivactAppearanceConfigurationEditor.list.applicationLocale.de'),
+    value: 'de',
+    disable: false
+  }
+];
 
 function uploadComplete() {
   quasar.notify({

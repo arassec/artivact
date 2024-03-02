@@ -22,7 +22,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -45,11 +44,6 @@ public class ImageCreator extends BaseCreator {
      * The configuration service.
      */
     private final ConfigurationService configurationService;
-
-    /**
-     * Message source for I18N.
-     */
-    private final MessageSource messageSource;
 
     /**
      * Provides the project's root directory.
@@ -127,11 +121,11 @@ public class ImageCreator extends BaseCreator {
         directoryWatcher.startWatching(targetDir, numPhotos,
                 newImage -> processNewImage(removeBackgrounds, backgroundRemovalAdapter, newImage, capturedImages));
 
-        String progressPrefix = messageSource.getMessage("image-creator.capture-photos.progress.prefix", null, Locale.getDefault());
+        progressMonitor.updateLabelKey("captureInProgress");
 
         // Start capturing:
         for (var i = 0; i < numPhotos; i++) {
-            progressMonitor.updateProgress(progressPrefix + " (" + (i + 1) + "/" + numPhotos + ")");
+            progressMonitor.updateProgress((i + 1), numPhotos);
             String filename = getAssetName(getNextAssetNumber(targetDir), null);
             log.debug("Capturing image: {}", filename);
             cameraAdapter.captureImage(filename);
@@ -207,13 +201,14 @@ public class ImageCreator extends BaseCreator {
      */
     private void addCapturedImagesToImageSet(String itemId, List<Path> images, ProgressMonitor progressMonitor, CreationImageSet targetCreationImageSet) {
         if (images != null && !images.isEmpty() && targetCreationImageSet != null) {
-            String progressPrefix = messageSource.getMessage("image-creator.add-images-to-set.progress.prefix", null, Locale.getDefault());
+
+            progressMonitor.updateLabelKey("imageSetInProgress");
 
             List<String> fileNames = new LinkedList<>();
             var index = new AtomicInteger(0);
             images.forEach(image -> {
                 fileNames.add(addImage(itemId, image));
-                progressMonitor.updateProgress(progressPrefix + " (" + index.addAndGet(1) + "/" + images.size() + ")");
+                progressMonitor.updateProgress(index.addAndGet(1), images.size());
             });
             targetCreationImageSet.getFiles().addAll(fileNames);
         }

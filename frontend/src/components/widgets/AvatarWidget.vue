@@ -111,7 +111,7 @@
       <artivact-content>
         <div class="column full-width">
           <q-uploader
-            label="Avatar Image"
+            :label="$t('AvatarWidget.label.image')"
             auto-upload
             field-name="file"
             :no-thumbnails="true"
@@ -124,7 +124,7 @@
           <artivact-restricted-translatable-item-editor
             :locales="localeStore.locales"
             :translatable-string="widgetDataRef.avatarSubtext"
-            label="Avatar Subtext"
+            :label="$t('AvatarWidget.label.subtext')"
             :show-separator="false"
           />
         </div>

@@ -11,7 +11,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class OperationProgress {
 
-    private String progress;
+    private String key;
+
+    private Integer currentAmount;
+
+    private Integer targetAmount;
 
     private String error;
 

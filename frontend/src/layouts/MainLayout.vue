@@ -64,8 +64,10 @@ import {useRoleStore} from 'stores/role';
 import ArtivactMenuBar from 'components/ArtivactMenuBar.vue';
 import ArtivactSettingsBar from 'components/ArtivactSettingsBar.vue';
 import {useDesktopStore} from 'stores/desktop';
+import {useI18n} from 'vue-i18n';
 
 const quasar = useQuasar();
+const i18n = useI18n();
 
 const data = ref('');
 
@@ -94,7 +96,7 @@ function loadColorTheme() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Loading color theme failed',
+        message: i18n.t('MainLayout.messages.colorThemeFailed'),
         icon: 'report_problem',
       });
     });
@@ -110,7 +112,25 @@ function loadLocales() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Loading locales failed',
+        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.locales') }),
+        icon: 'report_problem',
+      });
+    });
+}
+
+function loadApplicationLocale() {
+  api
+    .get('/api/configuration/public/application-locale')
+    .then((response) => {
+      if (response.data) {
+        i18n.locale.value = response.data;
+      }
+    })
+    .catch(() => {
+      quasar.notify({
+        color: 'negative',
+        position: 'bottom',
+        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.applicationLocale') }),
         icon: 'report_problem',
       });
     });
@@ -126,7 +146,7 @@ function loadRoles() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Loading roles failed',
+        message: i18n.t('MainLayout.messages.rolesFailed'),
         icon: 'report_problem',
       });
     });
@@ -142,7 +162,7 @@ function loadMenus() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Loading menus failed',
+        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.menus') }),
         icon: 'report_problem',
       });
     });
@@ -159,7 +179,7 @@ function loadTitle() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Loading title failed',
+        message: i18n.t('MainLayout.messages.titleFailed'),
         icon: 'report_problem',
       });
     });
@@ -175,7 +195,7 @@ function loadUserData() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Loading UserData failed',
+        message: i18n.t('MainLayout.messages.userDataFailed'),
         icon: 'report_problem',
       });
     });
@@ -191,7 +211,7 @@ function loadLicense() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Loading License failed',
+        message: i18n.t('MainLayout.messages.licenseFailed'),
         icon: 'report_problem',
       });
     });
@@ -209,7 +229,7 @@ function logout() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: 'Logout failed',
+        message: i18n.t('MainLayout.messages.logoutFailed'),
         icon: 'report_problem',
       });
     });
@@ -218,6 +238,7 @@ function logout() {
 onMounted(() => {
   loadColorTheme();
   loadLocales();
+  loadApplicationLocale();
   loadRoles();
   loadTitle();
   loadUserData();

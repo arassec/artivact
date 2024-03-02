@@ -64,12 +64,12 @@ public abstract class BaseAdapter<I extends AdapterInitParams, T> implements Ada
      * @param images          The images to copy.
      * @param destination     The destination path to copy the images to.
      * @param progressMonitor A progress monitor which is updated during copying.
-     * @param progressPrefix  The prefix to use in the {@link ProgressMonitor}.
      */
-    protected void copyImages(List<Path> images, Path destination, ProgressMonitor progressMonitor, String progressPrefix) {
+    protected void copyImages(List<Path> images, Path destination, ProgressMonitor progressMonitor) {
+        progressMonitor.updateLabelKey("copyImages");
         var index = new AtomicInteger(1);
         images.forEach(image -> {
-            progressMonitor.updateProgress(progressPrefix + " (" + index.getAndIncrement() + "/" + images.size() + ")");
+            progressMonitor.updateProgress(index.getAndIncrement(), images.size());
             try {
                 Files.copy(image, destination.resolve(image.getFileName()), StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {

@@ -45,6 +45,11 @@ public class ConfigurationController {
         }
     }
 
+    @GetMapping(value = "/public/application-locale")
+    public String getApplicationLocale() {
+        return configurationService.loadAppearanceConfiguration().getApplicationLocale();
+    }
+
     @GetMapping(value = "/public/role")
     public List<String> getAvailableRoles() {
         return List.of(Roles.ROLE_ADMIN, Roles.ROLE_USER);

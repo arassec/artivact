@@ -14,6 +14,8 @@ public class AppearanceConfiguration {
 
     private String availableLocales;
 
+    private String applicationLocale;
+
     private ColorTheme colorTheme;
 
     /**

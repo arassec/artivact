@@ -4,7 +4,6 @@ import com.arassec.artivact.backend.service.exception.ArtivactException;
 import com.arassec.artivact.backend.service.model.configuration.AdapterConfiguration;
 import com.arassec.artivact.backend.service.util.ProgressMonitor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.MessageSource;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -54,8 +53,7 @@ public abstract class BaseRemBgBackgroundRemovalAdapter extends BaseBackgroundRe
      */
     @Override
     public void removeBackgrounds(List<Path> filePaths) {
-        progressMonitor.updateProgress(getMessageSource().getMessage("background-removal-adapter.rembg.progress.prefix", null,
-                Locale.getDefault()));
+        progressMonitor.updateLabelKey("rembgInProgress");
         filePaths.forEach(filePath -> {
             log.debug("Removing background from image: {}", filePath);
             removeBackground(filePath);
@@ -94,10 +92,5 @@ public abstract class BaseRemBgBackgroundRemovalAdapter extends BaseBackgroundRe
      * @return The path to the newly created image file.
      */
     protected abstract Path removeBackgroundFromImage(AdapterConfiguration adapterConfiguration, Path inputFile, Path targetDir);
-
-    /**
-     * Returns the message source for I18N.
-     */
-    protected abstract MessageSource getMessageSource();
 
 }

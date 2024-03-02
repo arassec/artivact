@@ -243,7 +243,7 @@
 import draggable from 'vuedraggable';
 import {useQuasar} from 'quasar';
 import {computed, onMounted, ref} from 'vue';
-import {useRoute, useRouter} from 'vue-router';
+import {useRoute} from 'vue-router';
 import {api} from 'boot/axios';
 import ArtivactContent from 'components/ArtivactContent.vue';
 import ArtivactRestrictionsEditor from 'components/ArtivactRestrictionsEditor.vue';
@@ -262,7 +262,6 @@ import {useI18n} from 'vue-i18n';
 
 const quasar = useQuasar();
 const route = useRoute();
-const router = useRouter();
 const i18n = useI18n();
 
 const localeStore = useLocaleStore();

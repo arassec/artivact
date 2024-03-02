@@ -158,7 +158,7 @@ public class ExchangeService {
             return progressMonitor;
         }
 
-        progressMonitor = new ProgressMonitor("Packaging item for upload.");
+        progressMonitor = new ProgressMonitor(getClass(), "packaging");
 
         executorService.submit(() -> {
             File exportFile = projectRootProvider.getProjectRoot()
@@ -171,21 +171,20 @@ public class ExchangeService {
                 StreamingResponseBody streamingResponseBody = createItemExportFile(itemId);
                 streamingResponseBody.writeTo(fileOutputStream);
             } catch (IOException e) {
-                progressMonitor.updateProgress("Could not create export file to upload item to remote server!", e);
+                progressMonitor.updateProgress("exportFileCreationFailed", e);
                 log.error("Could not create export file to upload item to remote server!", e);
             }
 
             ExchangeConfiguration exchangeConfiguration = configurationService.loadExchangeConfiguration();
             String remoteServer = exchangeConfiguration.getRemoteServer();
             if (!StringUtils.hasText(remoteServer)) {
-                progressMonitor.updateProgress("Exchange configuration is missing a remote server to synchronize with!",
-                        new ArtivactException("Configuration missing!"));
+                progressMonitor.updateProgress("configMissing", new ArtivactException("Configuration missing!"));
             }
             if (!remoteServer.endsWith("/")) {
                 remoteServer += "/";
             }
 
-            progressMonitor.updateProgress("Uploading item to " + remoteServer);
+            progressMonitor.updateLabelKey("uploading");
 
             try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
                 HttpPost httpPost = new HttpPost(remoteServer
@@ -200,7 +199,7 @@ public class ExchangeService {
 
                 httpclient.execute(httpPost, response -> {
                     if (response.getCode() != 200) {
-                        progressMonitor.updateProgress("Could not upload item file to remote server!",
+                        progressMonitor.updateProgress("uploadFailed",
                                 new ArtivactException("HTTP result code: " + response.getCode()));
                         log.error("Could not upload item file to remote server: HTTP result code " + response.getCode());
                         return progressMonitor;
@@ -210,7 +209,7 @@ public class ExchangeService {
 
                 progressMonitor = null;
             } catch (Exception e) {
-                progressMonitor.updateProgress("Could not upload item file to remote server!", e);
+                progressMonitor.updateProgress("uploadFailed", e);
                 log.error("Could not upload item file to remote server!", e);
             }
         });
