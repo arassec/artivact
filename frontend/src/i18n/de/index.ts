@@ -393,11 +393,11 @@ export default {
     tooltip: {
       edit: 'Seite bearbeiten',
       cancel: 'Bearbeitungsmodus verlassen',
-      add: 'Widget hinzufügen'
+      add: 'Widget hinzufügen',
+      indexPageYes: 'Dies IST die Hauptseite',
+      indexPageNo: 'Dies ist NICHT die Hauptseite',
     },
     label: {
-      indexPage: 'Ist dies die Hauptseite?',
-      indexPageShort: 'Hauptseite?',
       addWidget: 'Widget hinzufügen',
       pageTitle: 'Seitentitel',
       textTitle: 'Texttitel',

@@ -13,13 +13,16 @@
     <!-- Editor -->
     <div v-if="inEditMode" class="col-grow">
       <div class="q-mb-lg">
+
+        <slot name="widget-editor-preview"></slot>
+
         <q-btn
           rounded
           dense
           color="primary"
           size="md"
           icon="edit"
-          class="widget-editor-edit-button"
+          class="float-right q-mr-lg"
           @click="showDetailsRef = true"
           v-if="!showDetailsRef">
           <q-tooltip>{{ $t('WidgetTemplate.tooltip.edit') }}</q-tooltip>
@@ -30,13 +33,11 @@
           color="primary"
           size="md"
           icon="expand_less"
-          class="widget-editor-edit-button"
+          class="float-right q-mr-lg q-mt-md"
           @click="showDetailsRef = false"
           v-if="showDetailsRef">
           <q-tooltip>{{ $t('WidgetTemplate.tooltip.close') }}</q-tooltip>
         </q-btn>
-
-        <slot name="widget-editor-preview"></slot>
 
         <transition>
           <div v-show="showDetailsRef">
@@ -156,10 +157,4 @@ function deleteRestriction(value: string) {
   border-bottom: 1px solid black;
 }
 
-.widget-editor-edit-button {
-  z-index: 2;
-  margin-top: 1em;
-  right: 1em;
-  position: absolute;
-}
 </style>

@@ -11,61 +11,46 @@
       <q-tooltip>{{ $t('ArtivactPage.tooltip.edit') }}</q-tooltip>
     </q-btn>
 
-    <q-toolbar
-      v-if="userdataStore.isUserOrAdmin && inEditMode"
-      class="sticky-toolbar gt-sm"
-    >
-      <q-btn :label="$t('Common.cancel')" color="primary" @click="inEditMode = false" />
-      <q-checkbox
-        v-model="pageContentRef.indexPage"
-        class="col-5 q-ml-lg"
-        name="user"
-        :label="$t('ArtivactPage.label.indexPage')"
-      />
-      <q-space />
-      <q-btn
-        :label="$t('ArtivactPage.label.addWidget')"
-        @click="showAddWidgetDialogRef = true"
-        color="primary"
-        class="q-mr-lg"
-      />
-      <q-btn :label="$t('Common.save')" @click="savePage(true)" color="primary" />
-    </q-toolbar>
+    <div class="col items-center" v-if="inEditMode">
+      <div class="absolute-top-left q-ma-md">
+        <q-btn
+          round
+          color="primary"
+          icon="close"
+          class="q-mr-sm main-nav-button"
+          @click="inEditMode = false">
+          <q-tooltip>{{ $t('Common.cancel') }}</q-tooltip>
+        </q-btn>
+        <q-btn
+          round
+          color="primary"
+          :icon="pageContentRef.indexPage ? 'check_circle' : 'circle'"
+          class="main-nav-button"
+          @click="pageContentRef.indexPage = !pageContentRef.indexPage">
+          <q-tooltip>{{ pageContentRef.indexPage ? $t('ArtivactPage.tooltip.indexPageYes') : $t('ArtivactPage.tooltip.indexPageNo') }}</q-tooltip>
+        </q-btn>
+      </div>
 
-    <q-toolbar
-      v-if="userdataStore.isUserOrAdmin && inEditMode"
-      class="sticky-toolbar lt-md"
-    >
-      <q-btn
-        icon="cancel"
-        @click="inEditMode = false"
-        flat
-        dense
-        round
-        size="lg">
-        <q-tooltip>{{$t('ArtivactPage.tooltip.cancel')}}</q-tooltip>
-      </q-btn>
-      <q-checkbox
-        v-model="pageContentRef.indexPage"
-        class="col-5 q-ml-lg"
-        name="user"
-        :label="$t('ArtivactPage.label.indexPageShort')"
-      />
-      <q-space />
-      <q-btn
-        icon="add"
-        @click="showAddWidgetDialogRef = true"
-        flat
-        dense
-        round
-        size="lg"
-        class="q-mr-lg">
-        <q-tooltip>{{$t('ArtivactPage.tooltip.add')}}</q-tooltip>
-      </q-btn>
-      <q-btn icon="save" @click="savePage(true)" flat dense round size="lg">
-        <q-tooltip>{{ $t('Common.save') }}</q-tooltip>
-      </q-btn>
-    </q-toolbar>
+      <div class="absolute-top-right q-ma-md">
+        <q-btn
+          round
+          color="primary"
+          icon="add"
+          type="submit"
+          class="q-mr-sm main-nav-button"
+          @click="showAddWidgetDialogRef = true">
+          <q-tooltip>{{ $t('ArtivactPage.label.addWidget') }}</q-tooltip>
+        </q-btn>
+        <q-btn
+          round
+          color="primary"
+          icon="save"
+          class="main-nav-button"
+          @click="savePage(true)">
+          <q-tooltip>{{ $t('Common.save') }}</q-tooltip>
+        </q-btn>
+      </div>
+    </div>
 
     <template
       v-for="(widgetData, index) of pageContentRef.widgets"
@@ -184,7 +169,7 @@
             :label="$t('ArtivactPage.dialog.type')"
           />
           <div class="q-mt-md" style="overflow-wrap: break-word">
-            {{ $t(selectedWidgetTypeRef + "_DESCRIPTION") }}
+            {{ $t(selectedWidgetTypeRef + '_DESCRIPTION') }}
           </div>
         </q-card-section>
       </template>
@@ -198,7 +183,7 @@
       </template>
 
       <template v-slot:approve>
-        <q-btn :label="$t('ArtivactPage.label.addWidget')" color="primary" @click="addWidget()" />
+        <q-btn :label="$t('ArtivactPage.label.addWidget')" color="primary" @click="addWidget()"/>
       </template>
     </artivact-dialog>
 
@@ -373,7 +358,7 @@ function savePage(leaveEditMode: boolean) {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: i18n.t('Common.messages.saving.success', { item: i18n.t('Common.items.page') }),
+        message: i18n.t('Common.messages.saving.success', {item: i18n.t('Common.items.page')}),
         icon: 'check',
       });
       emit('update-page-content', response.data);
@@ -385,7 +370,7 @@ function savePage(leaveEditMode: boolean) {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.saving.failed', { item: i18n.t('Common.items.page') }),
+        message: i18n.t('Common.messages.saving.failed', {item: i18n.t('Common.items.page')}),
         icon: 'report_problem',
       });
     });
@@ -397,7 +382,7 @@ function fileAdded(propertyName: string, widgetId: string) {
 </script>
 
 <style scoped>
-.edit-page-button {
+.main-nav-button {
   z-index: 2;
 }
 

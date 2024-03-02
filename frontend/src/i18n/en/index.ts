@@ -393,11 +393,11 @@ export default {
     tooltip: {
       edit: 'Edit page',
       cancel: 'Leave Edit Mode',
-      add: 'Add Widget'
+      add: 'Add Widget',
+      indexPageYes: 'This IS the index page',
+      indexPageNo: 'This is NOT the index page',
     },
     label: {
-      indexPage: 'Is this the index page?',
-      indexPageShort: 'Index Page?',
       addWidget: 'Add Widget',
       pageTitle: 'Page Title',
       textTitle: 'Text Title',
