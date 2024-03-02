@@ -5,6 +5,7 @@ import com.arassec.artivact.backend.service.aop.RestrictResult;
 import com.arassec.artivact.backend.service.aop.TranslateResult;
 import com.arassec.artivact.backend.service.exception.ArtivactException;
 import com.arassec.artivact.backend.service.model.item.Item;
+import com.arassec.artivact.backend.service.util.ProgressMonitor;
 import com.arassec.artivact.backend.service.util.ProjectRootProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
@@ -31,6 +32,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -38,6 +41,8 @@ import java.util.stream.Collectors;
 public class SearchService extends BaseService {
 
     private static final String SEARCH_INDEX_DIR = "sedata";
+
+    private final ExecutorService executorService = Executors.newFixedThreadPool(1);
 
     private final ItemEntityRepository itemEntityRepository;
 
@@ -48,6 +53,9 @@ public class SearchService extends BaseService {
 
     private IndexWriter indexWriter;
 
+    @Getter
+    private ProgressMonitor progressMonitor;
+
     public SearchService(ItemEntityRepository itemEntityRepository,
                          ObjectMapper objectMapper,
                          ProjectRootProvider projectRootProvider) {
@@ -57,13 +65,30 @@ public class SearchService extends BaseService {
     }
 
     public synchronized void recreateIndex() {
-        log.info("Recreating search index.");
-        prepareIndexing(false);
-        itemEntityRepository.findAll()
-                .forEach(vaultItemEntity
-                        -> updateIndexInternal(fromJson(vaultItemEntity.getContentJson(), Item.class), false));
-        finalizeIndexing();
-        log.info("Search index created.");
+
+        if (progressMonitor != null && progressMonitor.getException() == null) {
+            return;
+        }
+
+        progressMonitor = new ProgressMonitor(getClass(), "createIndex");
+
+        executorService.submit(() -> {
+            try {
+                log.info("Recreating search index.");
+                prepareIndexing(false);
+                itemEntityRepository.findAll()
+                        .forEach(vaultItemEntity
+                                -> updateIndexInternal(fromJson(vaultItemEntity.getContentJson(), Item.class), false));
+                finalizeIndexing();
+                log.info("Search index created.");
+
+                progressMonitor = null;
+
+            } catch (Exception e) {
+                progressMonitor.updateProgress("createIndexFailed", e);
+                log.error("Error during search index (re-)creation!", e);
+            }
+        });
     }
 
     public synchronized void updateIndex(Item item) {
@@ -77,7 +102,7 @@ public class SearchService extends BaseService {
     @SuppressWarnings("java:S6204") // Result list needs to be modifiable!
     public List<Item> search(String query, int maxResults) {
         if ("*".equals(query)) {
-            Pageable limit = PageRequest.of(0,maxResults);
+            Pageable limit = PageRequest.of(0, maxResults);
             return itemEntityRepository.findAll(limit).stream()
                     .map(itemEntity -> fromJson(itemEntity.getContentJson(), Item.class))
                     .collect(Collectors.toList());
@@ -179,7 +204,7 @@ public class SearchService extends BaseService {
             throws IOException, ParseException {
         IndexSearcher indexSearcher = new IndexSearcher(indexReader);
 
-        var queryParser = new MultiFieldQueryParser(new String[] {"fulltext"}, new StandardAnalyzer());
+        var queryParser = new MultiFieldQueryParser(new String[]{"fulltext"}, new StandardAnalyzer());
         queryParser.setAllowLeadingWildcard(true);
 
         Query query = queryParser.parse(searchTerm);

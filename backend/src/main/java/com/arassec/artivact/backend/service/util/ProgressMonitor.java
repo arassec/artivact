@@ -10,7 +10,7 @@ public class ProgressMonitor {
     /**
      * Prefix for all label keys.
      */
-    private final static String LABEL_KEY_PREFIX = "Progress";
+    private static final String LABEL_KEY_PREFIX = "Progress";
 
     /**
      * The class providing this monitor instance.

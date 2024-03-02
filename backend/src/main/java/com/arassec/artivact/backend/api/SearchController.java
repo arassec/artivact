@@ -1,11 +1,13 @@
 package com.arassec.artivact.backend.api;
 
 import com.arassec.artivact.backend.api.model.ItemCardData;
+import com.arassec.artivact.backend.api.model.OperationProgress;
 import com.arassec.artivact.backend.api.model.SearchResult;
 import com.arassec.artivact.backend.service.SearchService;
 import com.arassec.artivact.backend.service.model.item.Item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,8 +21,14 @@ public class SearchController extends BaseController {
     private final SearchService searchService;
 
     @PostMapping("/index/recreate")
-    public void recreateIndex() {
+    public ResponseEntity<OperationProgress> recreateIndex() {
         searchService.recreateIndex();
+        return getProgress();
+    }
+
+    @GetMapping("/progress")
+    public ResponseEntity<OperationProgress> getProgress() {
+        return convert(searchService.getProgressMonitor());
     }
 
     @GetMapping

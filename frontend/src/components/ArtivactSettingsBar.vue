@@ -220,6 +220,24 @@
               {{ $t('ArtivactSettingsBar.exchange') }}</label>
             </q-item-section>
           </q-item>
+          <q-item
+            clickable
+            v-close-popup
+            @click="gotoSearchConfigurationPage"
+            v-if="userdataStore.isAdmin"
+            class="menu-entry"
+          >
+            <q-item-section
+            ><label class="menu-label">
+              <q-icon
+                name="search"
+                size="xs"
+                color="primary"
+                class="q-mr-sm"
+              ></q-icon>
+              {{ $t('ArtivactSettingsBar.search') }}</label>
+            </q-item-section>
+          </q-item>
         </q-list>
       </q-menu>
     </q-btn>
@@ -597,6 +615,10 @@ function gotoPeripheralsConfigurationPage() {
 
 function gotoExchangeConfigurationPage() {
   route.push('/administration/configuration/exchange');
+}
+
+function gotoSearchConfigurationPage() {
+  route.push('/administration/configuration/search');
 }
 
 function gotoExhibitionsConfigurationPage() {

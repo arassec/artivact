@@ -236,6 +236,16 @@ export default {
     }
   },
 
+  SearchConfigurationPage: {
+    heading: 'Suchmaschinenkonfiguration',
+    label: 'Auf dieser Seite kann der Suchindex der intern verwendeten Suchmaschine (neu) erstellt werden, sollte dies nötig sein.',
+    btnLabel: 'Suchindex (neu) erstellen',
+    messages: {
+      indexCreated: 'Suchindex erstellt/aktualisiert',
+      indexCreationFailed: 'Erstellung/Aktualisierung des Suchindex fehlgeschlagen!'
+    }
+  },
+
   TagsConfigurationPage: {
     heading: 'Tags-Konfiguration',
     description: 'Tags können verwendet werden um Objekte zu kategorisieren. Sie sollten als Metadaten behandelt werden, und nicht verwendet werden um Eigenschaften zu ersetzen.',
@@ -499,7 +509,8 @@ export default {
     exchange: 'Austausch',
     locale: 'Sprache',
     exhib: 'Ausstellung',
-    system: 'System'
+    system: 'System',
+    search: 'Suchmaschine'
   },
 
   ArtivactTagsConfigurationEditor: {
@@ -711,6 +722,10 @@ export default {
       editModelStart: 'Bearbeite 3D-Modell in externem Editor.',
       editModelFailed: 'Fehler bei der Bearbeitung des 3D-Modells!',
       copyImages: 'Kopiere Bilder...'
+    },
+    SearchService: {
+      createIndex: 'Erstelle Suchindex...',
+      createIndexFailed: 'Fehler bei Erstellung/Aktualisierung des Suchindexes!',
     }
   },
 

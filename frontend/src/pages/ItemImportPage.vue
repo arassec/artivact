@@ -3,15 +3,24 @@
 
     <div class="full-width">
       <h1 class="av-text-h1">{{ $t('ItemImportPage.heading') }}</h1>
-      <div class="q-mb-lg">
-        {{ $t('ItemImportPage.description.scan') }}
-        <q-btn
-          :label="$t('ItemImportPage.button.scan')"
-          color="primary"
-          class="float-right q-mb-lg"
-          @click="scanItems()"
-        />
+
+      <q-separator class="q-mb-lg"/>
+
+      <div class="column">
+        <div class="q-mb-lg">
+          {{ $t('ItemImportPage.description.scan') }}
+        </div>
+        <div>
+          <q-btn
+            :label="$t('ItemImportPage.button.scan')"
+            color="primary"
+            class="q-mb-lg"
+            @click="scanItems()"
+          />
+        </div>
       </div>
+
+      <q-separator class="q-mb-lg"/>
 
       <div>
         {{ $t('ItemImportPage.description.upload') }}
@@ -25,18 +34,6 @@
           @finish="itemUploaded"
         />
       </div>
-    </div>
-
-    <div>
-      <h1 class="av-text-h1">Create Search Index</h1>
-      <label>(Re-)Creates the search index.</label>
-
-      <q-btn
-        label="(Re-)Create Search Index"
-        color="primary"
-        class="float-right q-mb-lg"
-        @click="recreateSearchIndex()"
-      />
     </div>
 
   </ArtivactContent>
@@ -81,26 +78,6 @@ function itemUploaded() {
   });
 }
 
-function recreateSearchIndex() {
-  api
-    .post('/api/search/index/recreate')
-    .then(() => {
-      quasar.notify({
-        color: 'positive',
-        position: 'bottom',
-        message: 'Index created successfully',
-        icon: 'done',
-      });
-    })
-    .catch(() => {
-      quasar.notify({
-        color: 'negative',
-        position: 'bottom',
-        message: 'Index creation failed',
-        icon: 'report_problem',
-      });
-    });
-}
 </script>
 
 <style scoped></style>

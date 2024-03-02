@@ -236,6 +236,16 @@ export default {
     }
   },
 
+  SearchConfigurationPage: {
+    heading: 'Search Engine Configuration',
+    label: 'Here you can (re-)create the search index if this might be necessary for some reason.',
+    btnLabel: '(Re-)Create Search Index',
+    messages: {
+      indexCreated: 'Index created successfully.',
+      indexCreationFailed: 'Index creation failed!'
+    }
+  },
+
   TagsConfigurationPage: {
     heading: 'Tags Configuration',
     description: 'Tags can be used to categorize items beyond their properties. They should be considered meta-data and not be used to replace properties.',
@@ -499,7 +509,8 @@ export default {
     exchange: 'Exchange',
     locale: 'Locale',
     exhib: 'Exhib.',
-    system: 'System'
+    system: 'System',
+    search: 'Searchengine'
   },
 
   ArtivactTagsConfigurationEditor: {
@@ -711,6 +722,10 @@ export default {
       editModelStart: 'Editing model in external editor.',
       editModelFailed: 'Error during model editing!',
       copyImages: 'Copying images...'
+    },
+    SearchService: {
+      createIndex: '(Re-)Creating search index...',
+      createIndexFailed: '(Re-)Creation of search index Failed!',
     }
   },
 
