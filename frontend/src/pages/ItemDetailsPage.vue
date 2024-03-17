@@ -22,24 +22,24 @@
     <div class="col-12">
 
       <div class="col items-center">
-        <div class="absolute-top-left" v-if="userdataStore.authenticated">
+        <div class="absolute-top-left q-ma-md" v-if="userdataStore.authenticated">
           <q-btn
             round
             color="primary"
             icon="delete"
-            class="q-ma-md edit-page-button"
+            class="main-nav-button"
             @click="confirmDeleteRef = true">
             <q-tooltip>{{ $t('ItemDetailsPage.button.tooltip.delete') }}</q-tooltip>
           </q-btn>
         </div>
 
-        <div class="absolute-top-right" v-if="userdataStore.authenticated">
+        <div class="absolute-top-right q-ma-md" v-if="userdataStore.authenticated">
           <!-- SYNC UP BUTTON -->
           <q-btn
             round
             color="primary"
             icon="cloud_upload"
-            class="edit-page-button"
+            class="q-mr-sm main-nav-button"
             @click="synchronizeUp()">
             <q-tooltip>{{ $t('ItemDetailsPage.button.tooltip.sync') }}</q-tooltip>
           </q-btn>
@@ -49,7 +49,7 @@
               round
               color="primary"
               icon="edit"
-              class="q-ma-md edit-page-button">
+              class="main-nav-button">
               <q-tooltip>{{ $t('ItemDetailsPage.button.tooltip.edit') }}</q-tooltip>
             </q-btn>
           </router-link>
@@ -312,6 +312,10 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.main-nav-button {
+  z-index: 2;
+}
+
 .property-category {
   min-width: 20rem;
 }

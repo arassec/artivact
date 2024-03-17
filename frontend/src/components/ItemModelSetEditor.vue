@@ -362,8 +362,4 @@ function updateOperationProgress() {
   height: 200px;
 }
 
-.image-set-modal {
-  min-width: 70em;
-}
-
 </style>

@@ -162,45 +162,13 @@
             <item-image-editor
               :images="itemDataRef.images"
               :item-id="itemDataRef.id"
-              @uploaded="loadItemMediaData(itemDataRef.id)"
-            />
+              @uploaded="loadItemMediaData(itemDataRef.id)"/>
           </div>
           <h2 class="av-text-h2">{{ $t('ItemEditPage.label.models') }}</h2>
-          <div class="row">
-            <q-uploader
-              :url="'/api/item/' + itemDataRef.id + '/model'"
-              label="Add Models"
-              multiple
-              class="uploader q-mb-md col-12"
-              accept=".glb"
-              field-name="file"
-              :no-thumbnails="true"
-              @uploaded="loadItemMediaData(itemDataRef.id)"
-            ></q-uploader>
-            <draggable
-              :list="itemDataRef.models"
-              item-key="fileName"
-              group="models"
-              class="row"
-            >
-              <template #item="{ element }">
-                <q-card class="model-card q-mr-md">
-                  <q-btn
-                    icon="delete"
-                    class="absolute-top-right q-ma-sm"
-                    rounded
-                    dense
-                    color="primary"
-                    @click="deleteModel(element)">
-                    <q-tooltip>{{ $t('ItemEditPage.button.tooltip.deleteModel') }}</q-tooltip>
-                  </q-btn>
-                  <q-card-section class="absolute-center text-h5">
-                    {{ element.fileName }}
-                  </q-card-section>
-                </q-card>
-              </template>
-            </draggable>
-          </div>
+          <artivact-item-model-editor
+            :models="itemDataRef.models"
+            :item-id="itemDataRef.id"
+            @uploaded="loadItemMediaData(itemDataRef.id)"/>
         </div>
 
         <!-- PROPERTIES -->
@@ -259,6 +227,7 @@ import ItemImageSetEditor from 'components/ItemImageSetEditor.vue';
 import ItemModelSetEditor from 'components/ItemModelSetEditor.vue';
 import ArtivactDialog from 'components/ArtivactDialog.vue';
 import {useI18n} from 'vue-i18n';
+import ArtivactItemModelEditor from 'components/ArtivactItemModelEditor.vue';
 
 const quasar = useQuasar();
 const route = useRoute();
@@ -391,13 +360,6 @@ function addRestriction(role: string) {
   itemDataRef.value?.restrictions.push(role);
 }
 
-function deleteModel(element: Asset) {
-  itemDataRef.value?.models.splice(
-    itemDataRef.value?.models.indexOf(element),
-    1
-  );
-}
-
 function deleteImageFromImageSet(imageSet: ImageSet, asset: Asset) {
   itemDataRef.value?.creationImageSets[itemDataRef.value?.creationImageSets.indexOf(imageSet)].images.splice(
     itemDataRef.value?.creationImageSets[itemDataRef.value?.creationImageSets.indexOf(imageSet)].images.indexOf(asset), 1);
@@ -443,11 +405,6 @@ onMounted(() => {
 
 .nav-tab {
   min-width: 8em;
-}
-
-.model-card {
-  width: 200px;
-  height: 150px;
 }
 
 </style>

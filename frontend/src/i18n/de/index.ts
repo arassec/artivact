@@ -333,6 +333,29 @@ export default {
     }
   },
 
+  ArtivactModelEditor: {
+    tooltip: {
+      open: 'Verzeichnis mit 3D-Modell öffnen',
+      upload: 'Bestehende GLTF/GLB-Datei zu Objekt hinzufügen.',
+      delete: '3D-Modell löschen',
+      move: 'Sortierung per Drag&Drop anpassen.'
+    },
+    dialog: {
+      upload: {
+        heading: '3D-Modell hochladen',
+        label: '3D-Modell hinzufügen'
+      },
+      delete: {
+        heading: '3D-Modell entfernen?',
+        description: 'Sind Sie sicher, dass sie das ausgwählte 3D-Modell löschen möchten? Dies kann nicht rückgängig gemacht werden!!',
+        approve: '3D-Modell löschen'
+      },
+      messages: {
+        openFailed: 'Konnte Verzeichnis nicht öffnen!'
+      }
+    }
+  },
+
   ArtivactLicenseConfigurationEditor: {
     description: 'Konfiguriert den Lizenz-Text auf der Objekt-Detailseite. Der Lizenztext setzt sich aus einem Prefix, der eigentlichen Lizenz und einem Suffix zusammen. Falls eine URL konfiguriert wird, wird die Lizenz als Link zu der konfigurierten URL gerendert.',
     descriptionSuffix: 'Der finale Lizenztext könnte folgendermaßen aussehen: "Mediendateien stehen unter der \'CC BY-SA\'-Lizenz."',

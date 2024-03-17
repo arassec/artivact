@@ -333,6 +333,29 @@ export default {
     }
   },
 
+  ArtivactModelEditor: {
+    tooltip: {
+      open: 'Open the directory containing the 3D model.',
+      upload: 'Upload an existing GLTF/GLB 3D model to this item.',
+      delete: 'Remove model from item',
+      move: 'Change sort order per Drag&Drop.'
+    },
+    dialog: {
+      upload: {
+        heading: 'Upload 3D model',
+        label: 'Add model'
+      },
+      delete: {
+        heading: 'Remove 3D model?',
+        description: 'Are you sure you want to delete this model? This action cannot be undone!',
+        approve: 'Delete model'
+      },
+      messages: {
+        openFailed: 'Could not open model directory!'
+      }
+    }
+  },
+
   ArtivactLicenseConfigurationEditor: {
     description: 'Configures the license string displayed on the artivacts details-page. The license is composed of a prefix, the actual license and a suffix. If an URL is configured, the license will be rendered as link to the provided URL.',
     descriptionSuffix: 'The final license text might look like: "Media files are provided under \'CC BY-SA\' license."',
