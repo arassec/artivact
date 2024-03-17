@@ -546,8 +546,26 @@ export default {
   },
 
   ItemImageEditor: {
-    addImages: 'Add Images',
-    deleteImage: 'Delete Image'
+    tooltip: {
+      open: 'Open the directory containing the images.',
+      upload: 'Upload an existing JPG/PNG image to this item.',
+      delete: 'Remove image from item',
+      move: 'Change sort order per Drag&Drop.'
+    },
+    dialog: {
+      upload: {
+        heading: 'Upload image',
+        label: 'Add image'
+      },
+      delete: {
+        heading: 'Delete Image?',
+        description: 'Are you sure you want to delete this image? This action cannot be undone!',
+        approve: 'Delete image'
+      },
+      messages: {
+        openFailed: 'Could not open model directory!'
+      }
+    }
   },
 
   ItemImageSetEditor: {

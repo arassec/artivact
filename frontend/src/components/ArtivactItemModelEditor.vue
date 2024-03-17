@@ -71,7 +71,7 @@
               :url="'/api/item/' + itemId + '/model'"
               :label="$t('ArtivactModelEditor.dialog.upload.label')"
               multiple
-              class="uploader q-mb-md col-12"
+              class="uploader q-mb-md full-width"
               accept=".glb"
               field-name="file"
               :no-thumbnails="true"
@@ -165,6 +165,7 @@ function showDeleteModelSetConfirm(element: Asset) {
 
 function deleteModel() {
   modelsRef.value?.splice(selectedModelIndex, 1);
+  confirmDeleteRef.value = false;
 }
 
 </script>

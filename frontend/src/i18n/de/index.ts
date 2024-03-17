@@ -347,7 +347,7 @@ export default {
       },
       delete: {
         heading: '3D-Modell entfernen?',
-        description: 'Sind Sie sicher, dass sie das ausgwählte 3D-Modell löschen möchten? Dies kann nicht rückgängig gemacht werden!!',
+        description: 'Sind Sie sicher, dass sie das ausgewählte 3D-Modell löschen möchten? Dies kann nicht rückgängig gemacht werden!!',
         approve: '3D-Modell löschen'
       },
       messages: {
@@ -546,9 +546,28 @@ export default {
   },
 
   ItemImageEditor: {
-    addImages: 'Bilder hinzufügen',
-    deleteImage: 'Bild löschen'
+    tooltip: {
+      open: 'Verzeichnis mit Bildern öffnen',
+      upload: 'Bestehende JPG/PNG-Datei zu Objekt hinzufügen.',
+      delete: 'Bild löschen',
+      move: 'Sortierung per Drag&Drop anpassen.'
+    },
+    dialog: {
+      upload: {
+        heading: 'Bild hochladen',
+        label: 'Bild hinzufügen'
+      },
+      delete: {
+        heading: 'Bild entfernen?',
+        description: 'Sind Sie sicher, dass sie das ausgewählte Bild löschen möchten? Dies kann nicht rückgängig gemacht werden!!',
+        approve: 'Bild löschen'
+      },
+      messages: {
+        openFailed: 'Konnte Verzeichnis nicht öffnen!'
+      }
+    }
   },
+
 
   ItemImageSetEditor: {
     tooltip: {

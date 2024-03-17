@@ -158,7 +158,7 @@
         <!-- MEDIA -->
         <div v-show="tabRef == 'media'">
           <h2 class="av-text-h2">{{ $t('ItemEditPage.label.images') }}</h2>
-          <div>
+          <div class="q-mb-xl">
             <item-image-editor
               :images="itemDataRef.images"
               :item-id="itemDataRef.id"
@@ -189,12 +189,11 @@
         <!-- MEDIA-CREATION -->
         <div v-if="desktopStore.isDesktopModeEnabled" v-show="tabRef == 'creation'">
           <h2 class="av-text-h2">{{ $t('ItemEditPage.label.images') }}</h2>
-          <div class="q-mb-lg">
+          <div class="q-mb-xl">
             <item-image-set-editor :item-id="savedItemId" :creation-image-sets="itemDataRef.creationImageSets"
                                    @delete-image="(imageSet, asset) => deleteImageFromImageSet(imageSet, asset)"
                                    @update-item="loadItemData(itemDataRef.id)"/>
           </div>
-
           <h2 class="av-text-h2">{{ $t('ItemEditPage.label.models') }}</h2>
           <item-model-set-editor :item-id="savedItemId" :creation-model-sets="itemDataRef.creationModelSets"
                                  @update-item="loadItemData(itemDataRef.id)"/>
@@ -207,8 +206,6 @@
 </template>
 
 <script setup lang="ts">
-// noinspection ES6UnusedImports
-import draggable from 'vuedraggable';
 import {useQuasar} from 'quasar';
 import {computed, onMounted, ref} from 'vue';
 import {useRoute} from 'vue-router';
