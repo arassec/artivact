@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import {LicenseConfiguration} from 'components/models';
+import {LicenseConfiguration} from 'components/artivact-models';
 
 export const useLicenseStore = defineStore('license', {
   state: () => ({

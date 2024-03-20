@@ -32,7 +32,7 @@ import {useQuasar} from 'quasar';
 import {useI18n} from 'vue-i18n';
 import ArtivactOperationInProgressDialog from 'components/ArtivactOperationInProgressDialog.vue';
 import {ref} from 'vue';
-import {OperationProgress} from 'components/models';
+import {OperationProgress} from 'components/artivact-models';
 
 const quasar = useQuasar();
 const i18n = useI18n();

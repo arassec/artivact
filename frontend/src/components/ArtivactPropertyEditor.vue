@@ -26,8 +26,8 @@
 
 <script setup lang="ts">
 import {computed, PropType, ref, toRef} from 'vue';
-import {Property, SelectboxModel} from 'components/models';
-import {translate} from 'components/utils';
+import {Property, SelectboxModel} from 'components/artivact-models';
+import {translate} from 'components/artivact-utils';
 
 const props = defineProps({
   property: {

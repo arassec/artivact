@@ -114,7 +114,7 @@
 // noinspection ES6UnusedImports
 import draggable from 'vuedraggable';
 import {PropType, ref, toRef} from 'vue';
-import {Asset} from 'components/models';
+import {Asset} from 'components/artivact-models';
 import {api} from 'boot/axios';
 import {useQuasar} from 'quasar';
 import {useI18n} from 'vue-i18n';

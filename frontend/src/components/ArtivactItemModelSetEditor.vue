@@ -150,7 +150,7 @@
 <script setup lang="ts">
 
 import {PropType, ref} from 'vue';
-import {Asset, ModelSet, OperationProgress} from 'components/models';
+import {Asset, ModelSet, OperationProgress} from 'components/artivact-models';
 import {api} from 'boot/axios';
 import {useQuasar} from 'quasar';
 import ArtivactDialog from 'components/ArtivactDialog.vue';

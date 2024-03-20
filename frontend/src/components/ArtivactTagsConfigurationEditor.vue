@@ -63,7 +63,7 @@
 
 <script setup lang="ts">
 import {PropType, toRef} from 'vue';
-import {Tag, TagsConfiguration} from 'components/models';
+import {Tag, TagsConfiguration} from 'components/artivact-models';
 import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
 import {useI18n} from 'vue-i18n';
 

@@ -49,9 +49,9 @@
 </template>
 
 <script setup lang="ts">
-import {ItemCardData} from './models';
+import {ItemCardData} from './artivact-models';
 import {PropType} from 'vue';
-import {translate} from './utils';
+import {translate} from './artivact-utils';
 
 defineProps({
   artivactCardData: {

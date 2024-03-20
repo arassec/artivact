@@ -37,8 +37,8 @@
 import {PropType, Ref, toRef} from 'vue';
 import {
   Property, PropertyCategory
-} from 'components/models';
-import {translate} from 'components/utils';
+} from 'components/artivact-models';
+import {translate} from 'components/artivact-utils';
 
 const props = defineProps({
   category: {

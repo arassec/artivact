@@ -42,7 +42,7 @@
 
 <script setup lang="ts">
 
-import {ExchangeConfiguration} from 'components/models';
+import {ExchangeConfiguration} from 'components/artivact-models';
 import {PropType, toRef} from 'vue';
 
 const props = defineProps({

@@ -217,7 +217,7 @@
 
 <script setup lang="ts">
 import {PropType, toRef} from 'vue';
-import {AdapterConfiguration, AdapterImplementation, SelectboxModel} from 'components/models';
+import {AdapterConfiguration, AdapterImplementation, SelectboxModel} from 'components/artivact-models';
 
 const props = defineProps({
   adapterConfiguration: {

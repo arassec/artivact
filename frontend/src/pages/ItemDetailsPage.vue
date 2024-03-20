@@ -99,7 +99,7 @@
         </div>
 
         <!-- MEDIA-CAROUSEL -->
-        <item-media-carousel :show-images="!openModelRef"
+        <artivact-item-media-carousel :show-images="!openModelRef"
                              v-if=" itemDataDetailsRef.images.length > 0 ||
             itemDataDetailsRef.models.length > 0"
                              :item-details="itemDataDetailsRef"
@@ -159,15 +159,15 @@ import {useRoute, useRouter} from 'vue-router';
 import {onMounted, ref} from 'vue';
 import {useUserdataStore} from 'stores/userdata';
 import ArtivactContent from 'components/ArtivactContent.vue';
-import ItemMediaCarousel from 'components/ItemMediaCarousel.vue';
 import {useBreadcrumbsStore} from 'stores/breadcrumbs';
-import {translate} from 'components/utils';
+import {translate} from 'components/artivact-utils';
 import ArtivactPropertyCategoryViewer from 'components/ArtivactPropertyCategoryViewer.vue';
 import {useDesktopStore} from 'stores/desktop';
 import ArtivactOperationInProgressDialog from 'components/ArtivactOperationInProgressDialog.vue';
-import {OperationProgress} from 'components/models';
+import {OperationProgress} from 'components/artivact-models';
 import ArtivactDialog from 'components/ArtivactDialog.vue';
 import {useI18n} from 'vue-i18n';
+import ArtivactItemMediaCarousel from 'components/ArtivactItemMediaCarousel.vue';
 
 const quasar = useQuasar();
 const route = useRoute();

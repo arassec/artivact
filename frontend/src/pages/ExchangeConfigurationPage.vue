@@ -22,7 +22,7 @@ import ArtivactContent from 'components/ArtivactContent.vue';
 import ArtivactExchangeConfigurationEditor from 'components/ArtivactExchangeConfigurationEditor.vue';
 import {useQuasar} from 'quasar';
 import {onMounted, ref, Ref} from 'vue';
-import {ExchangeConfiguration} from 'components/models';
+import {ExchangeConfiguration} from 'components/artivact-models';
 import {api} from 'boot/axios';
 import {useI18n} from 'vue-i18n';
 

@@ -253,7 +253,7 @@
 import {useQuasar} from 'quasar';
 import {api} from 'boot/axios';
 import {onMounted, Ref, ref} from 'vue';
-import {Account} from 'components/models';
+import {Account} from 'components/artivact-models';
 import ArtivactContent from 'components/ArtivactContent.vue';
 import ArtivactDialog from 'components/ArtivactDialog.vue';
 import {useI18n} from 'vue-i18n';

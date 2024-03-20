@@ -1,5 +1,5 @@
 <template>
-  <widget-template
+  <artivact-widget-template
     :move-down-enabled="moveDownEnabled"
     :move-up-enabled="moveUpEnabled"
     :in-edit-mode="inEditMode"
@@ -29,19 +29,19 @@
         >
           <template v-for="slide in calculateSlides(3)" v-bind:key="slide">
             <q-carousel-slide :name="slide" class="row no-wrap">
-              <item-card
+              <artivact-item-card
                 class="q-ma-sm"
                 v-if="searchResultRef.data[slide * 3]"
                 :artivact-card-data="searchResultRef.data[slide * 3]"
               />
-              <q-space />
-              <item-card
+              <q-space/>
+              <artivact-item-card
                 class="q-ma-sm"
                 v-if="searchResultRef.data[slide * 3 + 1]"
                 :artivact-card-data="searchResultRef.data[slide * 3 + 1]"
               />
-              <q-space />
-              <item-card
+              <q-space/>
+              <artivact-item-card
                 class="q-ma-sm"
                 v-if="searchResultRef.data[slide * 3 + 2]"
                 :artivact-card-data="searchResultRef.data[slide * 3 + 2]"
@@ -72,11 +72,15 @@
         >
           <template v-for="slide in calculateSlides(1)" v-bind:key="slide">
             <q-carousel-slide :name="slide" class="row no-wrap">
-              <item-card
-                class="q-ma-sm"
-                v-if="searchResultRef.data[slide]"
-                :artivact-card-data="searchResultRef.data[slide]"
-              />
+              <div class="row full-width">
+                <q-space/>
+                <artivact-item-card
+                  class="q-ma-sm "
+                  v-if="searchResultRef.data[slide]"
+                  :artivact-card-data="searchResultRef.data[slide]"
+                />
+                <q-space/>
+              </div>
             </q-carousel-slide>
           </template>
         </q-carousel>
@@ -92,7 +96,7 @@
           searchResultRef.data.length === 0
         "
       >
-        <artivact-content> No search results available! </artivact-content>
+        <artivact-content> No search results available!</artivact-content>
       </label>
       <artivact-content
         v-if="
@@ -115,21 +119,21 @@
         >
           <template v-for="slide in calculateSlides(3)" v-bind:key="slide">
             <q-carousel-slide :name="slide" class="row no-wrap">
-              <item-card
+              <artivact-item-card
                 class="q-ma-sm"
                 v-if="searchResultRef.data[slide * 3]"
                 :artivact-card-data="searchResultRef.data[slide * 3]"
                 :disabled="true"
               />
-              <q-space />
-              <item-card
+              <q-space/>
+              <artivact-item-card
                 class="q-ma-sm"
                 v-if="searchResultRef.data[slide * 3 + 1]"
                 :artivact-card-data="searchResultRef.data[slide * 3 + 1]"
                 :disabled="true"
               />
-              <q-space />
-              <item-card
+              <q-space/>
+              <artivact-item-card
                 class="q-ma-sm"
                 v-if="searchResultRef.data[slide * 3 + 2]"
                 :artivact-card-data="searchResultRef.data[slide * 3 + 2]"
@@ -161,7 +165,7 @@
         >
           <template v-for="slide in calculateSlides(1)" v-bind:key="slide">
             <q-carousel-slide :name="slide" class="row no-wrap">
-              <item-card
+              <artivact-item-card
                 class="q-ma-sm"
                 v-if="searchResultRef.data[slide]"
                 :artivact-card-data="searchResultRef.data[slide]"
@@ -184,20 +188,20 @@
         </div>
       </artivact-content>
     </template>
-  </widget-template>
+  </artivact-widget-template>
 </template>
 
 <script setup lang="ts">
 import ArtivactContent from 'components/ArtivactContent.vue';
 import {onMounted, PropType, ref, toRef} from 'vue';
-import {SearchBasedWidgetData} from 'components/widgets/widget-models';
+import {SearchBasedWidgetData} from 'components/widgets/artivact-widget-models';
 import {useQuasar} from 'quasar';
-import {SearchResult} from 'components/models';
+import {SearchResult} from 'components/artivact-models';
 import {api} from 'boot/axios';
-import ItemCard from 'components/ItemCard.vue';
-import WidgetTemplate from 'components/widgets/WidgetTemplate.vue';
 import ArtivactItemSearchInput from 'components/widgets/util/ArtivactItemSearchInput.vue';
 import {useI18n} from 'vue-i18n';
+import ArtivactItemCard from 'components/ArtivactItemCard.vue';
+import ArtivactWidgetTemplate from 'components/widgets/ArtivactWidgetTemplate.vue';
 
 const props = defineProps({
   inEditMode: {
@@ -233,11 +237,11 @@ function search() {
   api
     .get(
       '/api/search?query=' +
-        widgetDataRef.value?.searchTerm +
-        '&pageNo=0&pageSize=' +
-        widgetDataRef.value?.maxResults +
-        '&maxResults=' +
-        widgetDataRef.value?.maxResults
+      widgetDataRef.value?.searchTerm +
+      '&pageNo=0&pageSize=' +
+      widgetDataRef.value?.maxResults +
+      '&maxResults=' +
+      widgetDataRef.value?.maxResults
     )
     .then((response) => {
       searchResultRef.value = response.data;
@@ -255,8 +259,10 @@ function search() {
 
 function calculateSlides(numPerPage: number): number[] {
   if (searchResultRef.value && searchResultRef.value.data.length > 0) {
-    let result = Math.floor(searchResultRef.value.data.length / numPerPage);
+    let result = Math.ceil(searchResultRef.value.data.length / numPerPage);
     if (result > 0) {
+      console.log('RESULT: ' + result);
+      console.log('KEYS: ' + Array.from(Array(result).keys()));
       return Array.from(Array(result).keys());
     }
   }

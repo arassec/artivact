@@ -22,7 +22,7 @@ import ArtivactContent from 'components/ArtivactContent.vue';
 import { api } from 'boot/axios';
 import { setCssVar, useQuasar } from 'quasar';
 import { onMounted, ref, Ref } from 'vue';
-import { AppearanceConfiguration } from 'components/models';
+import { AppearanceConfiguration } from 'components/artivact-models';
 import ArtivactAppearanceConfigurationEditor from 'components/ArtivactAppearanceConfigurationEditor.vue';
 import { useLocaleStore } from 'stores/locale';
 import {useI18n} from 'vue-i18n';

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import {BreadcrumbData} from 'components/models';
+import {BreadcrumbData} from 'components/artivact-models';
 
 export const useBreadcrumbsStore = defineStore('breadcrumbs', {
   state: () => ({

@@ -49,7 +49,7 @@
         v-for="(model, index) of itemDetailsRef.models"
         :key="index"
         :name="index">
-        <item-model-viewer :model-url="model.url"/>
+        <artivact-item-model-viewer :model-url="model.url"/>
         <q-btn
           round
           dense
@@ -115,9 +115,9 @@
 
 <script setup lang="ts">
 import {PropType, ref, toRef} from 'vue';
-import {ItemDetails} from 'components/models';
-import ItemModelViewer from 'components/ItemModelViewer.vue';
+import {ItemDetails} from 'components/artivact-models';
 import {useLicenseStore} from 'stores/license';
+import ArtivactItemModelViewer from 'components/ArtivactItemModelViewer.vue';
 
 const props = defineProps({
   itemDetails: {

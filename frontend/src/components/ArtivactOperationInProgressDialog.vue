@@ -39,7 +39,7 @@
 
 import {PropType, ref, toRef} from 'vue';
 import ArtivactDialog from 'components/ArtivactDialog.vue';
-import {OperationProgress} from 'components/models';
+import {OperationProgress} from 'components/artivact-models';
 
 const props = defineProps({
   dialogModel: {

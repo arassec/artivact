@@ -20,7 +20,7 @@
 import { useQuasar } from 'quasar';
 import { api } from 'boot/axios';
 import { onMounted, Ref, ref } from 'vue';
-import { LicenseConfiguration } from 'components/models';
+import { LicenseConfiguration } from 'components/artivact-models';
 import ArtivactLicenseConfigurationEditor from 'components/ArtivactLicenseConfigurationEditor.vue';
 import ArtivactContent from 'components/ArtivactContent.vue';
 import {useI18n} from 'vue-i18n';

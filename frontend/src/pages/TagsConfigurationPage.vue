@@ -65,7 +65,7 @@
 import { api } from 'boot/axios';
 import { useQuasar } from 'quasar';
 import { onMounted, Ref, ref } from 'vue';
-import { TagsConfiguration } from 'components/models';
+import { TagsConfiguration } from 'components/artivact-models';
 import ArtivactTagsConfigurationEditor from 'components/ArtivactTagsConfigurationEditor.vue';
 import ArtivactContent from 'components/ArtivactContent.vue';
 import {useI18n} from 'vue-i18n';

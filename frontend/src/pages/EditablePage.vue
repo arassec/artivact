@@ -14,7 +14,7 @@ import { useRoute } from 'vue-router';
 import { api } from 'boot/axios';
 import { onMounted, ref } from 'vue';
 import ArtivactPage from 'components/ArtivactPage.vue';
-import { PageContent, Widget } from 'components/models';
+import { PageContent, Widget } from 'components/artivact-models';
 import { useBreadcrumbsStore } from 'stores/breadcrumbs';
 import {useMenuStore} from 'stores/menu';
 import {useI18n} from 'vue-i18n';

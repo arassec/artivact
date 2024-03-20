@@ -159,7 +159,7 @@
         <div v-show="tabRef == 'media'">
           <h2 class="av-text-h2">{{ $t('ItemEditPage.label.images') }}</h2>
           <div class="q-mb-xl">
-            <item-image-editor
+            <artivact-item-image-editor
               :images="itemDataRef.images"
               :item-id="itemDataRef.id"
               @uploaded="loadItemMediaData(itemDataRef.id)"/>
@@ -190,12 +190,12 @@
         <div v-if="desktopStore.isDesktopModeEnabled" v-show="tabRef == 'creation'">
           <h2 class="av-text-h2">{{ $t('ItemEditPage.label.images') }}</h2>
           <div class="q-mb-xl">
-            <item-image-set-editor :item-id="savedItemId" :creation-image-sets="itemDataRef.creationImageSets"
+            <artivact-item-image-set-editor :item-id="savedItemId" :creation-image-sets="itemDataRef.creationImageSets"
                                    @delete-image="(imageSet, asset) => deleteImageFromImageSet(imageSet, asset)"
                                    @update-item="loadItemData(itemDataRef.id)"/>
           </div>
           <h2 class="av-text-h2">{{ $t('ItemEditPage.label.models') }}</h2>
-          <item-model-set-editor :item-id="savedItemId" :creation-model-sets="itemDataRef.creationModelSets"
+          <artivact-item-model-set-editor :item-id="savedItemId" :creation-model-sets="itemDataRef.creationModelSets"
                                  @update-item="loadItemData(itemDataRef.id)"/>
         </div>
 
@@ -213,18 +213,18 @@ import {api} from 'boot/axios';
 import ArtivactContent from 'components/ArtivactContent.vue';
 import ArtivactRestrictionsEditor from 'components/ArtivactRestrictionsEditor.vue';
 import {useLocaleStore} from 'stores/locale';
-import {Asset, ImageSet, ItemDetails, Tag, TagsConfiguration} from 'components/models';
+import {Asset, ImageSet, ItemDetails, Tag, TagsConfiguration} from 'components/artivact-models';
 import ArtivactPropertyCategoryEditor from 'components/ArtivactPropertyCategoryEditor.vue';
 import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
 import {useBreadcrumbsStore} from 'stores/breadcrumbs';
 import {useUserdataStore} from 'stores/userdata';
 import {useDesktopStore} from 'stores/desktop';
-import ItemImageEditor from 'components/ItemImageEditor.vue';
-import ItemImageSetEditor from 'components/ItemImageSetEditor.vue';
-import ItemModelSetEditor from 'components/ItemModelSetEditor.vue';
 import ArtivactDialog from 'components/ArtivactDialog.vue';
 import {useI18n} from 'vue-i18n';
 import ArtivactItemModelEditor from 'components/ArtivactItemModelEditor.vue';
+import ArtivactItemImageEditor from 'components/ArtivactItemImageEditor.vue';
+import ArtivactItemImageSetEditor from 'components/ArtivactItemImageSetEditor.vue';
+import ArtivactItemModelSetEditor from 'components/ArtivactItemModelSetEditor.vue';
 
 const quasar = useQuasar();
 const route = useRoute();

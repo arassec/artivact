@@ -250,7 +250,7 @@
 <script setup lang="ts">
 
 import {api} from 'boot/axios';
-import {Asset, CapturePhotosParams, ImageSet, OperationProgress} from 'components/models';
+import {Asset, CapturePhotosParams, ImageSet, OperationProgress} from 'components/artivact-models';
 import {useQuasar} from 'quasar';
 import {PropType, ref} from 'vue';
 import ArtivactDialog from 'components/ArtivactDialog.vue';

@@ -1,5 +1,5 @@
 <template>
-  <widget-template
+  <artivact-widget-template
     :move-down-enabled="moveDownEnabled"
     :move-up-enabled="moveUpEnabled"
     :in-edit-mode="inEditMode"
@@ -37,7 +37,7 @@
             "
           >
             <div class="row">
-              <item-card
+              <artivact-item-card
                 :artivact-card-data="resultEntry"
                 v-for="(resultEntry, index) in searchResultRef.data"
                 v-bind:key="index"
@@ -111,7 +111,7 @@
             "
           >
             <div class="row">
-              <item-card
+              <artivact-item-card
                 :artivact-card-data="resultEntry"
                 v-for="(resultEntry, index) in searchResultRef.data"
                 v-bind:key="index"
@@ -143,21 +143,21 @@
         />
       </artivact-content>
     </template>
-  </widget-template>
+  </artivact-widget-template>
 </template>
 
 <script setup lang="ts">
 import ArtivactContent from 'components/ArtivactContent.vue';
 import {onMounted, PropType, ref, toRef} from 'vue';
-import {SearchBasedWidgetData} from 'components/widgets/widget-models';
-import {SearchResult} from 'components/models';
+import {SearchBasedWidgetData} from 'components/widgets/artivact-widget-models';
+import {SearchResult} from 'components/artivact-models';
 import {api} from 'boot/axios';
 import {useQuasar} from 'quasar';
-import ItemCard from 'components/ItemCard.vue';
-import WidgetTemplate from 'components/widgets/WidgetTemplate.vue';
 import {useWidgetdataStore} from 'stores/widgetdata';
 import ArtivactItemSearchInput from 'components/widgets/util/ArtivactItemSearchInput.vue';
 import {useI18n} from 'vue-i18n';
+import ArtivactItemCard from 'components/ArtivactItemCard.vue';
+import ArtivactWidgetTemplate from 'components/widgets/ArtivactWidgetTemplate.vue';
 
 const props = defineProps({
   inEditMode: {

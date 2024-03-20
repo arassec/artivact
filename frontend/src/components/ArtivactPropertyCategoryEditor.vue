@@ -13,8 +13,8 @@
 <script setup lang="ts">
 import { PropType, toRef } from 'vue';
 import ArtivactPropertyEditor from 'components/ArtivactPropertyEditor.vue';
-import { PropertyCategory } from 'components/models';
-import { translate } from './utils';
+import { PropertyCategory } from 'components/artivact-models';
+import { translate } from './artivact-utils';
 
 const props = defineProps({
   category: {

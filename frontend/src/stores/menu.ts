@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import {Menu} from 'components/models';
+import {Menu} from 'components/artivact-models';
 
 export const useMenuStore = defineStore('menu', {
   state: () => ({

@@ -1,5 +1,5 @@
 <template>
-  <widget-template
+  <artivact-widget-template
     :move-down-enabled="moveDownEnabled"
     :move-up-enabled="moveUpEnabled"
     :in-edit-mode="inEditMode"
@@ -130,18 +130,18 @@
         </div>
       </artivact-content>
     </template>
-  </widget-template>
+  </artivact-widget-template>
 </template>
 
 <script setup lang="ts">
 import {PropType, toRef} from 'vue';
-import {AvatarWidgetData} from 'components/widgets/widget-models';
+import {AvatarWidgetData} from 'components/widgets/artivact-widget-models';
 import ArtivactContent from 'components/ArtivactContent.vue';
-import WidgetTemplate from 'components/widgets/WidgetTemplate.vue';
 import {QUploader} from 'quasar';
 import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
 import {useLocaleStore} from 'stores/locale';
-import {translate} from '../utils';
+import {translate} from '../artivact-utils';
+import ArtivactWidgetTemplate from 'components/widgets/ArtivactWidgetTemplate.vue';
 
 const props = defineProps({
   inEditMode: {

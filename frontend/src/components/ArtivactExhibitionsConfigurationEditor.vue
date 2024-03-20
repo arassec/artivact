@@ -135,8 +135,8 @@
 import {api} from 'boot/axios';
 import {onMounted, ref} from 'vue';
 import {useQuasar} from 'quasar';
-import {ExhibitionSummary, MenuTreeNode, OperationProgress} from 'components/models';
-import {translate} from './utils';
+import {ExhibitionSummary, MenuTreeNode, OperationProgress} from 'components/artivact-models';
+import {translate} from './artivact-utils';
 import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
 import {useLocaleStore} from 'stores/locale';
 import {useMenuStore} from 'stores/menu';

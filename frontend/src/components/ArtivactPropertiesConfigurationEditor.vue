@@ -154,10 +154,10 @@
 // noinspection ES6UnusedImports
 import draggable from 'vuedraggable';
 import {PropType, toRef} from 'vue';
-import {PropertiesConfiguration, Property, PropertyCategory,} from 'components/models';
+import {PropertiesConfiguration, Property, PropertyCategory,} from 'components/artivact-models';
 import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
 import ArtivactPropertyValueRangeEditor from 'components/ArtivactPropertyValueRangeEditor.vue';
-import {translate} from './utils';
+import {translate} from './artivact-utils';
 import {useI18n} from 'vue-i18n';
 
 const i18n = useI18n();

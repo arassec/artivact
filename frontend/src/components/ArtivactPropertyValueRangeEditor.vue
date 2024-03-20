@@ -80,9 +80,9 @@
 
 <script setup lang="ts">
 import {PropType, ref, toRef} from 'vue';
-import {BaseTranslatableRestrictedItem} from 'components/models';
+import {BaseTranslatableRestrictedItem} from 'components/artivact-models';
 import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
-import {translate} from './utils';
+import {translate} from './artivact-utils';
 import ArtivactDialog from 'components/ArtivactDialog.vue';
 import {useI18n} from 'vue-i18n';
 

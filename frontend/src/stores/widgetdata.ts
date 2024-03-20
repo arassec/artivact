@@ -1,5 +1,5 @@
 import {defineStore} from 'pinia';
-import {WidgetPageContainer} from 'components/models';
+import {WidgetPageContainer} from 'components/artivact-models';
 
 export const useWidgetdataStore = defineStore('widgetdata', {
   state: () => ({

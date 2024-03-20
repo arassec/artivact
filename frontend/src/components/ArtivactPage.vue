@@ -56,7 +56,7 @@
       v-for="(widgetData, index) of pageContentRef.widgets"
       v-bind:key="widgetData.id"
     >
-      <page-title-widget
+      <artivact-page-title-widget
         v-if="widgetData.type === 'PAGE_TITLE'"
         :widget-data="widgetData as PageTitleWidgetData"
         :in-edit-mode="inEditMode"
@@ -69,7 +69,7 @@
         v-on:image-added="fileAdded($event, widgetData.id)"
       />
 
-      <text-widget
+      <artivact-text-widget
         v-if="widgetData.type === 'TEXT'"
         :widget-data="widgetData as TextWidgetData"
         :in-edit-mode="inEditMode"
@@ -80,7 +80,7 @@
         @delete-widget="deleteWidget(index)"
       />
 
-      <image-text-widget
+      <artivact-image-text-widget
         v-if="widgetData.type === 'IMAGE_TEXT'"
         :widget-data="widgetData as ImageTextWidgetData"
         :in-edit-mode="inEditMode"
@@ -93,7 +93,7 @@
         v-on:image-added="fileAdded($event, widgetData.id)"
       />
 
-      <search-widget
+      <artivact-search-widget
         v-if="widgetData.type === 'ITEM_SEARCH'"
         :widget-data="widgetData as SearchBasedWidgetData"
         :in-edit-mode="inEditMode"
@@ -104,7 +104,7 @@
         @delete-widget="deleteWidget(index)"
       />
 
-      <item-carousel-widget
+      <artivact-item-carousel-widget
         v-if="widgetData.type === 'ITEM_CAROUSEL'"
         :widget-data="widgetData as SearchBasedWidgetData"
         :in-edit-mode="inEditMode"
@@ -115,7 +115,7 @@
         @delete-widget="deleteWidget(index)"
       />
 
-      <info-box-widget
+      <artivact-info-box-widget
         v-if="widgetData.type === 'INFO_BOX'"
         :widget-data="widgetData as InfoBoxWidgetData"
         :in-edit-mode="inEditMode"
@@ -126,7 +126,7 @@
         @delete-widget="deleteWidget(index)"
       />
 
-      <avatar-widget
+      <artivact-avatar-widget
         v-if="widgetData.type === 'AVATAR'"
         :widget-data="widgetData as AvatarWidgetData"
         :in-edit-mode="inEditMode"
@@ -139,7 +139,7 @@
         v-on:image-added="fileAdded($event, widgetData.id)"
       />
 
-      <space-widget
+      <artivact-space-widget
         v-if="widgetData.type === 'SPACE'"
         :widget-data="widgetData as SpaceWidgetData"
         :in-edit-mode="inEditMode"
@@ -192,12 +192,8 @@
 
 <script setup lang="ts">
 import {PropType, ref, toRef} from 'vue';
-import {PageContent, TranslatableString, Widget} from 'components/models';
+import {PageContent, TranslatableString, Widget} from 'components/artivact-models';
 import {useUserdataStore} from 'stores/userdata';
-import TextWidget from 'components/widgets/TextWidget.vue';
-import PageTitleWidget from 'components/widgets/PageTitleWidget.vue';
-import SearchWidget from 'components/widgets/SearchWidget.vue';
-import ItemCarouselWidget from 'components/widgets/ItemCarouselWidget.vue';
 import {useQuasar} from 'quasar';
 import {
   AvatarWidgetData,
@@ -207,15 +203,19 @@ import {
   SearchBasedWidgetData,
   SpaceWidgetData,
   TextWidgetData,
-} from 'components/widgets/widget-models';
-import {moveDown, moveUp} from 'components/utils';
+} from 'components/widgets/artivact-widget-models';
+import {moveDown, moveUp} from 'components/artivact-utils';
 import {api} from 'boot/axios';
-import InfoBoxWidget from 'components/widgets/InfoBoxWidget.vue';
-import AvatarWidget from 'components/widgets/AvatarWidget.vue';
-import SpaceWidget from 'components/widgets/SpaceWidget.vue';
-import ImageTextWidget from 'components/widgets/ImageTextWidget.vue';
-import ArtivactDialog from 'components/ArtivactDialog.vue';
 import {useI18n} from 'vue-i18n';
+import ArtivactDialog from 'components/ArtivactDialog.vue';
+import ArtivactAvatarWidget from 'components/widgets/ArtivactAvatarWidget.vue';
+import ArtivactImageTextWidget from 'components/widgets/ArtivactImageTextWidget.vue';
+import ArtivactInfoBoxWidget from 'components/widgets/ArtivactInfoBoxWidget.vue';
+import ArtivactSpaceWidget from 'components/widgets/ArtivactSpaceWidget.vue';
+import ArtivactItemCarouselWidget from 'components/widgets/ArtivactItemCarouselWidget.vue';
+import ArtivactSearchWidget from 'components/widgets/ArtivactSearchWidget.vue';
+import ArtivactTextWidget from 'components/widgets/ArtivactTextWidget.vue';
+import ArtivactPageTitleWidget from 'components/widgets/ArtivactPageTitleWidget.vue';
 
 const props = defineProps({
   pageId: {
@@ -384,13 +384,5 @@ function fileAdded(propertyName: string, widgetId: string) {
 <style scoped>
 .main-nav-button {
   z-index: 2;
-}
-
-.sticky-toolbar {
-  position: sticky;
-  top: 44px;
-  background-color: white;
-  z-index: 15;
-  border-bottom: 1px solid var(--q-primary);
 }
 </style>

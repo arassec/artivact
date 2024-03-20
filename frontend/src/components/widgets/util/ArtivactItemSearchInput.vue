@@ -74,9 +74,9 @@
 
 <script setup lang="ts">
 import {onMounted, PropType, ref, Ref, toRef} from 'vue';
-import {SearchBasedWidgetData} from 'components/widgets/widget-models';
+import {SearchBasedWidgetData} from 'components/widgets/artivact-widget-models';
 import {api} from 'boot/axios';
-import {PropertiesConfiguration, TagsConfiguration} from 'components/models';
+import {PropertiesConfiguration, TagsConfiguration} from 'components/artivact-models';
 import {useQuasar} from 'quasar';
 import {useI18n} from 'vue-i18n';
 

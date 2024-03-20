@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import {UserData} from 'components/models';
+import {UserData} from 'components/artivact-models';
 
 export const useUserdataStore = defineStore('userdata', {
   state: () => ({

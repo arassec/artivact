@@ -55,7 +55,7 @@
 
 <script setup lang="ts">
 import {PropType, toRef} from 'vue';
-import {LicenseConfiguration} from 'components/models';
+import {LicenseConfiguration} from 'components/artivact-models';
 import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
 
 const props = defineProps({

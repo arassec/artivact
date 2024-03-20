@@ -1,4 +1,4 @@
-import {TranslatableString, Widget} from 'components/models';
+import {TranslatableString, Widget} from 'components/artivact-models';
 
 export interface PageTitleWidgetData extends Widget {
     title: TranslatableString;
