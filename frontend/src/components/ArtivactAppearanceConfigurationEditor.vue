@@ -195,7 +195,7 @@
               <q-uploader
                 label="16x16 Pixel Favicon"
                 :multiple="false"
-                accept="ico"
+                accept="*.ico"
                 max-file-size="5120"
                 auto-upload
                 field-name="file"
@@ -212,7 +212,7 @@
               <q-uploader
                 label="32x32 Pixel Favicon"
                 :multiple="false"
-                accept="ico"
+                accept="*.ico"
                 max-file-size="10240"
                 auto-upload
                 field-name="file"

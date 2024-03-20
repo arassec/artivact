@@ -291,7 +291,7 @@ export default {
       },
       favicon: {
         heading: 'Favicon',
-        descriptionPrefix: 'A custom Favicon can be uploaded here in sizes of 16x16 and 32x32 pixels.',
+        descriptionPrefix: 'A custom Favicon can be uploaded here in sizes of 16x16 and 32x32 pixels. The favicon file must be in ICO (.ico) format!',
         description: 'The uploaded file is directly installed as favicon!',
         descriptionSuffix: 'Due to browser caching the newly uploaded favicon might not directly be visible in your browser tab.',
         saved: 'Favicon saved'

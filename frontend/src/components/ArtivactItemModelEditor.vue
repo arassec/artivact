@@ -75,7 +75,7 @@
               accept=".glb"
               field-name="file"
               :no-thumbnails="true"
-              @uploaded="showUploadFilesModalRef = false; $emit('uploaded')"
+              @finish="showUploadFilesModalRef = false; $emit('uploaded')"
             />
           </q-card-section>
         </template>

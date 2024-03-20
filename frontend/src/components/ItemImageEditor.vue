@@ -70,13 +70,13 @@
         <q-card-section>
           <q-uploader
             :url="'/api/item/' + itemId + '/image'"
-            :label="$t('ArtivactModelEditor.dialog.upload.label')"
+            :label="$t('ItemImageEditor.dialog.upload.label')"
             multiple
             class="uploader q-mb-md full-width"
             accept=".jpg, image/*"
             field-name="file"
             :no-thumbnails="true"
-            @uploaded="showUploadFilesModalRef = false; $emit('uploaded')"
+            @finish="showUploadFilesModalRef = false; $emit('uploaded')"
           />
         </q-card-section>
       </template>
@@ -100,7 +100,7 @@
 
       <template v-slot:approve>
         <q-btn
-          :label="$t('ArtivactModelEditor.dialog.delete.approve')"
+          :label="$t('ItemImageEditor.dialog.delete.approve')"
           color="primary"
           @click="deleteImage"
         />

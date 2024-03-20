@@ -291,7 +291,7 @@ export default {
       },
       favicon: {
         heading: 'Favicon',
-        descriptionPrefix: 'Ein Favicon kann in den Größen 16x16 und 32x32 Pixel hochgeladen werden.',
+        descriptionPrefix: 'Ein Favicon kann in den Größen 16x16 und 32x32 Pixel hochgeladen werden. Die Favicon-Datei muss im ICO (.ico) Format vorliegen!',
         description: 'Die hochgeladene Datei wird sofort als Favicon verwendet!',
         descriptionSuffix: 'Durch Browsercaches kann es sein, dass ein neu hochgeladenes Favicon erst nach einiger Zeit sichtbar wird.',
         saved: 'Favicon gespeichert'
