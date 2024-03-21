@@ -70,6 +70,8 @@ public class BlenderModelEditorAdapter extends BaseModelEditorAdapter {
             cmdLine.addArgument(modelPath.toAbsolutePath().toString());
         }
 
+        progressMonitor.updateLabelKey("editModelStart");
+
         cmdUtil.execute(cmdLine);
     }
 

@@ -106,6 +106,8 @@ public class MeshroomModelCreatorAdapter extends BaseModelCreatorAdapter {
         cmdLine.addArgument("--cache");
         cmdLine.addArgument(cacheDir.toAbsolutePath().toString());
 
+        progressMonitor.updateLabelKey("createModelStart");
+
         cmdUtil.execute(cmdLine);
 
         return new ModelCreationResult(resultDir, pipeline);

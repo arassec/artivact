@@ -70,6 +70,8 @@ public class MetashapeModelCreatorAdapter extends BaseModelCreatorAdapter {
 
         fileUtil.openDirInOs(tempDir);
 
+        progressMonitor.updateLabelKey("createModelStart");
+
         cmdUtil.execute(new CommandLine(initParams.getAdapterConfiguration().getConfigValue(getSupportedImplementation())));
 
         return new ModelCreationResult(resultDir, "metashape");

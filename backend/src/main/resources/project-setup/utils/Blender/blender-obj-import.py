@@ -21,16 +21,15 @@ for item in obj_list:
 
     # import obj
     path_to_import = os.path.join(MODEL_DIR, item)
-    bpy.ops.import_scene.obj(filepath = path_to_import)
+    if bpy.app.version[0] < 4:
+        bpy.ops.import_scene.obj(filepath = path_to_import)
+    else:
+        bpy.ops.wm.obj_import(filepath = path_to_import)
 
-    # rename
+    # center obj
     for obj in bpy.context.selected_objects:
-        obj.name = item[:-4]
-        obj.rotation_euler = Vector([45, 135, 0])
         bpy.ops.object.origin_set(type='GEOMETRY_ORIGIN', center='MEDIAN')
-        print(dir(obj))
 
     # write blend
     path_to_export = os.path.join(MODEL_DIR, item[:-4] + ".blend")
-    print(path_to_export)
     bpy.ops.wm.save_as_mainfile(filepath=path_to_export, check_existing=False )
