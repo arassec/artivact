@@ -12,25 +12,50 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * REST-Controller for searching items and search engine management.
+ */
 @Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/search")
 public class SearchController extends BaseController {
 
+    /**
+     * The application's {@link SearchService}.
+     */
     private final SearchService searchService;
 
+    /**
+     * Re-creates the search index completely.
+     *
+     * @return The progress.
+     */
     @PostMapping("/index/recreate")
     public ResponseEntity<OperationProgress> recreateIndex() {
         searchService.recreateIndex();
         return getProgress();
     }
 
+    /**
+     * Returns the progress of a previously started long-running operation.
+     *
+     * @return The progress.
+     */
     @GetMapping("/progress")
     public ResponseEntity<OperationProgress> getProgress() {
         return convert(searchService.getProgressMonitor());
     }
 
+    /**
+     * Searches for items.
+     *
+     * @param searchTerm The search query to use.
+     * @param pageNumber The desired page to return from the search result.
+     * @param pageSize   The desired page size of the search result.
+     * @param maxResults The max number of results to consider.
+     * @return The search result.
+     */
     @GetMapping
     public SearchResult search(@RequestParam("query") String searchTerm,
                                @RequestParam(value = "pageNo", required = false, defaultValue = "0") int pageNumber,

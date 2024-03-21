@@ -147,7 +147,7 @@ let selectedImageIndex: number;
 
 function openImagesDir() {
   api
-    .put('/api/media-creation/' + props.itemId + '/open-images-dir')
+    .put('/api/item/' + props.itemId + '/media-creation/open-images-dir')
     .catch(() => {
       quasar.notify({
         color: 'negative',

@@ -147,7 +147,7 @@ let selectedModelIndex: number;
 
 function openModelsDir() {
   api
-    .put('/api/media-creation/' + props.itemId + '/open-models-dir')
+    .put('/api/item/' + props.itemId + '/media-creation/open-models-dir')
     .catch(() => {
       quasar.notify({
         color: 'negative',

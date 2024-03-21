@@ -11,14 +11,29 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+/**
+ * Custom authentication provider if the application is run in desktop mode.
+ * <p>
+ * This is required to auto-login users in desktop mode, i.e. disable user management completely.
+ */
 @Slf4j
 @Profile("desktop")
 @Component
 @RequiredArgsConstructor
 public class ArtivactDesktopAuthenticationProvider implements AuthenticationProvider {
 
+    /**
+     * The application's {@link AccountService}.
+     */
     private final AccountService accountService;
 
+    /**
+     * Always authenticates the user as application administrator.
+     *
+     * @param authentication The Spring-Security {@link Authentication} object.
+     * @return A newly created {@link UsernamePasswordAuthenticationToken} with the administrator account.
+     * @throws AuthenticationException in case of failures.
+     */
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 
@@ -30,6 +45,9 @@ public class ArtivactDesktopAuthenticationProvider implements AuthenticationProv
                 (admin, admin.getPassword(), admin.getAuthorities());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean supports(Class<?> authentication) {
         return authentication.equals(UsernamePasswordAuthenticationToken.class);

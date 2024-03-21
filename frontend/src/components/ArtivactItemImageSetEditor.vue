@@ -325,7 +325,7 @@ function showImageDetails(imageSet: ImageSet) {
 
 function capturePhotos() {
   api
-    .post('/api/media-creation/' + props.itemId + '/capture-photos', capturePhotosParamsRef.value)
+    .post('/api/item/' + props.itemId + '/media-creation/capture-photos', capturePhotosParamsRef.value)
     .then((response) => {
       if (response) {
         showCapturePhotosModalRef.value = false;
@@ -346,7 +346,7 @@ function capturePhotos() {
 
 function removeBackgrounds(imageSetIndex: number) {
   api
-    .post('/api/media-creation/' + props.itemId + '/remove-backgrounds?imageSetIndex=' + imageSetIndex)
+    .post('/api/item/' + props.itemId + '/media-creation/remove-backgrounds?imageSetIndex=' + imageSetIndex)
     .then((response) => {
       if (response) {
         showOperationInProgressModalRef.value = true;
@@ -366,7 +366,7 @@ function removeBackgrounds(imageSetIndex: number) {
 
 function createImageSet() {
   api
-    .post('/api/media-creation/' + props.itemId + '/create-image-set')
+    .post('/api/item/' + props.itemId + '/media-creation/create-image-set')
     .then((response) => {
       if (response) {
         showUploadFilesModalRef.value = false;
@@ -387,7 +387,7 @@ function createImageSet() {
 
 function openImagesDir() {
   api
-    .put('/api/media-creation/' + props.itemId + '/open-images-dir')
+    .put('/api/item/' + props.itemId + '/media-creation/open-images-dir')
     .catch(() => {
       quasar.notify({
         color: 'negative',
@@ -400,7 +400,7 @@ function openImagesDir() {
 
 function transferImageToMedia(image: Asset) {
   api
-    .put('/api/media-creation/' + props.itemId + '/transfer-image', image)
+    .put('/api/item/' + props.itemId + '/media-creation/transfer-image', image)
     .then((response) => {
       if (response) {
         emit('update-item');
@@ -430,7 +430,7 @@ function showDeleteImageSetConfirm(imageSetIndex: number) {
 function deleteImageSet() {
   confirmDeleteRef.value = false;
   api
-    .delete('/api/media-creation/' + props.itemId + '/image-set/' + selectedImageSetIndex)
+    .delete('/api/item/' + props.itemId + '/media-creation/image-set/' + selectedImageSetIndex)
     .then((response) => {
       if (response) {
         emit('update-item');
@@ -454,7 +454,7 @@ function deleteImageSet() {
 
 function toggleModelInput(imageSetIndex: number) {
   api
-    .put('/api/media-creation/' + props.itemId + '/image-set/' + imageSetIndex + '/toggle-model-input')
+    .put('/api/item/' + props.itemId + '/media-creation/image-set/' + imageSetIndex + '/toggle-model-input')
     .then((response) => {
       if (response) {
         emit('update-item');
@@ -478,7 +478,7 @@ function toggleModelInput(imageSetIndex: number) {
 
 function updateOperationProgress() {
   api
-    .get('/api/media-creation/progress')
+    .get('/api/item/' + props.itemId + '/media-creation/progress')
     .then((response) => {
       if (response.data) {
         progressMonitorRef.value = response.data;

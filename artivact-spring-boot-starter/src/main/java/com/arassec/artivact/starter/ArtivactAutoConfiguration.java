@@ -6,6 +6,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 
+/**
+ * Spring-Boot autoconfiguration for the Artivact application.
+ */
 @Configuration
 @ComponentScan
 @Import({ArtivactBackendConfiguration.class})

@@ -9,10 +9,20 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 
+/**
+ * Spring-Security configuration for desktop-mode.
+ */
 @Profile("desktop")
 @Configuration
 public class ArtivactDesktopSecurityConfiguration {
 
+    /**
+     * Provides a security filter-chain for Spring-Security when the application is run in desktop-mode.
+     *
+     * @param http Spring-Security's {@link HttpSecurity}.
+     * @return A desktop-mode {@link SecurityFilterChain}.
+     * @throws Exception in case of errors.
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http

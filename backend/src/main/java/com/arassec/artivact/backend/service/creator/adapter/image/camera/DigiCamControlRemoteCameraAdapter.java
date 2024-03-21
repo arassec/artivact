@@ -41,11 +41,6 @@ public class DigiCamControlRemoteCameraAdapter extends BaseCameraAdapter {
     private static final String CAPTURE_CMD = "?slc=capture&param1=";
 
     /**
-     * The implementation supported by this adapter.
-     */
-    private final AdapterImplementation supportedImplementation = AdapterImplementation.DIGI_CAM_CONTROL_REMOTE_CAMERA_ADAPTER;
-
-    /**
      * {@inheritDoc}
      */
     @Override
@@ -85,6 +80,11 @@ public class DigiCamControlRemoteCameraAdapter extends BaseCameraAdapter {
         return true;
     }
 
+    @Override
+    public AdapterImplementation getSupportedImplementation() {
+        return AdapterImplementation.DIGI_CAM_CONTROL_REMOTE_CAMERA_ADAPTER;
+    }
+
     /**
      * Executes a DigiCamControl Web API command via HTTP.
      * <p>
@@ -94,8 +94,7 @@ public class DigiCamControlRemoteCameraAdapter extends BaseCameraAdapter {
      * @param command              The command to execute.
      */
     private synchronized void executeRemoteCommand(AdapterConfiguration adapterConfiguration, String command) {
-        try {
-            HttpClient httpClient = HttpClient.newHttpClient();
+        try (HttpClient httpClient = HttpClient.newHttpClient()) {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(new URI(adapterConfiguration.getConfigValue(getSupportedImplementation()) + command))
                     .GET()

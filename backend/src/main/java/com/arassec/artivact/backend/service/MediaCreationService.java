@@ -84,6 +84,7 @@ public class MediaCreationService {
             } catch (Exception e) {
                 progressMonitor.updateProgress("captureFailed", e);
                 log.error("Error during photo capturing!", e);
+                Thread.currentThread().interrupt();
             }
         });
     }
@@ -156,16 +157,11 @@ public class MediaCreationService {
         });
     }
 
-    public synchronized void createModel(String itemId, String pipeline) {
+    public synchronized void createModel(String itemId) {
 
         if (progressMonitor != null && progressMonitor.getException() == null) {
             return;
         }
-
-        if (!StringUtils.hasText(pipeline)) {
-            pipeline = modelCreator.getDefaultPipeline();
-        }
-        final String selectedPipeline = pipeline;
 
         progressMonitor = new ProgressMonitor(getClass(), "createModelStart");
 
@@ -177,7 +173,7 @@ public class MediaCreationService {
                         .filter(CreationImageSet::isModelInput)
                         .toList();
 
-                Optional<CreationModelSet> modelSetOptional = modelCreator.createModel(itemId, modelInputImageSets, selectedPipeline, progressMonitor);
+                Optional<CreationModelSet> modelSetOptional = modelCreator.createModel(itemId, modelInputImageSets, modelCreator.getDefaultPipeline(), progressMonitor);
 
                 if (modelSetOptional.isPresent()) {
                     item.getMediaCreationContent().getModelSets().add(modelSetOptional.get());

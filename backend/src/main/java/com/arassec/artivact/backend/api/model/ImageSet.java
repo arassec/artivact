@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * A set of images, bundled for easier media creation.
+ */
 @Data
 @Builder
 @NoArgsConstructor

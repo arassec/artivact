@@ -5,6 +5,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Combines different files related to a single 3D model of an item.
+ */
 @Data
 @Builder
 @NoArgsConstructor

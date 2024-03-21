@@ -15,29 +15,61 @@ import java.io.IOException;
 import java.net.URLConnection;
 import java.nio.file.Files;
 
+/**
+ * REST-Controller for (web-)page management.
+ */
 @Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/page")
 public class PageController {
 
+    /**
+     * The application's {@link PageService}.
+     */
     private final PageService pageService;
 
+    /**
+     * Returns the index page.
+     *
+     * @return The content of the index page.
+     */
     @GetMapping()
     public PageContent loadIndexPageContent() {
         return pageService.loadIndexPageContent();
     }
 
+    /**
+     * Returns the page with the given ID.
+     *
+     * @param pageId The page's ID.
+     * @return The page content.
+     */
     @GetMapping("/{pageId}")
     public PageContent loadTranslatedPageContent(@PathVariable String pageId) {
         return pageService.loadPageContent(pageId);
     }
 
+    /**
+     * Saves a page.
+     *
+     * @param pageId      The page's ID.
+     * @param pageContent The page content to save.
+     * @return The updated page content.
+     */
     @PostMapping("/{pageId}")
     public PageContent savePageContent(@PathVariable String pageId, @RequestBody PageContent pageContent) {
         return pageService.savePageContent(pageId, pageContent);
     }
 
+    /**
+     * Saves a file to a widget.
+     *
+     * @param pageId   The page's ID the widget is on.
+     * @param widgetId The widget's ID.
+     * @param file     The file to save.
+     * @return The filename of the saved file.
+     */
     @PostMapping(value = "/{pageId}/widget/{widgetId}")
     public ResponseEntity<String> saveFile(@PathVariable String pageId,
                                            @PathVariable String widgetId,
@@ -45,20 +77,28 @@ public class PageController {
         return ResponseEntity.ok(pageService.saveFile(pageId, widgetId, file));
     }
 
-    @GetMapping(value = "/widget/{widgetId}/{fileName}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    /**
+     * Loads a widget's file.
+     *
+     * @param widgetId  The widget's ID.
+     * @param filename  The name of the file.
+     * @param imageSize Optional target size of an image.
+     * @return The file as byte array.
+     */
+    @GetMapping(value = "/widget/{widgetId}/{filename}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public HttpEntity<byte[]> loadFile(@PathVariable String widgetId,
-                                       @PathVariable String fileName,
+                                       @PathVariable String filename,
                                        @RequestParam(required = false) ImageSize imageSize) {
 
         var contentDisposition = ContentDisposition.builder("inline")
-                .filename(fileName)
+                .filename(filename)
                 .build();
 
         var headers = new HttpHeaders();
         headers.setContentDisposition(contentDisposition);
-        headers.setContentType(MediaType.valueOf(URLConnection.guessContentTypeFromName(fileName)));
+        headers.setContentType(MediaType.valueOf(URLConnection.guessContentTypeFromName(filename)));
 
-        FileSystemResource model = pageService.loadFile(widgetId, fileName, imageSize);
+        FileSystemResource model = pageService.loadFile(widgetId, filename, imageSize);
 
         try {
             return new HttpEntity<>(Files.readAllBytes(model.getFile().toPath()), headers);

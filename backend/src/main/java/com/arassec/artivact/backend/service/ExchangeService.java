@@ -1,5 +1,6 @@
 package com.arassec.artivact.backend.service;
 
+import com.arassec.artivact.backend.api.BaseController;
 import com.arassec.artivact.backend.service.exception.ArtivactException;
 import com.arassec.artivact.backend.service.model.account.Account;
 import com.arassec.artivact.backend.service.model.configuration.ExchangeConfiguration;
@@ -37,7 +38,7 @@ import java.util.zip.ZipOutputStream;
 
 @Slf4j
 @Service
-public class ExchangeService {
+public class ExchangeService extends BaseController {
 
     private final AccountService accountService;
 
@@ -79,24 +80,7 @@ public class ExchangeService {
             zipOutputStream.putNextEntry(zipEntry);
             zipOutputStream.write(exportObjectMapper.writeValueAsBytes(item));
 
-            for (String mediaFile : mediaFiles) {
-                File file = new File(mediaFile);
-                zipEntry = new ZipEntry(file.getName());
-
-                try (var inputStream = new FileInputStream(file)) {
-                    zipOutputStream.putNextEntry(zipEntry);
-                    byte[] bytes = new byte[1024];
-                    int length;
-                    while ((length = inputStream.read(bytes)) >= 0) {
-                        zipOutputStream.write(bytes, 0, length);
-                    }
-                } catch (IOException e) {
-                    log.error("Exception while reading and streaming data!", e);
-                }
-
-            }
-
-            zipOutputStream.close();
+            zipMediaFiles(zipOutputStream, mediaFiles);
         };
     }
 

@@ -11,35 +11,80 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 
+/**
+ * Spring-Security configuration for server-mode.
+ */
 @Profile("!desktop")
 @Configuration
 public class ArtivactServerSecurityConfiguration {
 
-
+    /**
+     * API path for account management of the current user's account.
+     */
     private static final String API_ACCOUNT_OWN_PATTERN = "/api/account/own";
 
+    /**
+     * API path for administration of accounts.
+     */
     private static final String API_ACCOUNT_PATTERN = "/api/account";
 
+    /**
+     * API path for public configuration requests.
+     */
     private static final String API_CONFIGURATION_PUBLIC_PATTERN = "/api/configuration/public";
 
+    /**
+     * API path for configuration administration.
+     */
     private static final String API_CONFIGURATION_PATTERN = "/api/configuration";
 
+    /**
+     * API path for item requests.
+     */
     private static final String API_ITEM_PATTERN = "/api/item";
 
+    /**
+     * API path for media-creation requests.
+     */
+    private static final String API_ITEM_MEDIA_CREATION_PATTERN = "/api/item/{itemId}/media-creation";
+
+    /**
+     * API path for page requests.
+     */
     private static final String API_PAGE_PATTERN = "/api/page";
 
+    /**
+     * API path for import administration.
+     */
     private static final String API_IMPORT_PATTERN = "/api/import";
 
+    /**
+     * API path for search index administration.
+     */
     private static final String API_SEARCH_INDEX_PATTERN = "/api/search/index";
 
-    private static final String API_MEDIA_CREATION_PATTERN = "/api/media-creation";
-
+    /**
+     * API path for exhibition administration.
+     */
     private static final String API_EXHIBITION_PATTERN = "/api/exhibition";
 
+    /**
+     * API path for exchange handling.
+     */
     private static final String API_EXCHANGE_PATTERN = "/api/exchange";
 
+    /**
+     * API path for exchange uploads.
+     */
     private static final String API_EXCHANGE_SYNC_PATTERN = "/api/exchange/sync";
 
+    /**
+     * Provides a security filter-chain for Spring-Security when the application is run in server-mode.
+     *
+     * @param http Spring-Security's {@link HttpSecurity}.
+     * @return A server-mode {@link SecurityFilterChain}.
+     * @throws Exception in case of errors.
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
@@ -52,7 +97,7 @@ public class ArtivactServerSecurityConfiguration {
                         .requestMatchers(API_CONFIGURATION_PATTERN).hasRole(Roles.ADMIN)
                         .requestMatchers(API_EXCHANGE_SYNC_PATTERN).permitAll()
                         .requestMatchers(API_EXCHANGE_PATTERN).hasRole(Roles.ADMIN)
-                        .requestMatchers(API_MEDIA_CREATION_PATTERN).hasAnyRole(Roles.ADMIN, Roles.USER)
+                        .requestMatchers(API_ITEM_MEDIA_CREATION_PATTERN).hasAnyRole(Roles.ADMIN, Roles.USER)
                         .requestMatchers(API_EXHIBITION_PATTERN).hasAnyRole(Roles.ADMIN, Roles.USER)
                         .requestMatchers(HttpMethod.POST, API_ITEM_PATTERN).hasAnyRole(Roles.ADMIN, Roles.USER)
                         .requestMatchers(HttpMethod.PUT, API_ITEM_PATTERN).hasAnyRole(Roles.ADMIN, Roles.USER)

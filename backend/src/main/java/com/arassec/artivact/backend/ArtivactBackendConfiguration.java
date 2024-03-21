@@ -21,6 +21,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+/**
+ * Spring configuration of the Artivact backend application.
+ */
 @Configuration
 @ComponentScan
 @EntityScan
@@ -30,6 +33,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 public class ArtivactBackendConfiguration {
 
+    /**
+     * Password encoder to ues.
+     *
+     * @return The system's password encoder.
+     */
     @Bean
     public PasswordEncoder encoder() {
         return new BCryptPasswordEncoder();

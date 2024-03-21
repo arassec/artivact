@@ -50,7 +50,7 @@ const i18n = useI18n();
 
 function scanItems() {
   api
-    .post('/api/import')
+    .post('/api/exchange/item/import/filesystem')
     .then(() => {
       quasar.notify({
         color: 'positive',

@@ -3,7 +3,7 @@ package com.arassec.artivact.backend.api;
 import com.arassec.artivact.backend.api.model.OperationProgress;
 import com.arassec.artivact.backend.service.ConfigurationService;
 import com.arassec.artivact.backend.service.ExchangeService;
-import com.arassec.artivact.backend.service.ItemService;
+import com.arassec.artivact.backend.service.ImportService;
 import com.arassec.artivact.backend.service.exception.ArtivactException;
 import com.arassec.artivact.backend.service.model.configuration.PropertiesConfiguration;
 import com.arassec.artivact.backend.service.model.configuration.TagsConfiguration;
@@ -12,6 +12,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,29 +22,57 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 import java.io.IOException;
 import java.time.LocalDate;
 
+/**
+ * Controller for exchanging items and configurations between different application instances.
+ */
 @Slf4j
 @RestController
 @RequestMapping("/api/exchange")
 public class ExchangeController extends BaseController {
 
+    /**
+     * The application's {@link ConfigurationService}.
+     */
     private final ConfigurationService configurationService;
 
-    private final ItemService itemService;
-
-    private final ObjectMapper exportObjectMapper;
-
+    /**
+     * The application's {@link ExchangeService}.
+     */
     private final ExchangeService exchangeService;
 
+    /**
+     * The application's {@link ImportService}.
+     */
+    private final ImportService importService;
+
+    /**
+     * The object mapper for exports.
+     */
+    private final ObjectMapper exportObjectMapper;
+
+    /**
+     * Creates a new instance.
+     *
+     * @param configurationService The application's {@link ConfigurationService}.
+     * @param exchangeService      The application's {@link ExchangeService}.
+     * @param exportObjectMapper   The object mapper for exports.
+     */
     public ExchangeController(ConfigurationService configurationService,
-                              ItemService itemService,
-                              @Qualifier("exportObjectMapper") ObjectMapper exportObjectMapper,
-                              ExchangeService exchangeService) {
+                              ExchangeService exchangeService,
+                              ImportService importService,
+                              @Qualifier("exportObjectMapper") ObjectMapper exportObjectMapper) {
         this.configurationService = configurationService;
-        this.itemService = itemService;
-        this.exportObjectMapper = exportObjectMapper;
         this.exchangeService = exchangeService;
+        this.importService = importService;
+        this.exportObjectMapper = exportObjectMapper;
     }
 
+    /**
+     * Exports the current properties configuration as JSON file.
+     *
+     * @param response The HTTP stream to write the exported JSON file to.
+     * @return The file as {@link StreamingResponseBody}.
+     */
     @GetMapping(value = "/properties/export")
     public ResponseEntity<StreamingResponseBody> exportPropertiesConfiguration(HttpServletResponse response) {
 
@@ -56,11 +86,11 @@ public class ExchangeController extends BaseController {
                 response.setContentLength(propertiesConfigurationJson.getBytes().length);
             };
 
-            response.setContentType("application/json");
-            response.setHeader("Content-Disposition", "attachment; filename="
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.setHeader(HttpHeaders.CONTENT_DISPOSITION, ATTACHMENT_PREFIX
                     + LocalDate.now() + ".artivact.properties-configuration.json");
-            response.addHeader("Pragma", "no-cache");
-            response.addHeader("Expires", "0");
+            response.addHeader(HttpHeaders.PRAGMA, NO_CACHE);
+            response.addHeader(HttpHeaders.EXPIRES, EXPIRES_IMMEDIATELY);
 
             return ResponseEntity.ok(streamResponseBody);
         } catch (JsonProcessingException e) {
@@ -68,6 +98,12 @@ public class ExchangeController extends BaseController {
         }
     }
 
+    /**
+     * Imports a properties configuration JSON file.
+     *
+     * @param file The export file to import.
+     * @return A status string.
+     */
     @PostMapping(value = "/properties/import")
     public ResponseEntity<String> importPropertiesConfiguration(@RequestPart(value = "file") final MultipartFile file) {
 
@@ -81,6 +117,12 @@ public class ExchangeController extends BaseController {
         return ResponseEntity.ok("Properties imported.");
     }
 
+    /**
+     * Exports the current tags configuration as JSON file.
+     *
+     * @param response The HTTP stream to write the exported JSON file to.
+     * @return The file as {@link StreamingResponseBody}.
+     */
     @GetMapping(value = "/tags/export")
     public ResponseEntity<StreamingResponseBody> exportTagsConfiguration(HttpServletResponse response) {
 
@@ -94,11 +136,11 @@ public class ExchangeController extends BaseController {
                 response.setContentLength(tagsConfigurationJson.getBytes().length);
             };
 
-            response.setContentType("application/json");
-            response.setHeader("Content-Disposition", "attachment; filename="
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.setHeader(HttpHeaders.CONTENT_DISPOSITION, ATTACHMENT_PREFIX
                     + LocalDate.now() + ".artivact.tags-configuration.json");
-            response.addHeader("Pragma", "no-cache");
-            response.addHeader("Expires", "0");
+            response.addHeader(HttpHeaders.PRAGMA, NO_CACHE);
+            response.addHeader(HttpHeaders.EXPIRES, EXPIRES_IMMEDIATELY);
 
             return ResponseEntity.ok(streamResponseBody);
         } catch (JsonProcessingException e) {
@@ -106,6 +148,12 @@ public class ExchangeController extends BaseController {
         }
     }
 
+    /**
+     * Imports a tags configuration JSON file.
+     *
+     * @param file The export file to import.
+     * @return A status string.
+     */
     @PostMapping(value = "/tags/import")
     public ResponseEntity<String> importTagsConfiguration(@RequestPart(value = "file") final MultipartFile file) {
 
@@ -119,23 +167,30 @@ public class ExchangeController extends BaseController {
         return ResponseEntity.ok("Tags imported.");
     }
 
+    /**
+     * Exports an item into a ZIP file containing the data as JSON file and all media assets.
+     *
+     * @param response The HTTP stream to write the exported JSON file to.
+     * @param itemId   The item's ID.
+     * @return The file as {@link StreamingResponseBody}.
+     */
     @GetMapping(value = "/item/{itemId}/export")
     public ResponseEntity<StreamingResponseBody> exportItem(HttpServletResponse response,
                                                             @PathVariable String itemId) {
 
-        response.setContentType("application/zip");
-        response.setHeader("Content-Disposition", "attachment; filename=" + itemId + ".artivact.item.zip");
-        response.addHeader("Pragma", "no-cache");
-        response.addHeader("Expires", "0");
+        response.setContentType(TYPE_ZIP);
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, ATTACHMENT_PREFIX + itemId + ".artivact.item.zip");
+        response.addHeader(HttpHeaders.PRAGMA, NO_CACHE);
+        response.addHeader(HttpHeaders.EXPIRES, EXPIRES_IMMEDIATELY);
 
         return ResponseEntity.ok(exchangeService.createItemExportFile(itemId));
     }
 
     /**
-     * Called from the UI for local import.
+     * Called from the UI for local import of an item.
      *
-     * @param file
-     * @return
+     * @param file The item's export file to import.
+     * @return A status string.
      */
     @PostMapping(value = "/item/import")
     public ResponseEntity<String> importItem(@RequestPart(value = "file") final MultipartFile file) {
@@ -144,11 +199,22 @@ public class ExchangeController extends BaseController {
     }
 
     /**
+     * Imports item's by scanning the filesystem.
+     *
+     * @return A status string.
+     */
+    @PostMapping(value = "/item/import/filesystem")
+    public ResponseEntity<String> importItems() {
+        importService.importItems();
+        return ResponseEntity.ok("scanned");
+    }
+
+    /**
      * Called by another server instance for remote import/sync!
      *
-     * @param file
-     * @param apiToken
-     * @return
+     * @param file     The item's export file to import.
+     * @param apiToken The API token of the local user account used to import the item.
+     * @return A status string.
      */
     @PostMapping(value = "sync/item/import/{apiToken}")
     public ResponseEntity<String> syncItem(@RequestPart(value = "file") final MultipartFile file,
@@ -157,11 +223,22 @@ public class ExchangeController extends BaseController {
         return ResponseEntity.ok("Item imported.");
     }
 
+    /**
+     * Called from the UI to start syncing an item with a remote application instance.
+     *
+     * @param itemId The item's ID.
+     * @return The operation progress.
+     */
     @PostMapping(value = "/item/{itemId}/sync-up")
     public ResponseEntity<OperationProgress> syncItemUp(@PathVariable String itemId) {
         return convert(exchangeService.syncItemUp(itemId));
     }
 
+    /**
+     * Returns the progress of a long-running operation of the {@link ExchangeService}.
+     *
+     * @return The current operation progress.
+     */
     @GetMapping("/progress")
     public ResponseEntity<OperationProgress> getProgress() {
         return convert(exchangeService.getProgressMonitor());

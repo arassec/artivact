@@ -188,7 +188,7 @@ const confirmDeleteRef = ref(false);
 function showModelSetDetails(modelSet: ModelSet, modelSetIndex: number) {
   selectedModelSetIndex = modelSetIndex;
   api
-    .get('/api/media-creation/' + props.itemId + '/model-set-files/' + modelSetIndex)
+    .get('/api/item/' + props.itemId + '/media-creation/model-set-files/' + modelSetIndex)
     .then((response) => {
       if (response) {
         modelSetFiles = response.data;
@@ -207,7 +207,7 @@ function showModelSetDetails(modelSet: ModelSet, modelSetIndex: number) {
 
 function createModel() {
   api
-    .post('/api/media-creation/' + props.itemId + '/create-model-set/TODO_PIPELINE_SELECTION')
+    .post('/api/item/' + props.itemId + '/media-creation/create-model-set')
     .then((response) => {
       if (response) {
         showOperationInProgressModalRef.value = true;
@@ -227,7 +227,7 @@ function createModel() {
 
 function openModelsDir() {
   api
-    .put('/api/media-creation/' + props.itemId + '/open-models-dir')
+    .put('/api/item/' + props.itemId + '/media-creation/open-models-dir')
     .catch(() => {
       quasar.notify({
         color: 'negative',
@@ -240,7 +240,7 @@ function openModelsDir() {
 
 function editModel(index: number) {
   api
-    .post('/api/media-creation/' + props.itemId + '/edit-model/' + index)
+    .post('/api/item/' + props.itemId + '/media-creation/edit-model/' + index)
     .then((response) => {
       if (response) {
         showOperationInProgressModalRef.value = true;
@@ -260,7 +260,7 @@ function editModel(index: number) {
 
 function openModelDir(index: number) {
   api
-    .put('/api/media-creation/' + props.itemId + '/open-model-dir/' + index)
+    .put('/api/item/' + props.itemId + '/media-creation/open-model-dir/' + index)
     .catch(() => {
       quasar.notify({
         color: 'negative',
@@ -273,7 +273,7 @@ function openModelDir(index: number) {
 
 function transferModel(file: Asset, modelSetIndex: number) {
   api
-    .put('/api/media-creation/' + props.itemId + '/transfer-model/' + modelSetIndex, file)
+    .put('/api/item/' + props.itemId + '/media-creation/transfer-model/' + modelSetIndex, file)
     .then((response) => {
       if (response) {
         emit('update-item');
@@ -303,7 +303,7 @@ function showDeleteModelSetConfirm(modelSetIndex: number) {
 function deleteModelSet() {
   confirmDeleteRef.value = false;
   api
-    .delete('/api/media-creation/' + props.itemId + '/model-set/' + selectedModelSetIndex)
+    .delete('/api/item/' + props.itemId + '/media-creation/model-set/' + selectedModelSetIndex)
     .then((response) => {
       if (response) {
         emit('update-item');
@@ -327,7 +327,7 @@ function deleteModelSet() {
 
 function updateOperationProgress() {
   api
-    .get('/api/media-creation/progress')
+    .get('/api/item/' + props.itemId + '/media-creation/progress')
     .then((response) => {
       if (response.data) {
         progressMonitorRef.value = response.data;

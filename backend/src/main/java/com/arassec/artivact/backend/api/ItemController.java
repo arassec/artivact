@@ -17,26 +17,37 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URLConnection;
 import java.nio.file.Files;
 import java.util.HashSet;
 import java.util.List;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+/**
+ * REST-Controller for item management.
+ */
 @Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/item")
 public class ItemController extends BaseController {
 
+    /**
+     * The application's {@link ItemService}.
+     */
     private final ItemService itemService;
 
+    /**
+     * The application's {@link ProjectRootProvider}.
+     */
     private final ProjectRootProvider projectRootProvider;
 
+    /**
+     * Creates a new item.
+     *
+     * @return The item's ID.
+     */
     @PostMapping
     public ResponseEntity<String> create() {
         Item item = itemService.create();
@@ -44,6 +55,12 @@ public class ItemController extends BaseController {
         return ResponseEntity.ok(item.getId());
     }
 
+    /**
+     * Returns the item with the given ID.
+     *
+     * @param itemId The item's ID.
+     * @return The item details.
+     */
     @GetMapping("/{itemId}")
     public ResponseEntity<ItemDetails> load(@PathVariable String itemId) {
         Item item = itemService.load(itemId);
@@ -100,9 +117,13 @@ public class ItemController extends BaseController {
                 .build());
     }
 
+    /**
+     * Updates an item.
+     *
+     * @param itemDetails The item details to save.
+     */
     @PutMapping
-    public ResponseEntity<Void> save(@RequestBody ItemDetails itemDetails) {
-
+    public void save(@RequestBody ItemDetails itemDetails) {
         Item item = itemService.load(itemDetails.getId());
 
         if (item == null) {
@@ -144,27 +165,37 @@ public class ItemController extends BaseController {
         item.setTags(itemDetails.getTags());
 
         itemService.save(item);
-
-        return ResponseEntity.ok().build();
     }
 
+    /**
+     * Deletes an item.
+     *
+     * @param itemId The item's ID.
+     */
     @DeleteMapping("/{itemId}")
-    public ResponseEntity<Void> deleteItem(@PathVariable String itemId) {
+    public void deleteItem(@PathVariable String itemId) {
         itemService.delete(itemId);
-        return ResponseEntity.ok().build();
     }
 
-    @GetMapping(value = "/{itemId}/image/{fileName}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    public HttpEntity<byte[]> getImage(@PathVariable String itemId, @PathVariable String fileName,
+    /**
+     * Returns an item's image in the requested size.
+     *
+     * @param itemId    The item's ID.
+     * @param filename  The image's filename.
+     * @param imageSize The target {@link ImageSize} of the image.
+     * @return The image as byte array.
+     */
+    @GetMapping(value = "/{itemId}/image/{filename}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public HttpEntity<byte[]> getImage(@PathVariable String itemId, @PathVariable String filename,
                                        @RequestParam(required = false) ImageSize imageSize) {
         if (imageSize == null) {
             imageSize = ImageSize.ORIGINAL;
         }
 
-        FileSystemResource image = itemService.loadImage(itemId, fileName, imageSize);
+        FileSystemResource image = itemService.loadImage(itemId, filename, imageSize);
 
         var headers = new HttpHeaders();
-        headers.setContentType(MediaType.valueOf(URLConnection.guessContentTypeFromName(fileName)));
+        headers.setContentType(MediaType.valueOf(URLConnection.guessContentTypeFromName(filename)));
 
         try {
             return new HttpEntity<>(Files.readAllBytes(image.getFile().toPath()), headers);
@@ -173,17 +204,24 @@ public class ItemController extends BaseController {
         }
     }
 
-    @GetMapping(value = "/{itemId}/model/{fileName}", produces = "model/gltf-binary")
-    public HttpEntity<byte[]> getModel(@PathVariable String itemId, @PathVariable String fileName) {
+    /**
+     * Returns an item's model.
+     *
+     * @param itemId   The item's ID.
+     * @param filename The model's filename.
+     * @return The model as byte array.
+     */
+    @GetMapping(value = "/{itemId}/model/{filename}", produces = "model/gltf-binary")
+    public HttpEntity<byte[]> getModel(@PathVariable String itemId, @PathVariable String filename) {
         var contentDisposition = ContentDisposition.builder("inline")
-                .filename(fileName)
+                .filename(filename)
                 .build();
 
         var headers = new HttpHeaders();
         headers.setContentDisposition(contentDisposition);
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 
-        FileSystemResource model = itemService.loadModel(itemId, fileName);
+        FileSystemResource model = itemService.loadModel(itemId, filename);
 
         try {
             return new HttpEntity<>(Files.readAllBytes(model.getFile().toPath()), headers);
@@ -192,6 +230,13 @@ public class ItemController extends BaseController {
         }
     }
 
+    /**
+     * Returns an item's media files as ZIP file.
+     *
+     * @param response The HTTP response.
+     * @param itemId   The item's ID.
+     * @return The item's zipped media files as {@link StreamingResponseBody}.
+     */
     @GetMapping(value = "/{itemId}/media")
     public ResponseEntity<StreamingResponseBody> downloadMedia(HttpServletResponse response,
                                                                @PathVariable String itemId) {
@@ -200,42 +245,28 @@ public class ItemController extends BaseController {
 
         StreamingResponseBody streamResponseBody = out -> {
             final ZipOutputStream zipOutputStream = new ZipOutputStream(response.getOutputStream());
-
-            ZipEntry zipEntry = null;
-            for (String mediaFile : mediaFiles) {
-                File file = new File(mediaFile);
-                zipEntry = new ZipEntry(file.getName());
-
-                try (var inputStream = new FileInputStream(file)) {
-                    zipOutputStream.putNextEntry(zipEntry);
-                    byte[] bytes = new byte[1024];
-                    int length;
-                    while ((length = inputStream.read(bytes)) >= 0) {
-                        zipOutputStream.write(bytes, 0, length);
-                    }
-                } catch (IOException e) {
-                    log.error("Exception while reading and streaming data!", e);
-                }
-
-            }
-
-            zipOutputStream.close();
-
-            response.setContentLength((int) (zipEntry != null ? zipEntry.getSize() : 0));
+            zipMediaFiles(zipOutputStream, mediaFiles);
         };
 
-        response.setContentType("application/zip");
-        response.setHeader("Content-Disposition", "attachment; filename=" + itemId + ".zip");
-        response.addHeader("Pragma", "no-cache");
-        response.addHeader("Expires", "0");
+        response.setContentType(TYPE_ZIP);
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, ATTACHMENT_PREFIX + itemId + ".zip");
+        response.addHeader(HttpHeaders.PRAGMA, NO_CACHE);
+        response.addHeader(HttpHeaders.EXPIRES, EXPIRES_IMMEDIATELY);
 
         return ResponseEntity.ok(streamResponseBody);
     }
 
+    /**
+     * Saves an image to an item. Used to maintain an item's media files and image-sets for media creation.
+     *
+     * @param itemId     The item's ID.
+     * @param file       The image file to save.
+     * @param uploadOnly Set to {@code true}, if the image should only be uploaded.
+     */
     @PostMapping("/{itemId}/image")
-    public ResponseEntity<String> uploadImage(@PathVariable String itemId,
-                                              @RequestPart(value = "file") final MultipartFile file,
-                                              @RequestParam(defaultValue = "false", required = false) Boolean uploadOnly) {
+    public void uploadImage(@PathVariable String itemId,
+                            @RequestPart(value = "file") final MultipartFile file,
+                            @RequestParam(defaultValue = "false", required = false) boolean uploadOnly) {
         synchronized (this) {
             if (uploadOnly) {
                 try {
@@ -247,16 +278,20 @@ public class ItemController extends BaseController {
                 itemService.addImage(itemId, file);
             }
         }
-        return ResponseEntity.ok("image uploaded");
     }
 
+    /**
+     * Saves a model to an item.
+     *
+     * @param itemId The item's ID.
+     * @param file   The model file.
+     */
     @PostMapping("/{itemId}/model")
-    public ResponseEntity<String> uploadModel(@PathVariable String itemId,
-                                              @RequestPart(value = "file") final MultipartFile file) {
+    public void uploadModel(@PathVariable String itemId,
+                            @RequestPart(value = "file") final MultipartFile file) {
         synchronized (this) {
             itemService.addModel(itemId, file);
         }
-        return ResponseEntity.ok("model uploaded");
     }
 
 }
