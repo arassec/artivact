@@ -1,23 +1,22 @@
 package com.arassec.artivact.backend.service;
 
-import com.arassec.artivact.backend.api.model.Asset;
 import com.arassec.artivact.backend.service.creator.CapturePhotosParams;
 import com.arassec.artivact.backend.service.creator.ImageCreator;
 import com.arassec.artivact.backend.service.creator.ModelCreator;
 import com.arassec.artivact.backend.service.exception.ArtivactException;
+import com.arassec.artivact.backend.service.misc.ProgressMonitor;
+import com.arassec.artivact.backend.service.misc.ProjectDataProvider;
+import com.arassec.artivact.backend.service.model.item.Asset;
 import com.arassec.artivact.backend.service.model.item.CreationImageSet;
 import com.arassec.artivact.backend.service.model.item.CreationModelSet;
 import com.arassec.artivact.backend.service.model.item.Item;
 import com.arassec.artivact.backend.service.util.FileUtil;
-import com.arassec.artivact.backend.service.util.ProgressMonitor;
-import com.arassec.artivact.backend.service.util.ProjectRootProvider;
 import jakarta.annotation.PreDestroy;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -30,32 +29,65 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
+/**
+ * Service for item media creation.
+ */
 @Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class MediaCreationService {
 
+    /**
+     * Service for item handling.
+     */
     private final ItemService itemService;
 
+    /**
+     * Creator for item images.
+     */
     private final ImageCreator imageCreator;
 
+    /**
+     * Creator for item models.
+     */
     private final ModelCreator modelCreator;
 
+    /**
+     * The application's {@link FileUtil}.
+     */
     private final FileUtil fileUtil;
 
-    private final ProjectRootProvider projectRootProvider;
+    /**
+     * Provider for project data.
+     */
+    private final ProjectDataProvider projectDataProvider;
 
+    /**
+     * Executor service for long-running background tasks.
+     */
     private final ExecutorService executorService = Executors.newFixedThreadPool(1);
 
+    /**
+     * Progress monitor for long-running tasks.
+     */
     @Getter
     private ProgressMonitor progressMonitor;
 
+    /**
+     * Cleans up the service.
+     */
     @PreDestroy
     public void teardown() {
         executorService.shutdownNow();
     }
 
+    /**
+     * Captures photos using peripherals like a turntable and camera.
+     *
+     * @param itemId              The ID of the item to capture photos for.
+     * @param capturePhotosParams Parameters for photo capturing.
+     */
     public synchronized void capturePhotos(String itemId, CapturePhotosParams capturePhotosParams) {
 
         if (progressMonitor != null && progressMonitor.getException() == null) {
@@ -89,6 +121,12 @@ public class MediaCreationService {
         });
     }
 
+    /**
+     * Removes the backgrounds from images.
+     *
+     * @param itemId        The ID of the item.
+     * @param imageSetIndex The image-set index containing the images to process.
+     */
     public synchronized void removeBackgrounds(String itemId, int imageSetIndex) {
 
         if (progressMonitor != null && progressMonitor.getException() == null) {
@@ -125,6 +163,11 @@ public class MediaCreationService {
         });
     }
 
+    /**
+     * Creates a new image-set from images not yet referenced by the item.
+     *
+     * @param itemId The item's ID.
+     */
     public synchronized void createImageSetFromDanglingImages(String itemId) {
 
         if (progressMonitor != null && progressMonitor.getException() == null) {
@@ -157,6 +200,11 @@ public class MediaCreationService {
         });
     }
 
+    /**
+     * Creates a new 3D model for the item by starting an external photogrammetry program.
+     *
+     * @param itemId The item's ID.
+     */
     public synchronized void createModel(String itemId) {
 
         if (progressMonitor != null && progressMonitor.getException() == null) {
@@ -173,7 +221,7 @@ public class MediaCreationService {
                         .filter(CreationImageSet::isModelInput)
                         .toList();
 
-                Optional<CreationModelSet> modelSetOptional = modelCreator.createModel(itemId, modelInputImageSets, modelCreator.getDefaultPipeline(), progressMonitor);
+                Optional<CreationModelSet> modelSetOptional = modelCreator.createModel(itemId, modelInputImageSets, progressMonitor);
 
                 if (modelSetOptional.isPresent()) {
                     item.getMediaCreationContent().getModelSets().add(modelSetOptional.get());
@@ -188,6 +236,12 @@ public class MediaCreationService {
         });
     }
 
+    /**
+     * Opens the item's model in an external 3D editor.
+     *
+     * @param itemId        The item's ID.
+     * @param modelSetIndex The model-set index to open the model from.
+     */
     public synchronized void editModel(String itemId, int modelSetIndex) {
         if (progressMonitor != null && progressMonitor.getException() == null) {
             return;
@@ -211,32 +265,50 @@ public class MediaCreationService {
         });
     }
 
-    public List<String> getPipelines() {
-        return modelCreator.getPipelines();
-    }
-
+    /**
+     * Opens the item's images directory with a local file browser.
+     *
+     * @param itemId The item's ID.
+     */
     public void openImagesDir(String itemId) {
         fileUtil.openDirInOs(imageCreator.getImagesDir(itemId, true));
     }
 
+    /**
+     * Opens the item's models directory with a local file browser.
+     *
+     * @param itemId The item's ID.
+     */
     public void openModelsDir(String itemId) {
         fileUtil.openDirInOs(modelCreator.getModelsDir(itemId, true));
     }
 
+    /**
+     * Opens a specific model directory of an item with a local file browser.
+     *
+     * @param itemId The item's ID.
+     */
     public void openModelDir(String itemId, int modelSetIndex) {
         Item item = itemService.load(itemId);
         CreationModelSet creationModelSet = item.getMediaCreationContent().getModelSets().get(modelSetIndex);
-        fileUtil.openDirInOs(projectRootProvider.getProjectRoot().resolve(creationModelSet.getDirectory()));
+        fileUtil.openDirInOs(projectDataProvider.getProjectRoot().resolve(creationModelSet.getDirectory()));
     }
 
+    /**
+     * Returns the {@link Asset}s of an item's model-set.
+     *
+     * @param itemId        The item's ID.
+     * @param modelSetIndex The index of the model-set to load the assets from.
+     * @return List of assets in the model-set.
+     */
     public List<Asset> getModelSetFiles(String itemId, int modelSetIndex) {
         Item item = itemService.load(itemId);
         CreationModelSet creationModelSet = item.getMediaCreationContent().getModelSets().get(modelSetIndex);
-        try (Stream<Path> files = Files.list(projectRootProvider.getProjectRoot().resolve(creationModelSet.getDirectory()))) {
+        try (Stream<Path> files = Files.list(projectDataProvider.getProjectRoot().resolve(creationModelSet.getDirectory()))) {
             return files
                     .map(file -> Asset.builder()
                             .fileName(file.getFileName().toString())
-                            .url(createModelFileUrl(file.getFileName().toString()))
+                            .url(createModelLogoUrl(file.getFileName().toString()))
                             .transferable(file.getFileName().toString().endsWith("glb") || file.getFileName().toString().endsWith("gltf"))
                             .build())
                     .toList();
@@ -246,8 +318,14 @@ public class MediaCreationService {
         }
     }
 
-    private String createModelFileUrl(String fileName) {
-        String file = fileName.toLowerCase();
+    /**
+     * Creates a logo file to display for a given model file.
+     *
+     * @param filename The filename to determine the logo for.
+     * @return The logo filename.
+     */
+    private String createModelLogoUrl(String filename) {
+        String file = filename.toLowerCase();
         if (file.endsWith("glb") || file.endsWith("gltf")) {
             return "gltf-logo.png";
         } else if (file.endsWith("blend") || file.endsWith("blend1")) {
@@ -260,6 +338,12 @@ public class MediaCreationService {
         return "unknown-file-logo.png";
     }
 
+    /**
+     * Transfers an image from an item's media-creation section to its media.
+     *
+     * @param itemId The item's ID.
+     * @param image  The image to transfer.
+     */
     public void transferImageToMedia(String itemId, Asset image) {
         Path sourcePath = imageCreator.getTransferSourcePath(itemId, image);
         Path targetPath = imageCreator.getTransferTargetPath(itemId, image);
@@ -273,12 +357,19 @@ public class MediaCreationService {
         }
     }
 
-    public void transferModelToMedia(String itemId, int modelSetIndex, Asset file) {
+    /**
+     * Transfers a model from an item's media-creation section to its media.
+     *
+     * @param itemId        The item's ID.
+     * @param modelSetIndex Index to the model-set containing the model file.
+     * @param model         The model to transfer.
+     */
+    public void transferModelToMedia(String itemId, int modelSetIndex, Asset model) {
         Item item = itemService.load(itemId);
         CreationModelSet creationModelSet = item.getMediaCreationContent().getModelSets().get(modelSetIndex);
 
-        Path sourcePath = projectRootProvider.getProjectRoot().resolve(creationModelSet.getDirectory()).resolve(file.getFileName());
-        Path targetPath = modelCreator.getTransferTargetPath(itemId, file);
+        Path sourcePath = projectDataProvider.getProjectRoot().resolve(creationModelSet.getDirectory()).resolve(model.getFileName());
+        Path targetPath = modelCreator.getTransferTargetPath(itemId, model);
         try {
             Files.copy(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
             item.getMediaContent().getModels().add(targetPath.getFileName().toString());
@@ -288,20 +379,38 @@ public class MediaCreationService {
         }
     }
 
+    /**
+     * Deletes an item's image-set.
+     *
+     * @param itemId        The item's ID.
+     * @param imageSetIndex The index of the image-set to delete.
+     */
     public void deleteImageSet(String itemId, int imageSetIndex) {
         Item item = itemService.load(itemId);
         item.getMediaCreationContent().getImageSets().remove(imageSetIndex);
         itemService.save(item);
     }
 
+    /**
+     * Deletes an item's model-set.
+     *
+     * @param itemId        The item's ID.
+     * @param modelSetIndex The index of the model-set to delete.
+     */
     public void deleteModelSet(String itemId, int modelSetIndex) {
         Item item = itemService.load(itemId);
         CreationModelSet creationModelSet = item.getMediaCreationContent().getModelSets().get(modelSetIndex);
-        fileUtil.deleteDir(projectRootProvider.getProjectRoot().resolve(Path.of(creationModelSet.getDirectory())).toAbsolutePath());
+        fileUtil.deleteDir(projectDataProvider.getProjectRoot().resolve(Path.of(creationModelSet.getDirectory())).toAbsolutePath());
         item.getMediaCreationContent().getModelSets().remove(modelSetIndex);
         itemService.save(item);
     }
 
+    /**
+     * Toggles the "model-input" property of an image-set.
+     *
+     * @param itemId        The item's ID.
+     * @param imageSetIndex The index to the image-set that should be modified.
+     */
     public void toggleModelInput(String itemId, int imageSetIndex) {
         Item item = itemService.load(itemId);
         item.getMediaCreationContent().getImageSets().get(imageSetIndex).setModelInput(

@@ -1,7 +1,6 @@
 package com.arassec.artivact.backend.service.creator.adapter;
 
-import com.arassec.artivact.backend.service.model.configuration.AdapterConfiguration;
-import com.arassec.artivact.backend.service.util.ProgressMonitor;
+import com.arassec.artivact.backend.service.misc.ProgressMonitor;
 
 import java.util.Optional;
 
@@ -46,20 +45,5 @@ public interface Adapter<I extends AdapterInitParams, T> {
      * @return Adapter result of the processing, if any.
      */
     Optional<T> teardown();
-
-    /**
-     * Tests the adapter's configuration.
-     *
-     * @param adapterConfiguration The adapter configuration.
-     */
-    void testConfiguration(AdapterConfiguration adapterConfiguration);
-
-    /**
-     * Tests whether the adapter is alive and can be used.
-     *
-     * @param adapterConfiguration The adapter configuration.
-     * @return {@code true} if the adapter is healthy, {@code false} otherwise.
-     */
-    boolean healthy(AdapterConfiguration adapterConfiguration);
 
 }

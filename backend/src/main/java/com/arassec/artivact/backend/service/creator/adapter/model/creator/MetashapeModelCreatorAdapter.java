@@ -1,8 +1,6 @@
 package com.arassec.artivact.backend.service.creator.adapter.model.creator;
 
 import com.arassec.artivact.backend.service.creator.adapter.AdapterImplementation;
-import com.arassec.artivact.backend.service.exception.ArtivactException;
-import com.arassec.artivact.backend.service.model.configuration.AdapterConfiguration;
 import com.arassec.artivact.backend.service.util.CmdUtil;
 import com.arassec.artivact.backend.service.util.FileUtil;
 import lombok.Getter;
@@ -13,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Adapter implementation that uses "Metashape" for model creation.
@@ -23,11 +20,6 @@ import java.util.Optional;
 @Getter
 @RequiredArgsConstructor
 public class MetashapeModelCreatorAdapter extends BaseModelCreatorAdapter {
-
-    /**
-     * The implementation supported by this adapter.
-     */
-    private final AdapterImplementation supportedImplementation = AdapterImplementation.METASHAPE_MODEL_CREATOR_ADAPTER;
 
     /**
      * The commandline util.
@@ -43,23 +35,15 @@ public class MetashapeModelCreatorAdapter extends BaseModelCreatorAdapter {
      * {@inheritDoc}
      */
     @Override
-    public Optional<String> getDefaultPipeline() {
-        return Optional.empty();
+    public AdapterImplementation getSupportedImplementation() {
+        return AdapterImplementation.METASHAPE_MODEL_CREATOR_ADAPTER;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<String> getPipelines() {
-        return List.of();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ModelCreationResult createModel(List<Path> images, String pipeline) {
+    public ModelCreationResult createModel(List<Path> images) {
         Path tempDir = initParams.getTempDir();
 
         Path resultDir = tempDir.resolve("metashape-export/").toAbsolutePath();
@@ -75,44 +59,6 @@ public class MetashapeModelCreatorAdapter extends BaseModelCreatorAdapter {
         cmdUtil.execute(new CommandLine(initParams.getAdapterConfiguration().getConfigValue(getSupportedImplementation())));
 
         return new ModelCreationResult(resultDir, "metashape");
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void cancelModelCreation() {
-        throw new ArtivactException("Cancellation is not supported by " + this.getClass().getSimpleName());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean supportsCancellation() {
-        return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void testConfiguration(AdapterConfiguration adapterConfiguration) {
-        if (!cmdUtil.execute(new CommandLine(adapterConfiguration.getConfigValue(getSupportedImplementation())))) {
-            throw new ArtivactException("Configured file could not be executed!");
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean healthy(AdapterConfiguration adapterConfiguration) {
-        try {
-            return fileUtil.isFileExecutable(adapterConfiguration.getConfigValue(getSupportedImplementation()));
-        } catch (Exception e) {
-            return false;
-        }
     }
 
 }

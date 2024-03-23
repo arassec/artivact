@@ -7,21 +7,36 @@ import com.arassec.artivact.backend.service.model.page.WidgetType;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * The avatar widget, showing a central image with optional subtext.
+ */
 @Getter
 @Setter
 public class AvatarWidget extends Widget implements FileProcessingWidget {
 
+    /**
+     * The image.
+     */
     private String avatarImage;
 
+    /**
+     * The subtext.
+     */
     private TranslatableString avatarSubtext;
 
+    /**
+     * Creates an instance.
+     */
     public AvatarWidget() {
         super(WidgetType.AVATAR);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void processFile(String fileName) {
-        this.avatarImage = fileName;
+    public void processFile(String filename) {
+        this.avatarImage = filename;
     }
 
 }

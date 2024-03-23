@@ -26,20 +26,40 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
+/**
+ * Service for configuration management.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class ConfigurationService extends BaseService {
 
+    /**
+     * Repository to configuration entities.
+     */
     private final ConfigurationEntityRepository configurationEntityRepository;
 
+    /**
+     * Service for page handling.
+     */
     private final PageService pageService;
 
+    /**
+     * Spring's environment.
+     */
     private final Environment environment;
 
+    /**
+     * The application's object mapper.
+     */
     @Getter
     private final ObjectMapper objectMapper;
 
+    /**
+     * Loads the current property configuration.
+     *
+     * @return The properties currently configured.
+     */
     @RestrictResult
     public PropertiesConfiguration loadPropertiesConfiguration() {
         ConfigurationEntity entity = loadOrCreateEntity(ConfigurationType.PROPERTIES.name());
@@ -49,11 +69,21 @@ public class ConfigurationService extends BaseService {
         return new PropertiesConfiguration();
     }
 
+    /**
+     * Saves a property configuration.
+     *
+     * @param propertiesConfiguration The configuration to save.
+     */
     @GenerateIds
     public void savePropertiesConfiguration(PropertiesConfiguration propertiesConfiguration) {
         saveEntity(ConfigurationType.PROPERTIES, toJson(propertiesConfiguration));
     }
 
+    /**
+     * Loads the translated properties within their categories.
+     *
+     * @return The current properties.
+     */
     @TranslateResult
     @RestrictResult
     public List<PropertyCategory> loadTranslatedProperties() {
@@ -61,6 +91,11 @@ public class ConfigurationService extends BaseService {
         return propertiesConfiguration.getCategories();
     }
 
+    /**
+     * Loads the current license configuration.
+     *
+     * @return The current license configuration.
+     */
     @TranslateResult
     public LicenseConfiguration loadLicenseConfiguration() {
         ConfigurationEntity entity = loadOrCreateEntity(ConfigurationType.LICENSE.name());
@@ -75,14 +110,29 @@ public class ConfigurationService extends BaseService {
         }
     }
 
+    /**
+     * Saves a license configuration.
+     *
+     * @param licenseConfiguration The configuration to save.
+     */
     public void saveLicenseConfiguration(LicenseConfiguration licenseConfiguration) {
         saveEntity(ConfigurationType.LICENSE, toJson(licenseConfiguration));
     }
 
+    /**
+     * Returns whether the application is run in desktop-mode or server-mode.
+     *
+     * @return {@code true} if the application is run in desktop-mode, {@code false} otherwise.
+     */
     public boolean isDesktopMode() {
         return environment.matchesProfiles("desktop");
     }
 
+    /**
+     * Loads the current appearance configuration of the application.
+     *
+     * @return The current appearance configuration.
+     */
     public AppearanceConfiguration loadAppearanceConfiguration() {
         ConfigurationEntity entity = loadOrCreateEntity(ConfigurationType.APPEARANCE.name());
         if (StringUtils.hasText(entity.getContentJson())) {
@@ -122,10 +172,20 @@ public class ConfigurationService extends BaseService {
         }
     }
 
+    /**
+     * Saves an appearance configuration.
+     *
+     * @param appearanceConfiguration The configuration to save.
+     */
     public void saveAppearanceConfiguration(AppearanceConfiguration appearanceConfiguration) {
         saveEntity(ConfigurationType.APPEARANCE, toJson(appearanceConfiguration));
     }
 
+    /**
+     * Loads the current tag configuration.
+     *
+     * @return The current tag configuration.
+     */
     @RestrictResult
     @TranslateResult
     public TagsConfiguration loadTagsConfiguration() {
@@ -133,11 +193,21 @@ public class ConfigurationService extends BaseService {
         return fromJson(entity.getContentJson(), TagsConfiguration.class);
     }
 
+    /**
+     * Saves a tag configuration.
+     *
+     * @param tagsConfiguration The configuration to save.
+     */
     @GenerateIds
     public void saveTagsConfiguration(TagsConfiguration tagsConfiguration) {
         saveEntity(ConfigurationType.TAGS, toJson(tagsConfiguration));
     }
 
+    /**
+     * Loads the current adapter configuration.
+     *
+     * @return The current adapter configuration.
+     */
     public AdapterConfiguration loadAdapterConfiguration() {
         ConfigurationEntity entity = loadOrCreateEntity(ConfigurationType.ADAPTER.name());
         AdapterConfiguration adapterConfiguration = fromJson(entity.getContentJson(), AdapterConfiguration.class);
@@ -205,6 +275,11 @@ public class ConfigurationService extends BaseService {
         return adapterConfiguration;
     }
 
+    /**
+     * Saves an adapter configuration.
+     *
+     * @param adapterConfiguration The configuration to save.
+     */
     public void saveAdapterConfiguration(AdapterConfiguration adapterConfiguration) {
         // Available options are computed on load and must not be saved:
         adapterConfiguration.setAvailableBackgroundRemovalAdapterImplementations(List.of());
@@ -215,15 +290,30 @@ public class ConfigurationService extends BaseService {
         saveEntity(ConfigurationType.ADAPTER, toJson(adapterConfiguration));
     }
 
+    /**
+     * Loads the current exchange configuration.
+     *
+     * @return The current exchange configuration.
+     */
     public ExchangeConfiguration loadExchangeConfiguration() {
         ConfigurationEntity entity = loadOrCreateEntity(ConfigurationType.EXCHANGE.name());
         return fromJson(entity.getContentJson(), ExchangeConfiguration.class);
     }
 
+    /**
+     * Saves an exchange configuration.
+     *
+     * @param exchangeConfiguration The configuration to save.
+     */
     public void saveExchangeConfiguration(ExchangeConfiguration exchangeConfiguration) {
         saveEntity(ConfigurationType.EXCHANGE, toJson(exchangeConfiguration));
     }
 
+    /**
+     * Loads translated menus.
+     *
+     * @return The currently configured, translated application menus.
+     */
     @RestrictResult
     @TranslateResult
     public List<Menu> loadTranslatedMenus() {
@@ -231,6 +321,12 @@ public class ConfigurationService extends BaseService {
                 loadOrCreateEntity(ConfigurationType.MENU.name()).getContentJson(), MenuConfiguration.class).getMenus();
     }
 
+    /**
+     * Saves the given menus.
+     *
+     * @param menus The menus to save.
+     * @return The updated, translated menus after saving.
+     */
     @GenerateIds
     @RestrictResult
     @TranslateResult
@@ -251,6 +347,12 @@ public class ConfigurationService extends BaseService {
         return loadTranslatedMenus();
     }
 
+    /**
+     * Saves a single menu.
+     *
+     * @param menu The menu to save.
+     * @return All application menus, translated, and including the new menu.
+     */
     @GenerateIds
     @RestrictResult
     @TranslateResult
@@ -294,6 +396,12 @@ public class ConfigurationService extends BaseService {
         return loadTranslatedMenus();
     }
 
+    /**
+     * Deletes a menu.
+     *
+     * @param menuId The ID of the menu to delete.
+     * @return All remaining application menus, translated.
+     */
     @RestrictResult
     @TranslateResult
     public List<Menu> deleteMenu(String menuId) {
@@ -341,6 +449,12 @@ public class ConfigurationService extends BaseService {
         return loadTranslatedMenus();
     }
 
+    /**
+     * Adds an empty page to the given menu.
+     *
+     * @param menuId The ID of the menu to add a new page to.
+     * @return All application menus, translated.
+     */
     @RestrictResult
     @TranslateResult
     public List<Menu> addPageToMenu(String menuId) {
@@ -364,6 +478,12 @@ public class ConfigurationService extends BaseService {
         return loadTranslatedMenus();
     }
 
+    /**
+     * Loads or creates a new configuration entity.
+     *
+     * @param id The ID of the configuration entity to load/create.
+     * @return The entity.
+     */
     private ConfigurationEntity loadOrCreateEntity(String id) {
         Optional<ConfigurationEntity> entityOptional = configurationEntityRepository.findById(id);
 
@@ -378,6 +498,12 @@ public class ConfigurationService extends BaseService {
         return entity;
     }
 
+    /**
+     * Saves a configuration entity.
+     *
+     * @param configurationType The type of configuration.
+     * @param contentJson       The content to save.
+     */
     private void saveEntity(ConfigurationType configurationType, String contentJson) {
         ConfigurationEntity entity = loadOrCreateEntity(configurationType.name());
         entity.setContentJson(contentJson);

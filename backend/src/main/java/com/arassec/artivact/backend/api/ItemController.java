@@ -1,13 +1,13 @@
 package com.arassec.artivact.backend.api;
 
-import com.arassec.artivact.backend.api.model.Asset;
+import com.arassec.artivact.backend.service.model.item.Asset;
 import com.arassec.artivact.backend.api.model.ImageSet;
 import com.arassec.artivact.backend.api.model.ItemDetails;
 import com.arassec.artivact.backend.api.model.ModelSet;
 import com.arassec.artivact.backend.service.ItemService;
 import com.arassec.artivact.backend.service.exception.ArtivactException;
 import com.arassec.artivact.backend.service.model.item.*;
-import com.arassec.artivact.backend.service.util.ProjectRootProvider;
+import com.arassec.artivact.backend.service.misc.ProjectDataProvider;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,9 +39,9 @@ public class ItemController extends BaseController {
     private final ItemService itemService;
 
     /**
-     * The application's {@link ProjectRootProvider}.
+     * The application's {@link ProjectDataProvider}.
      */
-    private final ProjectRootProvider projectRootProvider;
+    private final ProjectDataProvider projectDataProvider;
 
     /**
      * Creates a new item.
@@ -108,7 +108,7 @@ public class ItemController extends BaseController {
                                 ModelSet.builder()
                                         .directory(creationModelSet.getDirectory())
                                         .comment(creationModelSet.getComment())
-                                        .modelSetImage(createModelSetImageUrl(projectRootProvider.getProjectRoot().resolve(creationModelSet.getDirectory())))
+                                        .modelSetImage(createModelSetImageUrl(projectDataProvider.getProjectRoot().resolve(creationModelSet.getDirectory())))
                                         .build())
                         .toList()
                 )
@@ -241,7 +241,7 @@ public class ItemController extends BaseController {
     public ResponseEntity<StreamingResponseBody> downloadMedia(HttpServletResponse response,
                                                                @PathVariable String itemId) {
 
-        List<String> mediaFiles = itemService.getFilesForDownload(itemId);
+        List<String> mediaFiles = itemService.getMediaFiles(itemId);
 
         StreamingResponseBody streamResponseBody = out -> {
             final ZipOutputStream zipOutputStream = new ZipOutputStream(response.getOutputStream());

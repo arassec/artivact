@@ -71,7 +71,7 @@
 <script setup lang="ts">
 import {PropType, ref, toRef} from 'vue';
 import ArtivactRestrictionsEditor from 'components/ArtivactRestrictionsEditor.vue';
-import {BaseRestrictedItem, TranslatableString} from 'components/artivact-models';
+import {BaseRestrictedObject, TranslatableString} from 'components/artivact-models';
 import {useLocaleStore} from 'stores/locale';
 
 const props = defineProps({
@@ -96,7 +96,7 @@ const props = defineProps({
   },
   restrictedItem: {
     required: false,
-    type: Object as PropType<BaseRestrictedItem>,
+    type: Object as PropType<BaseRestrictedObject>,
   },
   locales: {
     required: true,

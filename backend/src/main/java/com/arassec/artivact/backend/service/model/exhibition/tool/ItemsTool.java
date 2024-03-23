@@ -8,13 +8,23 @@ import lombok.Setter;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Tool to display items in an exhibition.
+ */
 @Getter
 @Setter
 public class ItemsTool extends Tool {
 
+    /**
+     * The item IDs.
+     */
     private List<String> itemIds = new LinkedList<>();
 
+    /**
+     * Creates a new instance.
+     */
     public ItemsTool() {
         super(ToolType.ITEMS);
     }
+
 }

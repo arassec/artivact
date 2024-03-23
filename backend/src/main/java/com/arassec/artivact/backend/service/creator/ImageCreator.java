@@ -1,8 +1,9 @@
 package com.arassec.artivact.backend.service.creator;
 
-import com.arassec.artivact.backend.api.model.Asset;
+import com.arassec.artivact.backend.service.model.item.Asset;
 import com.arassec.artivact.backend.service.ConfigurationService;
 import com.arassec.artivact.backend.service.creator.adapter.Adapter;
+import com.arassec.artivact.backend.service.creator.adapter.AdapterImplementation;
 import com.arassec.artivact.backend.service.creator.adapter.image.background.BackgroundRemovalAdapter;
 import com.arassec.artivact.backend.service.creator.adapter.image.background.BackgroundRemovalInitParams;
 import com.arassec.artivact.backend.service.creator.adapter.image.camera.CameraAdapter;
@@ -10,13 +11,12 @@ import com.arassec.artivact.backend.service.creator.adapter.image.camera.CameraI
 import com.arassec.artivact.backend.service.creator.adapter.image.turntable.TurntableAdapter;
 import com.arassec.artivact.backend.service.creator.adapter.image.turntable.TurntableInitParams;
 import com.arassec.artivact.backend.service.exception.ArtivactException;
-import com.arassec.artivact.backend.service.model.ProjectDir;
 import com.arassec.artivact.backend.service.model.configuration.AdapterConfiguration;
 import com.arassec.artivact.backend.service.model.item.CreationImageSet;
-import com.arassec.artivact.backend.service.util.DirectoryWatcher;
+import com.arassec.artivact.backend.service.creator.util.DirectoryWatcher;
 import com.arassec.artivact.backend.service.util.FileUtil;
-import com.arassec.artivact.backend.service.util.ProgressMonitor;
-import com.arassec.artivact.backend.service.util.ProjectRootProvider;
+import com.arassec.artivact.backend.service.misc.ProgressMonitor;
+import com.arassec.artivact.backend.service.misc.ProjectDataProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,10 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -49,7 +52,7 @@ public class ImageCreator extends BaseCreator {
      * Provides the project's root directory.
      */
     @Getter
-    private final ProjectRootProvider projectRootProvider;
+    private final ProjectDataProvider projectDataProvider;
 
     /**
      * Watches for new images in the filesystem during photo capturing.
@@ -65,9 +68,11 @@ public class ImageCreator extends BaseCreator {
     /**
      * List of all available adapters.
      */
-    @Getter
     private final List<Adapter<?, ?>> adapters;
 
+    /**
+     * The application's {@link FileUtil}.
+     */
     private final FileUtil fileUtil;
 
     /**
@@ -189,7 +194,55 @@ public class ImageCreator extends BaseCreator {
         Path imagesDir = getImagesDir(itemId, true);
         int nextAssetNumber = getNextAssetNumber(imagesDir);
         String extension = FilenameUtils.getExtension(image.getFileName());
-        return projectRootProvider.getProjectRoot().resolve(getImagePath(itemId, nextAssetNumber, extension));
+        return projectDataProvider.getProjectRoot().resolve(getImagePath(itemId, nextAssetNumber, extension));
+    }
+
+    /**
+     * Returns the desired adapter.
+     *
+     * @param adapterConfiguration The current adapter configuration.
+     * @return The configured {@link TurntableAdapter}.
+     */
+    private TurntableAdapter getTurntableAdapter(AdapterConfiguration adapterConfiguration) {
+        AdapterImplementation adapterImplementation = adapterConfiguration.getTurntableAdapterImplementation();
+        return adapters.stream()
+                .filter(TurntableAdapter.class::isInstance)
+                .map(TurntableAdapter.class::cast)
+                .filter(adapter -> adapter.supports(adapterImplementation))
+                .findAny()
+                .orElseThrow(() -> new ArtivactException(NO_ADAPTER_ERROR));
+    }
+
+    /**
+     * Returns the desired adapter.
+     *
+     * @param adapterConfiguration The current adapter configuration.
+     * @return The configured {@link CameraAdapter}.
+     */
+    private CameraAdapter getCameraAdapter(AdapterConfiguration adapterConfiguration) {
+        AdapterImplementation adapterImplementation = adapterConfiguration.getCameraAdapterImplementation();
+        return adapters.stream()
+                .filter(CameraAdapter.class::isInstance)
+                .map(CameraAdapter.class::cast)
+                .filter(adapter -> adapter.supports(adapterImplementation))
+                .findAny()
+                .orElseThrow(() -> new ArtivactException(NO_ADAPTER_ERROR));
+    }
+
+    /**
+     * Returns the desired adapter.
+     *
+     * @param adapterConfiguration The current adapter configuration.
+     * @return The configured {@link BackgroundRemovalAdapter}.
+     */
+    private BackgroundRemovalAdapter getBackgroundRemovalAdapter(AdapterConfiguration adapterConfiguration) {
+        AdapterImplementation adapterImplementation = adapterConfiguration.getBackgroundRemovalAdapterImplementation();
+        return adapters.stream()
+                .filter(BackgroundRemovalAdapter.class::isInstance)
+                .map(BackgroundRemovalAdapter.class::cast)
+                .filter(adapter -> adapter.supports(adapterImplementation))
+                .findAny()
+                .orElseThrow(() -> new ArtivactException(NO_ADAPTER_ERROR));
     }
 
     /**
@@ -204,13 +257,13 @@ public class ImageCreator extends BaseCreator {
 
             progressMonitor.updateLabelKey("imageSetInProgress");
 
-            List<String> fileNames = new LinkedList<>();
+            List<String> filenames = new LinkedList<>();
             var index = new AtomicInteger(0);
             images.forEach(image -> {
-                fileNames.add(addImage(itemId, image));
+                filenames.add(addImage(itemId, image));
                 progressMonitor.updateProgress(index.addAndGet(1), images.size());
             });
-            targetCreationImageSet.getFiles().addAll(fileNames);
+            targetCreationImageSet.getFiles().addAll(filenames);
         }
     }
 
@@ -249,7 +302,7 @@ public class ImageCreator extends BaseCreator {
         var firstSubDir = getSubDir(itemId, 0);
         var secondSubDir = getSubDir(itemId, 1);
         var imageName = getAssetName(assetNumber, extension);
-        return Path.of(ProjectDir.ITEMS_DIR, firstSubDir, secondSubDir, itemId, ProjectDir.IMAGES_DIR, imageName);
+        return Path.of(ProjectDataProvider.ITEMS_DIR, firstSubDir, secondSubDir, itemId, ProjectDataProvider.IMAGES_DIR, imageName);
     }
 
     /**
@@ -296,8 +349,7 @@ public class ImageCreator extends BaseCreator {
                 continue;
             }
             try (RandomAccessFile raFile = new RandomAccessFile(file.toAbsolutePath().toString(), "rw")) {
-                raFile.close();
-                return true;
+                return raFile.getFD() != null;
             } catch (IOException e) {
                 log.debug("File not ready for processing ({})!", i);
             }

@@ -3,7 +3,7 @@ package com.arassec.artivact.backend.service.creator.adapter.image.camera;
 import com.arassec.artivact.backend.service.creator.adapter.AdapterImplementation;
 import com.arassec.artivact.backend.service.exception.ArtivactException;
 import com.arassec.artivact.backend.service.model.configuration.AdapterConfiguration;
-import com.arassec.artivact.backend.service.util.ProgressMonitor;
+import com.arassec.artivact.backend.service.misc.ProgressMonitor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +44,14 @@ public class DigiCamControlRemoteCameraAdapter extends BaseCameraAdapter {
      * {@inheritDoc}
      */
     @Override
+    public AdapterImplementation getSupportedImplementation() {
+        return AdapterImplementation.DIGI_CAM_CONTROL_REMOTE_CAMERA_ADAPTER;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void initialize(ProgressMonitor progressMonitor, CameraInitParams initParams) {
         super.initialize(progressMonitor, initParams);
         executeRemoteCommand(initParams.getAdapterConfiguration(), SET_SESSION_FOLDER_CMD
@@ -56,33 +64,6 @@ public class DigiCamControlRemoteCameraAdapter extends BaseCameraAdapter {
     @Override
     public void captureImage(String filename) {
         executeRemoteCommand(initParams.getAdapterConfiguration(), CAPTURE_CMD + filename);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void testConfiguration(AdapterConfiguration adapterConfiguration) {
-        executeRemoteCommand(adapterConfiguration, "");
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @SuppressWarnings("java:S3516") // sonar false positive: "Refactor this method to not always return the same value."
-    public boolean healthy(AdapterConfiguration adapterConfiguration) {
-        try {
-            executeRemoteCommand(adapterConfiguration, "");
-        } catch (Exception e) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public AdapterImplementation getSupportedImplementation() {
-        return AdapterImplementation.DIGI_CAM_CONTROL_REMOTE_CAMERA_ADAPTER;
     }
 
     /**

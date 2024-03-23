@@ -21,17 +21,33 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.StreamSupport;
 
+/**
+ * Service for managing application accounts.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class AccountService implements UserDetailsService {
 
+    /**
+     * The initial user's username.
+     */
     private static final String INITIAL_USERNAME = "admin";
 
+    /**
+     * Repository for accounts.
+     */
     private final AccountEntityRepository accountEntityRepository;
 
+    /**
+     * Password encoder.
+     */
     private final PasswordEncoder passwordEncoder;
 
+    /**
+     * Initializes the application by creating an initial user account if none is available. The password is printed
+     * to the application's log.
+     */
     @PostConstruct
     public void initialize() {
         if (!accountEntityRepository.findAll().iterator().hasNext()) {
@@ -73,6 +89,12 @@ public class AccountService implements UserDetailsService {
         throw new UsernameNotFoundException("No account with username " + username + " found!");
     }
 
+    /**
+     * Loads the current user's account data.
+     *
+     * @param username The username.
+     * @return The account.
+     */
     public Optional<Account> loadOwnAccount(String username) {
         Optional<AccountEntity> accountEntityOptional = accountEntityRepository.findByUsername(username);
         if (accountEntityOptional.isPresent()) {
@@ -85,6 +107,35 @@ public class AccountService implements UserDetailsService {
         return Optional.empty();
     }
 
+    /**
+     * Updates the current user's account data.
+     *
+     * @param originalUsername The original username.
+     * @param account          The account data to update.
+     * @return The updated account.
+     */
+    public Account updateOwnAccount(String originalUsername, Account account) {
+        AccountEntity accountEntity = accountEntityRepository.findById(account.getId()).orElseThrow();
+
+        if (originalUsername == null || !originalUsername.equals(accountEntity.getUsername())) {
+            throw new IllegalStateException("Account does not match logged in user!");
+        }
+
+        updateEntityValues(account, accountEntity);
+
+        AccountEntity savedAccountEntity = accountEntityRepository.save(accountEntity);
+
+        account.setVersion(savedAccountEntity.getVersion());
+
+        return account;
+    }
+
+    /**
+     * Loads an account by its API token.
+     *
+     * @param apiToken The API token of the account to load.
+     * @return The account.
+     */
     public Optional<Account> loadByApiToken(String apiToken) {
         if (!StringUtils.hasText(apiToken)) {
             return Optional.empty();
@@ -93,31 +144,12 @@ public class AccountService implements UserDetailsService {
         return accountEntityOptional.map(this::mapEntity);
     }
 
-    public Account updateOwnAccount(String originalUsername, Account account) {
-        AccountEntity accountEntity = accountEntityRepository.findById(account.getId()).orElseThrow();
-
-        if (originalUsername == null || !originalUsername.equals(accountEntity.getUsername())) {
-            throw new IllegalStateException("Account does not match logged in user!");
-        }
-
-        if (StringUtils.hasText(account.getUsername())) {
-            accountEntity.setUsername(account.getUsername());
-        }
-
-        if (StringUtils.hasText(account.getPassword())) {
-            accountEntity.setPassword(passwordEncoder.encode(account.getPassword()));
-        }
-
-        accountEntity.setEmail(account.getEmail());
-        accountEntity.setApiToken(account.getApiToken());
-
-        AccountEntity savedAccountEntity = accountEntityRepository.save(accountEntity);
-
-        account.setVersion(savedAccountEntity.getVersion());
-
-        return account;
-    }
-
+    /**
+     * Loads all accounts except the one with the given username.
+     *
+     * @param username The username of the account to exclude from the result.
+     * @return Accounts.
+     */
     public List<Account> loadAllExcept(String username) {
         return StreamSupport.stream(accountEntityRepository.findAll().spliterator(), false)
                 .filter(entity -> !entity.getUsername().equals(username))
@@ -125,33 +157,12 @@ public class AccountService implements UserDetailsService {
                 .toList();
     }
 
-    public Account update(Account account) {
-        if (account == null) {
-            throw new IllegalArgumentException("Account must be set to update it!");
-        }
-
-        AccountEntity accountEntity = accountEntityRepository.findById(account.getId()).orElseThrow();
-
-        if (StringUtils.hasText(account.getUsername())) {
-            accountEntity.setUsername(account.getUsername());
-        }
-
-        if (StringUtils.hasText(account.getPassword())) {
-            accountEntity.setPassword(passwordEncoder.encode(account.getPassword()));
-        }
-
-        accountEntity.setEmail(account.getEmail());
-        accountEntity.setApiToken(account.getApiToken());
-        accountEntity.setRoles(getRoles(account));
-
-        AccountEntity savedAccountEntity = accountEntityRepository.save(accountEntity);
-
-        account.setVersion(savedAccountEntity.getVersion());
-        account.setPassword(null);
-
-        return account;
-    }
-
+    /**
+     * Creates a new account.
+     *
+     * @param account The initial account data to use.
+     * @return The newly created account.
+     */
     public Account create(Account account) {
         AccountEntity accountEntity = new AccountEntity();
         accountEntity.setUsername(account.getUsername());
@@ -169,10 +180,65 @@ public class AccountService implements UserDetailsService {
         return account;
     }
 
+    /**
+     * Updates the given account data.
+     *
+     * @param account The account to update.
+     * @return The updated account.
+     */
+    public Account update(Account account) {
+        if (account == null) {
+            throw new IllegalArgumentException("Account must be set to update it!");
+        }
+
+        AccountEntity accountEntity = accountEntityRepository.findById(account.getId()).orElseThrow();
+
+        updateEntityValues(account, accountEntity);
+
+        accountEntity.setRoles(getRoles(account));
+
+        AccountEntity savedAccountEntity = accountEntityRepository.save(accountEntity);
+
+        account.setVersion(savedAccountEntity.getVersion());
+        account.setPassword(null);
+
+        return account;
+    }
+
+    /**
+     * Updates the entity with the values from the account.
+     *
+     * @param account       The account.
+     * @param accountEntity The account entity to update.
+     */
+    private void updateEntityValues(Account account, AccountEntity accountEntity) {
+        if (StringUtils.hasText(account.getUsername())) {
+            accountEntity.setUsername(account.getUsername());
+        }
+
+        if (StringUtils.hasText(account.getPassword())) {
+            accountEntity.setPassword(passwordEncoder.encode(account.getPassword()));
+        }
+
+        accountEntity.setEmail(account.getEmail());
+        accountEntity.setApiToken(account.getApiToken());
+    }
+
+    /**
+     * Deletes the account with the given ID.
+     *
+     * @param accountId The account's ID.
+     */
     public void delete(int accountId) {
         accountEntityRepository.deleteById(accountId);
     }
 
+    /**
+     * Maps the persistence {@link AccountEntity} to the {@link Account} object.
+     *
+     * @param accountEntity The persistence entity.
+     * @return The account.
+     */
     private Account mapEntity(AccountEntity accountEntity) {
         return Account.builder()
                 .id(accountEntity.getId())
@@ -185,10 +251,23 @@ public class AccountService implements UserDetailsService {
                 .build();
     }
 
+    /**
+     * Returns whether the comma-separated list of roles contains the given role.
+     *
+     * @param roles Comma-separated list of roles.
+     * @param role  The role to check.
+     * @return {@code true}, if the roles contain the given role. {@code false} otherwise.
+     */
     private boolean hasRole(String roles, String role) {
         return List.of(roles.split(",")).contains(role);
     }
 
+    /**
+     * Returns the account's roles.
+     *
+     * @param account The account to get the roles for.
+     * @return The roles as comma-separated list.
+     */
     private String getRoles(Account account) {
         List<String> roles = new LinkedList<>();
         if (account.getUser() != null && account.getUser()) {

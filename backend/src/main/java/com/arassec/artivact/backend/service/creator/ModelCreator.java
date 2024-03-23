@@ -1,21 +1,21 @@
 package com.arassec.artivact.backend.service.creator;
 
-import com.arassec.artivact.backend.api.model.Asset;
+import com.arassec.artivact.backend.service.model.item.Asset;
 import com.arassec.artivact.backend.service.ConfigurationService;
 import com.arassec.artivact.backend.service.creator.adapter.Adapter;
+import com.arassec.artivact.backend.service.creator.adapter.AdapterImplementation;
 import com.arassec.artivact.backend.service.creator.adapter.model.creator.ModelCreationResult;
 import com.arassec.artivact.backend.service.creator.adapter.model.creator.ModelCreatorAdapter;
 import com.arassec.artivact.backend.service.creator.adapter.model.creator.ModelCreatorInitParams;
 import com.arassec.artivact.backend.service.creator.adapter.model.editor.ModelEditorAdapter;
 import com.arassec.artivact.backend.service.creator.adapter.model.editor.ModelEditorInitParams;
 import com.arassec.artivact.backend.service.exception.ArtivactException;
-import com.arassec.artivact.backend.service.model.ProjectDir;
 import com.arassec.artivact.backend.service.model.configuration.AdapterConfiguration;
 import com.arassec.artivact.backend.service.model.item.CreationImageSet;
 import com.arassec.artivact.backend.service.model.item.CreationModelSet;
 import com.arassec.artivact.backend.service.util.FileUtil;
-import com.arassec.artivact.backend.service.util.ProgressMonitor;
-import com.arassec.artivact.backend.service.util.ProjectRootProvider;
+import com.arassec.artivact.backend.service.misc.ProgressMonitor;
+import com.arassec.artivact.backend.service.misc.ProjectDataProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +50,7 @@ public class ModelCreator extends BaseCreator {
      * Provides the project's root directory.
      */
     @Getter
-    private final ProjectRootProvider projectRootProvider;
+    private final ProjectDataProvider projectDataProvider;
 
     /**
      * The file util.
@@ -66,7 +66,6 @@ public class ModelCreator extends BaseCreator {
     /**
      * List of all available adapters.
      */
-    @Getter
     private final List<Adapter<?, ?>> adapters;
 
     /**
@@ -74,16 +73,15 @@ public class ModelCreator extends BaseCreator {
      *
      * @param itemId            The ID of the item to create a model for.
      * @param creationImageSets The image-sets to use as input for model creation.
-     * @param pipeline          The pipeline to use.
      * @param progressMonitor   The progress monitor which will be updated during model creation.
      */
-    public Optional<CreationModelSet> createModel(String itemId, List<CreationImageSet> creationImageSets, String pipeline, ProgressMonitor progressMonitor) {
+    public Optional<CreationModelSet> createModel(String itemId, List<CreationImageSet> creationImageSets, ProgressMonitor progressMonitor) {
         AdapterConfiguration adapterConfiguration = configurationService.loadAdapterConfiguration();
         ModelCreatorAdapter modelCreatorAdapter = getModelCreatorAdapter(adapterConfiguration);
 
         modelCreatorAdapter.initialize(progressMonitor, ModelCreatorInitParams.builder()
                 .adapterConfiguration(adapterConfiguration)
-                .tempDir(projectRootProvider.getProjectRoot().resolve(ProjectDir.TEMP_DIR))
+                .tempDir(projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.TEMP_DIR))
                 .build());
 
         Path imagesDir = getImagesDir(itemId, true);
@@ -93,7 +91,7 @@ public class ModelCreator extends BaseCreator {
                 .map(imagesDir::resolve)
                 .toList()));
 
-        ModelCreationResult result = modelCreatorAdapter.createModel(images, pipeline);
+        ModelCreationResult result = modelCreatorAdapter.createModel(images);
         modelCreatorAdapter.teardown();
 
         Path sourceDir = result.resultDir();
@@ -147,44 +145,6 @@ public class ModelCreator extends BaseCreator {
     }
 
     /**
-     * Returns the default pipeline provided by the current model-creator.
-     *
-     * @return The name of the model-creator's default pipeline.
-     */
-    public String getDefaultPipeline() {
-        AdapterConfiguration adapterConfiguration = configurationService.loadAdapterConfiguration();
-        return getModelCreatorAdapter(adapterConfiguration).getDefaultPipeline().orElse("");
-    }
-
-    /**
-     * Returns all available pipelines of the current model-creator.
-     *
-     * @return List of pipeline names.
-     */
-    public List<String> getPipelines() {
-        AdapterConfiguration adapterConfiguration = configurationService.loadAdapterConfiguration();
-        return getModelCreatorAdapter(adapterConfiguration).getPipelines();
-    }
-
-    /**
-     * Cancels model creation.
-     */
-    public void cancelModelCreation() {
-        AdapterConfiguration adapterConfiguration = configurationService.loadAdapterConfiguration();
-        getModelCreatorAdapter(adapterConfiguration).cancelModelCreation();
-    }
-
-    /**
-     * Returns whether model creation cancelling is supported or not.
-     *
-     * @return {@code true} if model creation can be cancelled, {@code false} otherwise.
-     */
-    public boolean cancelModelCreationSupported() {
-        AdapterConfiguration adapterConfiguration = configurationService.loadAdapterConfiguration();
-        return getModelCreatorAdapter(adapterConfiguration).supportsCancellation();
-    }
-
-    /**
      * Opens the selected model in the currently configured model-editor.
      *
      * @param progressMonitor The progress monitor to show status updates to the user.
@@ -195,7 +155,7 @@ public class ModelCreator extends BaseCreator {
         ModelEditorAdapter modelEditorAdapter = getModelEditorAdapter(adapterConfiguration);
 
         modelEditorAdapter.initialize(progressMonitor, ModelEditorInitParams.builder()
-                .projectRoot(projectRootProvider.getProjectRoot())
+                .projectRoot(projectDataProvider.getProjectRoot())
                 .adapterConfiguration(adapterConfiguration)
                 .build());
         modelEditorAdapter.open(creationModel);
@@ -211,9 +171,9 @@ public class ModelCreator extends BaseCreator {
      */
     public Path getModelsDir(String itemId, boolean includeProjectRoot) {
         if (includeProjectRoot) {
-            return getAssetDir(itemId, projectRootProvider.getProjectRoot(), ProjectDir.MODELS_DIR);
+            return getAssetDir(itemId, projectDataProvider.getProjectRoot(), ProjectDataProvider.MODELS_DIR);
         }
-        return getAssetDir(itemId, null, ProjectDir.MODELS_DIR);
+        return getAssetDir(itemId, null, ProjectDataProvider.MODELS_DIR);
     }
 
     /**
@@ -229,52 +189,48 @@ public class ModelCreator extends BaseCreator {
     }
 
     /**
-     * Adds a 3D model to the item with the given ID.
+     * Returns the target path to transfer a model from media-creation to media.
      *
-     * @param itemId    The ID of the item to get the directory for.
-     * @param modelFile Path to the model file to add.
+     * @param itemId The item's ID.
+     * @param model  The model to transfer.
+     * @return The target path for the transferred model.
      */
-    public CreationModelSet addModel(String itemId, Path modelFile) {
-        Path modelsDir = getModelsDir(itemId, true);
-
-        fileUtil.createDirIfRequired(modelsDir);
-
-        int nextAssetNumber = getNextAssetNumber(modelsDir);
-
-        var targetDir = getModelDir(itemId, false, nextAssetNumber);
-        var targetDirWithProjectRoot = getModelDir(itemId, true, nextAssetNumber);
-
-        fileUtil.createDirIfRequired(targetDirWithProjectRoot);
-
-        var destination = Paths.get(targetDirWithProjectRoot.toString(), modelFile.getFileName().toString());
-        try {
-            Files.copy(modelFile, destination, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            fileUtil.deleteDir(targetDirWithProjectRoot);
-            throw new ArtivactException("Could not copy model files!", e);
-        }
-
-        return CreationModelSet.builder()
-                .directory(formatPath(targetDir))
-                .comment("import")
-                .build();
-    }
-
-    /**
-     * Deletes the model with the given index from the list of models of the currently active item.
-     *
-     * @param creationModel The model to delete from the filesystem.
-     */
-    public void deleteModel(CreationModelSet creationModel) {
-        if (creationModel != null) {
-            fileUtil.deleteDir(projectRootProvider.getProjectRoot().resolve(creationModel.getDirectory()));
-        }
-    }
-
     public Path getTransferTargetPath(String itemId, Asset model) {
         Path modelsDir = getModelsDir(itemId, true);
         int nextAssetNumber = getNextAssetNumber(modelsDir);
         return modelsDir.resolve(getAssetName(nextAssetNumber, FilenameUtils.getExtension(model.getFileName())));
+    }
+
+    /**
+     * Returns the desired adapter.
+     *
+     * @param adapterConfiguration The current adapter configuration.
+     * @return The configured {@link ModelCreatorAdapter}.
+     */
+    private ModelCreatorAdapter getModelCreatorAdapter(AdapterConfiguration adapterConfiguration) {
+        AdapterImplementation adapterImplementation = adapterConfiguration.getModelCreatorImplementation();
+        return adapters.stream()
+                .filter(ModelCreatorAdapter.class::isInstance)
+                .map(ModelCreatorAdapter.class::cast)
+                .filter(adapter -> adapter.supports(adapterImplementation))
+                .findAny()
+                .orElseThrow(() -> new ArtivactException(NO_ADAPTER_ERROR));
+    }
+
+    /**
+     * Returns the desired adapter.
+     *
+     * @param adapterConfiguration The current adapter configuration.
+     * @return The configured {@link ModelEditorAdapter}.
+     */
+    private ModelEditorAdapter getModelEditorAdapter(AdapterConfiguration adapterConfiguration) {
+        AdapterImplementation adapterImplementation = adapterConfiguration.getModelEditorImplementation();
+        return adapters.stream()
+                .filter(ModelEditorAdapter.class::isInstance)
+                .map(ModelEditorAdapter.class::cast)
+                .filter(adapter -> adapter.supports(adapterImplementation))
+                .findAny()
+                .orElseThrow(() -> new ArtivactException(NO_ADAPTER_ERROR));
     }
 
 }

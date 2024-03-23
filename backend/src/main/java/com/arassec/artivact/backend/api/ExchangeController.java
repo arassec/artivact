@@ -2,7 +2,7 @@ package com.arassec.artivact.backend.api;
 
 import com.arassec.artivact.backend.api.model.OperationProgress;
 import com.arassec.artivact.backend.service.ConfigurationService;
-import com.arassec.artivact.backend.service.ExchangeService;
+import com.arassec.artivact.backend.service.ExportService;
 import com.arassec.artivact.backend.service.ImportService;
 import com.arassec.artivact.backend.service.exception.ArtivactException;
 import com.arassec.artivact.backend.service.model.configuration.PropertiesConfiguration;
@@ -36,9 +36,9 @@ public class ExchangeController extends BaseController {
     private final ConfigurationService configurationService;
 
     /**
-     * The application's {@link ExchangeService}.
+     * The application's {@link ExportService}.
      */
-    private final ExchangeService exchangeService;
+    private final ExportService exportService;
 
     /**
      * The application's {@link ImportService}.
@@ -54,15 +54,15 @@ public class ExchangeController extends BaseController {
      * Creates a new instance.
      *
      * @param configurationService The application's {@link ConfigurationService}.
-     * @param exchangeService      The application's {@link ExchangeService}.
+     * @param exportService      The application's {@link ExportService}.
      * @param exportObjectMapper   The object mapper for exports.
      */
     public ExchangeController(ConfigurationService configurationService,
-                              ExchangeService exchangeService,
+                              ExportService exportService,
                               ImportService importService,
                               @Qualifier("exportObjectMapper") ObjectMapper exportObjectMapper) {
         this.configurationService = configurationService;
-        this.exchangeService = exchangeService;
+        this.exportService = exportService;
         this.importService = importService;
         this.exportObjectMapper = exportObjectMapper;
     }
@@ -183,7 +183,7 @@ public class ExchangeController extends BaseController {
         response.addHeader(HttpHeaders.PRAGMA, NO_CACHE);
         response.addHeader(HttpHeaders.EXPIRES, EXPIRES_IMMEDIATELY);
 
-        return ResponseEntity.ok(exchangeService.createItemExportFile(itemId));
+        return ResponseEntity.ok(exportService.createItemExportFile(itemId));
     }
 
     /**
@@ -194,7 +194,7 @@ public class ExchangeController extends BaseController {
      */
     @PostMapping(value = "/item/import")
     public ResponseEntity<String> importItem(@RequestPart(value = "file") final MultipartFile file) {
-        exchangeService.importItem(file, null);
+        importService.importItem(file, null);
         return ResponseEntity.ok("Item imported.");
     }
 
@@ -205,7 +205,7 @@ public class ExchangeController extends BaseController {
      */
     @PostMapping(value = "/item/import/filesystem")
     public ResponseEntity<String> importItems() {
-        importService.importItems();
+        importService.importItemsFromFilesystem();
         return ResponseEntity.ok("scanned");
     }
 
@@ -219,7 +219,7 @@ public class ExchangeController extends BaseController {
     @PostMapping(value = "sync/item/import/{apiToken}")
     public ResponseEntity<String> syncItem(@RequestPart(value = "file") final MultipartFile file,
                                            @PathVariable final String apiToken) {
-        exchangeService.importItem(file, apiToken);
+        importService.importItem(file, apiToken);
         return ResponseEntity.ok("Item imported.");
     }
 
@@ -231,17 +231,17 @@ public class ExchangeController extends BaseController {
      */
     @PostMapping(value = "/item/{itemId}/sync-up")
     public ResponseEntity<OperationProgress> syncItemUp(@PathVariable String itemId) {
-        return convert(exchangeService.syncItemUp(itemId));
+        return convert(exportService.syncItemUp(itemId));
     }
 
     /**
-     * Returns the progress of a long-running operation of the {@link ExchangeService}.
+     * Returns the progress of a long-running operation of the {@link ExportService}.
      *
      * @return The current operation progress.
      */
     @GetMapping("/progress")
     public ResponseEntity<OperationProgress> getProgress() {
-        return convert(exchangeService.getProgressMonitor());
+        return convert(exportService.getProgressMonitor());
     }
 
 }

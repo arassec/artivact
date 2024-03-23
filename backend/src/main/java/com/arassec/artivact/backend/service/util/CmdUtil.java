@@ -25,7 +25,7 @@ public class CmdUtil {
     public boolean execute(CommandLine cmdLine) {
         var resultHandler = new DefaultExecuteResultHandler();
 
-        Executor executor = new DaemonExecutor();
+        Executor executor = DaemonExecutor.builder().get();
         executor.setExitValue(1);
 
         try {

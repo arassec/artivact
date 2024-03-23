@@ -2,8 +2,7 @@ package com.arassec.artivact.backend.service.creator.adapter.image.turntable;
 
 import com.arassec.artivact.backend.service.creator.adapter.AdapterImplementation;
 import com.arassec.artivact.backend.service.exception.ArtivactException;
-import com.arassec.artivact.backend.service.model.configuration.AdapterConfiguration;
-import com.arassec.artivact.backend.service.util.ProgressMonitor;
+import com.arassec.artivact.backend.service.misc.ProgressMonitor;
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
@@ -24,11 +23,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ArtivactTurntableAdapter extends BaseTurntableAdapter {
 
     /**
-     * The implementation supported by this adapter.
-     */
-    private final AdapterImplementation supportedImplementation = AdapterImplementation.ARTIVACT_TURNTABLE_ADAPTER;
-
-    /**
      * Indicates whether the turntable was found using USB or not.
      */
     private final AtomicBoolean turntableFound = new AtomicBoolean(false);
@@ -42,6 +36,14 @@ public class ArtivactTurntableAdapter extends BaseTurntableAdapter {
      * The USB serial port the turntable is attached to.
      */
     private SerialPort liveSerialPort;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public AdapterImplementation getSupportedImplementation() {
+        return AdapterImplementation.ARTIVACT_TURNTABLE_ADAPTER;
+    }
 
     /**
      * {@inheritDoc}
@@ -154,27 +156,6 @@ public class ArtivactTurntableAdapter extends BaseTurntableAdapter {
         finished.set(false);
 
         return Optional.empty();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void testConfiguration(AdapterConfiguration adapterConfiguration) {
-        if (!healthy(adapterConfiguration)) {
-            throw new ArtivactException("Artivact-Turntable not available!");
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean healthy(AdapterConfiguration adapterConfiguration) {
-        initialize(null, null);
-        boolean result = liveSerialPort != null;
-        teardown();
-        return result;
     }
 
 }

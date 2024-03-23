@@ -3,7 +3,7 @@ package com.arassec.artivact.backend.service;
 import com.arassec.artivact.backend.persistence.ExhibitionEntityRepository;
 import com.arassec.artivact.backend.persistence.model.ExhibitionEntity;
 import com.arassec.artivact.backend.service.exception.ArtivactException;
-import com.arassec.artivact.backend.service.model.BaseRestrictedItem;
+import com.arassec.artivact.backend.service.model.BaseRestrictedObject;
 import com.arassec.artivact.backend.service.model.TranslatableString;
 import com.arassec.artivact.backend.service.model.exhibition.Exhibition;
 import com.arassec.artivact.backend.service.model.exhibition.Tool;
@@ -16,7 +16,7 @@ import com.arassec.artivact.backend.service.model.page.PageContent;
 import com.arassec.artivact.backend.service.model.page.widget.PageTitleWidget;
 import com.arassec.artivact.backend.service.model.page.widget.SearchBasedWidget;
 import com.arassec.artivact.backend.service.util.FileUtil;
-import com.arassec.artivact.backend.service.util.ProjectRootProvider;
+import com.arassec.artivact.backend.service.misc.ProjectDataProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -54,6 +54,7 @@ public class ExhibitionService extends BaseFileService {
 
     private final ItemService itemService;
 
+    @Getter
     private final FileUtil fileUtil;
 
     @Getter
@@ -68,7 +69,7 @@ public class ExhibitionService extends BaseFileService {
                              ItemService itemService,
                              FileUtil fileUtil,
                              @Qualifier("exportObjectMapper") ObjectMapper exportObjectMapper,
-                             ProjectRootProvider projectRootProvider) {
+                             ProjectDataProvider projectDataProvider) {
         this.exhibitionEntityRepository = exhibitionEntityRepository;
         this.configurationService = configurationService;
         this.searchService = searchService;
@@ -77,7 +78,7 @@ public class ExhibitionService extends BaseFileService {
         this.fileUtil = fileUtil;
         this.objectMapper = exportObjectMapper;
 
-        this.exhibitionsDir = projectRootProvider.getProjectRoot().resolve(EXHIBITIONS_DIR);
+        this.exhibitionsDir = projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.EXHIBITIONS_DIR);
         if (!Files.exists(exhibitionsDir)) {
             try {
                 Files.createDirectories(exhibitionsDir);
@@ -181,6 +182,8 @@ public class ExhibitionService extends BaseFileService {
                     case PAGE_TITLE -> topic.getTools().add(createTitleTool(((PageTitleWidget) widget)));
                     case ITEM_CAROUSEL, ITEM_SEARCH ->
                             topic.getTools().add(createItemsTool(((SearchBasedWidget) widget)));
+                    default ->
+                            log.info("No conversion from widget type '{}' to exhibition tool defined!", widget.getType());
                 }
             });
         }
@@ -201,7 +204,7 @@ public class ExhibitionService extends BaseFileService {
         List<Item> searchResult = searchService.search(searchBasedWidget.getSearchTerm(), searchBasedWidget.getMaxResults());
 
         tool.setItemIds(searchResult.stream()
-                .map(BaseRestrictedItem::getId)
+                .map(BaseRestrictedObject::getId)
                 .toList());
 
         return tool;
@@ -237,10 +240,10 @@ public class ExhibitionService extends BaseFileService {
                     }
 
                     item.getMediaContent().getImages()
-                            .forEach(image -> itemService.copyFile(itemId, image, BaseFileService.IMAGES_DIR, itemDir));
+                            .forEach(image -> itemService.copyFile(itemId, image, ProjectDataProvider.IMAGES_DIR, itemDir));
 
                     item.getMediaContent().getModels()
-                            .forEach(model -> itemService.copyFile(itemId, model, BaseFileService.MODELS_DIR, itemDir));
+                            .forEach(model -> itemService.copyFile(itemId, model, ProjectDataProvider.MODELS_DIR, itemDir));
                 });
             }
         }));

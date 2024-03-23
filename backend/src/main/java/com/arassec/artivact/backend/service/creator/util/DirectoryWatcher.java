@@ -1,4 +1,4 @@
-package com.arassec.artivact.backend.service.util;
+package com.arassec.artivact.backend.service.creator.util;
 
 import com.arassec.artivact.backend.service.exception.ArtivactException;
 import lombok.extern.slf4j.Slf4j;

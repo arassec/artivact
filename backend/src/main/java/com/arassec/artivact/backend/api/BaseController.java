@@ -3,7 +3,7 @@ package com.arassec.artivact.backend.api;
 import com.arassec.artivact.backend.api.model.OperationProgress;
 import com.arassec.artivact.backend.service.exception.ArtivactException;
 import com.arassec.artivact.backend.service.model.item.Item;
-import com.arassec.artivact.backend.service.util.ProgressMonitor;
+import com.arassec.artivact.backend.service.misc.ProgressMonitor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.http.ResponseEntity;

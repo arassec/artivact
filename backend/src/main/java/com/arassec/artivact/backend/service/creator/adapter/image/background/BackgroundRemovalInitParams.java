@@ -2,7 +2,6 @@ package com.arassec.artivact.backend.service.creator.adapter.image.background;
 
 import com.arassec.artivact.backend.service.creator.adapter.AdapterInitParams;
 import com.arassec.artivact.backend.service.model.configuration.AdapterConfiguration;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;

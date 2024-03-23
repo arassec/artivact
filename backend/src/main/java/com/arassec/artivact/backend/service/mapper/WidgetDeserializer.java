@@ -11,16 +11,28 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import java.io.IOException;
 import java.util.Map;
 
+/**
+ * Custom {@link ObjectMapper} deserializer for Artivact widgets.
+ */
 public class WidgetDeserializer extends StdDeserializer<Widget> {
 
+    /**
+     * The object mapper.
+     */
     private final ObjectMapper objectMapper;
 
+    /**
+     * Creates a new instance.
+     */
     public WidgetDeserializer() {
         super(Widget.class);
         objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @SuppressWarnings("unchecked")
     @Override
     public Widget deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {

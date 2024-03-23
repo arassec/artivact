@@ -1,5 +1,6 @@
 package com.arassec.artivact.backend.api.model;
 
+import com.arassec.artivact.backend.service.model.item.Asset;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

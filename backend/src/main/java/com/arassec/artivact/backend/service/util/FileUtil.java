@@ -1,6 +1,8 @@
 package com.arassec.artivact.backend.service.util;
 
 import com.arassec.artivact.backend.service.exception.ArtivactException;
+import com.arassec.artivact.backend.service.misc.FileModification;
+import com.arassec.artivact.backend.service.misc.ProjectDataProvider;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FileUtils;
 import org.springframework.core.env.Environment;
@@ -19,6 +21,9 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class FileUtil {
 
+    /**
+     * Spring's {@link Environment}.
+     */
     private final Environment environment;
 
     /**
@@ -38,7 +43,7 @@ public class FileUtil {
         if (!Files.exists(projectSetupDir)) {
             projectSetupDir = Path.of("backend/src/main/resources/project-setup");
         }
-        createDirIfRequired(projectRoot.resolve("temp"));
+        createDirIfRequired(projectRoot.resolve(ProjectDataProvider.TEMP_DIR));
 
         try (Stream<Path> files = Files.list(projectSetupDir)) {
             files.forEach(file -> {
@@ -156,17 +161,6 @@ public class FileUtil {
         } catch (IOException e) {
             throw new ArtivactException("Could not open directory!", e);
         }
-    }
-
-    /**
-     * Checks whether a file is executable or not.
-     *
-     * @param filePath Path to the file to check.
-     * @return {@code true} if the file is executable, {@code false} otherwise.
-     */
-    public boolean isFileExecutable(String filePath) {
-        Path path = Path.of(filePath);
-        return Files.exists(path) && Files.isExecutable(path);
     }
 
 }

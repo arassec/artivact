@@ -4,9 +4,9 @@ import com.arassec.artivact.backend.persistence.ItemEntityRepository;
 import com.arassec.artivact.backend.service.aop.RestrictResult;
 import com.arassec.artivact.backend.service.aop.TranslateResult;
 import com.arassec.artivact.backend.service.exception.ArtivactException;
+import com.arassec.artivact.backend.service.misc.ProgressMonitor;
+import com.arassec.artivact.backend.service.misc.ProjectDataProvider;
 import com.arassec.artivact.backend.service.model.item.Item;
-import com.arassec.artivact.backend.service.util.ProgressMonitor;
-import com.arassec.artivact.backend.service.util.ProjectRootProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -36,34 +36,63 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
+/**
+ * Service for search-engine management and search handling.
+ */
 @Slf4j
 @Service
 public class SearchService extends BaseService {
 
-    private static final String SEARCH_INDEX_DIR = "sedata";
-
-    private final ExecutorService executorService = Executors.newFixedThreadPool(1);
-
+    /**
+     * Repository for item entities.
+     */
     private final ItemEntityRepository itemEntityRepository;
 
+    /**
+     * The object mapper.
+     */
     @Getter
     private final ObjectMapper objectMapper;
 
+    /**
+     * Directory to the search-engine files.
+     */
     private final Path searchIndexDir;
 
-    private IndexWriter indexWriter;
+    /**
+     * Executor service for long-running background tasks.
+     */
+    private final ExecutorService executorService = Executors.newFixedThreadPool(1);
 
+    /**
+     * The progress monitor for long-running tasks.
+     */
     @Getter
     private ProgressMonitor progressMonitor;
 
+    /**
+     * Lucene's {@link IndexWriter}.
+     */
+    private IndexWriter indexWriter;
+
+    /**
+     * Creates a new instance.
+     *
+     * @param itemEntityRepository Repository for item entities.
+     * @param objectMapper         The object mapper.
+     * @param projectDataProvider  Provider for project data.
+     */
     public SearchService(ItemEntityRepository itemEntityRepository,
                          ObjectMapper objectMapper,
-                         ProjectRootProvider projectRootProvider) {
+                         ProjectDataProvider projectDataProvider) {
         this.itemEntityRepository = itemEntityRepository;
         this.objectMapper = objectMapper;
-        this.searchIndexDir = projectRootProvider.getProjectRoot().resolve(SEARCH_INDEX_DIR);
+        this.searchIndexDir = projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.SEARCH_INDEX_DIR);
     }
 
+    /**
+     * Recreates the search index.
+     */
     public synchronized void recreateIndex() {
 
         if (progressMonitor != null && progressMonitor.getException() == null) {
@@ -77,8 +106,8 @@ public class SearchService extends BaseService {
                 log.info("Recreating search index.");
                 prepareIndexing(false);
                 itemEntityRepository.findAll()
-                        .forEach(vaultItemEntity
-                                -> updateIndexInternal(fromJson(vaultItemEntity.getContentJson(), Item.class), false));
+                        .forEach(itemEntity
+                                -> updateIndexInternal(fromJson(itemEntity.getContentJson(), Item.class), false));
                 finalizeIndexing();
                 log.info("Search index created.");
 
@@ -91,12 +120,24 @@ public class SearchService extends BaseService {
         });
     }
 
+    /**
+     * Updates an item's search index.
+     *
+     * @param item The item.
+     */
     public synchronized void updateIndex(Item item) {
         prepareIndexing(true);
         updateIndexInternal(item, true);
         finalizeIndexing();
     }
 
+    /**
+     * Searches for items with the given query.
+     *
+     * @param query      The lucene search query.
+     * @param maxResults Maximum number of results to return.
+     * @return The list of found items.
+     */
     @RestrictResult
     @TranslateResult
     @SuppressWarnings("java:S6204") // Result list needs to be modifiable!
@@ -128,6 +169,11 @@ public class SearchService extends BaseService {
         }
     }
 
+    /**
+     * Prepares indexing.
+     *
+     * @param append Set to {@code true} to append to the current search index rather than create a new one.
+     */
     private void prepareIndexing(boolean append) {
         try {
             Directory indexDirectory = FSDirectory.open(searchIndexDir);
@@ -145,10 +191,16 @@ public class SearchService extends BaseService {
         }
     }
 
-    private void updateIndexInternal(Item item, boolean updateDoc) {
+    /**
+     * Updates the search index for the given item.
+     *
+     * @param item        The item.
+     * @param updateIndex Set to {@code true} to update an existing index instead of creating a new entry for the item.
+     */
+    private void updateIndexInternal(Item item, boolean updateIndex) {
         try {
             Document luceneDocument = new Document();
-            StringBuffer fulltext = new StringBuffer();
+            StringBuilder fulltext = new StringBuilder();
 
             // Lucene doesn't like "-" in the UUIDs, so wie store the ID for search with Lucene without them:
             String preparedItemId = item.getId().replace("-", "");
@@ -179,7 +231,7 @@ public class SearchService extends BaseService {
 
             luceneDocument.add(new TextField("fulltext", fulltext.toString(), Field.Store.YES));
 
-            if (updateDoc) {
+            if (updateIndex) {
                 indexWriter.updateDocument(new Term("preparedItemId", preparedItemId), luceneDocument);
             } else {
                 indexWriter.addDocument(luceneDocument);
@@ -191,6 +243,9 @@ public class SearchService extends BaseService {
         }
     }
 
+    /**
+     * Finalize indexing.
+     */
     private void finalizeIndexing() {
         try {
             indexWriter.close();
@@ -200,14 +255,24 @@ public class SearchService extends BaseService {
         }
     }
 
-    private static List<String> searchItemIds(String searchTerm, DirectoryReader indexReader, int maxResults)
+    /**
+     * Search for item IDs with the given query.
+     *
+     * @param searchQuery The query to use.
+     * @param indexReader The index reader.
+     * @param maxResults  Maximum number of results to return.
+     * @return List of found item IDs.
+     * @throws IOException    In case of errors during search index access.
+     * @throws ParseException In case of malformed search queries.
+     */
+    private static List<String> searchItemIds(String searchQuery, DirectoryReader indexReader, int maxResults)
             throws IOException, ParseException {
         IndexSearcher indexSearcher = new IndexSearcher(indexReader);
 
         var queryParser = new MultiFieldQueryParser(new String[]{"fulltext"}, new StandardAnalyzer());
         queryParser.setAllowLeadingWildcard(true);
 
-        Query query = queryParser.parse(searchTerm);
+        Query query = queryParser.parse(searchQuery);
 
         TopDocs hits = indexSearcher.search(query, maxResults);
         StoredFields storedFields = indexSearcher.storedFields();
@@ -221,7 +286,16 @@ public class SearchService extends BaseService {
         return itemIds;
     }
 
-    private void appendField(StringBuffer target, String key, String value) {
+    /**
+     * Appends a key-value pair to the supplied StringBuilder.
+     * <p>
+     * Used to support fulltext-search over all item properties.
+     *
+     * @param target The target to put the values to.
+     * @param key    The key.
+     * @param value  The value.
+     */
+    private void appendField(StringBuilder target, String key, String value) {
         target.append(key);
         target.append("=");
         target.append(value);

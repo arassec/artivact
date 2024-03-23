@@ -7,10 +7,24 @@ import org.springframework.util.StringUtils;
 
 import java.lang.reflect.InvocationTargetException;
 
+/**
+ * Base for services with JSON handling.
+ */
 public abstract class BaseService {
 
+    /**
+     * Returns the object mapper to use.
+     *
+     * @return The application's primary {@link ObjectMapper}.
+     */
     protected abstract ObjectMapper getObjectMapper();
 
+    /**
+     * Serializes the given object to JSON.
+     *
+     * @param object The object to serialize.
+     * @return The JSON representation of the given object.
+     */
     protected String toJson(Object object) {
         if (object == null) {
             return null;
@@ -22,6 +36,14 @@ public abstract class BaseService {
         }
     }
 
+    /**
+     * Deserializes the given object from JSON.
+     *
+     * @param json  The JSON string to deserialize.
+     * @param clazz The desired target class.
+     * @param <T>   The type of the target class.
+     * @return The deserialized object.
+     */
     protected <T> T fromJson(String json, Class<T> clazz) {
         if (!StringUtils.hasText(json)) {
             try {

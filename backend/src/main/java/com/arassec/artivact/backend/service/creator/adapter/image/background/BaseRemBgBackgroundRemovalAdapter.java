@@ -2,7 +2,7 @@ package com.arassec.artivact.backend.service.creator.adapter.image.background;
 
 import com.arassec.artivact.backend.service.exception.ArtivactException;
 import com.arassec.artivact.backend.service.model.configuration.AdapterConfiguration;
-import com.arassec.artivact.backend.service.util.ProgressMonitor;
+import com.arassec.artivact.backend.service.misc.ProgressMonitor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.file.Path;

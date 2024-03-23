@@ -12,16 +12,28 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import java.io.IOException;
 import java.util.Map;
 
+/**
+ * Custom {@link ObjectMapper} deserializer for exhibition tools.
+ */
 public class ToolDeserializer extends StdDeserializer<Tool> {
 
+    /**
+     * The object mapper.
+     */
     private final ObjectMapper objectMapper;
 
+    /**
+     * Creates a new instance.
+     */
     public ToolDeserializer() {
         super(Widget.class);
         objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @SuppressWarnings("unchecked")
     @Override
     public Tool deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {

@@ -10,12 +10,12 @@ export interface TranslatableString {
   translations: Record<string, string>;
 }
 
-export interface BaseTranslatableRestrictedItem extends TranslatableString {
+export interface BaseTranslatableRestrictedObject extends TranslatableString {
   id: string;
   restrictions: string[];
 }
 
-export interface BaseRestrictedItem {
+export interface BaseRestrictedObject {
   id: string;
   restrictions: string[];
 }
@@ -46,7 +46,7 @@ export interface ModelSet {
   modelFiles: Asset[];
 }
 
-export interface ItemDetails extends BaseRestrictedItem {
+export interface ItemDetails extends BaseRestrictedObject {
   version: number;
   title: TranslatableString;
   description: TranslatableString;
@@ -71,11 +71,11 @@ export interface SearchResult {
   data: ItemCardData[];
 }
 
-export interface Property extends BaseTranslatableRestrictedItem {
-  valueRange: BaseTranslatableRestrictedItem[];
+export interface Property extends BaseTranslatableRestrictedObject {
+  valueRange: BaseTranslatableRestrictedObject[];
 }
 
-export interface PropertyCategory extends BaseTranslatableRestrictedItem {
+export interface PropertyCategory extends BaseTranslatableRestrictedObject {
   properties: Property[];
 }
 
@@ -83,7 +83,7 @@ export interface PropertiesConfiguration {
   categories: PropertyCategory[];
 }
 
-export interface Menu extends BaseTranslatableRestrictedItem {
+export interface Menu extends BaseTranslatableRestrictedObject {
   parentId: string | null;
   menuEntries: Menu[];
   targetPageId: string;
@@ -168,7 +168,7 @@ export interface AdapterConfiguration {
   configValues: Record<string, unknown>;
 }
 
-export interface Tag extends BaseTranslatableRestrictedItem {
+export interface Tag extends BaseTranslatableRestrictedObject {
   url: string;
   defaultTag: boolean;
 }
@@ -177,11 +177,11 @@ export interface TagsConfiguration {
   tags: Tag[];
 }
 
-export interface Widget extends BaseRestrictedItem {
+export interface Widget extends BaseRestrictedObject {
   type: string;
 }
 
-export interface PageContent extends BaseRestrictedItem {
+export interface PageContent extends BaseRestrictedObject {
   indexPage: boolean;
   widgets: Widget[];
 }

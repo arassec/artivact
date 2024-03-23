@@ -1,6 +1,7 @@
 package com.arassec.artivact.backend.api.model;
 
 import com.arassec.artivact.backend.service.model.TranslatableString;
+import com.arassec.artivact.backend.service.model.item.Asset;
 import com.arassec.artivact.backend.service.model.tag.Tag;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

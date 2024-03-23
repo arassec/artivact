@@ -1,6 +1,6 @@
 package com.arassec.artivact.backend.service.model.menu;
 
-import com.arassec.artivact.backend.service.model.BaseTranslatableRestrictedItem;
+import com.arassec.artivact.backend.service.model.BaseTranslatableRestrictedObject;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,16 +9,28 @@ import lombok.Setter;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * A menu.
+ */
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Menu extends BaseTranslatableRestrictedItem {
+public class Menu extends BaseTranslatableRestrictedObject {
 
+    /**
+     * Optional menu ID of a parent menu.
+     */
     private String parentId;
 
+    /**
+     * Entries in this menu.
+     */
     private List<Menu> menuEntries = new LinkedList<>();
 
+    /**
+     * The ID of the target page, if any.
+     */
     private String targetPageId;
 
 }

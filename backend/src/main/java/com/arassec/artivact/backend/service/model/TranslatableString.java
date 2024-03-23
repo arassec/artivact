@@ -9,40 +9,57 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+/**
+ * A translatable string.
+ */
 @Getter
 @Setter
-public class TranslatableString implements TranslatableItem {
+public class TranslatableString implements TranslatableObject {
 
+    /**
+     * The original value.
+     */
     private String value;
 
+    /**
+     * The translated value.
+     */
     @Transient
     private String translatedValue;
 
+    /**
+     * Configured translations for the value, indexed by locale.
+     */
     private Map<String, String> translations = new HashMap<>();
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public String translate(String locale) {
+    public void translate(String locale) {
         if (!StringUtils.hasText(locale)) {
             translatedValue = value;
-            return translatedValue;
+            return;
         }
         if (translations.containsKey(locale)) {
             translatedValue = translations.get(locale);
-            return translatedValue;
+            return;
         }
         for (Map.Entry<String, String> entry : translations.entrySet()) {
             if (locale.startsWith(entry.getKey() + "_")) {
                 translatedValue = entry.getValue();
-                return translatedValue;
+                return;
             }
         }
         translatedValue = value;
-        return translatedValue;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public String translate(Locale locale) {
-        return translate(locale.toString());
+    public void translate(Locale locale) {
+        translate(locale.toString());
     }
 
 }

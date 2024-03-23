@@ -2,7 +2,6 @@ package com.arassec.artivact.backend.service.creator.adapter.model.editor;
 
 import com.arassec.artivact.backend.service.creator.adapter.AdapterImplementation;
 import com.arassec.artivact.backend.service.exception.ArtivactException;
-import com.arassec.artivact.backend.service.model.configuration.AdapterConfiguration;
 import com.arassec.artivact.backend.service.model.item.CreationModelSet;
 import com.arassec.artivact.backend.service.util.CmdUtil;
 import com.arassec.artivact.backend.service.util.FileUtil;
@@ -33,11 +32,6 @@ public class BlenderModelEditorAdapter extends BaseModelEditorAdapter {
     private static final String BLENDER_DIR = "utils/Blender";
 
     /**
-     * The implementation supported by this adapter.
-     */
-    private final AdapterImplementation supportedImplementation = AdapterImplementation.BLENDER_MODEL_EDITOR_ADAPTER;
-
-    /**
      * The commandline util.
      */
     private final CmdUtil cmdUtil;
@@ -46,6 +40,14 @@ public class BlenderModelEditorAdapter extends BaseModelEditorAdapter {
      * The file util.
      */
     private final FileUtil fileUtil;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public AdapterImplementation getSupportedImplementation() {
+        return AdapterImplementation.BLENDER_MODEL_EDITOR_ADAPTER;
+    }
 
     /**
      * {@inheritDoc}
@@ -73,28 +75,6 @@ public class BlenderModelEditorAdapter extends BaseModelEditorAdapter {
         progressMonitor.updateLabelKey("editModelStart");
 
         cmdUtil.execute(cmdLine);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void testConfiguration(AdapterConfiguration adapterConfiguration) {
-        if (!cmdUtil.execute(new CommandLine(adapterConfiguration.getConfigValue(getSupportedImplementation())))) {
-            throw new ArtivactException("Configured file could not be executed!");
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean healthy(AdapterConfiguration adapterConfiguration) {
-        try {
-            return fileUtil.isFileExecutable(adapterConfiguration.getConfigValue(getSupportedImplementation()));
-        } catch (Exception e) {
-            return false;
-        }
     }
 
     /**

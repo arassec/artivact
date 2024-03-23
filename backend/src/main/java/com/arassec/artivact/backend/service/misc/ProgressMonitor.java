@@ -1,4 +1,4 @@
-package com.arassec.artivact.backend.service.util;
+package com.arassec.artivact.backend.service.misc;
 
 import lombok.Getter;
 

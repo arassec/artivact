@@ -1,4 +1,4 @@
-package com.arassec.artivact.backend.service.util;
+package com.arassec.artivact.backend.service.misc;
 
 /**
  * Defines a file and its modification during project setup.

@@ -6,14 +6,26 @@ import com.arassec.artivact.backend.service.model.page.WidgetType;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Displays a central text with an optional heading.
+ */
 @Getter
 @Setter
 public class TextWidget extends Widget {
 
+    /**
+     * The heading.
+     */
     private TranslatableString heading;
 
+    /**
+     * The text content.
+     */
     private TranslatableString content;
 
+    /**
+     * Creates a new widget.
+     */
     public TextWidget() {
         super(WidgetType.TEXT);
     }

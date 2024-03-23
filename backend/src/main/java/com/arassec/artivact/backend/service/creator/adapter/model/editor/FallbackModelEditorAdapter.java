@@ -1,7 +1,6 @@
 package com.arassec.artivact.backend.service.creator.adapter.model.editor;
 
 import com.arassec.artivact.backend.service.creator.adapter.AdapterImplementation;
-import com.arassec.artivact.backend.service.model.configuration.AdapterConfiguration;
 import com.arassec.artivact.backend.service.model.item.CreationModelSet;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +17,12 @@ import org.springframework.stereotype.Component;
 public class FallbackModelEditorAdapter extends BaseModelEditorAdapter {
 
     /**
-     * The implementation supported by this adapter.
+     * {@inheritDoc}
      */
-    private final AdapterImplementation supportedImplementation = AdapterImplementation.FALLBACK_MODEL_EDITOR_ADAPTER;
+    @Override
+    public AdapterImplementation getSupportedImplementation() {
+        return AdapterImplementation.FALLBACK_MODEL_EDITOR_ADAPTER;
+    }
 
     /**
      * {@inheritDoc}
@@ -30,18 +32,4 @@ public class FallbackModelEditorAdapter extends BaseModelEditorAdapter {
         log.info("Fallback model editor called for model: {}", creationModelSet.getDirectory());
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void testConfiguration(AdapterConfiguration adapterConfiguration) {
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean healthy(AdapterConfiguration adapterConfiguration) {
-        return true;
-    }
 }

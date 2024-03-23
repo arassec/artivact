@@ -20,8 +20,8 @@ public class PageTitleWidget extends Widget implements FileProcessingWidget {
     }
 
     @Override
-    public void processFile(String fileName) {
-        this.backgroundImage = fileName;
+    public void processFile(String filename) {
+        this.backgroundImage = filename;
     }
 
 }

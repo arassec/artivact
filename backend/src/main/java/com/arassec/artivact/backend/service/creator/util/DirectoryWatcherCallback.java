@@ -1,4 +1,4 @@
-package com.arassec.artivact.backend.service.util;
+package com.arassec.artivact.backend.service.creator.util;
 
 import java.nio.file.Path;
 

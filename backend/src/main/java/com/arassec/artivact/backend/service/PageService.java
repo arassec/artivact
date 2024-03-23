@@ -5,14 +5,15 @@ import com.arassec.artivact.backend.persistence.model.PageEntity;
 import com.arassec.artivact.backend.service.aop.GenerateIds;
 import com.arassec.artivact.backend.service.aop.RestrictResult;
 import com.arassec.artivact.backend.service.aop.TranslateResult;
-import com.arassec.artivact.backend.service.model.BaseRestrictedItem;
+import com.arassec.artivact.backend.service.misc.ProjectDataProvider;
+import com.arassec.artivact.backend.service.model.BaseRestrictedObject;
 import com.arassec.artivact.backend.service.model.TranslatableString;
+import com.arassec.artivact.backend.service.model.item.ImageSize;
 import com.arassec.artivact.backend.service.model.page.FileProcessingWidget;
 import com.arassec.artivact.backend.service.model.page.Page;
 import com.arassec.artivact.backend.service.model.page.PageContent;
 import com.arassec.artivact.backend.service.model.page.widget.TextWidget;
-import com.arassec.artivact.backend.service.model.item.ImageSize;
-import com.arassec.artivact.backend.service.util.ProjectRootProvider;
+import com.arassec.artivact.backend.service.util.FileUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import org.springframework.core.io.FileSystemResource;
@@ -26,26 +27,58 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * Service for page handling.
+ */
 @Service
 public class PageService extends BaseFileService {
 
-    public static final String WIDGETS_FILE_DIR = "widgets";
-
+    /**
+     * Repository for page entities.
+     */
     private final PageEntityRepository pageEntityRepository;
 
+    /**
+     * The application's {@link FileUtil}.
+     */
+    @Getter
+    private final FileUtil fileUtil;
+
+    /**
+     * The object mapper.
+     */
     @Getter
     private final ObjectMapper objectMapper;
 
+    /**
+     * Path to the widgets data directory.
+     */
     private final Path widgetFilesDir;
 
+    /**
+     * Creates a new instance.
+     *
+     * @param pageEntityRepository Repository for page entities.
+     * @param fileUtil             The application's {@link FileUtil}.
+     * @param objectMapper         The object mapper.
+     * @param projectDataProvider  Provider for project data.
+     */
     public PageService(PageEntityRepository pageEntityRepository,
+                       FileUtil fileUtil,
                        ObjectMapper objectMapper,
-                       ProjectRootProvider projectRootProvider) {
+                       ProjectDataProvider projectDataProvider) {
         this.pageEntityRepository = pageEntityRepository;
+        this.fileUtil = fileUtil;
         this.objectMapper = objectMapper;
-        this.widgetFilesDir = projectRootProvider.getProjectRoot().resolve(WIDGETS_FILE_DIR);
+        this.widgetFilesDir = projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.WIDGETS_FILE_DIR);
     }
 
+    /**
+     * Creates a new page.
+     *
+     * @param restrictions Set of restrictions that should apply to the new page.
+     * @return The newly created page.
+     */
     public Page createPage(Set<String> restrictions) {
         PageContent pageContent = new PageContent();
         pageContent.setId(UUID.randomUUID().toString());
@@ -66,6 +99,11 @@ public class PageService extends BaseFileService {
         return page;
     }
 
+    /**
+     * Deletes the page with the given ID.
+     *
+     * @param pageId The page's ID.
+     */
     public void deletePage(String pageId) {
         Optional<PageEntity> pageEntityOptional = pageEntityRepository.findById(pageId);
         if (pageEntityOptional.isPresent()) {
@@ -76,6 +114,12 @@ public class PageService extends BaseFileService {
         }
     }
 
+    /**
+     * Updates page restrictions.
+     *
+     * @param pageId       The page's ID.
+     * @param restrictions The new restrictions to apply.
+     */
     public void updatePageRestrictions(String pageId, Set<String> restrictions) {
         PageEntity pageEntity = pageEntityRepository.findById(pageId).orElseThrow();
 
@@ -86,12 +130,17 @@ public class PageService extends BaseFileService {
         pageEntityRepository.save(pageEntity);
     }
 
+    /**
+     * Loads the content of the index page.
+     *
+     * @return The {@link PageContent} of the index page.
+     */
     @TranslateResult
     @RestrictResult
     public PageContent loadIndexPageContent() {
         Optional<PageEntity> indexPageOptional = pageEntityRepository.findFirstByIndexPage(true);
         if (indexPageOptional.isPresent()) {
-            return processPageEntity(indexPageOptional.get());
+            return convertPageEntity(indexPageOptional.get());
         } else {
             TranslatableString fallbackText = new TranslatableString();
             fallbackText.setValue("No index page has been defined yet. "
@@ -104,12 +153,25 @@ public class PageService extends BaseFileService {
         }
     }
 
+    /**
+     * Loads the content of the given page.
+     *
+     * @param pageId The page's ID.
+     * @return The {@link PageContent} of the page.
+     */
     @TranslateResult
     @RestrictResult
     public PageContent loadPageContent(String pageId) {
-        return processPageEntity(pageEntityRepository.findById(pageId).orElseThrow());
+        return convertPageEntity(pageEntityRepository.findById(pageId).orElseThrow());
     }
 
+    /**
+     * Saves a page's content.
+     *
+     * @param pageId      The page's ID.
+     * @param pageContent The content to save.
+     * @return The updated page content.
+     */
     @GenerateIds
     @TranslateResult
     @RestrictResult
@@ -118,11 +180,11 @@ public class PageService extends BaseFileService {
 
         PageContent existingPageContent = fromJson(pageEntity.getContentJson(), PageContent.class);
         List<String> widgetIdsToDelete = existingPageContent.getWidgets().stream()
-                .map(BaseRestrictedItem::getId)
+                .map(BaseRestrictedObject::getId)
                 .collect(Collectors.toList());
 
         widgetIdsToDelete.removeAll(pageContent.getWidgets().stream()
-                .map(BaseRestrictedItem::getId)
+                .map(BaseRestrictedObject::getId)
                 .toList());
 
         widgetIdsToDelete.forEach(widgetId -> deleteDirAndEmptyParents(getDirFromId(widgetFilesDir, widgetId)));
@@ -133,30 +195,51 @@ public class PageService extends BaseFileService {
         return pageContent;
     }
 
-
+    /**
+     * Saves a file for a given widget in the filesystem.
+     *
+     * @param pageId   The page's ID.
+     * @param widgetId The widget's ID.
+     * @param file     The file to save.
+     * @return The name of the saved file.
+     */
     public String saveFile(String pageId, String widgetId, MultipartFile file) {
 
-        String fileName = saveFile(widgetFilesDir, widgetId, file);
+        String filename = saveFile(widgetFilesDir, widgetId, file);
 
         PageEntity pageEntity = pageEntityRepository.findById(pageId).orElseThrow();
         PageContent pageContent = fromJson(pageEntity.getContentJson(), PageContent.class);
         pageContent.getWidgets().forEach(widget -> {
             if (widget.getId().equals(widgetId) && widget instanceof FileProcessingWidget fileProcessingWidget) {
-                fileProcessingWidget.processFile(fileName);
+                fileProcessingWidget.processFile(filename);
             }
         });
 
         pageEntity.setContentJson(toJson(pageContent));
         pageEntityRepository.save(pageEntity);
 
-        return fileName;
+        return filename;
     }
 
-    public FileSystemResource loadFile(String widgetId, String fileName, ImageSize targetSize) {
-        return loadFile(widgetFilesDir, widgetId, fileName, targetSize);
+    /**
+     * Loads a widget's file from the filesystem.
+     *
+     * @param widgetId   The widget's ID.
+     * @param filename   The filename.
+     * @param targetSize The desired target size (if an image is loaded).
+     * @return The file as {@link FileSystemResource}.
+     */
+    public FileSystemResource loadFile(String widgetId, String filename, ImageSize targetSize) {
+        return loadFile(widgetFilesDir, widgetId, filename, targetSize);
     }
 
-    private PageContent processPageEntity(PageEntity pageEntity) {
+    /**
+     * Converts a {@link PageEntity} into its {@link PageContent}.
+     *
+     * @param pageEntity The entity to convert.
+     * @return The page's content.
+     */
+    private PageContent convertPageEntity(PageEntity pageEntity) {
         PageContent pageContent = fromJson(pageEntity.getContentJson(), PageContent.class);
 
         PageContent result = new PageContent();

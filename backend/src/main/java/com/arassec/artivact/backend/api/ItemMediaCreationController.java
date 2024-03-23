@@ -1,6 +1,6 @@
 package com.arassec.artivact.backend.api;
 
-import com.arassec.artivact.backend.api.model.Asset;
+import com.arassec.artivact.backend.service.model.item.Asset;
 import com.arassec.artivact.backend.api.model.OperationProgress;
 import com.arassec.artivact.backend.service.MediaCreationService;
 import com.arassec.artivact.backend.service.creator.CapturePhotosParams;

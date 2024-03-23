@@ -15,16 +15,9 @@ import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.nio.file.Path;
 import java.util.Arrays;
 
@@ -43,32 +36,11 @@ public class RemBgRemoteBackgroundRemovalAdapter extends BaseRemBgBackgroundRemo
     private static final String HTTP_ERROR_MSG_TEMPLATE = "Could not use RemBg remotely: %s - %s";
 
     /**
-     * The implementation supported by this adapter.
-     */
-    private final AdapterImplementation supportedImplementation = AdapterImplementation.REMBG_REMOTE_BACKGROUND_REMOVAL_ADAPTER;
-
-    /**
-     * Message source for I18N.
-     */
-    private final MessageSource messageSource;
-
-    /**
      * {@inheritDoc}
      */
     @Override
-    public void testConfiguration(AdapterConfiguration adapterConfiguration) {
-        boolean webApiCalledSuccessfully = callWebApi(adapterConfiguration);
-        if (!webApiCalledSuccessfully) {
-            throw new ArtivactException("RemBg-Web-Api could not be called. Please check the logfiles!");
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean healthy(AdapterConfiguration adapterConfiguration) {
-        return callWebApi(adapterConfiguration);
+    public AdapterImplementation getSupportedImplementation() {
+        return AdapterImplementation.REMBG_REMOTE_BACKGROUND_REMOVAL_ADAPTER;
     }
 
     /**
@@ -109,30 +81,6 @@ public class RemBgRemoteBackgroundRemovalAdapter extends BaseRemBgBackgroundRemo
             log.error("Could not remotely remove background from image!", e);
             throw new ArtivactException("Could not remotely remove background from image!", e);
         }
-    }
-
-    /**
-     * Calls the rembg HTTP API without arguments to check whether the server can be reached or not.
-     *
-     * @param adapterConfiguration The current adapter configuration.
-     * @return {@code true} if the configured endpoint is available, {@code false} otherwise.
-     */
-    private boolean callWebApi(AdapterConfiguration adapterConfiguration) {
-        try (HttpClient httpClient = HttpClient.newHttpClient()) {
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI(adapterConfiguration.getConfigValue(getSupportedImplementation())))
-                    .GET()
-                    .build();
-            httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (URISyntaxException | IOException e) {
-            log.error(String.format(HTTP_ERROR_MSG_TEMPLATE, e.getClass().getSimpleName(), e.getMessage()));
-            return false;
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            log.error(String.format(HTTP_ERROR_MSG_TEMPLATE, e.getClass().getSimpleName(), e.getMessage()));
-            return false;
-        }
-        return true;
     }
 
 }

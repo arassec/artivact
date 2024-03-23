@@ -1,74 +1,194 @@
 package com.arassec.artivact.backend.service;
 
 import com.arassec.artivact.backend.service.exception.ArtivactException;
+import com.arassec.artivact.backend.service.misc.ProjectDataProvider;
+import com.arassec.artivact.backend.service.model.account.Account;
 import com.arassec.artivact.backend.service.model.item.Item;
-import com.arassec.artivact.backend.service.util.ProjectRootProvider;
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.arassec.artivact.backend.service.model.item.MediaCreationContent;
+import com.arassec.artivact.backend.service.util.FileUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
+/**
+ * Service for handling item import.
+ */
 @Slf4j
 @Service
 public class ImportService extends BaseFileService {
 
-    private static final String CREATOR_DATA_FILE = "data.json";
+    /**
+     * The service for account handling.
+     */
+    private final AccountService accountService;
 
-    private static final String CREATOR_DATA_NOTES = "notes";
-
-    private final Path itemsFileDir;
-
+    /**
+     * The service for item handling.
+     */
     private final ItemService itemService;
 
+    /**
+     * Provider for project data.
+     */
+    private final ProjectDataProvider projectDataProvider;
+
+    /**
+     * The application's {@link FileUtil}.
+     */
+    @Getter
+    private final FileUtil fileUtil;
+
+    /**
+     * The object mapper.
+     */
     @Getter
     private final ObjectMapper objectMapper;
 
-    public ImportService(final ItemService itemService,
-                         final ObjectMapper objectMapper,
-                         ProjectRootProvider projectRootProvider) {
+    /**
+     * Path to the project's items directory.
+     */
+    private final Path itemsFileDir;
+
+    /**
+     * Creates a new instance.
+     *
+     * @param accountService      The service for account handling.
+     * @param itemService         The service for item handling.
+     * @param projectDataProvider Provider for project data.
+     * @param fileUtil            The application's {@link FileUtil}.
+     * @param objectMapper        The object mapper.
+     */
+    public ImportService(AccountService accountService,
+                         ItemService itemService,
+                         ProjectDataProvider projectDataProvider,
+                         FileUtil fileUtil,
+                         ObjectMapper objectMapper) {
+        this.accountService = accountService;
         this.itemService = itemService;
+        this.projectDataProvider = projectDataProvider;
+        this.fileUtil = fileUtil;
         this.objectMapper = objectMapper;
-        this.itemsFileDir = projectRootProvider.getProjectRoot().resolve(ITEMS_DIR);
+        this.itemsFileDir = projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.ITEMS_DIR);
     }
 
-    public void importItems() {
+    /**
+     * Imports a previously exported item to the application by reading the export ZIP file.
+     *
+     * @param file     The export ZIP file.
+     * @param apiToken The API token of the user to use for item import.
+     */
+    public void importItem(MultipartFile file, String apiToken) {
+        if (StringUtils.hasText(apiToken)) {
+            Optional<Account> accountOptional = accountService.loadByApiToken(apiToken);
+            if (accountOptional.isEmpty()) {
+                return;
+            }
+            Account account = accountOptional.get();
+            if (Boolean.TRUE.equals(!account.getUser()) && Boolean.TRUE.equals(!account.getAdmin())) {
+                return;
+            }
+        }
+
+        String originalFilename = Optional.ofNullable(file.getOriginalFilename()).orElse("import.zip");
+        File importFile = projectDataProvider.getProjectRoot()
+                .resolve(ProjectDataProvider.TEMP_DIR)
+                .resolve(originalFilename)
+                .toAbsolutePath()
+                .toFile();
+
+        try {
+            file.transferTo(importFile);
+        } catch (IOException e) {
+            throw new ArtivactException("Could not save uploaded ZIP file!", e);
+        }
+
+        try (ZipFile zipFile = new ZipFile(importFile)) {
+            ZipEntry itemJsonZipEntry = zipFile.getEntry("artivact.item.json");
+
+            Item item = objectMapper.readValue(new String(zipFile.getInputStream(itemJsonZipEntry).readAllBytes()), Item.class);
+            item.setMediaCreationContent(new MediaCreationContent());
+
+            item.getMediaContent().getImages().forEach(image -> {
+                ZipEntry imageZipEntry = zipFile.getEntry(image);
+                try {
+                    itemService.saveImage(item.getId(), image, zipFile.getInputStream(imageZipEntry), true);
+                } catch (IOException e) {
+                    throw new ArtivactException("Could not read image from imported ZIP file!", e);
+                }
+            });
+
+            item.getMediaContent().getModels().forEach(model -> {
+                ZipEntry modelZipEntry = zipFile.getEntry(model);
+                try {
+                    itemService.saveModel(item.getId(), model, zipFile.getInputStream(modelZipEntry), true);
+                } catch (IOException e) {
+                    throw new ArtivactException("Could not read model from imported ZIP file!", e);
+                }
+            });
+
+            itemService.save(item);
+
+        } catch (IOException e) {
+            throw new ArtivactException("Could not deserialize tags configuration!", e);
+        }
+    }
+
+    /**
+     * Imports items by scanning the project's items directory.
+     */
+    public void importItemsFromFilesystem() {
         log.info("Importing from directory: {}", itemsFileDir.toAbsolutePath());
-        getItemIdsFromCreatorExport().forEach(itemPath -> {
+        getItemPaths().forEach(itemPath -> {
             String itemId = itemPath.getFileName().toString();
             var item = itemService.load(itemId);
             if (item == null) {
-                processNewEntity(itemPath);
+                processNewItem(itemPath);
             } else {
-                updateExistingEntity(itemPath, item);
+                updateExistingItem(itemPath, item);
             }
         });
         log.info("Import finished.");
     }
 
-    private void processNewEntity(Path itemPath) {
+    /**
+     * Imports an item from the given path.
+     *
+     * @param itemPath The path to the item.
+     */
+    private void processNewItem(Path itemPath) {
         log.info("Creating item: {}", itemPath.getFileName());
         Item item = itemService.create();
-        item.getDescription().setValue(readNotes(itemPath));
         item.setId(itemPath.getFileName().toString());
-        item.getMediaContent().setImages(getFiles(itemPath, IMAGES_DIR));
-        item.getMediaContent().setModels(getFiles(itemPath, MODELS_DIR));
+        item.getMediaContent().setImages(getFiles(itemPath, ProjectDataProvider.IMAGES_DIR));
+        item.getMediaContent().setModels(getFiles(itemPath, ProjectDataProvider.MODELS_DIR));
         itemService.save(item);
     }
 
-    private void updateExistingEntity(Path itemPath, Item item) {
+    /**
+     * Updates an existing item by reading the item's directory again.
+     *
+     * @param itemPath Path to the item's directory.
+     * @param item     The item to update.
+     */
+    private void updateExistingItem(Path itemPath, Item item) {
         log.info("Updating item: {}", itemPath.getFileName());
 
         item.getMediaContent().getImages()
-                .addAll(getFiles(itemPath, IMAGES_DIR));
+                .addAll(getFiles(itemPath, ProjectDataProvider.IMAGES_DIR));
 
         item.getMediaContent().setImages(item.getMediaContent().getImages().stream()
                 .distinct()
@@ -76,7 +196,7 @@ public class ImportService extends BaseFileService {
         );
 
         item.getMediaContent().getModels()
-                .addAll(getFiles(itemPath, MODELS_DIR));
+                .addAll(getFiles(itemPath, ProjectDataProvider.MODELS_DIR));
 
         item.getMediaContent().setModels(item.getMediaContent().getModels().stream()
                 .distinct()
@@ -86,37 +206,37 @@ public class ImportService extends BaseFileService {
         itemService.save(item);
     }
 
-    private List<Path> getItemIdsFromCreatorExport() {
+    /**
+     * Returns paths to every item in the project.
+     *
+     * @return The path to every item.
+     */
+    private List<Path> getItemPaths() {
         List<Path> result = new LinkedList<>();
-        findArtivactIdsRecursively(itemsFileDir, result);
+        getItemPathsRecursively(itemsFileDir, result, 0);
         return result;
     }
 
-    private void findArtivactIdsRecursively(Path root, List<Path> target) {
+    /**
+     * Traverses the root directory to find items.
+     *
+     * @param root   The directory to start from.
+     * @param target The target list to put result paths in.
+     * @param depth  The current depth of the search.
+     */
+    private void getItemPathsRecursively(Path root, List<Path> target, int depth) {
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(root)) {
             directoryStream.forEach(path -> {
-                if (path.getFileName().toString().equals(CREATOR_DATA_FILE)) {
-                    target.add(path.getParent());
-                } else if (Files.isDirectory(path)) {
-                    findArtivactIdsRecursively(path, target);
+                if (depth == 2) {
+                    log.debug("Found item directory: {}", path);
+                    target.add(path);
+                } else {
+                    getItemPathsRecursively(path, target, depth + 1);
                 }
             });
         } catch (IOException e) {
             throw new ArtivactException("Could not read item ids!", e);
         }
-    }
-
-    private String readNotes(Path itemPath) {
-        try {
-            Map<String, Object> dataJson = getObjectMapper().readValue(
-                    Files.readString(itemPath.resolve(CREATOR_DATA_FILE)), new TypeReference<>() {});
-            if (dataJson.containsKey(CREATOR_DATA_NOTES)) {
-                return String.valueOf(dataJson.get(CREATOR_DATA_NOTES));
-            }
-        } catch (IOException e) {
-            log.warn("Could not read creator exported notes!", e);
-        }
-        return null;
     }
 
 }

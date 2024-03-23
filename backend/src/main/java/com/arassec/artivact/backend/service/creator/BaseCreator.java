@@ -1,16 +1,7 @@
 package com.arassec.artivact.backend.service.creator;
 
-import com.arassec.artivact.backend.service.creator.adapter.Adapter;
-import com.arassec.artivact.backend.service.creator.adapter.AdapterImplementation;
-import com.arassec.artivact.backend.service.creator.adapter.image.background.BackgroundRemovalAdapter;
-import com.arassec.artivact.backend.service.creator.adapter.image.camera.CameraAdapter;
-import com.arassec.artivact.backend.service.creator.adapter.image.turntable.TurntableAdapter;
-import com.arassec.artivact.backend.service.creator.adapter.model.creator.ModelCreatorAdapter;
-import com.arassec.artivact.backend.service.creator.adapter.model.editor.ModelEditorAdapter;
 import com.arassec.artivact.backend.service.exception.ArtivactException;
-import com.arassec.artivact.backend.service.model.ProjectDir;
-import com.arassec.artivact.backend.service.model.configuration.AdapterConfiguration;
-import com.arassec.artivact.backend.service.util.ProjectRootProvider;
+import com.arassec.artivact.backend.service.misc.ProjectDataProvider;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,96 +9,22 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
 
+/**
+ * Base for creator components.
+ */
 public abstract class BaseCreator {
 
     /**
-     * Returns all available adapters.
-     *
-     * @return List of available adapters;
+     * Error message if an adapter implementation could not be found.
      */
-    protected abstract List<Adapter<?, ?>> getAdapters();
-
-    protected abstract ProjectRootProvider getProjectRootProvider();
+    protected static final String NO_ADAPTER_ERROR = "Could not detect selected adapter!";
 
     /**
-     * Returns the desired adapter.
+     * Returns the {@link ProjectDataProvider}.
      *
-     * @param adapterConfiguration The current adapter configuration.
-     * @return The configured {@link TurntableAdapter}.
+     * @return The {@link ProjectDataProvider}.
      */
-    protected TurntableAdapter getTurntableAdapter(AdapterConfiguration adapterConfiguration) {
-        AdapterImplementation adapterImplementation = adapterConfiguration.getTurntableAdapterImplementation();
-        return getAdapters().stream()
-                .filter(TurntableAdapter.class::isInstance)
-                .map(TurntableAdapter.class::cast)
-                .filter(adapter -> adapter.supports(adapterImplementation))
-                .findAny()
-                .orElseThrow(() -> new ArtivactException("Could not detect selected adapter!"));
-    }
-
-    /**
-     * Returns the desired adapter.
-     *
-     * @param adapterConfiguration The current adapter configuration.
-     * @return The configured {@link CameraAdapter}.
-     */
-    protected CameraAdapter getCameraAdapter(AdapterConfiguration adapterConfiguration) {
-        AdapterImplementation adapterImplementation = adapterConfiguration.getCameraAdapterImplementation();
-        return getAdapters().stream()
-                .filter(CameraAdapter.class::isInstance)
-                .map(CameraAdapter.class::cast)
-                .filter(adapter -> adapter.supports(adapterImplementation))
-                .findAny()
-                .orElseThrow(() -> new ArtivactException("Could not detect selected adapter!"));
-    }
-
-    /**
-     * Returns the desired adapter.
-     *
-     * @param adapterConfiguration The current adapter configuration.
-     * @return The configured {@link BackgroundRemovalAdapter}.
-     */
-    protected BackgroundRemovalAdapter getBackgroundRemovalAdapter(AdapterConfiguration adapterConfiguration) {
-        AdapterImplementation adapterImplementation = adapterConfiguration.getBackgroundRemovalAdapterImplementation();
-        return getAdapters().stream()
-                .filter(BackgroundRemovalAdapter.class::isInstance)
-                .map(BackgroundRemovalAdapter.class::cast)
-                .filter(adapter -> adapter.supports(adapterImplementation))
-                .findAny()
-                .orElseThrow(() -> new ArtivactException("Could not detect selected adapter!"));
-    }
-
-    /**
-     * Returns the desired adapter.
-     *
-     * @param adapterConfiguration The current adapter configuration.
-     * @return The configured {@link ModelCreatorAdapter}.
-     */
-    protected ModelCreatorAdapter getModelCreatorAdapter(AdapterConfiguration adapterConfiguration) {
-        AdapterImplementation adapterImplementation = adapterConfiguration.getModelCreatorImplementation();
-        return getAdapters().stream()
-                .filter(ModelCreatorAdapter.class::isInstance)
-                .map(ModelCreatorAdapter.class::cast)
-                .filter(adapter -> adapter.supports(adapterImplementation))
-                .findAny()
-                .orElseThrow(() -> new ArtivactException("Could not detect selected adapter!"));
-    }
-
-    /**
-     * Returns the desired adapter.
-     *
-     * @param adapterConfiguration The current adapter configuration.
-     * @return The configured {@link ModelEditorAdapter}.
-     */
-    protected ModelEditorAdapter getModelEditorAdapter(AdapterConfiguration adapterConfiguration) {
-        AdapterImplementation adapterImplementation = adapterConfiguration.getModelEditorImplementation();
-        return getAdapters().stream()
-                .filter(ModelEditorAdapter.class::isInstance)
-                .map(ModelEditorAdapter.class::cast)
-                .filter(adapter -> adapter.supports(adapterImplementation))
-                .findAny()
-                .orElseThrow(() -> new ArtivactException("Could not detect selected adapter!"));
-    }
+    protected abstract ProjectDataProvider getProjectDataProvider();
 
     /**
      * Returns the images directory of the currently active item.
@@ -118,9 +35,9 @@ public abstract class BaseCreator {
      */
     public Path getImagesDir(String itemId, boolean includeProjectRoot) {
         if (includeProjectRoot) {
-            return getAssetDir(itemId, getProjectRootProvider().getProjectRoot(), ProjectDir.IMAGES_DIR);
+            return getAssetDir(itemId, getProjectDataProvider().getProjectRoot(), ProjectDataProvider.IMAGES_DIR);
         }
-        return getAssetDir(itemId, null, ProjectDir.IMAGES_DIR);
+        return getAssetDir(itemId, null, ProjectDataProvider.IMAGES_DIR);
     }
 
     /**
@@ -151,7 +68,7 @@ public abstract class BaseCreator {
     protected Path getAssetDir(String itemId, Path projectRoot, String assetSubDir) {
         var firstSubDir = getSubDir(itemId, 0);
         var secondSubDir = getSubDir(itemId, 1);
-        Path resultPath = Path.of(ProjectDir.ITEMS_DIR, firstSubDir, secondSubDir, itemId, assetSubDir);
+        Path resultPath = Path.of(ProjectDataProvider.ITEMS_DIR, firstSubDir, secondSubDir, itemId, assetSubDir);
         if (projectRoot != null) {
             return projectRoot.resolve(resultPath);
         }
@@ -191,7 +108,7 @@ public abstract class BaseCreator {
             List<Path> assets = stream.toList();
             for (Path path : assets) {
                 String existingAssetNumber = path.getFileName().toString().split("\\.")[0];
-                if (!existingAssetNumber.matches("[0-9]*")) {
+                if (!existingAssetNumber.matches("\\d*")) {
                     continue;
                 }
                 var number = Integer.parseInt(existingAssetNumber);

@@ -5,6 +5,9 @@ import lombok.Data;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Contains all media-creation content of an item.
+ */
 @Data
 public class MediaCreationContent {
 

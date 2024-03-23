@@ -2,7 +2,6 @@ package com.arassec.artivact.backend.service.creator.adapter.image.turntable;
 
 import com.arassec.artivact.backend.service.creator.adapter.AdapterImplementation;
 import com.arassec.artivact.backend.service.exception.ArtivactException;
-import com.arassec.artivact.backend.service.model.configuration.AdapterConfiguration;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -18,9 +17,12 @@ import java.util.concurrent.TimeUnit;
 public class FallbackTurntableAdapter extends BaseTurntableAdapter {
 
     /**
-     * The implementation supported by this adapter.
+     * {@inheritDoc}
      */
-    private final AdapterImplementation supportedImplementation = AdapterImplementation.FALLBACK_TURNTABLE_ADAPTER;
+    @Override
+    public AdapterImplementation getSupportedImplementation() {
+        return AdapterImplementation.FALLBACK_TURNTABLE_ADAPTER;
+    }
 
     /**
      * {@inheritDoc}
@@ -39,18 +41,4 @@ public class FallbackTurntableAdapter extends BaseTurntableAdapter {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void testConfiguration(AdapterConfiguration adapterConfiguration) {
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean healthy(AdapterConfiguration adapterConfiguration) {
-        return true;
-    }
 }

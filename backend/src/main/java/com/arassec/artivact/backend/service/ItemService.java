@@ -6,6 +6,7 @@ import com.arassec.artivact.backend.service.aop.GenerateIds;
 import com.arassec.artivact.backend.service.aop.RestrictResult;
 import com.arassec.artivact.backend.service.aop.TranslateResult;
 import com.arassec.artivact.backend.service.exception.ArtivactException;
+import com.arassec.artivact.backend.service.misc.ProjectDataProvider;
 import com.arassec.artivact.backend.service.model.Roles;
 import com.arassec.artivact.backend.service.model.TranslatableString;
 import com.arassec.artivact.backend.service.model.configuration.TagsConfiguration;
@@ -14,7 +15,7 @@ import com.arassec.artivact.backend.service.model.item.Item;
 import com.arassec.artivact.backend.service.model.item.MediaContent;
 import com.arassec.artivact.backend.service.model.item.MediaCreationContent;
 import com.arassec.artivact.backend.service.model.tag.Tag;
-import com.arassec.artivact.backend.service.util.ProjectRootProvider;
+import com.arassec.artivact.backend.service.util.FileUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -33,32 +34,73 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Service for item handling.
+ */
 @Slf4j
 @Service
 @Transactional
 public class ItemService extends BaseFileService {
 
+    /**
+     * Error message prefix if no item was found.
+     */
+    private static final String NO_ITEM_ERROR_PREFIX = "No item found with ID: ";
+
+    /**
+     * Repository for item entities.
+     */
     private final ItemEntityRepository itemEntityRepository;
 
+    /**
+     * Service for configuration handling.
+     */
     private final ConfigurationService configurationService;
 
+    /**
+     * Service for search management.
+     */
     private final SearchService searchService;
 
+    /**
+     * The application's {@link FileUtil}.
+     */
+    @Getter
+    private final FileUtil fileUtil;
+
+    /**
+     * The object mapper.
+     */
     @Getter
     private final ObjectMapper objectMapper;
 
+    /**
+     * The directory containing the project's items.
+     */
     private final Path itemsDir;
 
+    /**
+     * Creates a new instance.
+     *
+     * @param itemEntityRepository Repository for item entities.
+     * @param configurationService Service for configuration handling.
+     * @param searchService        Service for search management.
+     * @param fileUtil             The application's {@link FileUtil}.
+     * @param objectMapper         The object mapper.
+     * @param projectDataProvider  The directory containing the project's items.
+     */
     public ItemService(ItemEntityRepository itemEntityRepository,
                        ConfigurationService configurationService,
                        SearchService searchService,
+                       FileUtil fileUtil,
                        ObjectMapper objectMapper,
-                       ProjectRootProvider projectRootProvider) {
+                       ProjectDataProvider projectDataProvider) {
         this.itemEntityRepository = itemEntityRepository;
         this.configurationService = configurationService;
         this.searchService = searchService;
+        this.fileUtil = fileUtil;
         this.objectMapper = objectMapper;
-        this.itemsDir = projectRootProvider.getProjectRoot().resolve(ITEMS_DIR);
+        this.itemsDir = projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.ITEMS_DIR);
         if (!Files.exists(itemsDir)) {
             try {
                 Files.createDirectories(itemsDir);
@@ -68,6 +110,11 @@ public class ItemService extends BaseFileService {
         }
     }
 
+    /**
+     * Creates a new item.
+     *
+     * @return The newly created item.
+     */
     public Item create() {
         TagsConfiguration tagsConfiguration = configurationService.loadTagsConfiguration();
 
@@ -87,8 +134,15 @@ public class ItemService extends BaseFileService {
         return item;
     }
 
+    /**
+     * Loads the item with the given ID.
+     *
+     * @param itemId The item's ID.
+     * @return The item.
+     */
     @RestrictResult
     @TranslateResult
+    @SuppressWarnings("java:S6204") // Result list needs to be mutable!
     public Item load(String itemId) {
         Optional<ItemEntity> itemEntityOptional = itemEntityRepository.findById(itemId);
         if (itemEntityOptional.isPresent()) {
@@ -118,11 +172,23 @@ public class ItemService extends BaseFileService {
         return null;
     }
 
+    /**
+     * Loads an item without regard to restrictions.
+     *
+     * @param itemId The item's ID.
+     * @return The item.
+     */
     @TranslateResult
     public Item loadUnrestricted(String itemId) {
         return load(itemId);
     }
 
+    /**
+     * Saves an item.
+     *
+     * @param item The item to save.
+     * @return The updated item.
+     */
     @GenerateIds
     public Item save(Item item) {
         ItemEntity itemEntity = itemEntityRepository.findById(item.getId()).orElse(new ItemEntity());
@@ -133,9 +199,9 @@ public class ItemService extends BaseFileService {
 
         getDanglingImages(item).forEach(imageToDelete -> {
             try {
-                Files.deleteIfExists(getSubdirFilePath(itemsDir, item.getId(), IMAGES_DIR).resolve(imageToDelete));
+                Files.deleteIfExists(getSubdirFilePath(itemsDir, item.getId(), ProjectDataProvider.IMAGES_DIR).resolve(imageToDelete));
                 for (ImageSize imageSize : ImageSize.values()) {
-                    Files.deleteIfExists(getSubdirFilePath(itemsDir, item.getId(), IMAGES_DIR)
+                    Files.deleteIfExists(getSubdirFilePath(itemsDir, item.getId(), ProjectDataProvider.IMAGES_DIR)
                             .resolve(imageSize.name() + "-" + imageToDelete));
                 }
             } catch (IOException e) {
@@ -145,11 +211,11 @@ public class ItemService extends BaseFileService {
 
         List<String> modelsInItem = item.getMediaContent().getModels();
 
-        List<String> modelsToDelete = getFiles(getDirFromId(itemsDir, item.getId()), MODELS_DIR);
+        List<String> modelsToDelete = getFiles(getDirFromId(itemsDir, item.getId()), ProjectDataProvider.MODELS_DIR);
         modelsToDelete.removeAll(modelsInItem);
         modelsToDelete.forEach(imageToDelete -> {
             try {
-                Files.deleteIfExists(getSubdirFilePath(itemsDir, item.getId(), MODELS_DIR).resolve(imageToDelete));
+                Files.deleteIfExists(getSubdirFilePath(itemsDir, item.getId(), ProjectDataProvider.MODELS_DIR).resolve(imageToDelete));
             } catch (IOException e) {
                 log.error("Could not delete obsolete model from filesystem!", e);
             }
@@ -164,42 +230,73 @@ public class ItemService extends BaseFileService {
         return item;
     }
 
+    /**
+     * Returns a list of images of an item that are not referenced by the item itself.
+     *
+     * @param item The item.
+     * @return List of unreferenced images.
+     */
     public List<String> getDanglingImages(Item item) {
         List<String> imagesInItem = new LinkedList<>(item.getMediaContent().getImages());
         item.getMediaCreationContent().getImageSets().forEach(creationImageSet -> imagesInItem.addAll(creationImageSet.getFiles()));
 
-        List<String> allImagesInFolder = getFiles(getDirFromId(itemsDir, item.getId()), IMAGES_DIR);
+        List<String> allImagesInFolder = getFiles(getDirFromId(itemsDir, item.getId()), ProjectDataProvider.IMAGES_DIR);
         allImagesInFolder.removeAll(imagesInItem);
 
         return allImagesInFolder;
     }
 
+    /**
+     * Deletes an item.
+     *
+     * @param itemId The ID of the item to delete.
+     */
     public void delete(String itemId) {
         itemEntityRepository.deleteById(itemId);
         deleteDirAndEmptyParents(getDirFromId(itemsDir, itemId));
     }
 
-    public FileSystemResource loadImage(String itemId, String fileName, ImageSize targetSize) {
-        return loadImage(itemsDir, itemId, fileName, targetSize, IMAGES_DIR);
+    /**
+     * Loads an item's image.
+     *
+     * @param itemId     The ID of the item.
+     * @param filename   The filename of the image.
+     * @param targetSize The desired image target size.
+     * @return The (scaled) image as {@link FileSystemResource}.
+     */
+    public FileSystemResource loadImage(String itemId, String filename, ImageSize targetSize) {
+        return loadImage(itemsDir, itemId, filename, targetSize, ProjectDataProvider.IMAGES_DIR);
     }
 
-
-    public FileSystemResource loadModel(String itemId, String fileName) {
+    /**
+     * Loads an item's model.
+     *
+     * @param itemId   The ID of the item.
+     * @param filename The model's filename.
+     * @return The model as {@link FileSystemResource}.
+     */
+    public FileSystemResource loadModel(String itemId, String filename) {
         return new FileSystemResource(itemsDir
                 .resolve(itemId.substring(0, 3))
                 .resolve(itemId.substring(3, 6))
                 .resolve(itemId)
-                .resolve(MODELS_DIR)
-                .resolve(fileName));
+                .resolve(ProjectDataProvider.MODELS_DIR)
+                .resolve(filename));
     }
 
-    public List<String> getFilesForDownload(String itemId) {
+    /**
+     * Returns the absolute paths to all media files of an item as Strings.
+     *
+     * @param itemId The item's ID.
+     * @return List of media files of the item.
+     */
+    public List<String> getMediaFiles(String itemId) {
         List<String> result = new LinkedList<>();
 
         Item item = load(itemId);
 
         if (item == null) {
-            throw new IllegalArgumentException("No item with ID " + itemId + " found!");
+            throw new ArtivactException(NO_ITEM_ERROR_PREFIX + itemId);
         }
 
         result.addAll(item.getMediaContent().getImages().stream()
@@ -207,7 +304,7 @@ public class ItemService extends BaseFileService {
                         .resolve(itemId.substring(0, 3))
                         .resolve(itemId.substring(3, 6))
                         .resolve(itemId)
-                        .resolve(IMAGES_DIR)
+                        .resolve(ProjectDataProvider.IMAGES_DIR)
                         .resolve(image)
                         .toAbsolutePath())
                 .map(Path::toString)
@@ -218,7 +315,7 @@ public class ItemService extends BaseFileService {
                         .resolve(itemId.substring(0, 3))
                         .resolve(itemId.substring(3, 6))
                         .resolve(itemId)
-                        .resolve(MODELS_DIR)
+                        .resolve(ProjectDataProvider.MODELS_DIR)
                         .resolve(model)
                         .toAbsolutePath())
                 .map(Path::toString)
@@ -228,19 +325,21 @@ public class ItemService extends BaseFileService {
     }
 
     /**
-     * @param itemId ID of the vault item.
-     * @param file   The image file to save.
+     * Adds an image to the item.
+     *
+     * @param itemId ID of the item.
+     * @param file   The image file to add.
      */
     public void addImage(String itemId, MultipartFile file) {
         Item item = load(itemId);
 
         if (item == null) {
-            throw new IllegalArgumentException("No item with ID " + itemId + " found!");
+            throw new ArtivactException(NO_ITEM_ERROR_PREFIX + itemId);
         }
 
         try {
             item.getMediaContent().getImages().add(
-                    saveFile(itemId, file.getOriginalFilename(), file.getInputStream(), IMAGES_DIR, null, false)
+                    saveFile(itemId, file.getOriginalFilename(), file.getInputStream(), ProjectDataProvider.IMAGES_DIR, null, false)
             );
         } catch (IOException e) {
             throw new ArtivactException("Could not add image!", e);
@@ -250,19 +349,21 @@ public class ItemService extends BaseFileService {
     }
 
     /**
-     * @param itemId ID of the vault item.
-     * @param file   The model file to save.
+     * Adds a model to the item.
+     *
+     * @param itemId ID of the item.
+     * @param file   The model file to add.
      */
     public void addModel(String itemId, MultipartFile file) {
         Item item = load(itemId);
 
         if (item == null) {
-            throw new IllegalArgumentException("No item with ID " + itemId + " found!");
+            throw new ArtivactException(NO_ITEM_ERROR_PREFIX + itemId);
         }
 
         try {
             item.getMediaContent().getModels().add(
-                    saveFile(itemId, file.getOriginalFilename(), file.getInputStream(), MODELS_DIR, "glb", false)
+                    saveFile(itemId, file.getOriginalFilename(), file.getInputStream(), ProjectDataProvider.MODELS_DIR, "glb", false)
             );
         } catch (IOException e) {
             throw new ArtivactException("Could not add model!", e);
@@ -271,14 +372,38 @@ public class ItemService extends BaseFileService {
         save(item);
     }
 
+    /**
+     * Saves an image to an item.
+     *
+     * @param itemId          The ID of the item.
+     * @param filename        The name of the image file.
+     * @param data            The image's data as {@link InputStream}.
+     * @param keepAssetNumber Set to {@code true}, if the asset number from the image's filename should be used.
+     */
     public void saveImage(String itemId, String filename, InputStream data, boolean keepAssetNumber) {
-        saveFile(itemId, filename, data, IMAGES_DIR, null, keepAssetNumber);
+        saveFile(itemId, filename, data, ProjectDataProvider.IMAGES_DIR, null, keepAssetNumber);
     }
 
+    /**
+     * Saves a model to an item.
+     *
+     * @param itemId          The ID of the item.
+     * @param filename        The name of the model file.
+     * @param data            The model's data as {@link InputStream}.
+     * @param keepAssetNumber Set to {@code true}, if the asset number from the model's filename should be used.
+     */
     public void saveModel(String itemId, String filename, InputStream data, boolean keepAssetNumber) {
-        saveFile(itemId, filename, data, MODELS_DIR, null, keepAssetNumber);
+        saveFile(itemId, filename, data, ProjectDataProvider.MODELS_DIR, null, keepAssetNumber);
     }
 
+    /**
+     * Copies an item's file to the target directory.
+     *
+     * @param itemId    The item's ID.
+     * @param filename  The file to copy.
+     * @param subDir    The subdirectory the file lies in.
+     * @param targetDir The target directory to copy the file to.
+     */
     public void copyFile(String itemId, String filename, String subDir, Path targetDir) {
         Path sourceDir = getSubdirFilePath(itemsDir, itemId, subDir);
         try {
@@ -289,6 +414,17 @@ public class ItemService extends BaseFileService {
         }
     }
 
+    /**
+     * Saves a file to the item and provides it with a new asset number (if required).
+     *
+     * @param itemId                The item's ID.
+     * @param filename              The file to save.
+     * @param data                  The file's data as {@link InputStream}.
+     * @param subDir                The subdirectory inside the item's directory to save the file to.
+     * @param requiredFileExtension Provide to restrict the allowed file's extension.
+     * @param keepAssetNumber       Set to {@code true}, if the asset number from the model's filename should be used.
+     * @return The new file name.
+     */
     private String saveFile(String itemId, String filename, InputStream data, String subDir, String requiredFileExtension, boolean keepAssetNumber) {
         Path targetDir = getSubdirFilePath(itemsDir, itemId, subDir);
 
@@ -315,6 +451,12 @@ public class ItemService extends BaseFileService {
         return assetName;
     }
 
+    /**
+     * Returns the next available asset number.
+     *
+     * @param assetDir The directory of existing assets.
+     * @return The next, free asset number.
+     */
     private int getNextAssetNumber(Path assetDir) {
         var highestNumber = 0;
         if (!Files.exists(assetDir)) {
@@ -349,18 +491,37 @@ public class ItemService extends BaseFileService {
         return (highestNumber + 1);
     }
 
+    /**
+     * Returns the file extension of the given filename.
+     *
+     * @param filename The name of the file.
+     * @return The file extension.
+     */
     private Optional<String> getExtension(String filename) {
         return Optional.ofNullable(filename)
                 .filter(f -> f.contains("."))
                 .map(f -> f.substring(filename.lastIndexOf(".") + 1));
     }
 
+    /**
+     * Returns the raw filename without file extension.
+     *
+     * @param filename The complete name of the file.
+     * @return The name without extension.
+     */
     private Optional<String> getFilenameWithoutExtension(String filename) {
         return Optional.ofNullable(filename)
                 .filter(f -> f.contains("."))
                 .map(f -> f.substring(0, filename.indexOf(".")));
     }
 
+    /**
+     * Formats the given asset number and extension into a filename.
+     *
+     * @param assetNumber The asset number.
+     * @param extension   The file's extension.
+     * @return The filename.
+     */
     private String getAssetName(int assetNumber, String extension) {
         if (extension != null && !extension.isEmpty() && !extension.strip().isBlank()) {
             return String.format("%03d", assetNumber) + "." + extension;

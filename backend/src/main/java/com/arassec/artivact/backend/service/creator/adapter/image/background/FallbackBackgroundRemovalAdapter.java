@@ -2,7 +2,6 @@ package com.arassec.artivact.backend.service.creator.adapter.image.background;
 
 
 import com.arassec.artivact.backend.service.creator.adapter.AdapterImplementation;
-import com.arassec.artivact.backend.service.model.configuration.AdapterConfiguration;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -19,9 +18,12 @@ import java.util.List;
 public class FallbackBackgroundRemovalAdapter extends BaseBackgroundRemovalAdapter {
 
     /**
-     * The implementation supported by this adapter.
+     * {@inheritDoc}
      */
-    private final AdapterImplementation supportedImplementation = AdapterImplementation.FALLBACK_BACKGROUND_REMOVAL_ADAPTER;
+    @Override
+    public AdapterImplementation getSupportedImplementation() {
+        return AdapterImplementation.FALLBACK_BACKGROUND_REMOVAL_ADAPTER;
+    }
 
     /**
      * {@inheritDoc}
@@ -39,21 +41,6 @@ public class FallbackBackgroundRemovalAdapter extends BaseBackgroundRemovalAdapt
     public void removeBackgrounds(List<Path> filePaths) {
         log.info("Fallback background removal adapter called for multiple images.");
         filePaths.forEach(filePath -> log.info("Fallback background removal adapter called for image: {}", filePath));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void testConfiguration(AdapterConfiguration adapterConfiguration) {
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean healthy(AdapterConfiguration adapterConfiguration) {
-        return true;
     }
 
 }

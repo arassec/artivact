@@ -80,7 +80,7 @@
 
 <script setup lang="ts">
 import {PropType, ref, toRef} from 'vue';
-import {BaseTranslatableRestrictedItem} from 'components/artivact-models';
+import {BaseTranslatableRestrictedObject} from 'components/artivact-models';
 import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
 import {translate} from './artivact-utils';
 import ArtivactDialog from 'components/ArtivactDialog.vue';
@@ -91,7 +91,7 @@ const i18n = useI18n();
 const props = defineProps({
   valueRange: {
     required: true,
-    type: Object as PropType<BaseTranslatableRestrictedItem[]>,
+    type: Object as PropType<BaseTranslatableRestrictedObject[]>,
   },
   locales: {
     required: true,
@@ -100,7 +100,7 @@ const props = defineProps({
 });
 const valueRangeProp = toRef(props, 'valueRange');
 
-const value: BaseTranslatableRestrictedItem = {
+const value: BaseTranslatableRestrictedObject = {
   id: '',
   value: i18n.t('ArtivactPropertyValueRangeEditor.newValue'),
   translatedValue: '',
@@ -111,7 +111,7 @@ const value: BaseTranslatableRestrictedItem = {
 let addValueRef = ref(false);
 const valueRef = ref(value);
 
-let editedItem: BaseTranslatableRestrictedItem | null = null;
+let editedItem: BaseTranslatableRestrictedObject | null = null;
 
 function addValue() {
   editedItem = null;
@@ -125,7 +125,7 @@ function addValue() {
   addValueRef.value = true;
 }
 
-function editValue(item: BaseTranslatableRestrictedItem) {
+function editValue(item: BaseTranslatableRestrictedObject) {
   editedItem = item;
   valueRef.value = {
     id: item.id,
@@ -143,7 +143,7 @@ function saveValue() {
     editedItem.translations = valueRef.value.translations;
     editedItem.restrictions = valueRef.value.restrictions;
   } else {
-    let item: BaseTranslatableRestrictedItem = {
+    let item: BaseTranslatableRestrictedObject = {
       id: valueRef.value.id,
       value: valueRef.value.value,
       translatedValue: '',
@@ -163,9 +163,5 @@ function deleteValue(index: number) {
 <style scoped>
 .badge-container-label {
   display: inline-block;
-}
-
-.value-range-dialog {
-  min-width: 350px;
 }
 </style>
