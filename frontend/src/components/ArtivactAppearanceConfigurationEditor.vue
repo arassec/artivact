@@ -235,7 +235,7 @@
 
 <script setup lang="ts">
 import {PropType, toRef} from 'vue';
-import {AdapterImplementation, AppearanceConfiguration, SelectboxModel} from 'components/artivact-models';
+import {AppearanceConfiguration, SelectboxModel} from 'components/artivact-models';
 import ArtivactThemeColorEditor from 'components/ArtivactThemeColorEditor.vue';
 import {QUploader, useQuasar} from 'quasar';
 import {useDesktopStore} from 'stores/desktop';

@@ -295,6 +295,13 @@
         </q-list>
       </q-menu>
     </q-btn>
+
+    <!-- DOCUMENTATION -->
+    <a href="/artivact/index.html" target="_blank">
+      <q-btn flat color="white" icon="help" v-if="userdataStore.authenticated">
+        <q-tooltip>{{ $t('ArtivactSettingsBar.tooltip.documentation') }}</q-tooltip>
+      </q-btn>
+    </a>
   </div>
 
   <q-btn flat icon="more_vert" class="lt-md" v-if="userdataStore.authenticated">
@@ -563,6 +570,20 @@
             </q-list>
           </q-menu>
         </q-item>
+
+        <!-- DOCUMENTATION -->
+        <a href="/artivact/index.html" target="_blank" class="nav-link">
+        <q-item clickable v-close-popup
+                class="menu-entry" v-if="userdataStore.authenticated">
+          <q-item-section>
+            <label class="menu-label">
+              <q-icon name="help" size="sm" class="q-mr-sm"/>
+              <label>{{ $t('ArtivactSettingsBar.documentation') }}</label>
+            </label>
+          </q-item-section>
+        </q-item>
+        </a>
+
       </q-list>
     </q-menu>
   </q-btn>
@@ -681,5 +702,9 @@ function changeLocale(selectedLocale: string | null) {
 .menu-entry:hover {
   color: white;
   background: var(--q-secondary);
+}
+
+.nav-link {
+  text-decoration: none;
 }
 </style>

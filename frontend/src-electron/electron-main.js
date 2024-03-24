@@ -9,6 +9,10 @@ const platform = process.platform || os.platform();
 let mainWindow;
 
 // Artivact: +++
+const { Menu } = require('electron');
+// Disable the application menu, even for new window instances!
+Menu.setApplicationMenu(null);
+
 let kill = require('tree-kill');
 let backendChildProcess;
 let backendPort = 8080;
@@ -69,6 +73,7 @@ async function waitForBackend() {
 // Artivact: ---
 
 function createWindow() {
+
   /**
    * Initial window options
    */
@@ -87,6 +92,7 @@ function createWindow() {
       preload: path.resolve(__dirname, process.env.QUASAR_ELECTRON_PRELOAD),
     },
   });
+  mainWindow.removeMenu();
 
   // Artivact: +++
   let splash = new BrowserWindow({

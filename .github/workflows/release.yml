@@ -31,6 +31,10 @@ jobs:
           release_name: 'Version ${{ env.RELEASE_VERSION }}'
           tag: ${{ github.ref }}
           overwrite: true
+      - name: Deploy documentation to Github Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: documentation/docs/.vitepress/dist
 
   release-desktop-windows:
     runs-on: windows-latest

@@ -520,7 +520,8 @@ export default {
     tooltip: {
       locales: 'Locale Selection',
       systemSettings: 'System Settings',
-      account: 'Account Settings'
+      account: 'Account Settings',
+      documentation: 'Open the documentation'
     },
     default: 'Default',
     itemSettings: 'Item Settings',
@@ -533,7 +534,8 @@ export default {
     locale: 'Locale',
     exhib: 'Exhib.',
     system: 'System',
-    search: 'Searchengine'
+    search: 'Searchengine',
+    documentation: 'Docs'
   },
 
   ArtivactTagsConfigurationEditor: {

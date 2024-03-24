@@ -19,7 +19,6 @@ import {api} from 'boot/axios';
 import {useQuasar} from 'quasar';
 import {onMounted, ref, Ref} from 'vue';
 import {AdapterConfiguration} from 'components/artivact-models';
-import {useLocaleStore} from 'stores/locale';
 import ArtivactPeripheralsConfigurationEditor from 'components/ArtivactPeripheralsConfigurationEditor.vue';
 import {useI18n} from 'vue-i18n';
 
@@ -28,8 +27,6 @@ const i18n = useI18n();
 
 const adapterConfigurationRef: Ref<AdapterConfiguration | null> =
   ref(null);
-
-const localeStore = useLocaleStore();
 
 function loadAdapterConfiguration() {
   api
