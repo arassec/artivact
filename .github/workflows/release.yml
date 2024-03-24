@@ -34,7 +34,7 @@ jobs:
       - name: Deploy documentation to Github Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: documentation/docs/.vitepress/dist
+          folder: backend/target/classes/static/artivact
 
   release-desktop-windows:
     runs-on: windows-latest
