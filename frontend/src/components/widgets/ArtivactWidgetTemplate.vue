@@ -134,20 +134,6 @@ function deleteRestriction(value: string) {
 </script>
 
 <style scoped>
-.widget-editor-preview-separator {
-  border-top: 1px solid black;
-}
-
-.widget-editor {
-  border-top: 1px solid transparent;
-  border-bottom: 1px solid transparent;
-}
-
-.widget-editor-separator {
-  border-top: 1px solid black;
-  border-bottom: 1px solid black;
-}
-
 .artivact-widget {
   min-height: 4em;
 }
@@ -187,5 +173,4 @@ function deleteRestriction(value: string) {
   right: -14em;
   top: 1em;
 }
-
 </style>

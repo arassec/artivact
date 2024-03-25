@@ -32,7 +32,6 @@
 <script setup lang="ts">
 
 import {toRef} from 'vue';
-import ArtivactContent from 'components/ArtivactContent.vue';
 
 const props = defineProps({
   dialogModel: {

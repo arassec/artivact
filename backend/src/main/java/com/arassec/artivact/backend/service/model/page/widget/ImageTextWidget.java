@@ -7,6 +7,8 @@ import com.arassec.artivact.backend.service.model.page.WidgetType;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 /**
  * The two-column Image-Text widget contains an image on the left side, and a text on the right.
  */
@@ -37,6 +39,14 @@ public class ImageTextWidget extends Widget implements FileProcessingWidget {
     @Override
     public void processFile(String filename) {
         this.image = filename;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<String> usedFiles() {
+        return List.of(image);
     }
 
 }

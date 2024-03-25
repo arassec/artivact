@@ -12,14 +12,18 @@ import com.arassec.artivact.backend.service.model.item.ImageSize;
 import com.arassec.artivact.backend.service.model.page.FileProcessingWidget;
 import com.arassec.artivact.backend.service.model.page.Page;
 import com.arassec.artivact.backend.service.model.page.PageContent;
+import com.arassec.artivact.backend.service.model.page.Widget;
 import com.arassec.artivact.backend.service.model.page.widget.TextWidget;
 import com.arassec.artivact.backend.service.util.FileUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +34,7 @@ import java.util.stream.Collectors;
 /**
  * Service for page handling.
  */
+@Slf4j
 @Service
 public class PageService extends BaseFileService {
 
@@ -189,10 +194,41 @@ public class PageService extends BaseFileService {
 
         widgetIdsToDelete.forEach(widgetId -> deleteDirAndEmptyParents(getDirFromId(widgetFilesDir, widgetId)));
 
+        pageContent.getWidgets().forEach(widget ->
+                getDanglingImages(widget).forEach(imageToDelete -> {
+                    try {
+                        Files.deleteIfExists(getSubdirFilePath(widgetFilesDir, widget.getId(), null).resolve(imageToDelete));
+                        for (ImageSize imageSize : ImageSize.values()) {
+                            Files.deleteIfExists(getSubdirFilePath(widgetFilesDir, widget.getId(), null)
+                                    .resolve(imageSize.name() + "-" + imageToDelete));
+                        }
+                    } catch (IOException e) {
+                        log.error("Could not delete obsolete widget image from filesystem!", e);
+                    }
+                })
+        );
+
         pageEntity.setIndexPage(pageContent.isIndexPage());
         pageEntity.setContentJson(toJson(pageContent));
         pageEntityRepository.save(pageEntity);
         return pageContent;
+    }
+
+    /**
+     * Returns a list of images of a widget that are not referenced by the widget itself, but only existing in the
+     * filesystem.
+     *
+     * @param widget The widget.
+     * @return List of unreferenced images.
+     */
+    private List<String> getDanglingImages(Widget widget) {
+        if (widget instanceof FileProcessingWidget fileProcessingWidget) {
+            List<String> imagesInWidget = fileProcessingWidget.usedFiles();
+            List<String> allImagesInFolder = getFiles(getDirFromId(widgetFilesDir, widget.getId()), null);
+            allImagesInFolder.removeAll(imagesInWidget);
+            return allImagesInFolder;
+        }
+        return List.of();
     }
 
     /**

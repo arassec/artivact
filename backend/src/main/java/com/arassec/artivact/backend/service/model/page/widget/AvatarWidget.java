@@ -7,6 +7,8 @@ import com.arassec.artivact.backend.service.model.page.WidgetType;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 /**
  * The avatar widget, showing a central image with optional subtext.
  */
@@ -37,6 +39,14 @@ public class AvatarWidget extends Widget implements FileProcessingWidget {
     @Override
     public void processFile(String filename) {
         this.avatarImage = filename;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<String> usedFiles() {
+        return List.of(avatarImage);
     }
 
 }

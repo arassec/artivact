@@ -7,6 +7,8 @@ import com.arassec.artivact.backend.service.model.page.WidgetType;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 public class PageTitleWidget extends Widget implements FileProcessingWidget {
@@ -22,6 +24,14 @@ public class PageTitleWidget extends Widget implements FileProcessingWidget {
     @Override
     public void processFile(String filename) {
         this.backgroundImage = filename;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<String> usedFiles() {
+        return List.of(backgroundImage);
     }
 
 }

@@ -41,8 +41,12 @@ public abstract class BaseFileService extends BaseService {
      */
     @SuppressWarnings("java:S6204") // Result list needs to be mutable!
     public List<String> getFiles(Path path, String subDir) {
-        if (Files.exists(path.resolve(subDir))) {
-            try (Stream<Path> files = Files.list(path.resolve(subDir))) {
+        Path targetPath = path;
+        if (subDir != null) {
+            targetPath = targetPath.resolve(subDir);
+        }
+        if (Files.exists(targetPath)) {
+            try (Stream<Path> files = Files.list(targetPath)) {
                 return files.filter(filePath -> !Files.isDirectory(filePath)).map(filePath -> filePath.getFileName().toString()).filter(file -> {
                     for (ImageSize imageSize : ImageSize.values()) {
                         if (file.startsWith(imageSize.name())) {
@@ -155,7 +159,10 @@ public abstract class BaseFileService extends BaseService {
      * @return The path to the subdir.
      */
     protected Path getSubdirFilePath(Path root, String id, String subdir) {
-        return root.resolve(getSubDir(id, 0)).resolve(getSubDir(id, 1)).resolve(id).resolve(subdir);
+        if (subdir != null) {
+            return root.resolve(getSubDir(id, 0)).resolve(getSubDir(id, 1)).resolve(id).resolve(subdir);
+        }
+        return  root.resolve(getSubDir(id, 0)).resolve(getSubDir(id, 1)).resolve(id);
     }
 
     /**
