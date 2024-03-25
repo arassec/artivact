@@ -3,7 +3,7 @@ package com.arassec.artivact.backend.service.model.exhibition;
 import lombok.Getter;
 
 /**
- * A tool maps to a web-page's widget and is the smallest exhibition building block.
+ * A tool to implement an exhibition. It maps to a web-page's widget and is the smallest exhibition building block.
  */
 @Getter
 public abstract class Tool {

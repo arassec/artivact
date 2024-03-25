@@ -66,9 +66,12 @@ public class FileUtil {
         fileModifications.forEach(fileModification -> {
             try {
                 Path file = projectRoot.resolve(fileModification.file());
-                String fileContent = Files.readString(file);
-                fileContent = fileContent.replace(fileModification.placeholder(), fileModification.replacement());
-                Files.writeString(file, fileContent, StandardOpenOption.WRITE);
+                if (!Files.exists(file)) {
+                    Path templateFile = projectRoot.resolve(fileModification.file() + ".tpl");
+                    String fileContent = Files.readString(templateFile);
+                    fileContent = fileContent.replace(fileModification.placeholder(), fileModification.replacement());
+                    Files.writeString(file, fileContent, StandardOpenOption.CREATE_NEW);
+                }
             } catch (IOException e) {
                 throw new ArtivactException("Could not update project file!", e);
             }

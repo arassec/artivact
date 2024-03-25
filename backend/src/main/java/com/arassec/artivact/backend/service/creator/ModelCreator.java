@@ -82,6 +82,7 @@ public class ModelCreator extends BaseCreator {
         modelCreatorAdapter.initialize(progressMonitor, ModelCreatorInitParams.builder()
                 .adapterConfiguration(adapterConfiguration)
                 .tempDir(projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.TEMP_DIR))
+                .projectRoot(projectDataProvider.getProjectRoot())
                 .build());
 
         Path imagesDir = getImagesDir(itemId, true);

@@ -30,11 +30,6 @@ public class MeshroomModelCreatorAdapter extends BaseModelCreatorAdapter {
     private static final String MESHROOM_CACHE_DIR = "MeshroomCache";
 
     /**
-     * The result dir of Meshroom.
-     */
-    private static final String MESHROOM_RESULT_DIR = "MeshroomResult";
-
-    /**
      * The commandline util.
      */
     private final CmdUtil cmdUtil;
@@ -61,7 +56,7 @@ public class MeshroomModelCreatorAdapter extends BaseModelCreatorAdapter {
         Path projectRoot = initParams.getProjectRoot();
         Path tempDir = initParams.getTempDir();
 
-        Path resultDir = projectRoot.resolve(MESHROOM_DIR).resolve(MESHROOM_RESULT_DIR);
+        Path resultDir = tempDir.resolve(EXPORT_DIR).toAbsolutePath();
         Path cacheDir = projectRoot.resolve(MESHROOM_DIR).resolve(MESHROOM_CACHE_DIR);
 
         fileUtil.emptyDir(tempDir);
@@ -70,13 +65,10 @@ public class MeshroomModelCreatorAdapter extends BaseModelCreatorAdapter {
 
         copyImages(images, tempDir, progressMonitor);
 
+        fileUtil.openDirInOs(tempDir);
+
         var cmdLine = new CommandLine(initParams.getAdapterConfiguration().getConfigValue(getSupportedImplementation()));
-        cmdLine.addArgument("-i");
-        cmdLine.addArgument(tempDir.toAbsolutePath().toString());
-        cmdLine.addArgument("-o");
-        cmdLine.addArgument(resultDir.toAbsolutePath().toString());
-        cmdLine.addArgument("--cache");
-        cmdLine.addArgument(cacheDir.toAbsolutePath().toString());
+        cmdLine.addArgument(projectRoot.resolve(MESHROOM_DIR).resolve("artivact-meshroom-workflow.mg").toAbsolutePath().toString());
 
         progressMonitor.updateLabelKey("createModelStart");
 

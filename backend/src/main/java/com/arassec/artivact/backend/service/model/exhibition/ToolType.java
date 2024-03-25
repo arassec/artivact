@@ -7,7 +7,7 @@ import lombok.Getter;
 import java.util.Arrays;
 
 /**
- * Type for tools.
+ * Type of tool.
  */
 @Getter
 public enum ToolType {
