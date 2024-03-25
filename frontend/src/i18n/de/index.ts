@@ -693,7 +693,7 @@ export default {
     label: {
       heading: 'Überschrift',
       content: 'Inhalt',
-      outlined: 'Umriss'
+      outlined: 'Art'
     }
   },
 

@@ -75,7 +75,7 @@
               <div class="row full-width">
                 <q-space/>
                 <artivact-item-card
-                  class="q-ma-sm "
+                  class="q-ma-sm"
                   v-if="searchResultRef.data[slide]"
                   :artivact-card-data="searchResultRef.data[slide]"
                 />
@@ -96,7 +96,7 @@
           searchResultRef.data.length === 0
         "
       >
-        <artivact-content> No search results available!</artivact-content>
+        <artivact-content>No search results available!</artivact-content>
       </label>
       <artivact-content
         v-if="
@@ -115,7 +115,7 @@
           control-color="primary"
           navigation
           height="300px"
-          class="flat full-width bg-accent"
+          class="flat full-width"
         >
           <template v-for="slide in calculateSlides(3)" v-bind:key="slide">
             <q-carousel-slide :name="slide" class="row no-wrap">
@@ -161,7 +161,7 @@
           control-color="primary"
           navigation
           height="300px"
-          class="flat full-width bg-accent"
+          class="flat full-width"
         >
           <template v-for="slide in calculateSlides(1)" v-bind:key="slide">
             <q-carousel-slide :name="slide" class="row no-wrap">
@@ -188,6 +188,7 @@
         </div>
       </artivact-content>
     </template>
+
   </artivact-widget-template>
 </template>
 

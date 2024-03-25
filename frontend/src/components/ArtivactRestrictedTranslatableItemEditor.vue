@@ -1,9 +1,6 @@
 <template>
   <div :class="!restrictedItemRef ? 'q-mb-md' : ''">
-    <!-- Default value if locale is selected -->
-    <label v-if="translatableStringRef && localeStore.selectedLocale !== null">
-      {{ $t('ArtivactRestrictedTranslatableItemEditor.default') }} {{ translatableStringRef.value }}
-    </label>
+
     <!-- Input field -->
     <q-input
       v-if="translatableStringRef && localeStore.selectedLocale === null"
@@ -11,14 +8,40 @@
       v-model="translatableStringRef.value"
       :label="label"
       :type="textarea ? 'textarea' : ''"
-    ></q-input>
-    <q-input
-      v-if="translatableStringRef && localeStore.selectedLocale !== null"
-      outlined
-      v-model="translatableStringRef.translations[localeStore.selectedLocale]"
-      :label="label"
-      :type="textarea ? 'textarea' : ''"
-    ></q-input>
+      :autogrow="textarea"
+      class="no-scroll"
+    />
+    <div class="row full-width" v-if="translatableStringRef && localeStore.selectedLocale !== null">
+      <q-input
+        outlined
+        v-model="translatableStringRef.translations[localeStore.selectedLocale]"
+        :label="label"
+        :type="textarea ? 'textarea' : ''"
+        :autogrow="textarea"
+        class="no-scroll column col-grow"
+      />
+      <q-input
+        v-if="showStandardTextRef"
+        outlined
+        v-model="translatableStringRef.value"
+        :label="label"
+        :type="textarea ? 'textarea' : ''"
+        :autogrow="textarea"
+        class="no-scroll column col-grow q-ml-md"
+        :disable="true"
+        transition-show="slide-left"
+        transition-hide="slide-right"
+      />
+      <div class="q-ml-sm">
+        <q-btn
+          flat
+          dense
+          rounded
+          icon="language"
+          @click="showStandardTextRef = !showStandardTextRef"
+        />
+      </div>
+    </div>
 
     <q-btn
       rounded
@@ -62,9 +85,9 @@
       <!-- Slot for additional editors -->
       <slot></slot>
 
-      <div v-if="!showSeparator" class="q-mb-md" />
+      <div v-if="!showSeparator" class="q-mb-md"/>
     </div>
-    <q-separator class="q-mt-xs q-mb-lg" v-if="showSeparator" />
+    <q-separator class="q-mt-xs q-mb-lg" v-if="showSeparator"/>
   </div>
 </template>
 
@@ -109,6 +132,8 @@ const localeStore = useLocaleStore();
 const translatableStringRef = toRef(props, 'translatableString');
 const restrictedItemRef = toRef(props, 'restrictedItem');
 const showDetailsRef = ref(false);
+
+const showStandardTextRef = ref(false);
 
 function addRestriction(value: string) {
   if (restrictedItemRef.value) {

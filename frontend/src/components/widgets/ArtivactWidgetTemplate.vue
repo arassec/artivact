@@ -1,10 +1,6 @@
 <template>
-  <div
-    class="row"
-    :class="
-      inEditMode && showDetailsRef ? 'widget-editor-separator' : 'widget-editor'
-    "
-  >
+  <div class="row artivact-widget">
+
     <!-- Content -->
     <div class="col-grow" v-if="!inEditMode">
       <slot name="widget-content"></slot>
@@ -14,87 +10,82 @@
     <div v-if="inEditMode" class="col-grow">
       <div class="q-mb-lg">
 
-        <slot name="widget-editor-preview"></slot>
+        <div class="edit-widget-button-container">
+          <q-btn
+            rounded
+            dense
+            color="primary"
+            size="md"
+            icon="edit"
+            class="edit-widget-button"
+            @click="showDetailsRef = true">
+            <q-tooltip>{{ $t('WidgetTemplate.tooltip.edit') }}</q-tooltip>
+          </q-btn>
+          <q-btn
+            rounded
+            dense
+            color="primary"
+            class="upward-widget-button"
+            icon="arrow_upward"
+            @click="$emit('move-widget-up')"
+            v-if="moveUpEnabled">
+          </q-btn>
+          <q-btn
+            rounded
+            dense
+            color="primary"
+            class="downward-widget-button"
+            icon="arrow_downward"
+            @click="$emit('move-widget-down')"
+            v-if="moveDownEnabled">
+          </q-btn>
+          <q-btn
+            rounded
+            dense
+            color="primary"
+            class="delete-widget-button"
+            icon="delete"
+            @click="$emit('delete-widget')">
+            <q-tooltip>{{ $t('WidgetTemplate.tooltip.delete') }}</q-tooltip>
+          </q-btn>
+        </div>
 
-        <q-btn
-          rounded
-          dense
-          color="primary"
-          size="md"
-          icon="edit"
-          class="float-right q-mr-lg"
-          @click="showDetailsRef = true"
-          v-if="!showDetailsRef">
-          <q-tooltip>{{ $t('WidgetTemplate.tooltip.edit') }}</q-tooltip>
-        </q-btn>
-        <q-btn
-          rounded
-          dense
-          color="primary"
-          size="md"
-          icon="expand_less"
-          class="float-right q-mr-lg q-mt-md"
-          @click="showDetailsRef = false"
-          v-if="showDetailsRef">
-          <q-tooltip>{{ $t('WidgetTemplate.tooltip.close') }}</q-tooltip>
-        </q-btn>
+        <slot name="widget-content"></slot>
 
-        <transition>
-          <div v-show="showDetailsRef">
-            <artivact-content
-              :class="showDetailsRef ? 'widget-editor-preview-separator' : ''"
-            >
-              <artivact-restrictions-editor
-                :in-details-view="false"
-                :restrictions="restrictions"
-                @delete-restriction="deleteRestriction"
-                @add-restriction="addRestriction"
-              />
+        <artivact-widget-editor-modal :dialog-model="showDetailsRef">
+          <artivact-restrictions-editor
+            :in-details-view="false"
+            :restrictions="restrictions"
+            @delete-restriction="deleteRestriction"
+            @add-restriction="addRestriction"
+          />
 
-              <div>
-                <q-btn
-                  rounded
-                  dense
-                  flat
-                  class="widget-editor-content"
-                  icon="arrow_upward"
-                  @click="$emit('move-widget-up')"
-                  v-if="moveUpEnabled">
-                  <q-tooltip>{{ $t('WidgetTemplate.tooltip.moveUp') }}</q-tooltip>
-                </q-btn>
-                <q-btn
-                  rounded
-                  dense
-                  flat
-                  class="widget-editor-content"
-                  icon="arrow_downward"
-                  @click="$emit('move-widget-down')"
-                  v-if="moveDownEnabled">
-                  <q-tooltip>{{ $t('WidgetTemplate.tooltip.moveDown') }}</q-tooltip>
-                </q-btn>
-                <q-btn
-                  dense
-                  flat
-                  class="widget-editor-content"
-                  icon="delete"
-                  @click="$emit('delete-widget')">
-                  <q-tooltip>{{ $t('WidgetTemplate.tooltip.delete') }}</q-tooltip>
-                </q-btn>
-              </div>
-            </artivact-content>
+          <template v-slot:editor-preview>
+            <slot name="widget-editor-preview"></slot>
+          </template>
 
+          <template v-slot:editor-content>
             <slot name="widget-editor-content"></slot>
-          </div>
-        </transition>
+          </template>
+
+          <template v-slot:approve>
+            <q-btn
+              :label="$t('Common.save')"
+              color="primary"
+              @click="showDetailsRef = false"
+            />
+          </template>
+        </artivact-widget-editor-modal>
+
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { PropType, ref, toRef } from 'vue';
+import {PropType, ref, toRef} from 'vue';
 import ArtivactRestrictionsEditor from 'components/ArtivactRestrictionsEditor.vue';
-import ArtivactContent from 'components/ArtivactContent.vue';
+import ArtivactWidgetEditorModal from 'components/widgets/ArtivactWidgetEditorModal.vue';
 
 const props = defineProps({
   inEditMode: {
@@ -155,6 +146,46 @@ function deleteRestriction(value: string) {
 .widget-editor-separator {
   border-top: 1px solid black;
   border-bottom: 1px solid black;
+}
+
+.artivact-widget {
+  min-height: 4em;
+}
+
+.edit-widget-button-container {
+  height: 0;
+  max-width: 65rem;
+  margin-right: auto;
+  margin-left: auto;
+  position: relative;
+}
+
+.edit-widget-button {
+  z-index: 1;
+  position: absolute;
+  right: -5em;
+  top: 1em;
+}
+
+.upward-widget-button {
+  z-index: 1;
+  position: absolute;
+  right: -8em;
+  top: 1em;
+}
+
+.downward-widget-button {
+  z-index: 1;
+  position: absolute;
+  right: -11em;
+  top: 1em;
+}
+
+.delete-widget-button {
+  z-index: 1;
+  position: absolute;
+  right: -14em;
+  top: 1em;
 }
 
 </style>

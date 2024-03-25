@@ -93,7 +93,7 @@
         v-on:image-added="fileAdded($event, widgetData.id)"
       />
 
-      <artivact-search-widget
+      <artivact-item-search-widget
         v-if="widgetData.type === 'ITEM_SEARCH'"
         :widget-data="widgetData as SearchBasedWidgetData"
         :in-edit-mode="inEditMode"
@@ -213,9 +213,9 @@ import ArtivactImageTextWidget from 'components/widgets/ArtivactImageTextWidget.
 import ArtivactInfoBoxWidget from 'components/widgets/ArtivactInfoBoxWidget.vue';
 import ArtivactSpaceWidget from 'components/widgets/ArtivactSpaceWidget.vue';
 import ArtivactItemCarouselWidget from 'components/widgets/ArtivactItemCarouselWidget.vue';
-import ArtivactSearchWidget from 'components/widgets/ArtivactSearchWidget.vue';
 import ArtivactTextWidget from 'components/widgets/ArtivactTextWidget.vue';
 import ArtivactPageTitleWidget from 'components/widgets/ArtivactPageTitleWidget.vue';
+import ArtivactItemSearchWidget from 'components/widgets/ArtivactItemSearchWidget.vue';
 
 const props = defineProps({
   pageId: {

@@ -214,7 +214,7 @@ import {api} from 'boot/axios';
 import ArtivactContent from 'components/ArtivactContent.vue';
 import ArtivactRestrictionsEditor from 'components/ArtivactRestrictionsEditor.vue';
 import {useLocaleStore} from 'stores/locale';
-import {Asset, ImageSet, ItemDetails, Tag, TagsConfiguration} from 'components/artivact-models';
+import {ItemDetails, Tag, TagsConfiguration} from 'components/artivact-models';
 import ArtivactPropertyCategoryEditor from 'components/ArtivactPropertyCategoryEditor.vue';
 import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
 import {useBreadcrumbsStore} from 'stores/breadcrumbs';
