@@ -237,12 +237,12 @@ public class ConfigurationService extends BaseService {
             adapterConfiguration.getConfigValues().put(AdapterImplementation.FALLBACK_MODEL_EDITOR_ADAPTER, "");
 
             if (windowsOs) {
-                adapterConfiguration.getConfigValues().put(AdapterImplementation.MESHROOM_MODEL_CREATOR_ADAPTER, "C:/Users/<USER>/Tools/Meshroom/meshroom_batch.exe");
+                adapterConfiguration.getConfigValues().put(AdapterImplementation.MESHROOM_MODEL_CREATOR_ADAPTER, "C:/Users/<USER>/Tools/Meshroom/Meshroom.exe");
                 adapterConfiguration.getConfigValues().put(AdapterImplementation.METASHAPE_MODEL_CREATOR_ADAPTER, "C:/Program Files/Agisoft/Metashape/metashape.exe");
 
                 adapterConfiguration.getConfigValues().put(AdapterImplementation.BLENDER_MODEL_EDITOR_ADAPTER, "C:/Users/<USER>/Tools/Blender/blender.exe");
             } else {
-                adapterConfiguration.getConfigValues().put(AdapterImplementation.MESHROOM_MODEL_CREATOR_ADAPTER, "~/tools/meshroom/meshroom_batch");
+                adapterConfiguration.getConfigValues().put(AdapterImplementation.MESHROOM_MODEL_CREATOR_ADAPTER, "~/tools/meshroom/meshroom");
                 adapterConfiguration.getConfigValues().put(AdapterImplementation.METASHAPE_MODEL_CREATOR_ADAPTER, "~/tools/metashape/metashape.sh");
 
                 adapterConfiguration.getConfigValues().put(AdapterImplementation.BLENDER_MODEL_EDITOR_ADAPTER, "~/tools/blender/blender");

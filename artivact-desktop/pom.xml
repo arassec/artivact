@@ -190,7 +190,7 @@
                                     <goal>copy-resources</goal>
                                 </goals>
                                 <configuration>
-                                    <outputDirectory>${project.build.directory}/artivact-desktop-windows-v${revision}/resources/project-setup</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/artivact-desktop-linux-v${revision}/resources/project-setup</outputDirectory>
                                     <overwrite>true</overwrite>
                                     <resources>
                                         <resource>
@@ -231,7 +231,7 @@
                                     <goal>copy-resources</goal>
                                 </goals>
                                 <configuration>
-                                    <outputDirectory>${project.build.directory}/artivact-desktop-windows-v${revision}/lib/security</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/artivact-desktop-linux-v${revision}/lib/security</outputDirectory>
                                     <overwrite>true</overwrite>
                                     <resources>
                                         <resource>
