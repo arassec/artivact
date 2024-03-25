@@ -69,52 +69,7 @@ public class ItemController extends BaseController {
             throw new IllegalArgumentException("No item found with ID " + itemId);
         }
 
-        return ResponseEntity.ok(ItemDetails.builder()
-                .id(item.getId())
-                .version(item.getVersion())
-                .restrictions(item.getRestrictions().stream().toList())
-                .title(item.getTitle())
-                .description(item.getDescription())
-                .images(item.getMediaContent().getImages().stream()
-                        .map(fileName -> Asset.builder()
-                                .fileName(fileName)
-                                .url(createImageUrl(itemId, fileName))
-                                .transferable(false)
-                                .build())
-                        .toList())
-                .models(item.getMediaContent().getModels().stream()
-                        .map(fileName -> Asset.builder()
-                                .fileName(fileName)
-                                .url(createModelUrl(itemId, fileName))
-                                .transferable(false)
-                                .build())
-                        .toList())
-                .creationImageSets(item.getMediaCreationContent().getImageSets().stream()
-                        .map(creationImageSet ->
-                                ImageSet.builder()
-                                        .backgroundRemoved(creationImageSet.getBackgroundRemoved())
-                                        .modelInput(creationImageSet.isModelInput())
-                                        .images(creationImageSet.getFiles().stream()
-                                                .map(fileName -> Asset.builder()
-                                                        .fileName(fileName)
-                                                        .url(createImageUrl(itemId, fileName))
-                                                        .transferable(true)
-                                                        .build())
-                                                .toList())
-                                        .build())
-                        .toList())
-                .creationModelSets(item.getMediaCreationContent().getModelSets().stream()
-                        .map(creationModelSet ->
-                                ModelSet.builder()
-                                        .directory(creationModelSet.getDirectory())
-                                        .comment(creationModelSet.getComment())
-                                        .modelSetImage(createModelSetImageUrl(projectDataProvider.getProjectRoot().resolve(creationModelSet.getDirectory())))
-                                        .build())
-                        .toList()
-                )
-                .properties(item.getProperties())
-                .tags(item.getTags())
-                .build());
+        return ResponseEntity.ok(convertItem(item));
     }
 
     /**
@@ -123,7 +78,7 @@ public class ItemController extends BaseController {
      * @param itemDetails The item details to save.
      */
     @PutMapping
-    public void save(@RequestBody ItemDetails itemDetails) {
+    public ResponseEntity<ItemDetails> save(@RequestBody ItemDetails itemDetails) {
         Item item = itemService.load(itemDetails.getId());
 
         if (item == null) {
@@ -164,7 +119,9 @@ public class ItemController extends BaseController {
         item.setProperties(itemDetails.getProperties());
         item.setTags(itemDetails.getTags());
 
-        itemService.save(item);
+        Item savedItem = itemService.save(item);
+
+        return ResponseEntity.ok(convertItem(savedItem));
     }
 
     /**
@@ -292,6 +249,61 @@ public class ItemController extends BaseController {
         synchronized (this) {
             itemService.addModel(itemId, file);
         }
+    }
+
+    /**
+     * Converts the given item into item details for the frontend.
+     *
+     * @param item The item to convert.
+     * @return The converted {@link ItemDetails}.
+     */
+    private ItemDetails convertItem(Item item) {
+        return ItemDetails.builder()
+                .id(item.getId())
+                .version(item.getVersion())
+                .restrictions(item.getRestrictions().stream().toList())
+                .title(item.getTitle())
+                .description(item.getDescription())
+                .images(item.getMediaContent().getImages().stream()
+                        .map(fileName -> Asset.builder()
+                                .fileName(fileName)
+                                .url(createImageUrl(item.getId(), fileName))
+                                .transferable(false)
+                                .build())
+                        .toList())
+                .models(item.getMediaContent().getModels().stream()
+                        .map(fileName -> Asset.builder()
+                                .fileName(fileName)
+                                .url(createModelUrl(item.getId(), fileName))
+                                .transferable(false)
+                                .build())
+                        .toList())
+                .creationImageSets(item.getMediaCreationContent().getImageSets().stream()
+                        .map(creationImageSet ->
+                                ImageSet.builder()
+                                        .backgroundRemoved(creationImageSet.getBackgroundRemoved())
+                                        .modelInput(creationImageSet.isModelInput())
+                                        .images(creationImageSet.getFiles().stream()
+                                                .map(fileName -> Asset.builder()
+                                                        .fileName(fileName)
+                                                        .url(createImageUrl(item.getId(), fileName))
+                                                        .transferable(true)
+                                                        .build())
+                                                .toList())
+                                        .build())
+                        .toList())
+                .creationModelSets(item.getMediaCreationContent().getModelSets().stream()
+                        .map(creationModelSet ->
+                                ModelSet.builder()
+                                        .directory(creationModelSet.getDirectory())
+                                        .comment(creationModelSet.getComment())
+                                        .modelSetImage(createModelSetImageUrl(projectDataProvider.getProjectRoot().resolve(creationModelSet.getDirectory())))
+                                        .build())
+                        .toList()
+                )
+                .properties(item.getProperties())
+                .tags(item.getTags())
+                .build();
     }
 
 }

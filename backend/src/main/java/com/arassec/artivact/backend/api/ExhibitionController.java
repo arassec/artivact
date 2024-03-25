@@ -1,8 +1,8 @@
 package com.arassec.artivact.backend.api;
 
 import com.arassec.artivact.backend.api.model.ExhibitionSummary;
+import com.arassec.artivact.backend.api.model.OperationProgress;
 import com.arassec.artivact.backend.service.ExhibitionService;
-import com.arassec.artivact.backend.service.model.exhibition.Exhibition;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -48,9 +48,10 @@ public class ExhibitionController extends BaseController {
      * @return The created/updated exhibition.
      */
     @PostMapping()
-    public ResponseEntity<Exhibition> save(@RequestBody ExhibitionSummary exhibitionSummary) {
-        return ResponseEntity.ok(exhibitionService.save(exhibitionSummary.getExhibitionId(),
-                exhibitionSummary.getTitle(), exhibitionSummary.getDescription(), exhibitionSummary.getMenuIds()));
+    public ResponseEntity<OperationProgress> save(@RequestBody ExhibitionSummary exhibitionSummary) {
+        exhibitionService.createOrUpdate(exhibitionSummary.getExhibitionId(),
+                exhibitionSummary.getTitle(), exhibitionSummary.getDescription(), exhibitionSummary.getMenuIds());
+        return getProgress();
     }
 
     /**
@@ -61,6 +62,16 @@ public class ExhibitionController extends BaseController {
     @DeleteMapping("/{exhibitionId}")
     public void delete(@PathVariable String exhibitionId) {
         exhibitionService.delete(exhibitionId);
+    }
+
+    /**
+     * Returns the progress of a previously started long-running operation.
+     *
+     * @return The progress.
+     */
+    @GetMapping("/progress")
+    public ResponseEntity<OperationProgress> getProgress() {
+        return convert(exhibitionService.getProgressMonitor());
     }
 
 }

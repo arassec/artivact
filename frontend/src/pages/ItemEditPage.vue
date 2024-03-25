@@ -11,7 +11,7 @@
               icon="close"
               class="main-nav-button"
               @click="cancel">
-              <q-tooltip>{{$t('ItemEditPage.button.tooltip.close')}}</q-tooltip>
+              <q-tooltip>{{ $t('ItemEditPage.button.tooltip.close') }}</q-tooltip>
             </q-btn>
           </router-link>
         </div>
@@ -24,7 +24,7 @@
               icon="download"
               type="submit"
               class="q-mr-sm main-nav-button">
-            <q-tooltip>{{$t('ItemEditPage.button.tooltip.download')}}</q-tooltip>
+              <q-tooltip>{{ $t('ItemEditPage.button.tooltip.download') }}</q-tooltip>
             </q-btn>
             <q-btn :disable="tabRef == 'creation'"
                    round
@@ -32,7 +32,7 @@
                    icon="save"
                    class="main-nav-button"
                    @click="saveItem">
-              <q-tooltip>{{ $t('ItemEditPage.button.tooltip.save')}}</q-tooltip>
+              <q-tooltip>{{ $t('ItemEditPage.button.tooltip.save') }}</q-tooltip>
             </q-btn>
           </q-form>
         </div>
@@ -67,7 +67,7 @@
             v-if="tagsDataRef"
             v-show="tagsDataRef.tags.length > 0">
             <div class="editor-label">
-              <label class="q-mr-xs q-mt-xs vertical-middle">{{$t('ItemEditPage.label.tags')}}</label>
+              <label class="q-mr-xs q-mt-xs vertical-middle">{{ $t('ItemEditPage.label.tags') }}</label>
             </div>
 
             <div>
@@ -85,7 +85,7 @@
                   size="xs"
                   icon="close"
                   @click="removeTag(tag)">
-                  <q-tooltip>{{$t('ItemEditPage.button.tooltip.removeTag')}}</q-tooltip>
+                  <q-tooltip>{{ $t('ItemEditPage.button.tooltip.removeTag') }}</q-tooltip>
                 </q-btn>
               </q-badge>
               <q-btn
@@ -98,7 +98,7 @@
                 size="xs"
                 icon="add"
                 @click="addTag">
-                <q-tooltip>{{ $t('ItemEditPage.button.tooltip.addTag')}}</q-tooltip>
+                <q-tooltip>{{ $t('ItemEditPage.button.tooltip.addTag') }}</q-tooltip>
               </q-btn>
             </div>
 
@@ -190,13 +190,14 @@
         <div v-if="desktopStore.isDesktopModeEnabled" v-show="tabRef == 'creation'">
           <h2 class="av-text-h2">{{ $t('ItemEditPage.label.images') }}</h2>
           <div class="q-mb-xl">
-            <artivact-item-image-set-editor :item-id="savedItemId" :creation-image-sets="itemDataRef.creationImageSets"
-                                   @delete-image="(imageSet, asset) => deleteImageFromImageSet(imageSet, asset)"
-                                   @update-item="loadItemData(itemDataRef.id)"/>
+            <artivact-item-image-set-editor ref="imageSetEditorRef"
+                                            :item-id="savedItemId" :creation-image-sets="itemDataRef.creationImageSets"
+                                            @delete-image="saveItem()"
+                                            @update-item="loadItemData(itemDataRef.id)"/>
           </div>
           <h2 class="av-text-h2">{{ $t('ItemEditPage.label.models') }}</h2>
           <artivact-item-model-set-editor :item-id="savedItemId" :creation-model-sets="itemDataRef.creationModelSets"
-                                 @update-item="loadItemData(itemDataRef.id)"/>
+                                          @update-item="loadItemData(itemDataRef.id)"/>
         </div>
 
       </div>
@@ -246,6 +247,8 @@ const tagValueRef = ref(null);
 
 let savedItemId;
 
+const imageSetEditorRef = ref<InstanceType<typeof ArtivactItemImageSetEditor> | null>(null)
+
 const availableTags = computed(() => {
   return tagsDataRef.value?.tags.filter((tag: Tag) => {
     if (itemDataRef.value) {
@@ -276,7 +279,7 @@ function loadItemData(itemId: string | string[]) {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.item') }),
+        message: i18n.t('Common.messages.loading.failed', {item: i18n.t('Common.items.item')}),
         icon: 'report_problem',
       });
     });
@@ -298,7 +301,7 @@ function loadItemMediaData(itemId: string | string[]) {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.item') }),
+        message: i18n.t('Common.messages.loading.failed', {item: i18n.t('Common.items.item')}),
         icon: 'report_problem',
       });
     });
@@ -314,7 +317,7 @@ function loadPropertiesData() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.properties') }),
+        message: i18n.t('Common.messages.loading.failed', {item: i18n.t('Common.items.properties')}),
         icon: 'report_problem',
       });
     });
@@ -330,7 +333,7 @@ function loadTagsData() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.tags') }),
+        message: i18n.t('Common.messages.loading.failed', {item: i18n.t('Common.items.tags')}),
         icon: 'report_problem',
       });
     });
@@ -357,11 +360,6 @@ function addRestriction(role: string) {
   itemDataRef.value?.restrictions.push(role);
 }
 
-function deleteImageFromImageSet(imageSet: ImageSet, asset: Asset) {
-  itemDataRef.value?.creationImageSets[itemDataRef.value?.creationImageSets.indexOf(imageSet)].images.splice(
-    itemDataRef.value?.creationImageSets[itemDataRef.value?.creationImageSets.indexOf(imageSet)].images.indexOf(asset), 1);
-}
-
 function saveItem() {
   let item = itemDataRef.value;
   api
@@ -370,7 +368,7 @@ function saveItem() {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: i18n.t('Common.messages.saving.success', { item: i18n.t('Common.items.item') }),
+        message: i18n.t('Common.messages.saving.success', {item: i18n.t('Common.items.item')}),
         icon: 'done',
       });
     })
@@ -378,7 +376,7 @@ function saveItem() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.saving.failed', { item: i18n.t('Common.items.item') }),
+        message: i18n.t('Common.messages.saving.failed', {item: i18n.t('Common.items.item')}),
         icon: 'report_problem',
       });
     });

@@ -770,6 +770,10 @@ export default {
     SearchService: {
       createIndex: 'Erstelle Suchindex...',
       createIndexFailed: 'Fehler bei Erstellung/Aktualisierung des Suchindexes!',
+    },
+    ExhibitionService: {
+      createOrUpdate: 'Bearbeite Ausstellung...',
+      createOrUpdateFailed: 'Bearbeiten der Ausstellung fehlgeschlagen!'
     }
   },
 

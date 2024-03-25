@@ -119,8 +119,9 @@
     </artivact-dialog>
 
     <!-- LONG-RUNNING OPERATION -->
-    <artivact-operation-in-progress-dialog
-      :progress-monitor-ref="progressMonitorRef" :dialog-model="showOperationInProgressModalRef"/>
+    <artivact-operation-in-progress-dialog :progress-monitor-ref="progressMonitorRef"
+                                           :dialog-model="showOperationInProgressModalRef"
+                                           @close-dialog="showOperationInProgressModalRef = false"/>
 
     <div class="row">
       <q-space></q-space>
@@ -158,10 +159,7 @@ const showDeleteExhibitionConfirmModalRef = ref(false);
 const menuTreeRef = ref([] as MenuTreeNode[])
 
 const showOperationInProgressModalRef = ref(false);
-const progressMonitorRef = ref<OperationProgress>({
-  progress: i18n.t('ArtivactExhibitionsConfigurationEditor.dialog.progress'),
-  error: ''
-});
+const progressMonitorRef = ref<OperationProgress>();
 
 function createMenuTree() {
   let result = [] as MenuTreeNode[];
@@ -192,19 +190,47 @@ function loadExhibitionSummaries() {
 }
 
 function saveOrUpdateExhibitionSummary(exhibition: ExhibitionSummary) {
-  showOperationInProgressModalRef.value = true;
   showExhibitionConfigurationModalRef.value = false;
+  showOperationInProgressModalRef.value = true;
   api
     .post('/api/exhibition', exhibition)
-    .then(() => {
-      loadExhibitionSummaries();
-      showOperationInProgressModalRef.value = false;
+    .then((response) => {
+      if (response) {
+        showOperationInProgressModalRef.value = true;
+        progressMonitorRef.value = response.data;
+        updateOperationProgress();
+      }
+    })
+    .catch(() => {
       quasar.notify({
-        color: 'positive',
+        color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.saving.success', { item: i18n.t('Common.items.exhibition') }),
-        icon: 'report',
+        message: i18n.t('Common.messages.saving.failed', { item: i18n.t('Common.items.exhibition') }),
+        icon: 'report_problem',
       });
+    });
+}
+
+function updateOperationProgress() {
+  api
+    .get('/api/exhibition/progress')
+    .then((response) => {
+      if (response.data) {
+        progressMonitorRef.value = response.data;
+        if (!progressMonitorRef.value?.error) {
+          setTimeout(() => updateOperationProgress(), 1000);
+        }
+      } else {
+        progressMonitorRef.value = undefined;
+        showOperationInProgressModalRef.value = false;
+        loadExhibitionSummaries();
+        quasar.notify({
+          color: 'positive',
+          position: 'bottom',
+          message: i18n.t('Common.messages.saving.success', { item: i18n.t('Common.items.exhibition') }),
+          icon: 'report',
+        });
+      }
     })
     .catch(() => {
       quasar.notify({

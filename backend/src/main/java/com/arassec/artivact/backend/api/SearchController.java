@@ -65,6 +65,14 @@ public class SearchController extends BaseController {
         return getSearchResult(items, pageNumber, pageSize);
     }
 
+    /**
+     * Converts the given item list into a {@link SearchResult}.
+     *
+     * @param all        All found items.
+     * @param pageNumber The page number to return.
+     * @param pageSize   The page size to use.
+     * @return The search result.
+     */
     private SearchResult getSearchResult(List<Item> all, int pageNumber, int pageSize) {
         if (all != null && !all.isEmpty() && pageSize > 0) {
             long totalPages = all.size() / pageSize;

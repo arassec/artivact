@@ -84,13 +84,13 @@
             <q-input
               v-if="adapterConfigurationRef.cameraAdapterImplementation.toString() === AdapterImplementation[AdapterImplementation.DIGI_CAM_CONTROL_REMOTE_CAMERA_ADAPTER]"
               outlined
-              label="$t('ArtivactPeripheralsConfigurationEditor.camera.digiCamControlUrl')"
+              :label="$t('ArtivactPeripheralsConfigurationEditor.camera.digiCamControlUrl')"
               v-model="adapterConfigurationRef.configValues['DIGI_CAM_CONTROL_REMOTE_CAMERA_ADAPTER']"
             />
             <q-input
               v-if="adapterConfigurationRef.cameraAdapterImplementation.toString() === AdapterImplementation[AdapterImplementation.GPHOTO_TWO_CAMERA_ADAPTER]"
               outlined
-              label="$t('ArtivactPeripheralsConfigurationEditor.camera.gphotoExe')"
+              :label="$t('ArtivactPeripheralsConfigurationEditor.camera.gphotoExe')"
               v-model="adapterConfigurationRef.configValues['GPHOTO_TWO_CAMERA_ADAPTER']"
             />
           </q-card-section>

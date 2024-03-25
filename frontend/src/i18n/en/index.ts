@@ -768,7 +768,11 @@ export default {
     },
     SearchService: {
       createIndex: '(Re-)Creating search index...',
-      createIndexFailed: '(Re-)Creation of search index Failed!',
+      createIndexFailed: '(Re-)Creation of search index failed!',
+    },
+    ExhibitionService: {
+      createOrUpdate: 'Creating/Updating exhibition...',
+      createOrUpdateFailed: 'Creating/Updating exhibition failed!'
     }
   },
 

@@ -195,7 +195,7 @@
                   flat
                   size="md"
                   color="primary"
-                  @click="$emit('delete-image', selectedImageSet, image)">
+                  @click="deleteImageFromImageSet(image)">
                   <q-tooltip>{{ $t('ItemImageSetEditor.dialog.details.deleteImage') }}</q-tooltip>
                 </q-btn>
               </div>
@@ -203,13 +203,13 @@
           </q-card>
         </div>
         <div class="row justify-center items-center">
-        <q-pagination
-          class="gt-xs"
-          v-model="pageData.cur"
-          :max="pageData.max"
-          input
-          @update:model-value="updateImagesPage(pageData.cur - 1)"
-        />
+          <q-pagination
+            class="gt-xs"
+            v-model="pageData.cur"
+            :max="pageData.max"
+            input
+            @update:model-value="updateImagesPage(pageData.cur - 1)"
+          />
         </div>
       </q-card-section>
     </template>
@@ -273,7 +273,7 @@ const props = defineProps({
 
 const emit = defineEmits<{
   (e: 'delete-image-set', imageSet: ImageSet): void;
-  (e: 'delete-image', imageSet: ImageSet, asset: Asset): void;
+  (e: 'delete-image'): void;
   (e: 'update-item'): void;
 }>();
 
@@ -303,8 +303,13 @@ const pageData = {
 }
 const imagePageRef = ref([] as Asset[])
 
+let currentPage = 0;
+
 function updateImagesPage(page: number) {
-  let start = page * 9;
+  if (page >= 0) {
+    currentPage = page;
+  }
+  let start = currentPage * 9;
   let end = start + 9;
   if (end > selectedImageSet.images.length) {
     end = selectedImageSet.images.length;
@@ -313,6 +318,13 @@ function updateImagesPage(page: number) {
   for (let i = start; i < end; i++) {
     imagePageRef.value.push(selectedImageSet.images[i]);
   }
+}
+
+function deleteImageFromImageSet(asset: Asset) {
+  selectedImageSet.images.splice(
+    selectedImageSet.images.indexOf(asset), 1);
+  updateImagesPage(-1);
+  emit('delete-image');
 }
 
 function showImageDetails(imageSet: ImageSet) {

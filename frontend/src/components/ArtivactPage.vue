@@ -385,4 +385,8 @@ function fileAdded(propertyName: string, widgetId: string) {
 .main-nav-button {
   z-index: 2;
 }
+
+.edit-page-button {
+  z-index: 2;
+}
 </style>
