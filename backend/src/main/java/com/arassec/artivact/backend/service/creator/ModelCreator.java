@@ -1,5 +1,6 @@
 package com.arassec.artivact.backend.service.creator;
 
+import com.arassec.artivact.backend.service.creator.adapter.model.creator.FallbackModelCreatorAdapter;
 import com.arassec.artivact.backend.service.model.item.Asset;
 import com.arassec.artivact.backend.service.ConfigurationService;
 import com.arassec.artivact.backend.service.creator.adapter.Adapter;
@@ -114,9 +115,9 @@ public class ModelCreator extends BaseCreator {
         fileUtil.createDirIfRequired(targetDirWithProjectRoot);
 
         try (Stream<Path> stream = Files.list(sourceDir)) {
-            if (stream.findAny().isEmpty()) {
+            if (stream.findAny().isEmpty() && !(modelCreatorAdapter instanceof FallbackModelCreatorAdapter)) {
                 fileUtil.deleteDir(targetDirWithProjectRoot);
-                throw new ArtivactException("Source for model creation not present: " + sourceDir);
+                throw new ArtivactException("No model files found in export directory: " + sourceDir);
             }
 
             try (Stream<Path> sourceStream = Files.walk(sourceDir)) {
