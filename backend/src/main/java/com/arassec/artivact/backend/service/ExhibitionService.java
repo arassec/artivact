@@ -6,6 +6,7 @@ import com.arassec.artivact.backend.service.exception.ArtivactException;
 import com.arassec.artivact.backend.service.misc.ProgressMonitor;
 import com.arassec.artivact.backend.service.misc.ProjectDataProvider;
 import com.arassec.artivact.backend.service.model.BaseRestrictedObject;
+import com.arassec.artivact.backend.service.model.BaseTranslatableRestrictedObject;
 import com.arassec.artivact.backend.service.model.TranslatableString;
 import com.arassec.artivact.backend.service.model.exhibition.Exhibition;
 import com.arassec.artivact.backend.service.model.exhibition.Tool;
@@ -21,7 +22,6 @@ import com.arassec.artivact.backend.service.util.FileUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -94,7 +94,7 @@ public class ExhibitionService extends BaseFileService {
     private final ObjectMapper objectMapper;
 
     /**
-     * Path to the exhibtions export directory.
+     * Path to the exhibitions export directory.
      */
     private final Path exhibitionsDir;
 
@@ -118,7 +118,7 @@ public class ExhibitionService extends BaseFileService {
      * @param pageService                Service for page handling.
      * @param itemService                Service for item handling.
      * @param fileUtil                   The application's file util.
-     * @param exportObjectMapper         The object mapper for exports.
+     * @param objectMapper               The object mapper for exports.
      * @param projectDataProvider        Provider of project data.
      */
     public ExhibitionService(ExhibitionEntityRepository exhibitionEntityRepository,
@@ -127,7 +127,7 @@ public class ExhibitionService extends BaseFileService {
                              PageService pageService,
                              ItemService itemService,
                              FileUtil fileUtil,
-                             @Qualifier("exportObjectMapper") ObjectMapper exportObjectMapper,
+                             ObjectMapper objectMapper,
                              ProjectDataProvider projectDataProvider) {
         this.exhibitionEntityRepository = exhibitionEntityRepository;
         this.configurationService = configurationService;
@@ -135,7 +135,7 @@ public class ExhibitionService extends BaseFileService {
         this.pageService = pageService;
         this.itemService = itemService;
         this.fileUtil = fileUtil;
-        this.objectMapper = exportObjectMapper;
+        this.objectMapper = objectMapper;
 
         this.exhibitionsDir = projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.EXHIBITIONS_DIR);
         if (!Files.exists(exhibitionsDir)) {
@@ -180,12 +180,12 @@ public class ExhibitionService extends BaseFileService {
     /**
      * Creates or updates an existing exhibition.
      *
-     * @param exhibitionId The ID of an existing exhibition or {@code null} for new ones.
-     * @param title        The exhibition's title.
-     * @param description  The exhibition's description.
-     * @param menuIds      The IDs of menus that must be used as source for exhibition creation.
+     * @param exhibitionId      The ID of an existing exhibition or {@code null} for new ones.
+     * @param title             The exhibition's title.
+     * @param description       The exhibition's description.
+     * @param referencedMenuIds The IDs of menus that must be used as source for exhibition creation.
      */
-    public synchronized void createOrUpdate(String exhibitionId, TranslatableString title, TranslatableString description, List<String> menuIds) {
+    public synchronized void createOrUpdate(String exhibitionId, TranslatableString title, TranslatableString description, List<String> referencedMenuIds) {
 
         if (progressMonitor != null && progressMonitor.getException() == null) {
             return;
@@ -196,6 +196,12 @@ public class ExhibitionService extends BaseFileService {
         if (!StringUtils.hasText(exhibitionId)) {
             exhibitionId = UUID.randomUUID().toString();
         }
+
+        // Cleanup menus that might have been removed since last update:
+        List<Menu> existingMenus = configurationService.loadTranslatedMenus();
+        referencedMenuIds.retainAll(existingMenus.stream()
+                .map(BaseTranslatableRestrictedObject::getId)
+                .toList());
 
         final String id = exhibitionId;
 
@@ -219,7 +225,7 @@ public class ExhibitionService extends BaseFileService {
                 exhibition.setDescription(description);
                 exhibition.getDescription().setTranslatedValue(null);
                 exhibition.setLastModified(Instant.now());
-                exhibition.setReferencedMenuIds(menuIds);
+                exhibition.setReferencedMenuIds(referencedMenuIds);
 
                 exhibition.setPropertyCategories(configurationService.loadTranslatedProperties());
                 exhibition.getPropertyCategories().forEach(propertyCategory -> {
@@ -237,8 +243,7 @@ public class ExhibitionService extends BaseFileService {
                 });
 
                 exhibition.getTopics().clear();
-                menuIds.forEach(menuId -> exhibition.getTopics()
-                        .add(createTopicFromMenu(configurationService.loadTranslatedMenus(), menuId)));
+                referencedMenuIds.forEach(menuId -> exhibition.getTopics().add(createTopicFromMenu(existingMenus, menuId)));
 
                 createExhibitionFile(exhibition);
 

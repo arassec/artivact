@@ -10,8 +10,8 @@ import com.arassec.artivact.backend.service.model.configuration.TagsConfiguratio
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +27,7 @@ import java.time.LocalDate;
  */
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/exchange")
 public class ExchangeController extends BaseController {
 
@@ -48,24 +49,7 @@ public class ExchangeController extends BaseController {
     /**
      * The object mapper for exports.
      */
-    private final ObjectMapper exportObjectMapper;
-
-    /**
-     * Creates a new instance.
-     *
-     * @param configurationService The application's {@link ConfigurationService}.
-     * @param exportService      The application's {@link ExportService}.
-     * @param exportObjectMapper   The object mapper for exports.
-     */
-    public ExchangeController(ConfigurationService configurationService,
-                              ExportService exportService,
-                              ImportService importService,
-                              @Qualifier("exportObjectMapper") ObjectMapper exportObjectMapper) {
-        this.configurationService = configurationService;
-        this.exportService = exportService;
-        this.importService = importService;
-        this.exportObjectMapper = exportObjectMapper;
-    }
+    private final ObjectMapper objectMapper;
 
     /**
      * Exports the current properties configuration as JSON file.
@@ -79,7 +63,7 @@ public class ExchangeController extends BaseController {
         PropertiesConfiguration propertiesConfiguration = configurationService.loadPropertiesConfiguration();
 
         try {
-            String propertiesConfigurationJson = exportObjectMapper.writeValueAsString(propertiesConfiguration);
+            String propertiesConfigurationJson = objectMapper.writeValueAsString(propertiesConfiguration);
 
             StreamingResponseBody streamResponseBody = out -> {
                 response.getOutputStream().write(propertiesConfigurationJson.getBytes());
@@ -108,7 +92,7 @@ public class ExchangeController extends BaseController {
     public ResponseEntity<String> importPropertiesConfiguration(@RequestPart(value = "file") final MultipartFile file) {
 
         try {
-            PropertiesConfiguration propertiesConfiguration = exportObjectMapper.readValue(new String(file.getBytes()), PropertiesConfiguration.class);
+            PropertiesConfiguration propertiesConfiguration = objectMapper.readValue(new String(file.getBytes()), PropertiesConfiguration.class);
             configurationService.savePropertiesConfiguration(propertiesConfiguration);
         } catch (IOException e) {
             throw new ArtivactException("Could not deserialize properties configuration!", e);
@@ -129,7 +113,7 @@ public class ExchangeController extends BaseController {
         TagsConfiguration tagsConfiguration = configurationService.loadTagsConfiguration();
 
         try {
-            String tagsConfigurationJson = exportObjectMapper.writeValueAsString(tagsConfiguration);
+            String tagsConfigurationJson = objectMapper.writeValueAsString(tagsConfiguration);
 
             StreamingResponseBody streamResponseBody = out -> {
                 response.getOutputStream().write(tagsConfigurationJson.getBytes());
@@ -158,7 +142,7 @@ public class ExchangeController extends BaseController {
     public ResponseEntity<String> importTagsConfiguration(@RequestPart(value = "file") final MultipartFile file) {
 
         try {
-            TagsConfiguration tagsConfiguration = exportObjectMapper.readValue(new String(file.getBytes()), TagsConfiguration.class);
+            TagsConfiguration tagsConfiguration = objectMapper.readValue(new String(file.getBytes()), TagsConfiguration.class);
             configurationService.saveTagsConfiguration(tagsConfiguration);
         } catch (IOException e) {
             throw new ArtivactException("Could not deserialize tags configuration!", e);

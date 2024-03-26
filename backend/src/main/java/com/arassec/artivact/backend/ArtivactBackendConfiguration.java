@@ -13,7 +13,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.*;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -46,33 +45,23 @@ public class ArtivactBackendConfiguration {
      */
     @Bean
     @Primary
-    public ObjectMapper objectMapper(Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder) {
-        var mapperModule = new SimpleModule();
+    public ObjectMapper objectMapper() {
+        var artivactMapperModule = new SimpleModule();
+        artivactMapperModule.addDeserializer(Widget.class, new WidgetDeserializer());
+        artivactMapperModule.addDeserializer(Tool.class, new ToolDeserializer());
 
-        mapperModule.addDeserializer(Widget.class, new WidgetDeserializer());
-        mapperModule.addDeserializer(Tool.class, new ToolDeserializer());
+        ObjectMapper objectMapper = new ObjectMapper();
 
-        return jackson2ObjectMapperBuilder
-                .modules(mapperModule, new JavaTimeModule())
-                .build();
-    }
+        objectMapper.registerModule(artivactMapperModule);
+        objectMapper.registerModule(new JavaTimeModule());
 
-    /**
-     * Object mapper that ignores unknown properties.
-     */
-    @Bean(name = "exportObjectMapper")
-    public ObjectMapper exportObjectMapper(Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder) {
-        var mapperModule = new SimpleModule();
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
-        mapperModule.addDeserializer(Widget.class, new WidgetDeserializer());
-        mapperModule.addDeserializer(Tool.class, new ToolDeserializer());
+        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
-        return jackson2ObjectMapperBuilder
-                .modules(mapperModule, new JavaTimeModule())
-                .serializationInclusion(JsonInclude.Include.NON_NULL)
-                .featuresToDisable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-                .featuresToEnable(SerializationFeature.INDENT_OUTPUT)
-                .build();
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+
+        return objectMapper;
     }
 
 }

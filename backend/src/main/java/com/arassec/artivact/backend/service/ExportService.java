@@ -8,6 +8,7 @@ import com.arassec.artivact.backend.service.model.configuration.ExchangeConfigur
 import com.arassec.artivact.backend.service.model.item.Item;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.entity.mime.FileBody;
@@ -16,7 +17,6 @@ import org.apache.hc.client5.http.entity.mime.MultipartEntityBuilder;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.HttpEntity;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
@@ -35,6 +35,7 @@ import java.util.zip.ZipOutputStream;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class ExportService extends BaseController {
 
     /**
@@ -55,7 +56,7 @@ public class ExportService extends BaseController {
     /**
      * The application's object mapper.
      */
-    private final ObjectMapper exportObjectMapper;
+    private final ObjectMapper objectMapper;
 
     /**
      * The service's progress monitor for long-running tasks.
@@ -67,24 +68,6 @@ public class ExportService extends BaseController {
      * Executor service for background tasks.
      */
     private final ExecutorService executorService = Executors.newFixedThreadPool(1);
-
-    /**
-     * Creates a new instance.
-     *
-     * @param configurationService The service for configuration handling.
-     * @param itemService          The service for item handling.
-     * @param projectDataProvider  Provider for project data.
-     * @param exportObjectMapper   The application's object mapper.
-     */
-    public ExportService(ConfigurationService configurationService,
-                         ItemService itemService,
-                         ProjectDataProvider projectDataProvider,
-                         @Qualifier("exportObjectMapper") ObjectMapper exportObjectMapper) {
-        this.configurationService = configurationService;
-        this.itemService = itemService;
-        this.projectDataProvider = projectDataProvider;
-        this.exportObjectMapper = exportObjectMapper;
-    }
 
     /**
      * Creates an item's export ZIP file.
@@ -103,7 +86,7 @@ public class ExportService extends BaseController {
 
             ZipEntry zipEntry = new ZipEntry("artivact.item.json");
             zipOutputStream.putNextEntry(zipEntry);
-            zipOutputStream.write(exportObjectMapper.writeValueAsBytes(item));
+            zipOutputStream.write(objectMapper.writeValueAsBytes(item));
 
             zipMediaFiles(zipOutputStream, mediaFiles);
         };
