@@ -17,7 +17,7 @@ func _ready():
 	
 	var	exhibitionScene = load("res://scenes/default_exhibition.tscn").instantiate()
 	# TODO: Load scene dynamically when main menu is implemented!
-	exhibitionScene.setup("67af9c0c-44e0-4a58-b3a5-0dcfe6f27ec5")
+	exhibitionScene.setup("420cc38a-cd9e-4d82-a462-17e2ee55a4fb")
 	add_child(exhibitionScene)
 	
 	SignalBus.register(SignalBus.SignalType.DEBUG, update_debug_panel)
