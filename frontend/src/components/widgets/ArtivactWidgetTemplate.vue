@@ -70,7 +70,7 @@
 
           <template v-slot:approve>
             <q-btn
-              :label="$t('Common.save')"
+              :label="$t('Common.apply')"
               color="primary"
               @click="showDetailsRef = false"
             />
@@ -147,28 +147,28 @@ function deleteRestriction(value: string) {
 }
 
 .edit-widget-button {
-  z-index: 1;
+  z-index: 3;
   position: absolute;
   right: -5em;
   top: 1em;
 }
 
 .upward-widget-button {
-  z-index: 1;
+  z-index: 3;
   position: absolute;
   right: -8em;
   top: 1em;
 }
 
 .downward-widget-button {
-  z-index: 1;
+  z-index: 3;
   position: absolute;
   right: -11em;
   top: 1em;
 }
 
 .delete-widget-button {
-  z-index: 1;
+  z-index: 3;
   position: absolute;
   right: -14em;
   top: 1em;

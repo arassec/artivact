@@ -95,7 +95,7 @@ public class ConfigurationController {
      * @return User data of the current user.
      */
     @GetMapping(value = "/public/user")
-    public UserData getUserDetails(Authentication authentication) {
+    public UserData getUserData(Authentication authentication) {
         if (authentication != null) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             return UserData.builder()
@@ -115,7 +115,7 @@ public class ConfigurationController {
      * @return The categories containing item properties.
      */
     @GetMapping(value = "/public/property")
-    public List<PropertyCategory> getPropertyCategories() {
+    public List<PropertyCategory> getPublicPropertyCategories() {
         return configurationService.loadTranslatedProperties();
     }
 
@@ -125,7 +125,7 @@ public class ConfigurationController {
      * @return The menu.
      */
     @GetMapping(value = "/public/menu")
-    public List<Menu> getMenus() {
+    public List<Menu> getPublicMenus() {
         return configurationService.loadTranslatedMenus();
     }
 
@@ -135,7 +135,7 @@ public class ConfigurationController {
      * @return The tag configuration.
      */
     @GetMapping(value = "/public/tag")
-    public TagsConfiguration getTagsConfiguration() {
+    public TagsConfiguration getPublicTagsConfiguration() {
         return configurationService.loadTagsConfiguration();
     }
 
@@ -145,7 +145,7 @@ public class ConfigurationController {
      * @return The license configuration.
      */
     @GetMapping(value = "/public/license")
-    public LicenseConfiguration getTranslatedLicenseConfiguration() {
+    public LicenseConfiguration getPublicLicenseConfiguration() {
         return configurationService.loadLicenseConfiguration();
     }
 
@@ -234,7 +234,7 @@ public class ConfigurationController {
      * @return The current property configuration.
      */
     @GetMapping(value = "/property")
-    public PropertiesConfiguration getProperties() {
+    public PropertiesConfiguration getPropertiesConfiguration() {
         return configurationService.loadPropertiesConfiguration();
     }
 
@@ -244,7 +244,7 @@ public class ConfigurationController {
      * @param propertiesConfiguration The configuration to save.
      */
     @PostMapping(value = "/property")
-    public void saveProperties(@RequestBody PropertiesConfiguration propertiesConfiguration) {
+    public void savePropertiesConfiguration(@RequestBody PropertiesConfiguration propertiesConfiguration) {
         configurationService.savePropertiesConfiguration(propertiesConfiguration);
     }
 
@@ -254,7 +254,7 @@ public class ConfigurationController {
      * @return The current license configuration.
      */
     @GetMapping(value = "/license")
-    public LicenseConfiguration getLicense() {
+    public LicenseConfiguration getLicenseConfiguration() {
         return configurationService.loadLicenseConfiguration();
     }
 
@@ -264,7 +264,7 @@ public class ConfigurationController {
      * @param licenseConfiguration The license configuration to save.
      */
     @PostMapping(value = "/license")
-    public void saveLicense(@RequestBody LicenseConfiguration licenseConfiguration) {
+    public void saveLicenseConfiguration(@RequestBody LicenseConfiguration licenseConfiguration) {
         configurationService.saveLicenseConfiguration(licenseConfiguration);
     }
 
@@ -274,7 +274,7 @@ public class ConfigurationController {
      * @return The current appearance configuration.
      */
     @GetMapping(value = "/appearance")
-    public AppearanceConfiguration getAppearanceConfig() {
+    public AppearanceConfiguration getAppearanceConfiguration() {
         return configurationService.loadAppearanceConfiguration();
     }
 
@@ -284,7 +284,7 @@ public class ConfigurationController {
      * @param appearanceConfiguration The configuration to save.
      */
     @PostMapping(value = "/appearance")
-    public void saveAppearanceConfig(@RequestBody AppearanceConfiguration appearanceConfiguration) {
+    public void saveAppearanceConfiguration(@RequestBody AppearanceConfiguration appearanceConfiguration) {
         configurationService.saveAppearanceConfiguration(appearanceConfiguration);
     }
 
@@ -294,7 +294,7 @@ public class ConfigurationController {
      * @return The current tag configuration.
      */
     @GetMapping(value = "/tags")
-    public TagsConfiguration getTags() {
+    public TagsConfiguration getTagsConfiguration() {
         return configurationService.loadTagsConfiguration();
     }
 
@@ -304,7 +304,7 @@ public class ConfigurationController {
      * @param tagsConfiguration The configuration to save.
      */
     @PostMapping(value = "/tags")
-    public void saveTags(@RequestBody TagsConfiguration tagsConfiguration) {
+    public void saveTagsConfiguration(@RequestBody TagsConfiguration tagsConfiguration) {
         configurationService.saveTagsConfiguration(tagsConfiguration);
     }
 
@@ -314,7 +314,7 @@ public class ConfigurationController {
      * @return The current adapter configuration.
      */
     @GetMapping(value = "/adapter")
-    public AdapterConfiguration getAdapterConfig() {
+    public AdapterConfiguration getAdapterConfiguration() {
         return configurationService.loadAdapterConfiguration();
     }
 
@@ -334,7 +334,7 @@ public class ConfigurationController {
      * @return The current exchange configuration.
      */
     @GetMapping(value = "/exchange")
-    public ExchangeConfiguration getExchangeConfig() {
+    public ExchangeConfiguration getExchangeConfiguration() {
         return configurationService.loadExchangeConfiguration();
     }
 

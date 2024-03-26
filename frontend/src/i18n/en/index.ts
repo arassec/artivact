@@ -3,6 +3,7 @@ export default {
   Common: {
     cancel: 'Cancel',
     save: 'Save',
+    apply: 'Apply',
     username: 'Username',
     password: 'Password',
     passwordRepeat: 'Password (repeat)',

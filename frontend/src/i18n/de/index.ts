@@ -3,6 +3,7 @@ export default {
   Common: {
     cancel: 'Abbrechen',
     save: 'Speichern',
+    apply: 'Anwenden',
     username: 'Benutzername',
     password: 'Passwort',
     passwordRepeat: 'Passwort (wdh.)',
