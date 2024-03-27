@@ -57,7 +57,7 @@ func _process(_delta: float):
 
 
 func _load_item():
-	loadedItem = load("res://scenes/default_item.tscn").instantiate()
+	loadedItem = load("res://scenes/exhibition/default_item.tscn").instantiate()
 	loadedItem.setup(zipReader, items[itemIndex])
 	itemLoaded = true
 

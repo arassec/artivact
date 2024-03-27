@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://bssxk2sniv84g"]
 
-[ext_resource type="Script" path="res://scenes/default_topic.gd" id="1_44bx5"]
+[ext_resource type="Script" path="res://scenes/exhibition/default_topic.gd" id="1_44bx5"]
 
 [node name="DefaultTopic" type="Node3D"]
 script = ExtResource("1_44bx5")

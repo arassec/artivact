@@ -30,3 +30,7 @@ func update_exhibition_data(exhibitionDataInput: Variant):
 		topicsContainer.add_child(topicButtonContainer);
 		
 		topicIndex = topicIndex + 1
+
+
+func close_exhibition():
+	SignalBus.trigger(SignalBus.SignalType.CLOSE_EXHIBITION)

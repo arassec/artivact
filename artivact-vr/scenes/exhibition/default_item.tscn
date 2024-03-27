@@ -1,8 +1,8 @@
 [gd_scene load_steps=7 format=3 uid="uid://bb7braknklre4"]
 
-[ext_resource type="Script" path="res://scenes/default_item.gd" id="1_hpb3m"]
+[ext_resource type="Script" path="res://scenes/exhibition/default_item.gd" id="1_hpb3m"]
 [ext_resource type="PackedScene" uid="uid://clujaf3u776a3" path="res://addons/godot-xr-tools/objects/viewport_2d_in_3d.tscn" id="2_1fssi"]
-[ext_resource type="PackedScene" uid="uid://daf60j6sweob0" path="res://scenes/default_item_ui.tscn" id="3_j7ama"]
+[ext_resource type="PackedScene" uid="uid://daf60j6sweob0" path="res://scenes/exhibition/default_item_ui.tscn" id="3_j7ama"]
 [ext_resource type="Script" path="res://scenes/turntable.gd" id="4_rjdyc"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_o5sep"]

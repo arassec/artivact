@@ -18,6 +18,8 @@ mono_crash.*.json
 android/build/*
 !android/build/AndroidManifest.xml
 
-# Artivact-Exhibitions specific
+# ArtivactVR specific
 addons/
 *.apk
+*.artivact-exhibition.zip
+!420cc38a-cd9e-4d82-a462-17e2ee55a4fb.artivact-exhibition.zip

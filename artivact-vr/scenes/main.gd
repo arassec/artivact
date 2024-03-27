@@ -2,6 +2,9 @@ extends Node3D
 
 var xr_interface: XRInterface
 
+var exhibitionMenu
+var	exhibitionScene
+
 func _ready():
 	xr_interface = XRServer.find_interface("OpenXR")
 	
@@ -15,18 +18,31 @@ func _ready():
 	else:
 		print("OpenXR not initialized, please check if your headset is connected")
 	
-	var	exhibitionScene = load("res://scenes/default_exhibition.tscn").instantiate()
-	# TODO: Load scene dynamically when main menu is implemented!
-	exhibitionScene.setup("420cc38a-cd9e-4d82-a462-17e2ee55a4fb")
-	add_child(exhibitionScene)
+	exhibitionMenu = load("res://scenes/menus/exhibitions.tscn").instantiate()
+	add_child(exhibitionMenu)
 	
+	SignalBus.register(SignalBus.SignalType.OPEN_EXHIBITION, open_exhibition)
+	SignalBus.register(SignalBus.SignalType.CLOSE_EXHIBITION, close_exhibition)
 	SignalBus.register(SignalBus.SignalType.DEBUG, update_debug_panel)
 
 
 func update_debug_panel(message: String):
 	if $DebugPanel != null:
 		$DebugPanel.text = message
-	
+
+
+func open_exhibition(exhibitionId: String):
+	remove_child(exhibitionMenu)
+	exhibitionScene = load("res://scenes/exhibition/default_exhibition.tscn").instantiate()
+	exhibitionScene.setup(exhibitionId)
+	add_child(exhibitionScene)
+
+
+func close_exhibition():
+	remove_child(exhibitionScene)
+	exhibitionScene.queue_free()
+	add_child(exhibitionMenu)	
+
 
 func _on_right_controller_input_vector_2_changed(eventName, value):
 	if eventName == "primary" and value.x == 1:

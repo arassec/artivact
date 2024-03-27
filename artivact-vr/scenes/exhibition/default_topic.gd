@@ -10,7 +10,7 @@ func setup(zipReaderInput: ZIPReader, topicDataInput: Variant):
 
 
 func _enter_tree():
-	var currentTool = load("res://scenes/default_multi_tool.tscn").instantiate()
+	var currentTool = load("res://scenes/exhibition/default_multi_tool.tscn").instantiate()
 	# TODO: Implement switching tools!
 	currentTool.setup(zipReader, topicData.tools[1])
 	

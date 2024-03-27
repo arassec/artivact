@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://7lpg34iv562c"]
 
-[ext_resource type="Script" path="res://scenes/default_multi_tool.gd" id="1_6p1vs"]
+[ext_resource type="Script" path="res://scenes/exhibition/default_multi_tool.gd" id="1_6p1vs"]
 
 [node name="DefaultMultiTool" type="Node3D"]
 script = ExtResource("1_6p1vs")

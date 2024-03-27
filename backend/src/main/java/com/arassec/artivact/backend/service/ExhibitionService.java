@@ -341,9 +341,11 @@ public class ExhibitionService extends BaseFileService {
             return Optional.empty();
         }
 
-        List<Item> searchResult = searchService.search(searchBasedWidget.getSearchTerm(), searchBasedWidget.getMaxResults());
+        // Unrestricted search should be a configurable option of the exhibition configuration:
+        List<Item> searchResult = searchService.searchUnrestricted(searchBasedWidget.getSearchTerm(), searchBasedWidget.getMaxResults());
 
         tool.setItemIds(searchResult.stream()
+                .filter(item -> !item.getMediaContent().getModels().isEmpty()) // Include only items with 3D models.
                 .map(BaseRestrictedObject::getId)
                 .toList());
 

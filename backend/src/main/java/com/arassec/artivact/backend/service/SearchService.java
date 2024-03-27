@@ -139,9 +139,20 @@ public class SearchService extends BaseService {
      * @return The list of found items.
      */
     @RestrictResult
+    public List<Item> search(String query, int maxResults) {
+        return searchUnrestricted(query, maxResults);
+    }
+
+    /**
+     * Searches for items without restrictions.
+     *
+     * @param query The search query to use.
+     * @param maxResults The maximum number of results.
+     * @return The list of found items.
+     */
     @TranslateResult
     @SuppressWarnings("java:S6204") // Result list needs to be modifiable!
-    public List<Item> search(String query, int maxResults) {
+    public List<Item> searchUnrestricted(String query, int maxResults) {
         if ("*".equals(query)) {
             Pageable limit = PageRequest.of(0, maxResults);
             return itemEntityRepository.findAll(limit).stream()

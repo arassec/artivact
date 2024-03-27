@@ -37,7 +37,7 @@ func switch_topic(topicIndex: int):
 	print("SWITCH TOPIC %s" % topicIndex)
 	if (currentTopic):
 		remove_child(currentTopic)
-	currentTopic = load("res://scenes/default_topic.tscn").instantiate()
+	currentTopic = load("res://scenes/exhibition/default_topic.tscn").instantiate()
 	currentTopic.setup(zipReader, exhibitionData.topics[topicIndex])
 	add_child(currentTopic)
 

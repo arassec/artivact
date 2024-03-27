@@ -1,0 +1,70 @@
+[gd_scene load_steps=3 format=3 uid="uid://dsib5yvog5ih4"]
+
+[ext_resource type="Theme" uid="uid://dk7uv5eu7v20q" path="res://themes/ArtivactVR.tres" id="1_hc0v5"]
+[ext_resource type="Script" path="res://scenes/exhibition/default_exhibition_ui.gd" id="1_m0ui5"]
+
+[node name="DefaultExhibitionUi" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_m0ui5")
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_hc0v5")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme = ExtResource("1_hc0v5")
+theme_override_font_sizes/font_size = 64
+text = "Topics"
+horizontal_alignment = 1
+
+[node name="SeparatorMargin" type="MarginContainer" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 5
+
+[node name="HSeparator" type="HSeparator" parent="PanelContainer/VBoxContainer/SeparatorMargin"]
+layout_mode = 2
+
+[node name="TopicsContainer" type="VBoxContainer" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="SeparatorMargin2" type="MarginContainer" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 5
+
+[node name="HSeparator" type="HSeparator" parent="PanelContainer/VBoxContainer/SeparatorMargin2"]
+layout_mode = 2
+
+[node name="CloseButtonMarginContainer" type="MarginContainer" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 5
+
+[node name="CloseExhibitionButton" type="Button" parent="PanelContainer/VBoxContainer/CloseButtonMarginContainer"]
+layout_mode = 2
+text = "Close Exhibition"
+
+[node name="BottomMargin" type="MarginContainer" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_bottom = 10
+
+[connection signal="pressed" from="PanelContainer/VBoxContainer/CloseButtonMarginContainer/CloseExhibitionButton" to="." method="close_exhibition"]

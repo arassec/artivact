@@ -14,6 +14,7 @@ var maxModelIndex = 0
 var gltfDocument: GLTFDocument
 var gltfState: GLTFState
 	
+var modelLoading = false
 var updateModel = false
 var glbLoaded = false
 var modelLoaded = false
@@ -52,11 +53,17 @@ func setup(zipReaderInput: ZIPReader, itemIdInput: String):
 
 
 func next_model():
+	if modelLoading:
+		return
+		
 	if models.size() == 1:
 		return
+		
 	modelIndex = modelIndex + 1
 	if modelIndex > maxModelIndex:
 		modelIndex = 0
+	
+	modelLoading = true
 	updateModel = true
 	
 
@@ -76,9 +83,8 @@ func zoom_stop():
 
 
 func _enter_tree():
-	if itemData.title.has("value"):
-		SignalBus.debug(itemData.title.value)
-	if models.size() > 0:
+	if models.size() > 0 && !modelLoading:
+		modelLoading = true
 		updateModel = true
 
 
@@ -166,3 +172,4 @@ func _add_model():
 	find_child("Turntable").call_deferred("add_child", loadedModel)
 	shownModel = loadedModel
 	modelShown = true
+	modelLoading = false
