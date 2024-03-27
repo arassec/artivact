@@ -3,8 +3,8 @@ extends Node
 enum SignalType { 
 	DEBUG, 
 	ERROR,
-	NEXT_TOPIC,
-	PREVIOUS_TOPIC,
+	UPDATE_EXHIBITION_NAVIGATION,
+	SWITCH_TOPIC,
 	NEXT_TOOL,
 	PREVIOUS_TOOL,
 	UPDATE_ITEM_DATA,
@@ -18,8 +18,8 @@ enum SignalType {
 var callbacks = {
 	SignalType.DEBUG: [],
 	SignalType.ERROR: [],
-	SignalType.NEXT_TOPIC: [],
-	SignalType.PREVIOUS_TOPIC: [],
+	SignalType.UPDATE_EXHIBITION_NAVIGATION: [],
+	SignalType.SWITCH_TOPIC: [],
 	SignalType.NEXT_TOOL: [],
 	SignalType.PREVIOUS_TOOL: [],
 	SignalType.UPDATE_ITEM_DATA: [],
@@ -33,6 +33,8 @@ var callbacks = {
 
 func register(type: SignalType, callback: Callable):
 	callbacks[type].push_back(callback)
+	if (SignalType.SWITCH_TOPIC == type):
+		print("REGISTERED")
 
 
 func deregister(type: SignalType, callback: Callable):
@@ -40,6 +42,8 @@ func deregister(type: SignalType, callback: Callable):
 
 
 func trigger(type: SignalType):
+	if (SignalType.SWITCH_TOPIC == type):
+		print("TRIGGERED")
 	for callback in callbacks[type]:
 		callback.call()
 

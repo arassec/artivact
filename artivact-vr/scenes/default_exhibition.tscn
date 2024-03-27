@@ -1,6 +1,26 @@
-[gd_scene load_steps=2 format=3 uid="uid://u6wwa4kuo00y"]
+[gd_scene load_steps=4 format=3 uid="uid://u6wwa4kuo00y"]
 
 [ext_resource type="Script" path="res://scenes/default_exhibition.gd" id="1_rlxcw"]
+[ext_resource type="PackedScene" uid="uid://clujaf3u776a3" path="res://addons/godot-xr-tools/objects/viewport_2d_in_3d.tscn" id="2_jnqii"]
+[ext_resource type="PackedScene" uid="uid://dsib5yvog5ih4" path="res://scenes/default_exhibition_ui.tscn" id="3_860cr"]
 
 [node name="DefaultExhibition" type="Node3D"]
 script = ExtResource("1_rlxcw")
+
+[node name="ExhibitionTitleLabel" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7, -16.061)
+text = "Exhibition Title"
+font_size = 256
+outline_size = 32
+
+[node name="ExhibitionDescriptionLabel" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, -16.162)
+text = "Exhibition Description"
+font_size = 128
+outline_size = 16
+
+[node name="ExhibitionNavigationPanel" parent="." instance=ExtResource("2_jnqii")]
+transform = Transform3D(0.00153209, 0, 0.00128558, 0, 0.002, 0, -0.00128558, 0, 0.00153209, -1.4, 1, -2)
+screen_size = Vector2(500, 800)
+scene = ExtResource("3_860cr")
+viewport_size = Vector2(500, 800)

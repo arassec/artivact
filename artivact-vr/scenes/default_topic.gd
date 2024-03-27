@@ -14,6 +14,4 @@ func _enter_tree():
 	# TODO: Implement switching tools!
 	currentTool.setup(zipReader, topicData.tools[1])
 	
-	$TopicTitle.text = topicData.title.value
-
 	add_child(currentTool)

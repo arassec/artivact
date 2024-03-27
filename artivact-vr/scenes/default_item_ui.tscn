@@ -13,40 +13,51 @@ grow_vertical = 2
 theme = ExtResource("2_eskbx")
 script = ExtResource("1_8o5o5")
 
-[node name="PanelContainer" type="PanelContainer" parent="."]
-custom_minimum_size = Vector2(1024, 600)
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+offset_right = 1152.0
+offset_bottom = 648.0
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
 
-[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer"]
+[node name="PanelContainer" type="PanelContainer" parent="MarginContainer"]
+custom_minimum_size = Vector2(1024, 600)
 layout_mode = 2
 
-[node name="TitleLabel" type="Label" parent="PanelContainer/VBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/PanelContainer"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="MarginContainer/PanelContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 64
 text = "Title"
 horizontal_alignment = 1
 
-[node name="DescriptionMargin" type="MarginContainer" parent="PanelContainer/VBoxContainer"]
+[node name="SeparatorMargin" type="MarginContainer" parent="MarginContainer/PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 5
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/PanelContainer/VBoxContainer/SeparatorMargin"]
+layout_mode = 2
+
+[node name="DescriptionMargin" type="MarginContainer" parent="MarginContainer/PanelContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/margin_left = 5
 theme_override_constants/margin_bottom = 75
 
-[node name="DescriptionLabel" type="Label" parent="PanelContainer/VBoxContainer/DescriptionMargin"]
+[node name="DescriptionLabel" type="Label" parent="MarginContainer/PanelContainer/VBoxContainer/DescriptionMargin"]
 layout_mode = 2
 text = "Description"
 
-[node name="CategoryMarginLeft" type="MarginContainer" parent="PanelContainer/VBoxContainer"]
+[node name="CategoryMargin" type="MarginContainer" parent="MarginContainer/PanelContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/margin_left = 5
+theme_override_constants/margin_bottom = 5
 
-[node name="CategoryPropertiesTabContainer" type="TabContainer" parent="PanelContainer/VBoxContainer/CategoryMarginLeft"]
-layout_mode = 2
-
-[node name="GridContainer" type="GridContainer" parent="PanelContainer"]
+[node name="CategoryPropertiesTabContainer" type="TabContainer" parent="MarginContainer/PanelContainer/VBoxContainer/CategoryMargin"]
 layout_mode = 2

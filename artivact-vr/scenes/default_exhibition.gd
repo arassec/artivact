@@ -29,15 +29,32 @@ func setup(exhibitionIdInput: String):
 
 	exhibitionData = exhibitionJson.data
 	ArtivactSettings.setup(exhibitionData)
+	
+	SignalBus.register(SignalBus.SignalType.SWITCH_TOPIC, switch_topic)
+
+
+func switch_topic(topicIndex: int):
+	print("SWITCH TOPIC %s" % topicIndex)
+	if (currentTopic):
+		remove_child(currentTopic)
+	currentTopic = load("res://scenes/default_topic.tscn").instantiate()
+	currentTopic.setup(zipReader, exhibitionData.topics[topicIndex])
+	add_child(currentTopic)
 
 
 func _enter_tree():
-	currentTopic = load("res://scenes/default_topic.tscn").instantiate()
-	# TODO: Implement switching topics!
-	currentTopic.setup(zipReader, exhibitionData.topics[0])
-	add_child(currentTopic)
+	if $ExhibitionTitleLabel != null:
+		$ExhibitionTitleLabel.text = ArtivactSettings.get_exhibition_title()
+
+	if $ExhibitionDescriptionLabel != null:
+		$ExhibitionDescriptionLabel.text = ArtivactSettings.get_exhibition_description()
+	
+	switch_topic(0)
+
+
+func _ready():
+	SignalBus.trigger_with_payload(SignalBus.SignalType.UPDATE_EXHIBITION_NAVIGATION, exhibitionData)
 
 
 func _exit_tree():
 	zipReader.close()
-
