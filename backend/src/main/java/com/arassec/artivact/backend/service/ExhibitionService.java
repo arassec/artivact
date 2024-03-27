@@ -37,6 +37,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 /**
  * Service for exhibition creation and management.
@@ -199,9 +200,16 @@ public class ExhibitionService extends BaseFileService {
 
         // Cleanup menus that might have been removed since last update:
         List<Menu> existingMenus = configurationService.loadTranslatedMenus();
-        referencedMenuIds.retainAll(existingMenus.stream()
+        // Add main menu IDs:
+        List<String> existingMenuIds = existingMenus.stream()
                 .map(BaseTranslatableRestrictedObject::getId)
-                .toList());
+                .collect(Collectors.toList());
+        // Add sub-menu IDs:
+        existingMenus.forEach(menu -> existingMenuIds.addAll(menu.getMenuEntries().stream()
+                .map(BaseTranslatableRestrictedObject::getId)
+                .toList()));
+
+        referencedMenuIds.retainAll(existingMenuIds);
 
         final String id = exhibitionId;
 
