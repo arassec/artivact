@@ -63,7 +63,7 @@ public class ItemController extends BaseController {
      */
     @GetMapping("/{itemId}")
     public ResponseEntity<ItemDetails> load(@PathVariable String itemId) {
-        Item item = itemService.load(itemId);
+        Item item = itemService.loadTranslatedRestricted(itemId);
 
         if (item == null) {
             throw new IllegalArgumentException("No item found with ID " + itemId);
@@ -79,7 +79,7 @@ public class ItemController extends BaseController {
      */
     @PutMapping
     public ResponseEntity<ItemDetails> save(@RequestBody ItemDetails itemDetails) {
-        Item item = itemService.load(itemDetails.getId());
+        Item item = itemService.loadTranslatedRestricted(itemDetails.getId());
 
         if (item == null) {
             throw new IllegalArgumentException("No item found with ID " + itemDetails.getId());

@@ -1,6 +1,6 @@
 extends Control
 
-func _enter_tree():
+func _init():
 	SignalBus.register(SignalBus.SignalType.UPDATE_ITEM_DATA, update_item_data)
 
 
@@ -8,23 +8,26 @@ func _exit_tree():
 	SignalBus.deregister(SignalBus.SignalType.UPDATE_ITEM_DATA, update_item_data)
 
 
-func update_item_data(itemDataInput: Variant):
-	find_child("TitleLabel").text = itemDataInput.title.value
-	find_child("DescriptionLabel").text = itemDataInput.description.value
-	_create_property_category_tabs(itemDataInput)
+func update_item_data(exhibitionIdInput: String, itemDataInput: Variant):
+		find_child("TitleLabel").text = I18n.translate(itemDataInput.title)
+		find_child("DescriptionLabel").text = I18n.translate(itemDataInput.description)
+		create_property_category_tabs(exhibitionIdInput, itemDataInput)
 
 
-func _create_property_category_tabs(itemDataInput: Variant):
+func create_property_category_tabs(exhibitionIdInput: String, itemDataInput: Variant):
 	var categoryTabs = find_child("CategoryPropertiesTabContainer")
-	var propertyCategories = ArtivactSettings.get_property_categories()
+	for tab in categoryTabs.get_children():
+		categoryTabs.remove_child(tab)
+		tab.queue_free()
+	var propertyCategories = ExhibitionStore.get_property_categories(exhibitionIdInput)
 	for propertyCategory in propertyCategories:
-		var propertyContainer = _create_property_category_tab_content(propertyCategory, itemDataInput)
+		var propertyContainer = create_property_category_tab_content(propertyCategory, itemDataInput)
 		categoryTabs.add_child(propertyContainer)
 
 
-func _create_property_category_tab_content(propertyCategory: Variant, itemDataInput: Variant):
+func create_property_category_tab_content(propertyCategory: Variant, itemDataInput: Variant):
 	var marginContainer = MarginContainer.new()
-	marginContainer.name = propertyCategory.value # TODO: I18N
+	marginContainer.name = I18n.translate(propertyCategory)
 	marginContainer.add_theme_constant_override("margin_left", 20)
 	marginContainer.add_theme_constant_override("margin_top", 20)
 	
@@ -35,7 +38,7 @@ func _create_property_category_tab_content(propertyCategory: Variant, itemDataIn
 
 	for propertyDefinition in propertyCategory.properties:
 		var propertyKeyLabel = Label.new()
-		propertyKeyLabel.text = propertyDefinition.value # TODO: I18N
+		propertyKeyLabel.text = I18n.translate(propertyDefinition)
 		propertyKeyLabel.add_theme_font_size_override("font_size", 24)
 		categoryContainer.add_child(propertyKeyLabel)
 

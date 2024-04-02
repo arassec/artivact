@@ -154,7 +154,7 @@ public class ImportService extends BaseFileService {
         log.info("Importing from directory: {}", itemsFileDir.toAbsolutePath());
         getItemPaths().forEach(itemPath -> {
             String itemId = itemPath.getFileName().toString();
-            var item = itemService.load(itemId);
+            var item = itemService.loadTranslatedRestricted(itemId);
             if (item == null) {
                 processNewItem(itemPath);
             } else {

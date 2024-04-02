@@ -4,26 +4,25 @@ layout: home
 
 hero:
   name: "Artivact Dokumentation"
-  tagline: Erstelle und verwalte virtuelle Sammlungen.
+  tagline: Erstelle und präsentiere virtuelle Sammlungen.
   image:
     src: /logo-large.png
   actions:
     - theme: alt
-      text: Erzeuge virtuelle Sammlungsstücke
+      text: Erstelle
       link: /desktop/about
     - theme: alt
-      text: Präsentiere deine Sammlung
+      text: Präsentiere
       link: /server/about
     - theme: alt
-      text: Erfahre virtuelle Ausstellungen
+      text: Erlebe
       link: /metaverse/about
 
 features:
-  - title: Desktop
+  - title: Erstelle
     details: Artivact kann dir auf dem Desktop dabei helfen, deine Sammlung zu virtualisieren und zu verwalten.
-  - title: Server
+  - title: Präsentiere
     details: Artivact kann als Webserver betrieben werden um deine virtuelle Sammlung einfach im Netz zu präsentieren.
-  - title: VR/AR
-    details: Mit Artivact kannst du virtuelle Ausstellungen ins Metaversum exportieren und dort erfahren.
+  - title: Erlebe
+    details: Mit Artivact kannst du deine virtuellen Ausstellungen mit VR/AR erleben.
 ---
-

@@ -12,9 +12,9 @@ export default defineConfig({
 
         nav: [
             {text: 'Home', link: '/'},
-            {text: 'On the Desktop', link: '/desktop/about'},
-            {text: 'On the Web', link: '/server/about'},
-            {text: 'In the Metaverse', link: '/metaverse/about'},
+            {text: 'Create', link: '/desktop/introduction/about'},
+            {text: 'Present', link: '/server/about'},
+            {text: 'Experience', link: '/metaverse/about'},
             {text: 'User Manual', link: '/user-manual/about'},
         ],
 
@@ -23,10 +23,28 @@ export default defineConfig({
                 {
                     text: 'Introduction',
                     items: [
-                        {text: 'About', link: '/desktop/about'},
-                        {text: 'Installation', link: '/desktop/installation'},
-                        {text: 'Configuration', link: '/desktop/configuration'},
-                        {text: 'User Manual', link: '/desktop/manual'},
+                        {text: 'About', link: '/desktop/introduction/about'},
+                        {text: 'Installation', link: '/desktop/introduction/installation'},
+                        {text: 'Configuration', link: '/desktop/introduction/configuration'},
+                    ]
+                },
+                {
+                    text: 'User Manual',
+                    items: [
+                        {text: 'Manual', link: '/desktop/manual/manual'},
+                        {text: 'Media Creation', link: '/desktop/manual/media-creation'},
+                        {text: 'Peripherals', link: '/desktop/manual/peripherals'},
+                    ]
+                },
+                {
+                    text: '3D Model Creation',
+                    items: [
+                        {text: 'About', link: '/desktop/models/about'},
+                        {text: 'Capturing Images', link: '/desktop/models/capturing-images'},
+                        {text: 'Artivact Turntable', link: '/desktop/models/artivact-turntable'},
+                        {text: 'Background Removal', link: '/desktop/models/background-removal'},
+                        {text: 'Model Creation', link: '/desktop/models/model-creation'},
+                        {text: 'Model Editing', link: '/desktop/models/model-editing'},
                     ]
                 }
             ],
@@ -78,9 +96,9 @@ export default defineConfig({
 
                 nav: [
                     {text: 'Start', link: '/de/index'},
-                    {text: 'Auf dem Desktop', link: '/de/desktop/about'},
-                    {text: 'Im Web', link: '/de/server/about'},
-                    {text: 'Im Metaverse', link: '/de/metaverse/about'},
+                    {text: 'Erstelle', link: '/de/desktop/introduction/about'},
+                    {text: 'Präsentiere', link: '/de/server/about'},
+                    {text: 'Erlebe', link: '/de/metaverse/about'},
                     {text: 'Benutzerhandbuch', link: '/de/user-manual/about'},
                 ],
 
@@ -89,10 +107,28 @@ export default defineConfig({
                         {
                             text: 'Einführung',
                             items: [
-                                {text: 'Über', link: '/de/desktop/about'},
-                                {text: 'Installation', link: '/de/desktop/installation'},
-                                {text: 'Konfiguration', link: '/de/desktop/configuration'},
-                                {text: 'Benutzerhandbuch', link: '/de/desktop/manual'},
+                                {text: 'Start', link: '/de/desktop/introduction/about'},
+                                {text: 'Installation', link: '/de/desktop/introduction/installation'},
+                                {text: 'Konfiguration', link: '/de/desktop/introduction/configuration'},
+                            ]
+                        },
+                        {
+                            text: 'Benutzerhandbuch',
+                            items: [
+                                {text: 'Start', link: '/de/desktop/manual/manual'},
+                                {text: 'Gestaltung', link: '/de/desktop/manual/media-creation'},
+                                {text: 'Peripheriegeräte', link: '/de/desktop/manual/peripherals'},
+                            ]
+                        },
+                        {
+                            text: '3D-Modelle Erstellen',
+                            items: [
+                                {text: 'Start', link: '/de/desktop/models/about'},
+                                {text: 'Fotos Aufnehmen', link: '/de/desktop/models/capturing-images'},
+                                {text: 'Artivact Drehteller', link: '/de/desktop/models/artivact-turntable'},
+                                {text: 'Freistellen', link: '/de/desktop/models/background-removal'},
+                                {text: '3D-Modell Erzeugung', link: '/de/desktop/models/model-creation'},
+                                {text: '3D-Modell Bearbeitung', link: '/de/desktop/models/model-editing'},
                             ]
                         }
                     ],

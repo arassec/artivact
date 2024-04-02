@@ -1,6 +1,6 @@
 extends Node3D
 
-var zipReader:ZIPReader
+var exhibitionId: String
 var itemId: String
 
 var modelLoaderThread: Thread
@@ -26,30 +26,82 @@ var zoomIn = false
 var zoomOut = false
 
 
-func setup(zipReaderInput: ZIPReader, itemIdInput: String):
-	zipReader = zipReaderInput
+func _init():
+	SignalBus.register(SignalBus.SignalType.NEXT_MODEL, next_model)
+	SignalBus.register(SignalBus.SignalType.ZOOM_MODEL_IN, zoom_in)
+	SignalBus.register(SignalBus.SignalType.ZOOM_MODEL_OUT, zoom_out)
+	SignalBus.register(SignalBus.SignalType.ZOOM_MODEL_STOP, zoom_stop)
+
+
+func _ready():
+	if models.size() > 0 && !modelLoading:
+		modelLoading = true
+		updateModel = true
+
+	SignalBus.trigger_with_multiload(SignalBus.SignalType.UPDATE_ITEM_DATA, exhibitionId, itemData)
+
+
+func _exit_tree():
+	SignalBus.deregister(SignalBus.SignalType.NEXT_MODEL, next_model)
+	SignalBus.deregister(SignalBus.SignalType.ZOOM_MODEL_IN, zoom_in)
+	SignalBus.deregister(SignalBus.SignalType.ZOOM_MODEL_OUT, zoom_out)
+	SignalBus.deregister(SignalBus.SignalType.ZOOM_MODEL_STOP, zoom_stop)
+	if modelLoaderThread.is_started():
+		modelLoaderThread.wait_to_finish()
+	
+
+func _process(delta: float):
+	if updateModel:
+		updateModel = false
+		if modelLoaderThread.is_started():
+			modelLoaderThread.wait_to_finish()
+		modelLoaderThread.start(load_model, Thread.PRIORITY_LOW)
+	elif glbLoaded:
+		glbLoaded = false
+		generate_scene()
+	elif modelShown && modelLoaded:
+		remove_model()
+	elif modelLoaded:
+		modelLoaded = false
+		add_model()
+		
+	if shownModel:
+		var scaleFactor = 10 * delta
+		var model = shownModel
+		model.rotate(Vector3(0, 1, 0), 0.4 * delta)
+		if zoomIn:
+			if (model.scale.x < 1.2):
+				model.scale = model.scale + Vector3(scaleFactor, scaleFactor, scaleFactor)
+				model.position.y = model.position.y - (scaleFactor / 2)
+		if zoomOut:
+			if (model.scale.x > 0.1):
+				model.scale = model.scale - Vector3(scaleFactor, scaleFactor, scaleFactor)
+				model.position.y = model.position.y + (scaleFactor / 2)
+
+
+
+func setup(exhibitionIdInput: String, itemIdInput: String) -> bool:
+	exhibitionId = exhibitionIdInput
 	itemId = itemIdInput
 	
 	modelLoaderThread = Thread.new()
 
+	var zipReader = ExhibitionStore.get_zip_reader(exhibitionId)
 	var itemJson := JSON.new()
 	var itemJsonString = zipReader.read_file(str(itemId, "/", itemId, ".artivact.json")).get_string_from_utf8()
 	var parseResult := itemJson.parse(itemJsonString)
 	if parseResult != OK:
 		var errMsg = str("default_item.setup(", itemIdInput, "): FAILED - ", parseResult)
-		SignalBus.debug(errMsg)
 		printerr(errMsg)
-		return
+		return false
 		
 	itemData = itemJson.data
 	
 	models = itemData.mediaContent.models
 	maxModelIndex = models.size() - 1
 	
-	SignalBus.register(SignalBus.SignalType.NEXT_MODEL, next_model)
-	SignalBus.register(SignalBus.SignalType.ZOOM_MODEL_IN, zoom_in)
-	SignalBus.register(SignalBus.SignalType.ZOOM_MODEL_OUT, zoom_out)
-	SignalBus.register(SignalBus.SignalType.ZOOM_MODEL_STOP, zoom_stop)
+	return true
+	
 
 
 func next_model():
@@ -80,71 +132,25 @@ func zoom_out():
 func zoom_stop():
 		zoomIn = false
 		zoomOut = false
-
-
-func _enter_tree():
-	if models.size() > 0 && !modelLoading:
-		modelLoading = true
-		updateModel = true
-
-
-func _ready():
-		SignalBus.trigger_with_payload(SignalBus.SignalType.UPDATE_ITEM_DATA, itemData)
-
-
-func _exit_tree():
-	SignalBus.deregister(SignalBus.SignalType.NEXT_MODEL, next_model)
-	SignalBus.deregister(SignalBus.SignalType.ZOOM_MODEL_IN, zoom_in)
-	SignalBus.deregister(SignalBus.SignalType.ZOOM_MODEL_OUT, zoom_out)
-	SignalBus.deregister(SignalBus.SignalType.ZOOM_MODEL_STOP, zoom_stop)
-	if modelLoaderThread.is_started():
-		modelLoaderThread.wait_to_finish()
-	
-
-func _process(delta: float):
-	if updateModel:
-		updateModel = false
-		if modelLoaderThread.is_started():
-			modelLoaderThread.wait_to_finish()
-		modelLoaderThread.start(_load_model, Thread.PRIORITY_LOW)
-	elif glbLoaded:
-		glbLoaded = false
-		_generate_scene()
-	elif modelShown && modelLoaded:
-		_remove_model()
-	elif modelLoaded:
-		modelLoaded = false
-		_add_model()
 		
-	var scaleFactor = 10 * delta
-	var model = $Turntable
-	if zoomIn:
-		if (model.scale.x < 2):
-			model.scale = model.scale + Vector3(scaleFactor, scaleFactor, scaleFactor)
-			model.position.y = model.position.y - (scaleFactor / 2)
-	if zoomOut:
-		if (model.scale.x > 0.5):
-			model.scale = model.scale - Vector3(scaleFactor, scaleFactor, scaleFactor)
-			model.position.y = model.position.y + (scaleFactor / 2)
 
-
-func _load_model():
+func load_model():
 	gltfDocument = GLTFDocument.new()
 	gltfState = GLTFState.new()
 
-	var modelData := zipReader.read_file(str(itemId, "/", models[modelIndex]))
+	var zipReader = ExhibitionStore.get_zip_reader(exhibitionId)
+	var modelData = zipReader.read_file(str(itemId, "/", models[modelIndex]))
 	var result = gltfDocument.append_from_buffer(modelData, "", gltfState, 64)
 
 	if result != OK:
-		var errMsg = str("item.load_model(", models[modelIndex], "): FAILED - ", result)
-		SignalBus.debug(errMsg)
+		var errMsg = str("default_item.load_model(", itemId, " / ", models[modelIndex], "): FAILED - ", result)
 		printerr(errMsg)
 		return
 
 	glbLoaded = true
 	
 
-func _generate_scene():
+func generate_scene():
 	loadedModel = gltfDocument.generate_scene(gltfState)
 	
 	var size:Vector3
@@ -161,15 +167,16 @@ func _generate_scene():
 	modelLoaded = true
 
 
-func _remove_model():
+func remove_model():
 	if shownModel != null:
 		shownModel.visible = false
 		shownModel.queue_free()
 		modelShown = false
 
 
-func _add_model():
-	find_child("Turntable").call_deferred("add_child", loadedModel)
+func add_model():
+	call_deferred("add_child", loadedModel)
 	shownModel = loadedModel
 	modelShown = true
 	modelLoading = false
+	SignalBus.trigger(SignalBus.SignalType.MODEL_LOADED)

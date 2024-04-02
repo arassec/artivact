@@ -76,7 +76,7 @@ public class ExportService extends BaseController {
      * @return The item's JSON representation and its media files in a {@link StreamingResponseBody}.
      */
     public StreamingResponseBody createItemExportFile(String itemId) {
-        Item item = itemService.loadUnrestricted(itemId);
+        Item item = itemService.loadTranslated(itemId);
         item.setMediaCreationContent(null);
 
         List<String> mediaFiles = itemService.getMediaFiles(itemId);

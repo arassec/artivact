@@ -14,12 +14,14 @@ config/name="ArtivactVR"
 run/main_scene="res://scenes/main.tscn"
 config/features=PackedStringArray("4.2", "GL Compatibility")
 boot_splash/image="res://logo-large.png"
+boot_splash/fullsize=false
 config/icon="res://logo.png"
 
 [autoload]
 
 SignalBus="*res://scripts/signal_bus.gd"
-ArtivactSettings="*res://scripts/artivact_settings.gd"
+ExhibitionStore="*res://scripts/exhibition_store.gd"
+I18n="*res://scripts/i18n.gd"
 
 [editor_plugins]
 

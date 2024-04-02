@@ -1,17 +1,25 @@
 extends Node3D
 
-var zipReader: ZIPReader
-var topicData: Variant
+var exhibitionId: String
+var topicIndex: int
+
+var currentTool
 
 
-func setup(zipReaderInput: ZIPReader, topicDataInput: Variant):
-	zipReader = zipReaderInput
-	topicData = topicDataInput
+func setup(exhibitionIdInput: String, topicIndexInput: int):
+	exhibitionId = exhibitionIdInput
+	topicIndex = topicIndexInput
+	switch_tool(1)  # Load the second tool of the exhibition (for now ignoring titles!)...
+		
+	
+# TODO: Implement switching tools
+func switch_tool(toolIndex: int):
+	if currentTool:
+		remove_child(currentTool)
+		currentTool.queue_free()
 
-
-func _enter_tree():
-	var currentTool = load("res://scenes/exhibition/default_multi_tool.tscn").instantiate()
-	# TODO: Implement switching tools!
-	currentTool.setup(zipReader, topicData.tools[1])
+	currentTool = load("res://scenes/exhibition/default_multi_tool.tscn").instantiate()
+	
+	currentTool.setup(exhibitionId, topicIndex, toolIndex)
 	
 	add_child(currentTool)

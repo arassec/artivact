@@ -1,6 +1,6 @@
 extends Node3D
 
-var zipReader:ZIPReader
+var exhibitionId: String
 var toolData: Variant
 
 var title: String
@@ -16,59 +16,68 @@ var loadedItem
 var shownItem
 
 
-func setup(zipReaderInput: ZIPReader, toolDataInput: Variant):
-	zipReader = zipReaderInput
-	toolData = toolDataInput
-		
-	if toolData.type == "TITLE":
-		title = toolData.title.value
-	elif toolData.type == "ITEMS":
-		items = toolData.itemIds
-		maxItemIndex = items.size() - 1
-
-	SignalBus.register(SignalBus.SignalType.NEXT_ITEM, next_item)
+func _init():
+	SignalBus.register(SignalBus.SignalType.NEXT_ITEM, show_next_item)
+	SignalBus.register(SignalBus.SignalType.MODEL_LOADED, item_model_loaded)
 	
 
-func next_item():
-	itemIndex = itemIndex + 1
-	if itemIndex > maxItemIndex:
-		itemIndex = 0
-	loadItem = true
-	
-
-func _enter_tree():
+func _ready():
 	if items.size() > 0:
 		loadItem = true
 
 
 func _exit_tree():
-	SignalBus.deregister(SignalBus.SignalType.NEXT_ITEM, next_item)
+	SignalBus.deregister(SignalBus.SignalType.NEXT_ITEM, show_next_item)
+	SignalBus.deregister(SignalBus.SignalType.MODEL_LOADED, item_model_loaded)
 
 
 func _process(_delta: float):
 	if loadItem:
 		loadItem = false
-		_load_item()
+		load_item()
 	elif itemShown && itemLoaded:
-		_remove_item()
+		remove_item()
 	elif itemLoaded:
 		itemLoaded = false
-		_add_item()
+		add_item()
 
 
-func _load_item():
+func setup(exhibitionIdInput: String, topicIndexInput: int, toolIndexInput: int):
+	exhibitionId = exhibitionIdInput
+	toolData = ExhibitionStore.get_tool(exhibitionId, topicIndexInput, toolIndexInput)
+	
+	if toolData.type == "TITLE":
+		title = I18n.translate(toolData.title)
+	elif toolData.type == "ITEMS":
+		items = toolData.itemIds
+		maxItemIndex = items.size() - 1
+	
+
+func show_next_item():
+	itemIndex = itemIndex + 1
+	if itemIndex > maxItemIndex:
+		itemIndex = 0
+	loadItem = true
+
+
+func load_item():
+	SignalBus.deregister(SignalBus.SignalType.NEXT_ITEM, show_next_item)
 	loadedItem = load("res://scenes/exhibition/default_item.tscn").instantiate()
-	loadedItem.setup(zipReader, items[itemIndex])
-	itemLoaded = true
+	if loadedItem.setup(exhibitionId, items[itemIndex]):
+		itemLoaded = true
 
 
-func _remove_item():
-	shownItem.visible = false
+func remove_item():
+	remove_child(shownItem)
 	shownItem.queue_free()
 	itemShown = false
 
 
-func _add_item():
+func add_item():
 	add_child(loadedItem)
 	shownItem = loadedItem
 	itemShown = true
+
+
+func item_model_loaded():
+	SignalBus.register(SignalBus.SignalType.NEXT_ITEM, show_next_item)

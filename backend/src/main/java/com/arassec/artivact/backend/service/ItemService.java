@@ -135,14 +135,11 @@ public class ItemService extends BaseFileService {
     }
 
     /**
-     * Loads the item with the given ID.
+     * Loads an item without regard to restrictions but translations.
      *
      * @param itemId The item's ID.
      * @return The item.
      */
-    @RestrictResult
-    @TranslateResult
-    @SuppressWarnings("java:S6204") // Result list needs to be mutable!
     public Item load(String itemId) {
         Optional<ItemEntity> itemEntityOptional = itemEntityRepository.findById(itemId);
         if (itemEntityOptional.isPresent()) {
@@ -173,13 +170,26 @@ public class ItemService extends BaseFileService {
     }
 
     /**
-     * Loads an item without regard to restrictions.
+     * Loads an item without regard to restrictions but translations.
      *
      * @param itemId The item's ID.
      * @return The item.
      */
     @TranslateResult
-    public Item loadUnrestricted(String itemId) {
+    public Item loadTranslated(String itemId) {
+        return load(itemId);
+    }
+
+    /**
+     * Loads the item with the given ID.
+     *
+     * @param itemId The item's ID.
+     * @return The item.
+     */
+    @TranslateResult
+    @RestrictResult
+    @SuppressWarnings("java:S6204") // Result list needs to be mutable!
+    public Item loadTranslatedRestricted(String itemId) {
         return load(itemId);
     }
 
@@ -293,7 +303,7 @@ public class ItemService extends BaseFileService {
     public List<String> getMediaFiles(String itemId) {
         List<String> result = new LinkedList<>();
 
-        Item item = load(itemId);
+        Item item = loadTranslatedRestricted(itemId);
 
         if (item == null) {
             throw new ArtivactException(NO_ITEM_ERROR_PREFIX + itemId);
@@ -331,7 +341,7 @@ public class ItemService extends BaseFileService {
      * @param file   The image file to add.
      */
     public void addImage(String itemId, MultipartFile file) {
-        Item item = load(itemId);
+        Item item = loadTranslatedRestricted(itemId);
 
         if (item == null) {
             throw new ArtivactException(NO_ITEM_ERROR_PREFIX + itemId);
@@ -355,7 +365,7 @@ public class ItemService extends BaseFileService {
      * @param file   The model file to add.
      */
     public void addModel(String itemId, MultipartFile file) {
-        Item item = load(itemId);
+        Item item = loadTranslatedRestricted(itemId);
 
         if (item == null) {
             throw new ArtivactException(NO_ITEM_ERROR_PREFIX + itemId);

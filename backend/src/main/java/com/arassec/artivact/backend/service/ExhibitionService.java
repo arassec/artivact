@@ -350,7 +350,7 @@ public class ExhibitionService extends BaseFileService {
         }
 
         // Unrestricted search should be a configurable option of the exhibition configuration:
-        List<Item> searchResult = searchService.searchUnrestricted(searchBasedWidget.getSearchTerm(), searchBasedWidget.getMaxResults());
+        List<Item> searchResult = searchService.search(searchBasedWidget.getSearchTerm(), searchBasedWidget.getMaxResults());
 
         tool.setItemIds(searchResult.stream()
                 .filter(item -> !item.getMediaContent().getModels().isEmpty()) // Include only items with 3D models.
@@ -394,8 +394,10 @@ public class ExhibitionService extends BaseFileService {
                         throw new ArtivactException("Could not create item JSON file!", e);
                     }
 
-                    item.getMediaContent().getImages()
-                            .forEach(image -> itemService.copyFile(itemId, image, ProjectDataProvider.IMAGES_DIR, itemDir));
+                    // Omit images until they can be displayed in ArtivactVR
+                    // item.getMediaContent().getImages()
+                    //        .forEach(image -> itemService.copyFile(itemId, image, ProjectDataProvider.IMAGES_DIR, itemDir));
+                    item.getMediaContent().setImages(List.of());
 
                     item.getMediaContent().getModels()
                             .forEach(model -> itemService.copyFile(itemId, model, ProjectDataProvider.MODELS_DIR, itemDir));

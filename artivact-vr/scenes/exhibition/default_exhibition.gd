@@ -1,60 +1,40 @@
 extends Node3D
 
 var exhibitionId: String
-var exhibitionZipFile: String
-var exhibitionData: Variant
-
-var zipReader: ZIPReader
 
 var currentTopic
 
 
-func setup(exhibitionIdInput: String):
-	exhibitionId = exhibitionIdInput
-	# TODO: Replace "res://" with "user://" once downloading exhibitions is implemented!
-	exhibitionZipFile = str("res://", exhibitionId, ".artivact-exhibition.zip")
-	
-	zipReader = ZIPReader.new()
-	var openResult := zipReader.open(exhibitionZipFile)
-	if openResult != OK:
-		# TODO: Error handling!
-		return
-	
-	var exhibitionJson := JSON.new()
-	var exhibitionJsonString = zipReader.read_file(str(exhibitionId, ".artivact.json")).get_string_from_utf8()
-	var parseResult := exhibitionJson.parse(exhibitionJsonString)
-	if parseResult != OK:
-		# TODO: Error handling!
-		return
-
-	exhibitionData = exhibitionJson.data
-	ArtivactSettings.setup(exhibitionData)
-	
+func _init():
 	SignalBus.register(SignalBus.SignalType.SWITCH_TOPIC, switch_topic)
 
 
-func switch_topic(topicIndex: int):
-	print("SWITCH TOPIC %s" % topicIndex)
-	if (currentTopic):
-		remove_child(currentTopic)
-	currentTopic = load("res://scenes/exhibition/default_topic.tscn").instantiate()
-	currentTopic.setup(zipReader, exhibitionData.topics[topicIndex])
-	add_child(currentTopic)
-
-
-func _enter_tree():
+func _ready():
 	if $ExhibitionTitleLabel != null:
-		$ExhibitionTitleLabel.text = ArtivactSettings.get_exhibition_title()
+		$ExhibitionTitleLabel.text = ExhibitionStore.get_exhibition_title(exhibitionId)
 
 	if $ExhibitionDescriptionLabel != null:
-		$ExhibitionDescriptionLabel.text = ArtivactSettings.get_exhibition_description()
-	
-	switch_topic(0)
+		$ExhibitionDescriptionLabel.text = ExhibitionStore.get_exhibition_description(exhibitionId)
 
-
-func _ready():
-	SignalBus.trigger_with_payload(SignalBus.SignalType.UPDATE_EXHIBITION_NAVIGATION, exhibitionData)
+	SignalBus.trigger_with_payload(SignalBus.SignalType.UPDATE_EXHIBITION_NAVIGATION, exhibitionId)
 
 
 func _exit_tree():
-	zipReader.close()
+	SignalBus.deregister(SignalBus.SignalType.SWITCH_TOPIC, switch_topic)
+
+
+func setup(exhibitionIdInput: String):
+	exhibitionId = exhibitionIdInput
+	switch_topic(0) # Load the first topic of the exhibition
+
+
+func switch_topic(topicIndex: int):
+	if currentTopic:
+		remove_child(currentTopic)
+		currentTopic.queue_free()
+		
+	currentTopic = load("res://scenes/exhibition/default_topic.tscn").instantiate()
+	
+	currentTopic.setup(exhibitionId, topicIndex)
+	
+	add_child(currentTopic)

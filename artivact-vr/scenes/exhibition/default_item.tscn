@@ -1,16 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://bb7braknklre4"]
+[gd_scene load_steps=4 format=3 uid="uid://bb7braknklre4"]
 
 [ext_resource type="Script" path="res://scenes/exhibition/default_item.gd" id="1_hpb3m"]
 [ext_resource type="PackedScene" uid="uid://clujaf3u776a3" path="res://addons/godot-xr-tools/objects/viewport_2d_in_3d.tscn" id="2_1fssi"]
 [ext_resource type="PackedScene" uid="uid://daf60j6sweob0" path="res://scenes/exhibition/default_item_ui.tscn" id="3_j7ama"]
-[ext_resource type="Script" path="res://scenes/turntable.gd" id="4_rjdyc"]
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_o5sep"]
-height = 0.01
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_83qe0"]
-albedo_color = Color(0.733333, 0.729412, 0.776471, 1)
-disable_receive_shadows = true
 
 [node name="DefaultItem" type="Node3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, -2)
@@ -20,8 +12,3 @@ script = ExtResource("1_hpb3m")
 transform = Transform3D(0.766044, 0, -0.642788, 0, 1, 0, 0.642788, 0, 0.766044, 2.388, -0.4, 0.5)
 scene = ExtResource("3_j7ama")
 viewport_size = Vector2(1500, 1000)
-
-[node name="Turntable" type="MeshInstance3D" parent="."]
-mesh = SubResource("CylinderMesh_o5sep")
-surface_material_override/0 = SubResource("StandardMaterial3D_83qe0")
-script = ExtResource("4_rjdyc")

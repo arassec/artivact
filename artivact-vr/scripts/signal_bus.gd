@@ -1,7 +1,6 @@
 extends Node
 
 enum SignalType { 
-	DEBUG, 
 	ERROR,
 	OPEN_EXHIBITION,
 	CLOSE_EXHIBITION,
@@ -12,13 +11,13 @@ enum SignalType {
 	UPDATE_ITEM_DATA,
 	NEXT_ITEM,
 	NEXT_MODEL,
+	MODEL_LOADED,
 	ZOOM_MODEL_IN, 
 	ZOOM_MODEL_OUT, 
 	ZOOM_MODEL_STOP
 }
 
 var callbacks = {
-	SignalType.DEBUG: [],
 	SignalType.ERROR: [],
 	SignalType.OPEN_EXHIBITION: [],
 	SignalType.CLOSE_EXHIBITION: [],
@@ -29,6 +28,7 @@ var callbacks = {
 	SignalType.UPDATE_ITEM_DATA: [],
 	SignalType.NEXT_ITEM: [],
 	SignalType.NEXT_MODEL: [],
+	SignalType.MODEL_LOADED: [],
 	SignalType.ZOOM_MODEL_IN: [],
 	SignalType.ZOOM_MODEL_OUT: [],
 	SignalType.ZOOM_MODEL_STOP: [],
@@ -53,9 +53,9 @@ func trigger_with_payload(type: SignalType, payload: Variant):
 		callback.call(payload)
 
 
-func debug(payload: String):
-	for callback in callbacks[SignalType.DEBUG]:
-		callback.call(payload)
+func trigger_with_multiload(type: SignalType, payloadOne: Variant, payloadTwo: Variant):
+	for callback in callbacks[type]:
+		callback.call(payloadOne, payloadTwo)
 
 
 func error(payload: String):

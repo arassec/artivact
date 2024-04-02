@@ -105,7 +105,7 @@ public class MediaCreationService {
                         capturePhotosParams.isRemoveBackgrounds(),
                         progressMonitor);
 
-                Item item = itemService.loadUnrestricted(itemId);
+                Item item = itemService.loadTranslated(itemId);
                 item.getMediaCreationContent().getImageSets().addAll(creationImageSets);
                 itemService.save(item);
 
@@ -137,7 +137,7 @@ public class MediaCreationService {
 
         executorService.submit(() -> {
             try {
-                Item item = itemService.loadUnrestricted(itemId);
+                Item item = itemService.loadTranslated(itemId);
 
                 List<Path> imagesWithoutBackground = imageCreator
                         .removeBackgrounds(itemId, item.getMediaCreationContent().getImageSets().get(imageSetIndex), progressMonitor);
@@ -178,7 +178,7 @@ public class MediaCreationService {
 
         executorService.submit(() -> {
             try {
-                Item item = itemService.loadUnrestricted(itemId);
+                Item item = itemService.loadTranslated(itemId);
 
                 List<String> newImages = itemService.getDanglingImages(item);
 
@@ -215,7 +215,7 @@ public class MediaCreationService {
 
         executorService.submit(() -> {
             try {
-                Item item = itemService.loadUnrestricted(itemId);
+                Item item = itemService.loadTranslated(itemId);
 
                 List<CreationImageSet> modelInputImageSets = item.getMediaCreationContent().getImageSets().stream()
                         .filter(CreationImageSet::isModelInput)
@@ -251,7 +251,7 @@ public class MediaCreationService {
 
         executorService.submit(() -> {
             try {
-                Item item = itemService.loadUnrestricted(itemId);
+                Item item = itemService.loadTranslated(itemId);
 
                 CreationModelSet creationModelSet = item.getMediaCreationContent().getModelSets().get(modelSetIndex);
 
@@ -289,7 +289,7 @@ public class MediaCreationService {
      * @param itemId The item's ID.
      */
     public void openModelDir(String itemId, int modelSetIndex) {
-        Item item = itemService.load(itemId);
+        Item item = itemService.loadTranslatedRestricted(itemId);
         CreationModelSet creationModelSet = item.getMediaCreationContent().getModelSets().get(modelSetIndex);
         fileUtil.openDirInOs(projectDataProvider.getProjectRoot().resolve(creationModelSet.getDirectory()));
     }
@@ -302,7 +302,7 @@ public class MediaCreationService {
      * @return List of assets in the model-set.
      */
     public List<Asset> getModelSetFiles(String itemId, int modelSetIndex) {
-        Item item = itemService.load(itemId);
+        Item item = itemService.loadTranslatedRestricted(itemId);
         CreationModelSet creationModelSet = item.getMediaCreationContent().getModelSets().get(modelSetIndex);
         try (Stream<Path> files = Files.list(projectDataProvider.getProjectRoot().resolve(creationModelSet.getDirectory()))) {
             return files
@@ -349,7 +349,7 @@ public class MediaCreationService {
         Path targetPath = imageCreator.getTransferTargetPath(itemId, image);
         try {
             Files.copy(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
-            Item item = itemService.load(itemId);
+            Item item = itemService.loadTranslatedRestricted(itemId);
             item.getMediaContent().getImages().add(targetPath.getFileName().toString());
             itemService.save(item);
         } catch (IOException e) {
@@ -365,7 +365,7 @@ public class MediaCreationService {
      * @param model         The model to transfer.
      */
     public void transferModelToMedia(String itemId, int modelSetIndex, Asset model) {
-        Item item = itemService.load(itemId);
+        Item item = itemService.loadTranslatedRestricted(itemId);
         CreationModelSet creationModelSet = item.getMediaCreationContent().getModelSets().get(modelSetIndex);
 
         Path sourcePath = projectDataProvider.getProjectRoot().resolve(creationModelSet.getDirectory()).resolve(model.getFileName());
@@ -386,7 +386,7 @@ public class MediaCreationService {
      * @param imageSetIndex The index of the image-set to delete.
      */
     public void deleteImageSet(String itemId, int imageSetIndex) {
-        Item item = itemService.load(itemId);
+        Item item = itemService.loadTranslatedRestricted(itemId);
         item.getMediaCreationContent().getImageSets().remove(imageSetIndex);
         itemService.save(item);
     }
@@ -398,7 +398,7 @@ public class MediaCreationService {
      * @param modelSetIndex The index of the model-set to delete.
      */
     public void deleteModelSet(String itemId, int modelSetIndex) {
-        Item item = itemService.load(itemId);
+        Item item = itemService.loadTranslatedRestricted(itemId);
         CreationModelSet creationModelSet = item.getMediaCreationContent().getModelSets().get(modelSetIndex);
         fileUtil.deleteDir(projectDataProvider.getProjectRoot().resolve(Path.of(creationModelSet.getDirectory())).toAbsolutePath());
         item.getMediaCreationContent().getModelSets().remove(modelSetIndex);
@@ -412,7 +412,7 @@ public class MediaCreationService {
      * @param imageSetIndex The index to the image-set that should be modified.
      */
     public void toggleModelInput(String itemId, int imageSetIndex) {
-        Item item = itemService.load(itemId);
+        Item item = itemService.loadTranslatedRestricted(itemId);
         item.getMediaCreationContent().getImageSets().get(imageSetIndex).setModelInput(
                 !item.getMediaCreationContent().getImageSets().get(imageSetIndex).isModelInput()
         );
