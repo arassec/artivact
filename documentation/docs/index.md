@@ -11,7 +11,7 @@ hero:
   actions:
     - theme: alt
       text: Create
-      link: /create/about
+      link: /create/introduction/about
     - theme: alt
       text: Present
       link: /present/about

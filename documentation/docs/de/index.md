@@ -11,13 +11,13 @@ hero:
   actions:
     - theme: alt
       text: Erstelle
-      link: /create/about
+      link: /de/create/introduction/about
     - theme: alt
       text: Präsentiere
-      link: /server/about
+      link: /de/present/about
     - theme: alt
       text: Erlebe
-      link: /metaverse/about
+      link: /de/experience/about
 
 features:
   - title: Erstelle
