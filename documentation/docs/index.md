@@ -3,20 +3,21 @@
 layout: home
 
 hero:
-  name: "Artivact Documentation"
-  tagline: Create and present virtual collections.
+  name: "Artivact"
+  text: "Create, present and experience virtual collections."
+  tagline: "An open source tool for collection management and presentation."
   image:
     src: /logo-large.png
   actions:
     - theme: alt
       text: Create
-      link: /desktop/about
+      link: /create/about
     - theme: alt
       text: Present
-      link: /server/about
+      link: /present/about
     - theme: alt
       text: Experience
-      link: /metaverse/about
+      link: /experience/about
       alt: Artivact
       
 features:

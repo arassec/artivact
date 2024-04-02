@@ -12,58 +12,58 @@ export default defineConfig({
 
         nav: [
             {text: 'Home', link: '/'},
-            {text: 'Create', link: '/desktop/introduction/about'},
-            {text: 'Present', link: '/server/about'},
-            {text: 'Experience', link: '/metaverse/about'},
+            {text: 'Create', link: '/create/introduction/about'},
+            {text: 'Present', link: '/present/about'},
+            {text: 'Experience', link: '/experience/about'},
             {text: 'User Manual', link: '/user-manual/about'},
         ],
 
         sidebar: {
-            '/desktop/': [
+            '/create/': [
                 {
                     text: 'Introduction',
                     items: [
-                        {text: 'About', link: '/desktop/introduction/about'},
-                        {text: 'Installation', link: '/desktop/introduction/installation'},
-                        {text: 'Configuration', link: '/desktop/introduction/configuration'},
+                        {text: 'About', link: '/create/introduction/about'},
+                        {text: 'Installation', link: '/create/introduction/installation'},
+                        {text: 'Configuration', link: '/create/introduction/configuration'},
                     ]
                 },
                 {
                     text: 'User Manual',
                     items: [
-                        {text: 'Manual', link: '/desktop/manual/manual'},
-                        {text: 'Media Creation', link: '/desktop/manual/media-creation'},
-                        {text: 'Peripherals', link: '/desktop/manual/peripherals'},
+                        {text: 'Manual', link: '/create/manual/manual'},
+                        {text: 'Media Creation', link: '/create/manual/media-creation'},
+                        {text: 'Peripherals', link: '/create/manual/peripherals'},
                     ]
                 },
                 {
                     text: '3D Model Creation',
                     items: [
-                        {text: 'About', link: '/desktop/models/about'},
-                        {text: 'Capturing Images', link: '/desktop/models/capturing-images'},
-                        {text: 'Artivact Turntable', link: '/desktop/models/artivact-turntable'},
-                        {text: 'Background Removal', link: '/desktop/models/background-removal'},
-                        {text: 'Model Creation', link: '/desktop/models/model-creation'},
-                        {text: 'Model Editing', link: '/desktop/models/model-editing'},
+                        {text: 'About', link: '/create/models/about'},
+                        {text: 'Capturing Images', link: '/create/models/capturing-images'},
+                        {text: 'Artivact Turntable', link: '/create/models/artivact-turntable'},
+                        {text: 'Background Removal', link: '/create/models/background-removal'},
+                        {text: 'Model Creation', link: '/create/models/model-creation'},
+                        {text: 'Model Editing', link: '/create/models/model-editing'},
                     ]
                 }
             ],
-            '/server/': [
+            '/present/': [
                 {
                     text: 'Introduction',
                     items: [
-                        {text: 'About', link: '/server/about'},
-                        {text: 'Installation', link: '/server/installation'},
-                        {text: 'Configuration', link: '/server/configuration'},
-                        {text: 'User Manual', link: '/server/manual'},
+                        {text: 'About', link: '/present/about'},
+                        {text: 'Installation', link: '/present/installation'},
+                        {text: 'Configuration', link: '/present/configuration'},
+                        {text: 'User Manual', link: '/present/manual'},
                     ]
                 }
             ],
-            '/metaverse/': [
+            '/experience/': [
                 {
                     text: 'Introduction',
                     items: [
-                        {text: 'About', link: '/metaverse/about'},
+                        {text: 'About', link: '/experience/about'},
                     ]
                 }
             ],
@@ -96,58 +96,58 @@ export default defineConfig({
 
                 nav: [
                     {text: 'Start', link: '/de/index'},
-                    {text: 'Erstelle', link: '/de/desktop/introduction/about'},
-                    {text: 'Präsentiere', link: '/de/server/about'},
-                    {text: 'Erlebe', link: '/de/metaverse/about'},
+                    {text: 'Erstelle', link: '/de/create/introduction/about'},
+                    {text: 'Präsentiere', link: '/de/present/about'},
+                    {text: 'Erlebe', link: '/de/experience/about'},
                     {text: 'Benutzerhandbuch', link: '/de/user-manual/about'},
                 ],
 
                 sidebar: {
-                    '/de/desktop/': [
+                    '/de/create/': [
                         {
                             text: 'Einführung',
                             items: [
-                                {text: 'Start', link: '/de/desktop/introduction/about'},
-                                {text: 'Installation', link: '/de/desktop/introduction/installation'},
-                                {text: 'Konfiguration', link: '/de/desktop/introduction/configuration'},
+                                {text: 'Start', link: '/de/create/introduction/about'},
+                                {text: 'Installation', link: '/de/create/introduction/installation'},
+                                {text: 'Konfiguration', link: '/de/create/introduction/configuration'},
                             ]
                         },
                         {
                             text: 'Benutzerhandbuch',
                             items: [
-                                {text: 'Start', link: '/de/desktop/manual/manual'},
-                                {text: 'Gestaltung', link: '/de/desktop/manual/media-creation'},
-                                {text: 'Peripheriegeräte', link: '/de/desktop/manual/peripherals'},
+                                {text: 'Start', link: '/de/create/manual/manual'},
+                                {text: 'Gestaltung', link: '/de/create/manual/media-creation'},
+                                {text: 'Peripheriegeräte', link: '/de/create/manual/peripherals'},
                             ]
                         },
                         {
                             text: '3D-Modelle Erstellen',
                             items: [
-                                {text: 'Start', link: '/de/desktop/models/about'},
-                                {text: 'Fotos Aufnehmen', link: '/de/desktop/models/capturing-images'},
-                                {text: 'Artivact Drehteller', link: '/de/desktop/models/artivact-turntable'},
-                                {text: 'Freistellen', link: '/de/desktop/models/background-removal'},
-                                {text: '3D-Modell Erzeugung', link: '/de/desktop/models/model-creation'},
-                                {text: '3D-Modell Bearbeitung', link: '/de/desktop/models/model-editing'},
+                                {text: 'Start', link: '/de/create/models/about'},
+                                {text: 'Fotos Aufnehmen', link: '/de/create/models/capturing-images'},
+                                {text: 'Artivact Drehteller', link: '/de/create/models/artivact-turntable'},
+                                {text: 'Freistellen', link: '/de/create/models/background-removal'},
+                                {text: '3D-Modell Erzeugung', link: '/de/create/models/model-creation'},
+                                {text: '3D-Modell Bearbeitung', link: '/de/create/models/model-editing'},
                             ]
                         }
                     ],
-                    '/de/server/': [
+                    '/de/present/': [
                         {
                             text: 'Einführung',
                             items: [
-                                {text: 'Über', link: '/de/server/about'},
-                                {text: 'Installation', link: '/de/server/installation'},
-                                {text: 'Konfiguration', link: '/de/server/configuration'},
-                                {text: 'Benutzerhandbuch', link: '/de/server/manual'},
+                                {text: 'Über', link: '/de/present/about'},
+                                {text: 'Installation', link: '/de/present/installation'},
+                                {text: 'Konfiguration', link: '/de/present/configuration'},
+                                {text: 'Benutzerhandbuch', link: '/de/present/manual'},
                             ]
                         }
                     ],
-                    '/de/metaverse/': [
+                    '/de/experience/': [
                         {
                             text: 'Einführung',
                             items: [
-                                {text: 'Über', link: '/de/metaverse/about'},
+                                {text: 'Über', link: '/de/experience/about'},
                             ]
                         }
                     ],

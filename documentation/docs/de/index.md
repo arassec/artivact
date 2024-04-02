@@ -3,14 +3,15 @@
 layout: home
 
 hero:
-  name: "Artivact Dokumentation"
-  tagline: Erstelle und präsentiere virtuelle Sammlungen.
+  name: "Artivact"
+  text: "Erstelle, präsentiere und erlebe virtuelle Sammlungen."
+  tagline: "Ein Open-Source-Tool zum Sammlungs-management und zur Sammlungspräsentation."
   image:
     src: /logo-large.png
   actions:
     - theme: alt
       text: Erstelle
-      link: /desktop/about
+      link: /create/about
     - theme: alt
       text: Präsentiere
       link: /server/about
