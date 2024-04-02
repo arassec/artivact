@@ -1,0 +1,1 @@
+const a="/artivact/assets/image-capture_good.CtucZkJv.jpg",s="/artivact/assets/image-capture_bad_shadows.C9YZiulG.jpg",t="/artivact/assets/image-capture_bad_sharpness.BhETgYKG.jpg";export{a as _,s as a,t as b};

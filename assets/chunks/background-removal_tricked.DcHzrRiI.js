@@ -1,0 +1,1 @@
+const a="/artivact/assets/background-removal_hole.ByyIxfAy.png",s="/artivact/assets/background-removal.slL2iipC.png",t="/artivact/assets/background-removal_tricked.CdOge4mt.jpg";export{a as _,s as a,t as b};

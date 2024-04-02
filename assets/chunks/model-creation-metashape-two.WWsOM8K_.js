@@ -1,0 +1,1 @@
+const t="/artivact/assets/model-creation-meshroom.BAM1fh69.png",s="/artivact/assets/model-creation-metashape-one.CzDZTzLf.png",a="/artivact/assets/model-creation-metashape-two.BWrRULRK.png";export{t as _,s as a,a as b};
