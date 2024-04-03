@@ -45,13 +45,17 @@ public class TranslateResultAspect {
      * @param locale The locale to use for translation.
      */
     private void translateIfPossible(Object object, Locale locale) {
-        if (object instanceof TranslatableObject translatableObject) {
-            translatableObject.translate(locale);
-            translatePropertiesIfPossible(translatableObject, locale);
-        } else if (object instanceof Collection<?> collectionToTranslate) {
-            collectionToTranslate.forEach(entry -> translateIfPossible(entry, locale));
-        } else {
-            translatePropertiesIfPossible(object, locale);
+        if (object == null) {
+            return;
+        }
+        switch (object) {
+            case TranslatableObject translatableObject -> {
+                translatableObject.translate(locale);
+                translatePropertiesIfPossible(translatableObject, locale);
+            }
+            case Collection<?> collectionToTranslate ->
+                    collectionToTranslate.forEach(entry -> translateIfPossible(entry, locale));
+            default -> translatePropertiesIfPossible(object, locale);
         }
     }
 

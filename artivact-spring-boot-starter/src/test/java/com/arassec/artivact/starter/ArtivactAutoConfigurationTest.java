@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
 @ContextConfiguration(classes = ArtivactAutoConfiguration.class)
-public class ArtivactAutoConfigurationTest {
+class ArtivactAutoConfigurationTest {
 
     /**
      * The spring application context.

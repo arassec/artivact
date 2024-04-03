@@ -395,8 +395,6 @@ public class ExhibitionService extends BaseFileService {
                     }
 
                     // Omit images until they can be displayed in ArtivactVR
-                    // item.getMediaContent().getImages()
-                    //        .forEach(image -> itemService.copyFile(itemId, image, ProjectDataProvider.IMAGES_DIR, itemDir));
                     item.getMediaContent().setImages(List.of());
 
                     item.getMediaContent().getModels()

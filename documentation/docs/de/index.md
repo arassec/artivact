@@ -5,7 +5,7 @@ layout: home
 hero:
   name: "Artivact"
   text: "Erstelle, präsentiere und erlebe virtuelle Sammlungen."
-  tagline: "Ein Open-Source-Tool zum Sammlungs-management und zur Sammlungspräsentation."
+  tagline: "Ein Open-Source-Tool zum Sammlungs-verwaltung und zur Sammlungspräsentation."
   image:
     src: /logo-large.png
   actions:

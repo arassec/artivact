@@ -22,7 +22,7 @@ import static org.mockito.Mockito.*;
  * Tests the {@link AccountController}.
  */
 @ExtendWith(MockitoExtension.class)
-public class AccountControllerTest {
+class AccountControllerTest {
 
     /**
      * The controller under test.

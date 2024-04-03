@@ -95,6 +95,7 @@ public class AccountService implements UserDetailsService {
      * @param username The username.
      * @return The account.
      */
+    @SuppressWarnings("java:S3516") // Sonar false positive
     public Optional<Account> loadOwnAccount(String username) {
         Optional<AccountEntity> accountEntityOptional = accountEntityRepository.findByUsername(username);
         if (accountEntityOptional.isPresent()) {

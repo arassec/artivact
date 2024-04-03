@@ -30,7 +30,7 @@ import static org.mockito.Mockito.*;
  * Tests the {@link ConfigurationController}.
  */
 @ExtendWith(MockitoExtension.class)
-public class ConfigurationControllerTest {
+class ConfigurationControllerTest {
 
     /**
      * The controller under test.

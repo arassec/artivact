@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
  * Tests the {@link ArtivactBackendConfiguration} functionality.
  */
 @Slf4j
-public class ArtivactBackendConfigurationTest {
+class ArtivactBackendConfigurationTest {
 
     /**
      * The configuration under test.

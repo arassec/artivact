@@ -19,7 +19,7 @@ import static org.mockito.Mockito.when;
  * Tests the {@link ArtivactDesktopAuthenticationProvider}.
  */
 @ExtendWith(MockitoExtension.class)
-public class ArtivactDesktopAuthenticationProviderTest {
+class ArtivactDesktopAuthenticationProviderTest {
 
     /**
      * The class under test.

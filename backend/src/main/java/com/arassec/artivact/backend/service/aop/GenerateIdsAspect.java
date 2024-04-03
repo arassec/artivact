@@ -42,13 +42,16 @@ public class GenerateIdsAspect {
      * @param object The object to generate IDs for.
      */
     private void generateIdsIfRequired(Object object) {
-        if (object instanceof IdentifiedObject identifiedObject && !StringUtils.hasText(identifiedObject.getId())) {
-            identifiedObject.setId(UUID.randomUUID().toString());
-            generateIdsOfPropertiesIfRequired(object);
-        } else if (object instanceof Collection<?> collection) {
-            collection.forEach(this::generateIdsIfRequired);
-        } else {
-            generateIdsOfPropertiesIfRequired(object);
+        if (object == null) {
+            return;
+        }
+        switch (object) {
+            case IdentifiedObject identifiedObject when !StringUtils.hasText(identifiedObject.getId()) -> {
+                identifiedObject.setId(UUID.randomUUID().toString());
+                generateIdsOfPropertiesIfRequired(object);
+            }
+            case Collection<?> collection -> collection.forEach(this::generateIdsIfRequired);
+            default -> generateIdsOfPropertiesIfRequired(object);
         }
     }
 

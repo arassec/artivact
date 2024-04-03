@@ -190,7 +190,7 @@ public class ExchangeController extends BaseController {
     @PostMapping(value = "/item/import/filesystem")
     public ResponseEntity<String> importItems() {
         importService.importItemsFromFilesystem();
-        return ResponseEntity.ok("scanned");
+        return ResponseEntity.ok("Items scanned.");
     }
 
     /**
@@ -204,7 +204,7 @@ public class ExchangeController extends BaseController {
     public ResponseEntity<String> syncItem(@RequestPart(value = "file") final MultipartFile file,
                                            @PathVariable final String apiToken) {
         importService.importItem(file, apiToken);
-        return ResponseEntity.ok("Item imported.");
+        return ResponseEntity.ok("Item synchronized.");
     }
 
     /**

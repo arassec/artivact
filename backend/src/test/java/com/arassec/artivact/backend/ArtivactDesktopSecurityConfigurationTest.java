@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * Tests the {@link ArtivactDesktopSecurityConfiguration}.
  */
 @ExtendWith(MockitoExtension.class)
-public class ArtivactDesktopSecurityConfigurationTest {
+class ArtivactDesktopSecurityConfigurationTest {
 
     /**
      * The tested configuration.

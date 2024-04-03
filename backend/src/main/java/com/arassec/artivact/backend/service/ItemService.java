@@ -140,6 +140,7 @@ public class ItemService extends BaseFileService {
      * @param itemId The item's ID.
      * @return The item.
      */
+    @SuppressWarnings("java:S6204") // Collection needs to be modifiable...
     public Item load(String itemId) {
         Optional<ItemEntity> itemEntityOptional = itemEntityRepository.findById(itemId);
         if (itemEntityOptional.isPresent()) {

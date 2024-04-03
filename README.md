@@ -2,7 +2,7 @@
 
 ## About
 
-Artivact is an application to create virtual items and manage them in collections.
+Artivact is an open source application to create virtual items and manage them in collections.
 
 It is written in Java using [Spring Boot](https://spring.io/projects/spring-boot) and provides an
 easy-to-use web-frontend based on the Quasar framework [Quasar](https://quasar.dev/).
@@ -10,7 +10,7 @@ easy-to-use web-frontend based on the Quasar framework [Quasar](https://quasar.d
 ### On the Desktop
 
 The application's desktop variant can be used to create 3D models for virtual items using third party tools
-and photogrammetry. It combines camera setups with photogrammetry and model editing to speed 3D model creation up.
+and photogrammetry. It combines camera setups with photogrammetry and model editing to speed up 3D model creation.
 
 The created models can be assigned to items which themselves can be categorized and organized using the application.
 

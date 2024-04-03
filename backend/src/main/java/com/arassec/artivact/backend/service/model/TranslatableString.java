@@ -1,8 +1,7 @@
 package com.arassec.artivact.backend.service.model;
 
 import jakarta.persistence.Transient;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
@@ -14,6 +13,9 @@ import java.util.Map;
  */
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class TranslatableString implements TranslatableObject {
 
     /**
@@ -30,6 +32,7 @@ public class TranslatableString implements TranslatableObject {
     /**
      * Configured translations for the value, indexed by locale.
      */
+    @Builder.Default
     private Map<String, String> translations = new HashMap<>();
 
     /**

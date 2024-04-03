@@ -133,7 +133,7 @@ const translatableStringRef = toRef(props, 'translatableString');
 const restrictedItemRef = toRef(props, 'restrictedItem');
 const showDetailsRef = ref(false);
 
-const showStandardTextRef = ref(false);
+const showStandardTextRef = ref(true);
 
 function addRestriction(value: string) {
   if (restrictedItemRef.value) {
