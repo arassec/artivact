@@ -1,5 +1,6 @@
 package com.arassec.artivact.backend.api;
 
+import com.arassec.artivact.backend.api.model.Profiles;
 import com.arassec.artivact.backend.api.model.UserData;
 import com.arassec.artivact.backend.service.ConfigurationService;
 import com.arassec.artivact.backend.service.model.appearance.ColorTheme;
@@ -172,10 +173,15 @@ class ConfigurationControllerTest {
      * Tests getting the "desktop-mode" property.
      */
     @Test
-    void testGetDesktopMode() {
-        assertFalse(controller.getDesktopMode());
+    void testGetProfiles() {
+        Profiles profiles = controller.getProfiles();
+        assertFalse(profiles.isDesktop());
+        assertFalse(profiles.isE2e());
         when(configurationService.isDesktopProfileEnabled()).thenReturn(true);
-        assertTrue(controller.getDesktopMode());
+        when(configurationService.isE2eProfileEnabled()).thenReturn(true);
+        profiles = controller.getProfiles();
+        assertTrue(profiles.isDesktop());
+        assertTrue(profiles.isE2e());
     }
 
     /**
