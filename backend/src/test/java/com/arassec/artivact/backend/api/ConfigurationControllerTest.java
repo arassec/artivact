@@ -174,7 +174,7 @@ class ConfigurationControllerTest {
     @Test
     void testGetDesktopMode() {
         assertFalse(controller.getDesktopMode());
-        when(configurationService.isDesktopMode()).thenReturn(true);
+        when(configurationService.isDesktopProfileEnabled()).thenReturn(true);
         assertTrue(controller.getDesktopMode());
     }
 

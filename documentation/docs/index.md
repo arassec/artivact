@@ -9,16 +9,15 @@ hero:
   image:
     src: /logo-large.png
   actions:
+    - theme: brand
+      text: Quick Start
+      link: /quick-start/local-installation/introduction
     - theme: alt
-      text: Create
-      link: /create/introduction/about
+      text: User Manual
+      link: /user-manual/introduction/about
     - theme: alt
-      text: Present
-      link: /present/about
-    - theme: alt
-      text: Experience
-      link: /experience/about
-      alt: Artivact
+      text: Tutorials
+      link: /tutorials/artivact-as-scanner/introduction
       
 features:
   - title: Create
@@ -26,6 +25,6 @@ features:
   - title: Present
     details: Run Artivact as web server to manage and present your virtual collection online.
   - title: Experience
-    details: Use Artivact to create and experience your virtual exhibitions in VR/AR.
+    details: Use Artivact to create and experience your virtual exhibitions in the metaverse.
 
 ---

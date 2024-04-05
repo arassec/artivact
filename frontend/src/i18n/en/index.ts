@@ -65,7 +65,7 @@ export default {
       userDataFailed: 'Loading user data failed!',
       licenseFailed: 'Loading license information failed!',
       logoutFailed: 'Logout failed!'
-    }
+    },
   },
 
   AccountsConfigurationPage: {
@@ -422,9 +422,11 @@ export default {
       indexPageNo: 'This is NOT the index page',
     },
     label: {
+      noIndexPage: 'No index page has been defined yet. Create a menu, add a page to it and edit it to be the index page.',
       addWidget: 'Add Widget',
       pageTitle: 'Page Title',
       textTitle: 'Text Title',
+      textContent: 'Text Content',
       text: 'Text',
       infoBoxTitle: 'Info-Box Title',
       infoBoxContent: 'Info-Box Content',
@@ -735,6 +737,9 @@ export default {
 
   WidgetTemplate: {
     tooltip: {
+      edit: 'Right click to edit widget'
+    },
+    label: {
       edit: 'Edit Widget',
       close: 'Close Widget Editor',
       moveUp: 'Move Widget Up',

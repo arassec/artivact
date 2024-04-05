@@ -3,20 +3,22 @@
 
     <!-- Input field -->
     <q-input
+      :data-test="dataTest"
       v-if="translatableStringRef && localeStore.selectedLocale === null"
       outlined
       v-model="translatableStringRef.value"
       :label="label"
-      :type="textarea ? 'textarea' : ''"
+      :type="textarea ? 'textarea' : 'text'"
       :autogrow="textarea"
       class="no-scroll"
     />
     <div class="row full-width" v-if="translatableStringRef && localeStore.selectedLocale !== null">
       <q-input
+        :data-test="dataTest"
         outlined
         v-model="translatableStringRef.translations[localeStore.selectedLocale]"
         :label="label"
-        :type="textarea ? 'textarea' : ''"
+        :type="textarea ? 'textarea' : 'text'"
         :autogrow="textarea"
         class="no-scroll column col-grow"
       />
@@ -25,7 +27,7 @@
         outlined
         v-model="translatableStringRef.value"
         :label="label"
-        :type="textarea ? 'textarea' : ''"
+        :type="textarea ? 'textarea' : 'text'"
         :autogrow="textarea"
         class="no-scroll column col-grow q-ml-md"
         :disable="true"
@@ -125,6 +127,10 @@ const props = defineProps({
     required: true,
     type: Object as PropType<string[]>,
   },
+  dataTest: {
+    required: false,
+    type: String
+  }
 });
 
 const localeStore = useLocaleStore();

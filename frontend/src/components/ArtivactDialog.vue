@@ -2,7 +2,7 @@
   <q-dialog v-model="dialogModelRef" persistent>
 
     <!-- DESKTOP RESOLUTION -->
-    <q-card class="q-mb-lg gt-sm" :style="'min-width: ' + minWidth + 'em;'">
+    <q-card :data-test="dataTest" class="q-mb-lg gt-sm" :style="'min-width: ' + minWidth + 'em;'">
       <q-card-section class="text-white" :class="error ? 'bg-negative' : warn ? 'bg-warning' : 'bg-primary'">
         <div class="row">
           <div class="text-h6">
@@ -90,6 +90,11 @@ const props = defineProps({
   minWidth: {
     required: false,
     default: 35
+  },
+  dataTest: {
+    required: false,
+    default: 'artivact-modal',
+    type: String
   }
 });
 

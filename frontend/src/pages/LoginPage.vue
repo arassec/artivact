@@ -7,6 +7,7 @@
         </div>
         <div class="row justify-center">
           <q-input
+            data-test="username-input"
             autofocus
             v-model="usernameRef"
             class="col-5"
@@ -17,6 +18,7 @@
         </div>
         <div class="row justify-center">
           <q-input
+            data-test="password-input"
             v-model="passwordRef"
             class="col-5"
             type="password"
@@ -26,7 +28,7 @@
         </div>
         <div class="row justify-center q-mt-lg">
           <div class="col-5">
-            <q-btn type="submit" class="float-right" outline :label="$t('LoginPage.login')" />
+            <q-btn data-test="submit-login-button" type="submit" class="float-right" outline :label="$t('LoginPage.login')" />
           </div>
         </div>
       </q-form>
@@ -87,6 +89,12 @@ function onSubmit() {
             position: 'bottom',
             message: i18n.t('LoginPage.messages.loginSuccessful'),
             icon: 'check',
+            attrs: {
+              'data-test': 'artivact-notify-success'
+            },
+            actions: [
+              { icon: 'close', color: 'white', round: true, flat: true, handler: () => { /* ... */ } }
+            ]
           });
           route.push('/');
         })

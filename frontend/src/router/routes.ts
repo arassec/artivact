@@ -1,8 +1,9 @@
 import {RouteRecordRaw} from 'vue-router';
 import {api} from 'boot/axios';
 import {useQuasar} from 'quasar';
-import {useDesktopStore} from 'stores/desktop';
 import {useUserdataStore} from 'stores/userdata';
+import {Profiles} from 'components/artivact-models';
+import {useProfilesStore} from 'stores/profiles';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -11,15 +12,17 @@ const routes: RouteRecordRaw[] = [
     beforeEnter: (to, from, next) => {
 
       const quasar = useQuasar();
-      const desktopStore = useDesktopStore();
+      const profilesStore = useProfilesStore();
       const userdataStore = useUserdataStore();
 
       api
-        .get('/api/configuration/public/desktop-mode')
+        .get('/api/configuration/public/profiles')
         .then((response) => {
-          const desktopModeEnabled = response.data;
-          desktopStore.setEnabled(desktopModeEnabled);
-          if (desktopModeEnabled) {
+          const profiles: Profiles = response.data;
+          profilesStore.setE2eModeEnabled(profiles.e2e)
+          profilesStore.setDesktopModeEnabled(profiles.desktop || profiles.e2e);
+          profilesStore.setServerModeEnabled(!profiles.desktop || profiles.e2e);
+          if (profiles.desktop || profiles.e2e) {
             const postdata = new URLSearchParams();
             postdata.append('username', 'desktop');
             postdata.append('password', '');

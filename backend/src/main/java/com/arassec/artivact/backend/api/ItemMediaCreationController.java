@@ -18,7 +18,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@Profile("desktop")
+@Profile({"desktop", "e2e"})
 @RequestMapping("/api/item/{itemId}/media-creation")
 public class ItemMediaCreationController extends BaseController {
 

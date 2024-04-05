@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="hHh lpR fFf">
+  <q-layout view="hHh lpR fFf" data-test="artivact-main-layout">
     <q-header elevated class="bg-primary page-header" height-hint="98">
       <q-toolbar class="q-pl-xs page-toolbar">
         <q-toolbar-title class="q-mt-xs q-mb-xs">
@@ -14,20 +14,22 @@
 
         <router-link
           to="/user-login"
-          v-if="!userdataStore.authenticated && !desktopStore.isDesktopModeEnabled"
+          v-if="!userdataStore.authenticated && profilesStore.isServerModeEnabled"
           class="menu-entry-link q-mt-xs q-mb-xs"
         >
-          <q-btn flat color="white" icon="login" size="md">
+          <q-btn data-test="login-button"
+            flat color="white" icon="login" size="md">
             <q-tooltip>{{$t("MainLayout.login")}}</q-tooltip>
           </q-btn>
         </router-link>
 
         <router-link
           to="/"
-          v-if="userdataStore.authenticated && !desktopStore.isDesktopModeEnabled"
+          v-if="userdataStore.authenticated && profilesStore.isServerModeEnabled"
           class="menu-entry-link"
         >
           <q-btn
+            data-test="logout-button"
             no-caps
             flat
             color="white"
@@ -63,8 +65,8 @@ import {useMenuStore} from 'stores/menu';
 import {useRoleStore} from 'stores/role';
 import ArtivactMenuBar from 'components/ArtivactMenuBar.vue';
 import ArtivactSettingsBar from 'components/ArtivactSettingsBar.vue';
-import {useDesktopStore} from 'stores/desktop';
 import {useI18n} from 'vue-i18n';
+import {useProfilesStore} from 'stores/profiles';
 
 const quasar = useQuasar();
 const i18n = useI18n();
@@ -76,7 +78,7 @@ const localeStore = useLocaleStore();
 const menuStore = useMenuStore();
 const licenseStore = useLicenseStore();
 const roleStore = useRoleStore();
-const desktopStore = useDesktopStore();
+const profilesStore = useProfilesStore();
 
 function loadColorTheme() {
   api

@@ -1,5 +1,6 @@
 package com.arassec.artivact.backend.api;
 
+import com.arassec.artivact.backend.api.model.Profiles;
 import com.arassec.artivact.backend.api.model.UserData;
 import com.arassec.artivact.backend.service.ConfigurationService;
 import com.arassec.artivact.backend.service.exception.ArtivactException;
@@ -164,9 +165,9 @@ public class ConfigurationController {
      *
      * @return {@code true} if the application runs in desktop-mode, {@code false} otherwise.
      */
-    @GetMapping(value = "/public/desktop-mode")
-    public boolean getDesktopMode() {
-        return configurationService.isDesktopMode();
+    @GetMapping(value = "/public/profiles")
+    public Profiles getProfiles() {
+        return new Profiles(configurationService.isDesktopProfileEnabled(), configurationService.isE2eProfileEnabled());
     }
 
     /**

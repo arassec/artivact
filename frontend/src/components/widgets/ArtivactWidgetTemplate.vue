@@ -7,52 +7,97 @@
     </div>
 
     <!-- Editor -->
-    <div v-if="inEditMode" class="col-grow">
+    <div v-if="inEditMode" class="col-grow widget-editor">
+      <q-tooltip>{{ $t('WidgetTemplate.tooltip.edit') }}</q-tooltip>
       <div class="q-mb-lg">
 
-        <div class="edit-widget-button-container">
-          <q-btn
-            rounded
-            dense
-            color="primary"
-            size="md"
-            icon="edit"
-            class="edit-widget-button"
-            @click="showDetailsRef = true">
-            <q-tooltip>{{ $t('WidgetTemplate.tooltip.edit') }}</q-tooltip>
-          </q-btn>
-          <q-btn
-            rounded
-            dense
-            color="primary"
-            class="upward-widget-button"
-            icon="arrow_upward"
-            @click="$emit('move-widget-up')"
-            v-if="moveUpEnabled">
-          </q-btn>
-          <q-btn
-            rounded
-            dense
-            color="primary"
-            class="downward-widget-button"
-            icon="arrow_downward"
-            @click="$emit('move-widget-down')"
-            v-if="moveDownEnabled">
-          </q-btn>
-          <q-btn
-            rounded
-            dense
-            color="primary"
-            class="delete-widget-button"
-            icon="delete"
-            @click="$emit('delete-widget')">
-            <q-tooltip>{{ $t('WidgetTemplate.tooltip.delete') }}</q-tooltip>
-          </q-btn>
-        </div>
+        <q-menu
+          data-test="widget-context-menu"
+          :context-menu="true">
+          <q-list data-test="widget-context-menu">
+            <q-item
+              data-test="widget-context-menu-edit-button"
+              clickable
+              v-close-popup
+              @click="showDetailsRef = true"
+              class="menu-entry"
+            >
+              <q-item-section>
+                <label class="menu-label">
+                  <q-icon
+                    name="edit"
+                    size="xs"
+                    color="primary"
+                    class="q-mr-sm"
+                  />
+                  {{ $t('WidgetTemplate.label.edit') }}</label
+                >
+              </q-item-section>
+            </q-item>
+            <q-item
+              data-test="widget-context-menu-up"
+              clickable
+              v-close-popup
+              @click="$emit('move-widget-up')"
+              class="menu-entry"
+            >
+              <q-item-section>
+                <label class="menu-label">
+                  <q-icon
+                    name="arrow_upward"
+                    size="xs"
+                    color="primary"
+                    class="q-mr-sm"
+                  />
+                  {{ $t('WidgetTemplate.label.moveUp') }}</label
+                >
+              </q-item-section>
+            </q-item>
+            <q-item
+              data-test="widget-context-menu-down"
+              clickable
+              v-close-popup
+              @click="$emit('move-widget-down')"
+              class="menu-entry"
+            >
+              <q-item-section>
+                <label class="menu-label">
+                  <q-icon
+                    name="arrow_downward"
+                    size="xs"
+                    color="primary"
+                    class="q-mr-sm"
+                  />
+                  {{ $t('WidgetTemplate.label.moveDown') }}</label
+                >
+              </q-item-section>
+            </q-item>
+            <q-item
+              data-test="widget-context-menu-delete"
+              clickable
+              v-close-popup
+              @click="$emit('delete-widget')"
+              class="menu-entry"
+            >
+              <q-item-section>
+                <label class="menu-label">
+                  <q-icon
+                    name="delete"
+                    size="xs"
+                    color="primary"
+                    class="q-mr-sm"
+                  />
+                  {{ $t('WidgetTemplate.label.delete') }}</label
+                >
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-menu>
 
         <slot name="widget-content"></slot>
 
-        <artivact-widget-editor-modal :dialog-model="showDetailsRef">
+        <artivact-widget-editor-modal
+          :dialog-model="showDetailsRef">
           <artivact-restrictions-editor
             :in-details-view="false"
             :restrictions="restrictions"
@@ -70,6 +115,7 @@
 
           <template v-slot:approve>
             <q-btn
+              data-test="widget-editor-modal-approve"
               :label="$t('Common.apply')"
               color="primary"
               @click="showDetailsRef = false"
@@ -138,39 +184,8 @@ function deleteRestriction(value: string) {
   min-height: 4em;
 }
 
-.edit-widget-button-container {
-  height: 0;
-  max-width: 65rem;
-  margin-right: auto;
-  margin-left: auto;
-  position: relative;
+.widget-editor:hover {
+  cursor: pointer;
 }
 
-.edit-widget-button {
-  z-index: 3;
-  position: absolute;
-  right: -5em;
-  top: 1em;
-}
-
-.upward-widget-button {
-  z-index: 3;
-  position: absolute;
-  right: -8em;
-  top: 1em;
-}
-
-.downward-widget-button {
-  z-index: 3;
-  position: absolute;
-  right: -11em;
-  top: 1em;
-}
-
-.delete-widget-button {
-  z-index: 3;
-  position: absolute;
-  right: -14em;
-  top: 1em;
-}
 </style>

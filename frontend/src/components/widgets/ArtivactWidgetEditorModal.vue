@@ -1,6 +1,6 @@
 <template>
   <q-dialog v-model="dialogModelRef" persistent>
-    <q-card class="widget-editor-modal-card">
+    <q-card data-test="widget-editor-modal" class="widget-editor-modal-card">
       <q-card-section class="text-white bg-primary">
         <div class="row">
           <div class="text-h6">

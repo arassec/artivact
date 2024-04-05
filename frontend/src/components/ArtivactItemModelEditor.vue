@@ -1,7 +1,7 @@
 <template>
   <div>
     <q-btn
-      v-if="desktopStore.isDesktopModeEnabled"
+      v-if="profilesStore.isDesktopModeEnabled"
       text-color="primary"
       class="q-mr-md"
       round
@@ -119,12 +119,12 @@ import {api} from 'boot/axios';
 import {useQuasar} from 'quasar';
 import {useI18n} from 'vue-i18n';
 import ArtivactDialog from 'components/ArtivactDialog.vue';
-import {useDesktopStore} from 'stores/desktop';
+import {useProfilesStore} from 'stores/profiles';
 
 const quasar = useQuasar();
 const i18n = useI18n();
 
-const desktopStore = useDesktopStore();
+const profilesStore = useProfilesStore();
 
 const props = defineProps({
   itemId: {

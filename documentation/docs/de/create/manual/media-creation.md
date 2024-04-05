@@ -1,4 +1,4 @@
-# Media Creation
+# Medien-Gestaltung
 
 ## Overview
 
@@ -27,7 +27,7 @@ Die Kernfunktionen, um Artivact als 3D-Scanner zu verwenden, können über folge
 
 ## Aufnahmeparameter
 
-Wenn der Kamera-Knopf gedrückt wird öffnet sich ein Dialog zur Konfiguration der Aufnahmeparameter:
+Wenn der Kamera-Knopf gedrückt wird, öffnet sich ein Dialog zur Konfiguration der Aufnahmeparameter:
 
 ![media creation capture params](/assets/create/manual/de/media-creation-image-capture-params.png)
 
@@ -35,14 +35,14 @@ Hier kann die Anzahl der aufzunehmenden Fotos sowie die Nutzung eines Drehteller
 Die Zeitverzögerung bei der Verwendung des Drehtellers wird in Millisekunden angegeben.
 Nach der Rotation des automatischen Drehtellers wird erst nach dieser Verzögerung das nächste Foto erstellt.
 
-::: tip Manuelle Drehteller
+::: tip Manuelle Rotation
 Falls kein automatischer Drehteller verwendet werden soll, kann die konfigurierte Verzögerung genutzt werden, um einen
-manuellen Drehteller von Hand zu rotieren.
+manuellen Drehteller von Hand, oder auch direkt das Objekt zu rotieren.
 
 Eine Konfiguration von 5000 z.B. sorgt für eine verzögerte Fotoaufnahme von 5 Sekunden, bevor das nächste Foto erstellt wird.
 :::
 
-Das automatische Freistellen kann ebenfalls angehakt werden, um schon während er Aufnahmen die Bildhintergründe der
+Das automatische Freistellen kann ebenfalls angehakt werden, um schon während der Aufnahmen die Bildhintergründe der
 erstellten Fotos automatisch zu entfernen, und so den Gesamtprozess weiter zu beschleunigen.
 
 ## Medienübertragung
@@ -52,9 +52,9 @@ Ausstellungsstück ausgewählt werden:
 
 ![media creation model set details](/assets/create/manual/de/media-creation-model-set-details.png)
 
-Ein Klick auf den Übertragen-Button kopiert das ausgewählte 3D-Modell in die ``Media`` Übersicht des Objekts.
+Ein Klick auf den Übertragen-Button kopiert das ausgewählte 3D-Modell in die Medienübersicht des Objekts.
 
 ::: tip Bilderübertragung
 Derselbe Button kann in den Bilder-Set-Details verwendet werden, um aus den Aufnahmen geeignete Bilder für die Medienübersicht des Objekts auszuwählen.
-Dies kann verwendet werden, um schnell ein Objektbild für die Übersicht zu erzeugen, bevor später Detailreichere "Produktbilder" erstellt weden.
+Dies kann verwendet werden, um schnell ein Objektbild für die Übersicht zu erzeugen, bevor später Detailreichere "Produktbilder" erstellt werden.
 :::

@@ -120,12 +120,21 @@ public class ConfigurationService extends BaseService {
     }
 
     /**
-     * Returns whether the application is run in desktop-mode or server-mode.
+     * Returns whether the application is run in desktop-mode.
      *
      * @return {@code true} if the application is run in desktop-mode, {@code false} otherwise.
      */
-    public boolean isDesktopMode() {
+    public boolean isDesktopProfileEnabled() {
         return environment.matchesProfiles("desktop");
+    }
+
+    /**
+     * Returns whether the application is run in E2E-mode.
+     *
+     * @return {@code true} if the application is run in E2E-mode, {@code false} otherwise.
+     */
+    public boolean isE2eProfileEnabled() {
+        return environment.matchesProfiles("e2e");
     }
 
     /**

@@ -1,3 +1,8 @@
+export interface Profiles {
+  desktop: boolean;
+  e2e: boolean;
+}
+
 export interface SelectboxModel {
   label: string;
   value: string;

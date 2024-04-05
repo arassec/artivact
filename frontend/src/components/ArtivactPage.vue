@@ -1,6 +1,7 @@
 <template>
   <div v-if="pageContentRef && pageId">
     <q-btn
+      data-test="edit-page-button"
       round
       color="primary"
       icon="edit"
@@ -14,6 +15,7 @@
     <div class="col items-center" v-if="inEditMode">
       <div class="absolute-top-left q-ma-md">
         <q-btn
+          data-test="close-button"
           round
           color="primary"
           icon="close"
@@ -22,17 +24,22 @@
           <q-tooltip>{{ $t('Common.cancel') }}</q-tooltip>
         </q-btn>
         <q-btn
+          data-test="index-page-button"
           round
           color="primary"
           :icon="pageContentRef.indexPage ? 'check_circle' : 'circle'"
           class="main-nav-button"
           @click="pageContentRef.indexPage = !pageContentRef.indexPage">
-          <q-tooltip>{{ pageContentRef.indexPage ? $t('ArtivactPage.tooltip.indexPageYes') : $t('ArtivactPage.tooltip.indexPageNo') }}</q-tooltip>
+          <q-tooltip>{{
+              pageContentRef.indexPage ? $t('ArtivactPage.tooltip.indexPageYes') : $t('ArtivactPage.tooltip.indexPageNo')
+            }}
+          </q-tooltip>
         </q-btn>
       </div>
 
       <div class="absolute-top-right q-ma-md">
         <q-btn
+          data-test="add-widget-button"
           round
           color="primary"
           icon="add"
@@ -42,6 +49,7 @@
           <q-tooltip>{{ $t('ArtivactPage.label.addWidget') }}</q-tooltip>
         </q-btn>
         <q-btn
+          data-test="save-button"
           round
           color="primary"
           icon="save"
@@ -51,6 +59,12 @@
         </q-btn>
       </div>
     </div>
+
+    <artivact-content v-if="pageContentRef.widgets.length == 0 && pageId === 'INDEX'">
+      <label>
+        {{ $t('ArtivactPage.label.noIndexPage') }}
+      </label>
+    </artivact-content>
 
     <template
       v-for="(widgetData, index) of pageContentRef.widgets"
@@ -151,7 +165,7 @@
       />
     </template>
 
-    <artivact-dialog :dialog-model="showAddWidgetDialogRef" v-if="userdataStore.isUserOrAdmin && inEditMode">
+    <artivact-dialog :data-test="'add-widget-modal'" :dialog-model="showAddWidgetDialogRef" v-if="userdataStore.isUserOrAdmin && inEditMode">
       <template v-slot:header>
         {{ $t('ArtivactPage.dialog.heading') }}
       </template>
@@ -162,12 +176,21 @@
             {{ $t('ArtivactPage.dialog.description') }}
           </div>
           <q-select
+            data-test="add-widget-selection"
             outlined
             v-model="selectedWidgetTypeRef"
             :options="availableWidgetTypes"
             :option-label="(option) => $t(option)"
             :label="$t('ArtivactPage.dialog.type')"
-          />
+          >
+            <template v-slot:option="scope">
+              <q-item :data-test="'add-widget-selection-' + scope.opt" v-bind="scope.itemProps">
+                <q-item-section>
+                  <q-item-label>{{ $t(scope.opt) }}</q-item-label>
+                </q-item-section>
+              </q-item>
+            </template>
+          </q-select>
           <div class="q-mt-md" style="overflow-wrap: break-word">
             {{ $t(selectedWidgetTypeRef + '_DESCRIPTION') }}
           </div>
@@ -183,7 +206,7 @@
       </template>
 
       <template v-slot:approve>
-        <q-btn :label="$t('ArtivactPage.label.addWidget')" color="primary" @click="addWidget()"/>
+        <q-btn data-test="add-widget-modal-approve" :label="$t('ArtivactPage.label.addWidget')" color="primary" @click="addWidget()"/>
       </template>
     </artivact-dialog>
 
@@ -216,6 +239,7 @@ import ArtivactItemCarouselWidget from 'components/widgets/ArtivactItemCarouselW
 import ArtivactTextWidget from 'components/widgets/ArtivactTextWidget.vue';
 import ArtivactPageTitleWidget from 'components/widgets/ArtivactPageTitleWidget.vue';
 import ArtivactItemSearchWidget from 'components/widgets/ArtivactItemSearchWidget.vue';
+import ArtivactContent from 'components/ArtivactContent.vue';
 
 const props = defineProps({
   pageId: {
@@ -276,7 +300,7 @@ function addWidget() {
         value: i18n.t('ArtivactPage.label.textTitle'),
       } as TranslatableString,
       content: {
-        value: 'Text content',
+        value: i18n.t('ArtivactPage.label.textContent'),
       } as TranslatableString,
     } as TextWidgetData);
   } else if (selectedWidgetTypeRef.value === 'IMAGE_TEXT') {

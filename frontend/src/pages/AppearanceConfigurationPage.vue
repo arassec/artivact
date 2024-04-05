@@ -8,6 +8,7 @@
         @favicon-uploaded="loadAppearanceConfiguration"
       />
       <q-btn
+        data-test="appearance-configuration-page-save"
         :label="$t('save')"
         color="primary"
         class="q-mb-lg float-right"
@@ -106,6 +107,13 @@ function saveAppearanceConfiguration() {
         position: 'bottom',
         message: i18n.t('Common.messages.saving.success', { item: i18n.t('Common.items.configuration.appearance')}),
         icon: 'check',
+        attrs: {
+          'data-test': 'artivact-notify-success'
+        },
+        actions: [
+          { icon: 'close', color: 'white', round: true, flat: true, handler: () => { /* ... */ } }
+        ],
+        timeout: 15000
       });
     })
     .catch(() => {
@@ -113,7 +121,7 @@ function saveAppearanceConfiguration() {
         color: 'negative',
         position: 'bottom',
         message: i18n.t('Common.messages.saving.failed', { item: i18n.t('Common.items.configuration.appearance')}),
-        icon: 'report_problem',
+        icon: 'report_problem'
       });
     });
 }

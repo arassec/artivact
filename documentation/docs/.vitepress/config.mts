@@ -12,66 +12,65 @@ export default defineConfig({
 
         nav: [
             {text: 'Home', link: '/'},
-            {text: 'Create', link: '/create/introduction/about'},
-            {text: 'Present', link: '/present/about'},
-            {text: 'Experience', link: '/experience/about'},
-            {text: 'User Manual', link: '/user-manual/about'},
+            {text: 'Quick Start', link: '/quick-start/local-installation/introduction'},
+            {text: 'User Manual', link: '/user-manual/introduction/about'},
+            {text: 'Tutorials', link: '/tutorials/artivact-as-scanner/introduction'},
         ],
 
         sidebar: {
-            '/create/': [
+            '/quick-start/': [
                 {
-                    text: 'Introduction',
+                    text: 'Local Installation',
                     items: [
-                        {text: 'About', link: '/create/introduction/about'},
-                        {text: 'Installation', link: '/create/introduction/installation'},
-                        {text: 'Configuration', link: '/create/introduction/configuration'},
+                        {text: 'Introduction', link: '/quick-start/local-installation/introduction'},
+                        {text: 'Installation', link: '/quick-start/local-installation/installation'},
+                        {text: 'Configuration', link: '/quick-start/local-installation/configuration'},
                     ]
                 },
                 {
-                    text: 'User Manual',
+                    text: 'Server Installation',
                     items: [
-                        {text: 'Manual', link: '/create/manual/manual'},
-                        {text: 'Media Creation', link: '/create/manual/media-creation'},
-                        {text: 'Peripherals', link: '/create/manual/peripherals'},
+                        {text: 'Introduction', link: '/quick-start/server-installation/introduction'},
+                        {text: 'Installation', link: '/quick-start/server-installation/installation'},
+                        {text: 'Configuration', link: '/quick-start/server-installation/configuration'},
                     ]
                 },
                 {
-                    text: '3D Model Creation',
+                    text: 'Metaverse Installation',
                     items: [
-                        {text: 'About', link: '/create/models/about'},
-                        {text: 'Capturing Images', link: '/create/models/capturing-images'},
-                        {text: 'Artivact Turntable', link: '/create/models/artivact-turntable'},
-                        {text: 'Background Removal', link: '/create/models/background-removal'},
-                        {text: 'Model Creation', link: '/create/models/model-creation'},
-                        {text: 'Model Editing', link: '/create/models/model-editing'},
+                        {text: 'Introduction', link: '/quick-start/metaverse-installation/introduction'},
+                        {text: 'Installation', link: '/quick-start/metaverse-installation/installation'},
                     ]
-                }
-            ],
-            '/present/': [
-                {
-                    text: 'Introduction',
-                    items: [
-                        {text: 'About', link: '/present/about'},
-                        {text: 'Installation', link: '/present/installation'},
-                        {text: 'Configuration', link: '/present/configuration'},
-                        {text: 'User Manual', link: '/present/manual'},
-                    ]
-                }
-            ],
-            '/experience/': [
-                {
-                    text: 'Introduction',
-                    items: [
-                        {text: 'About', link: '/experience/about'},
-                    ]
-                }
+                },
             ],
             '/user-manual/': [
                 {
                     text: 'Introduction',
                     items: [
-                        {text: 'About', link: '/user-manual/about'},
+                        {text: 'About', link: '/user-manual/introduction/about'},
+                        {text: 'Changelog', link: '/user-manual/introduction/changelog'},
+                        {text: 'License', link: '/user-manual/introduction/license'},
+                    ]
+                },
+                {
+                    text: 'Content Management',
+                    items: [
+                        {text: 'Introduction', link: '/user-manual/content-management/introduction'},
+                        {text: 'Menus', link: '/user-manual/content-management/menus'},
+                        {text: 'Pages', link: '/user-manual/content-management/pages'},
+                    ]
+                },
+            ],
+            '/tutorials/': [
+                {
+                    text: 'Artivact as 3D-Scanner',
+                    items: [
+                        {text: 'Introduction', link: '/tutorials/artivact-as-scanner/introduction'},
+                        {text: 'Capturing Images', link: '/tutorials/artivact-as-scanner/capturing-images'},
+                        {text: 'Artivact Turntable', link: '/tutorials/artivact-as-scanner/artivact-turntable'},
+                        {text: 'Background Removal', link: '/tutorials/artivact-as-scanner/background-removal'},
+                        {text: 'Model Creation', link: '/tutorials/artivact-as-scanner/model-creation'},
+                        {text: 'Model Editing', link: '/tutorials/artivact-as-scanner/model-editing'},
                     ]
                 }
             ],
@@ -95,67 +94,66 @@ export default defineConfig({
             themeConfig: {
 
                 nav: [
-                    {text: 'Start', link: '/de/index'},
-                    {text: 'Erstelle', link: '/de/create/introduction/about'},
-                    {text: 'Präsentiere', link: '/de/present/about'},
-                    {text: 'Erlebe', link: '/de/experience/about'},
-                    {text: 'Benutzerhandbuch', link: '/de/user-manual/about'},
+                    {text: 'Start', link: '/de/'},
+                    {text: 'Schnelleinstieg', link: '/de/quick-start/local-installation/introduction'},
+                    {text: 'Benutzerhandbuch', link: '/de/user-manual/introduction/about'},
+                    {text: 'Tutorials', link: '/de/tutorials/artivact-as-scanner/introduction'},
                 ],
 
                 sidebar: {
-                    '/de/create/': [
+                    '/de/quick-start/': [
                         {
-                            text: 'Einführung',
+                            text: 'Lokale Installation',
                             items: [
-                                {text: 'Start', link: '/de/create/introduction/about'},
-                                {text: 'Installation', link: '/de/create/introduction/installation'},
-                                {text: 'Konfiguration', link: '/de/create/introduction/configuration'},
+                                {text: 'Einführung', link: '/de/quick-start/local-installation/introduction'},
+                                {text: 'Installation', link: '/de/quick-start/local-installation/installation'},
+                                {text: 'Konfiguration', link: '/de/quick-start/local-installation/configuration'},
                             ]
                         },
                         {
-                            text: 'Benutzerhandbuch',
+                            text: 'Server Installation',
                             items: [
-                                {text: 'Start', link: '/de/create/manual/manual'},
-                                {text: 'Gestaltung', link: '/de/create/manual/media-creation'},
-                                {text: 'Peripheriegeräte', link: '/de/create/manual/peripherals'},
+                                {text: 'Einführung', link: '/de/quick-start/server-installation/introduction'},
+                                {text: 'Installation', link: '/de/quick-start/server-installation/installation'},
+                                {text: 'Konfiguration', link: '/de/quick-start/server-installation/configuration'},
                             ]
                         },
                         {
-                            text: '3D-Modelle Erstellen',
+                            text: 'Metaverse Installation',
                             items: [
-                                {text: 'Start', link: '/de/create/models/about'},
-                                {text: 'Fotos Aufnehmen', link: '/de/create/models/capturing-images'},
-                                {text: 'Artivact Drehteller', link: '/de/create/models/artivact-turntable'},
-                                {text: 'Freistellen', link: '/de/create/models/background-removal'},
-                                {text: '3D-Modell Erzeugung', link: '/de/create/models/model-creation'},
-                                {text: '3D-Modell Bearbeitung', link: '/de/create/models/model-editing'},
+                                {text: 'Einführung', link: '/de/quick-start/metaverse-installation/introduction'},
+                                {text: 'Installation', link: '/de/quick-start/metaverse-installation/installation'},
                             ]
-                        }
-                    ],
-                    '/de/present/': [
-                        {
-                            text: 'Einführung',
-                            items: [
-                                {text: 'Über', link: '/de/present/about'},
-                                {text: 'Installation', link: '/de/present/installation'},
-                                {text: 'Konfiguration', link: '/de/present/configuration'},
-                                {text: 'Benutzerhandbuch', link: '/de/present/manual'},
-                            ]
-                        }
-                    ],
-                    '/de/experience/': [
-                        {
-                            text: 'Einführung',
-                            items: [
-                                {text: 'Über', link: '/de/experience/about'},
-                            ]
-                        }
+                        },
                     ],
                     '/de/user-manual/': [
                         {
                             text: 'Einführung',
                             items: [
-                                {text: 'Über', link: '/de/user-manual/about'},
+                                {text: 'Über Artivact', link: '/de/user-manual/introduction/about'},
+                                {text: 'Changelog', link: '/de/user-manual/introduction/changelog'},
+                                {text: 'Lizenz', link: '/de/user-manual/introduction/license'},
+                            ]
+                        },
+                        {
+                            text: 'Content-Management',
+                            items: [
+                                {text: 'Einführung', link: '/de/user-manual/content-management/introduction'},
+                                {text: 'Menus', link: '/de/user-manual/content-management/menus'},
+                                {text: 'Seiten', link: '/de/user-manual/content-management/pages'},
+                            ]
+                        },
+                    ],
+                    '/de/tutorials/': [
+                        {
+                            text: 'Artivact als 3D-Scanner',
+                            items: [
+                                {text: 'Einführung', link: '/de/tutorials/artivact-as-scanner/introduction'},
+                                {text: 'Fotos Aufnehmen', link: '/de/tutorials/artivact-as-scanner/capturing-images'},
+                                {text: 'Artivact Drehteller', link: '/de/tutorials/artivact-as-scanner/artivact-turntable'},
+                                {text: 'Fotos Freistellen', link: '/de/tutorials/artivact-as-scanner/background-removal'},
+                                {text: '3D-Modell Erzeugung', link: '/de/tutorials/artivact-as-scanner/model-creation'},
+                                {text: '3D-Modell Bearbeitung', link: '/de/tutorials/artivact-as-scanner/model-editing'},
                             ]
                         }
                     ],

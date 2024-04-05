@@ -1,8 +1,9 @@
 <template>
-  <div class="row gt-sm">
+  <div class="row gt-sm" data-test="artivact-settings-bar">
 
     <!-- LOCALE SELECTION -->
     <q-btn
+      data-test="locale-selection-button"
       flat
       color="white"
       icon="language"
@@ -16,6 +17,7 @@
       >
         <q-list>
           <q-item
+            data-test="artivact-locale-selection-default"
             clickable
             v-close-popup
             @click="changeLocale(null)"
@@ -26,6 +28,7 @@
           </q-item>
           <template v-for="locale in localeStore.locales" :key="locale">
             <q-item
+              :data-test="'artivact-locale-selection-' + locale"
               clickable
               v-close-popup
               @click="changeLocale(locale)"
@@ -41,6 +44,7 @@
 
     <!-- ITEM SETTINGS-->
     <q-btn
+      data-test="item-settings-button"
       flat
       color="white"
       icon="view_in_ar"
@@ -95,14 +99,15 @@
     </q-btn>
 
     <!-- EXHIBITION CONFIGURATION -->
-    <router-link to="/administration/configuration/exhibitions">
+    <router-link data-test="exhibitions-button"
+                 to="/administration/configuration/exhibitions">
       <q-btn flat color="white" icon="collections" v-if="userdataStore.isUserOrAdmin">
         <q-tooltip>{{ $t('Common.items.exhibitions') }}</q-tooltip>
       </q-btn>
     </router-link>
 
     <!-- SYSTEM SETTINGS -->
-    <q-btn flat color="white" icon="settings" v-if="userdataStore.isAdmin">
+    <q-btn data-test="system-settings-button" flat color="white" icon="settings" v-if="userdataStore.isAdmin">
       <q-tooltip v-if="!systemMenuOpen">{{ $t('ArtivactSettingsBar.tooltip.systemSettings') }}</q-tooltip>
       <q-menu
         anchor="bottom middle"
@@ -112,6 +117,7 @@
       >
         <q-list>
           <q-item
+            data-test="artivact-system-settings-properties"
             clickable
             v-close-popup
             @click="gotoPropertiesConfigurationPage"
@@ -130,6 +136,7 @@
             </q-item-section>
           </q-item>
           <q-item
+            data-test="artivact-system-settings-tags"
             clickable
             v-close-popup
             @click="gotoTagsConfigurationPage"
@@ -148,10 +155,11 @@
             </q-item-section>
           </q-item>
           <q-item
+            data-test="artivact-system-settings-license"
             clickable
             v-close-popup
             @click="gotoLicenseConfigurationPage"
-            v-if="userdataStore.isAdmin && !desktopStore.isDesktopModeEnabled"
+            v-if="userdataStore.isAdmin && profilesStore.isServerModeEnabled"
             class="menu-entry"
           >
             <q-item-section
@@ -166,6 +174,7 @@
             </q-item-section>
           </q-item>
           <q-item
+            data-test="artivact-system-settings-appearance"
             clickable
             v-close-popup
             @click="gotoAppearanceConfigurationPage"
@@ -185,10 +194,11 @@
             </q-item-section>
           </q-item>
           <q-item
+            data-test="artivact-system-settings-peripherals"
             clickable
             v-close-popup
             @click="gotoPeripheralsConfigurationPage"
-            v-if="userdataStore.isAdmin && desktopStore.isDesktopModeEnabled"
+            v-if="userdataStore.isAdmin && profilesStore.isDesktopModeEnabled"
             class="menu-entry"
           >
             <q-item-section
@@ -203,10 +213,11 @@
             </q-item-section>
           </q-item>
           <q-item
+            data-test="artivact-system-settings-exchange"
             clickable
             v-close-popup
             @click="gotoExchangeConfigurationPage"
-            v-if="userdataStore.isAdmin && desktopStore.isDesktopModeEnabled"
+            v-if="userdataStore.isAdmin && profilesStore.isDesktopModeEnabled"
             class="menu-entry"
           >
             <q-item-section
@@ -221,6 +232,7 @@
             </q-item-section>
           </q-item>
           <q-item
+            data-test="artivact-system-settings-search"
             clickable
             v-close-popup
             @click="gotoSearchConfigurationPage"
@@ -244,10 +256,11 @@
 
     <!-- ACCOUNT SETTINGS -->
     <q-btn
+      data-test="account-settings-button"
       flat
       color="white"
       icon="manage_accounts"
-      v-if="userdataStore.authenticated && !desktopStore.isDesktopModeEnabled"
+      v-if="userdataStore.authenticated && profilesStore.isServerModeEnabled"
     >
       <q-tooltip v-if="!accountsMenuOpen">{{ $t('ArtivactSettingsBar.tooltip.account') }}</q-tooltip>
       <q-menu
@@ -297,7 +310,8 @@
     </q-btn>
 
     <!-- DOCUMENTATION -->
-    <a href="/artivact/index.html" target="_blank">
+    <a data-test="documentation-button"
+       href="/artivact/index.html" target="_blank">
       <q-btn flat color="white" icon="help" v-if="userdataStore.authenticated">
         <q-tooltip>{{ $t('ArtivactSettingsBar.tooltip.documentation') }}</q-tooltip>
       </q-btn>
@@ -463,7 +477,7 @@
                 clickable
                 v-close-popup
                 @click="gotoLicenseConfigurationPage"
-                v-if="userdataStore.isAdmin && !desktopStore.isDesktopModeEnabled"
+                v-if="userdataStore.isAdmin && profilesStore.isServerModeEnabled"
                 class="menu-entry"
               >
                 <q-item-section
@@ -501,7 +515,7 @@
                 clickable
                 v-close-popup
                 @click="gotoExchangeConfigurationPage"
-                v-if="userdataStore.isAdmin && desktopStore.isDesktopModeEnabled"
+                v-if="userdataStore.isAdmin && profilesStore.isDesktopModeEnabled"
                 class="menu-entry"
               >
                 <q-item-section
@@ -521,7 +535,7 @@
         </q-item>
 
         <!-- ACCOUNT SETTINGS -->
-        <q-item clickable class="menu-entry" v-if="userdataStore.authenticated && !desktopStore.isDesktopModeEnabled">
+        <q-item clickable class="menu-entry" v-if="userdataStore.authenticated && profilesStore.isServerModeEnabled">
           <q-item-section>
             <label class="menu-label">
               <q-icon name="manage_accounts" size="sm" class="q-mr-sm"/>
@@ -573,15 +587,15 @@
 
         <!-- DOCUMENTATION -->
         <a href="/artivact/index.html" target="_blank" class="nav-link">
-        <q-item clickable v-close-popup
-                class="menu-entry" v-if="userdataStore.authenticated">
-          <q-item-section>
-            <label class="menu-label">
-              <q-icon name="help" size="sm" class="q-mr-sm"/>
-              <label>{{ $t('ArtivactSettingsBar.documentation') }}</label>
-            </label>
-          </q-item-section>
-        </q-item>
+          <q-item clickable v-close-popup
+                  class="menu-entry" v-if="userdataStore.authenticated">
+            <q-item-section>
+              <label class="menu-label">
+                <q-icon name="help" size="sm" class="q-mr-sm"/>
+                <label>{{ $t('ArtivactSettingsBar.documentation') }}</label>
+              </label>
+            </q-item-section>
+          </q-item>
         </a>
 
       </q-list>
@@ -597,7 +611,7 @@ import {api} from 'boot/axios';
 import {useRouter} from 'vue-router';
 import {useQuasar} from 'quasar';
 import {useI18n} from 'vue-i18n';
-import {useDesktopStore} from 'stores/desktop';
+import {useProfilesStore} from 'stores/profiles';
 
 const {locale} = useI18n({useScope: 'global'});
 
@@ -607,7 +621,7 @@ const i18n = useI18n();
 
 const userdataStore = useUserdataStore();
 const localeStore = useLocaleStore();
-const desktopStore = useDesktopStore();
+const profilesStore = useProfilesStore();
 
 const accountsMenuOpen = ref(false);
 const itemMenuOpen = ref(false);
@@ -666,7 +680,7 @@ function createItem() {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: i18n.t('Common.messages.creating.success', { item: i18n.t('Common.items.item')}),
+        message: i18n.t('Common.messages.creating.success', {item: i18n.t('Common.items.item')}),
         icon: 'check',
       });
     })
@@ -674,7 +688,7 @@ function createItem() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.creating.failed', { item: i18n.t('Common.items.item')}),
+        message: i18n.t('Common.messages.creating.failed', {item: i18n.t('Common.items.item')}),
         icon: 'report_problem',
       });
     });

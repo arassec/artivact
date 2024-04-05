@@ -14,7 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 /**
  * Spring-Security configuration for server-mode.
  */
-@Profile("!desktop")
+@Profile("!desktop & !e2e")
 @Configuration
 public class ArtivactServerSecurityConfiguration {
 

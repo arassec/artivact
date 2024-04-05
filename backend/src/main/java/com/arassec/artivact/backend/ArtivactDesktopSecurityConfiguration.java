@@ -12,7 +12,7 @@ import org.springframework.security.web.SecurityFilterChain;
 /**
  * Spring-Security configuration for desktop-mode.
  */
-@Profile("desktop")
+@Profile({"desktop", "e2e"})
 @Configuration
 public class ArtivactDesktopSecurityConfiguration {
 
@@ -36,6 +36,12 @@ public class ArtivactDesktopSecurityConfiguration {
                         .failureHandler((request, response, exception) -> response.setStatus(HttpStatus.UNAUTHORIZED.value()))
                         .permitAll()
                 )
+                .logout(httpSecurityLogoutConfigurer -> httpSecurityLogoutConfigurer
+                        .logoutUrl("/api/auth/logout")
+                        .logoutSuccessHandler((request, response, authentication) -> response.setStatus(HttpStatus.OK.value()))
+                        .permitAll()
+                )
+
                 .csrf(AbstractHttpConfigurer::disable)
                 .headers(httpSecurityHeadersConfigurer -> httpSecurityHeadersConfigurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
                 .build();

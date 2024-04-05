@@ -98,4 +98,118 @@
         </plugins>
     </build>
 
+
+    <profiles>
+
+        <!-- During release: generate the changelog -->
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+
+                    <plugin>
+                        <groupId>se.bjurr.gitchangelog</groupId>
+                        <artifactId>git-changelog-maven-plugin</artifactId>
+                        <version>2.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>GenerateGitChangelog</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>git-changelog</goal>
+                                </goals>
+                                <configuration>
+                                    <file>docs/user-manual/introduction/changelog.md</file>
+                                    <fromRevision>v0.2.0</fromRevision>
+                                    <templateContent>
+                                        <![CDATA[
+# Changelog
+
+{{#tags}}
+{{#ifReleaseTag .}}
+## [{{name}}](https://github.com/arassec/artivact/releases/tag/{{name}}) ({{tagDate .}})
+
+  {{#ifContainsBreaking commits}}
+### Breaking changes
+
+    {{#commits}}
+      {{#ifCommitBreaking .}}
+- {{#eachCommitScope .}} **{{.}}**:{{/eachCommitScope}} {{{commitDescription .}}} ([{{hash}}](https://github.com/{{ownerName}}/{{repoName}}/commit/{{hash}}))
+      {{/ifCommitBreaking}}
+    {{/commits}}
+  {{/ifContainsBreaking}}
+
+
+  {{#ifContainsType commits type='feat'}}
+### Features
+
+    {{#commits}}
+      {{#ifCommitType . type = 'feat'}}
+- {{#eachCommitScope .}} **{{.}}**:{{/eachCommitScope}} {{{commitDescription .}}} ([{{hash}}](https://github.com/{{ownerName}}/{{repoName}}/commit/{{hash}}))
+      {{/ifCommitType}}
+    {{/commits}}
+  {{/ifContainsType}}
+
+
+  {{#ifContainsType commits type='fix'}}
+### Bug Fixes
+
+    {{#commits}}
+      {{#ifCommitType . type='fix'}}
+- {{#eachCommitScope .}} **{{.}}**:{{/eachCommitScope}} {{{commitDescription .}}} ([{{hash}}](https://github.com/{{ownerName}}/{{repoName}}/commit/{{hash}}))
+      {{/ifCommitType}}
+    {{/commits}}
+  {{/ifContainsType}}
+
+
+  {{#ifContainsType commits type='chore'}}
+### Chores
+
+    {{#commits}}
+      {{#ifCommitType . type='chore'}}
+- {{#eachCommitScope .}} {{.}}:{{/eachCommitScope}} {{{commitDescription .}}} ([{{hash}}](https://github.com/{{ownerName}}/{{repoName}}/commit/{{hash}}))
+      {{/ifCommitType}}
+    {{/commits}}
+  {{/ifContainsType}}
+
+{{/ifReleaseTag}}
+{{/tags}}
+]]>
+                                    </templateContent>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>3.3.1</version>
+                        <executions>
+                            <execution>
+                                <id>Copy_Changelog_DE</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>docs/de/user-manual/introduction/</outputDirectory>
+                                    <overwrite>true</overwrite>
+                                    <resources>
+                                        <resource>
+                                            <directory>docs/user-manual/introduction/</directory>
+                                            <includes>
+                                                <include>changelog.md</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
 </project>

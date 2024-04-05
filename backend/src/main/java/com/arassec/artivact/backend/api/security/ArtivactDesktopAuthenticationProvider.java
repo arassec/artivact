@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
  * This is required to auto-login users in desktop mode, i.e. disable user management completely.
  */
 @Slf4j
-@Profile("desktop")
+@Profile({"desktop", "e2e"})
 @Component
 @RequiredArgsConstructor
 public class ArtivactDesktopAuthenticationProvider implements AuthenticationProvider {

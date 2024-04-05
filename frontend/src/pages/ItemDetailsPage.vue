@@ -80,7 +80,7 @@
             v-for="(tag, index) in itemDataDetailsRef.tags"
             :key="index"
           >
-            <template v-if="tag.url && !desktopStore.isDesktopModeEnabled">
+            <template v-if="tag.url && profilesStore.isServerModeEnabled">
               <a :href="tag.url" class="tag-link">{{
                   tag.translatedValue
                 }}</a>
@@ -162,12 +162,12 @@ import ArtivactContent from 'components/ArtivactContent.vue';
 import {useBreadcrumbsStore} from 'stores/breadcrumbs';
 import {translate} from 'components/artivact-utils';
 import ArtivactPropertyCategoryViewer from 'components/ArtivactPropertyCategoryViewer.vue';
-import {useDesktopStore} from 'stores/desktop';
 import ArtivactOperationInProgressDialog from 'components/ArtivactOperationInProgressDialog.vue';
 import {OperationProgress} from 'components/artivact-models';
 import ArtivactDialog from 'components/ArtivactDialog.vue';
 import {useI18n} from 'vue-i18n';
 import ArtivactItemMediaCarousel from 'components/ArtivactItemMediaCarousel.vue';
+import {useProfilesStore} from 'stores/profiles';
 
 const quasar = useQuasar();
 const route = useRoute();
@@ -176,7 +176,7 @@ const i18n = useI18n();
 
 const userdataStore = useUserdataStore();
 const breadcrumbsStore = useBreadcrumbsStore();
-const desktopStore = useDesktopStore();
+const profilesStore = useProfilesStore();
 
 const itemDataDetailsRef = ref();
 const propertiesDataRef = ref();

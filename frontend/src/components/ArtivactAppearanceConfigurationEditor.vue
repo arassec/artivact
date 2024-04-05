@@ -6,8 +6,9 @@
 
     <q-list bordered class="rounded-borders q-mb-lg">
       <q-expansion-item
+        data-test="appearance-config-application-title"
         group="appearanceConfig"
-        v-if="!desktopStore.isDesktopModeEnabled"
+        v-if="profilesStore.isServerModeEnabled"
         header-class="bg-primary text-white"
         class="list-entry"
         expand-separator
@@ -33,6 +34,7 @@
       </q-expansion-item>
 
       <q-expansion-item
+        data-test="appearance-config-locales"
         group="appearanceConfig"
         header-class="bg-primary text-white"
         class="list-entry"
@@ -50,6 +52,7 @@
               {{ $t('ArtivactAppearanceConfigurationEditor.list.locales.description') }}
             </div>
             <q-input
+              data-test="appearance-config-locales-input"
               outlined
               :label="$t('ArtivactAppearanceConfigurationEditor.list.locales.label')"
               v-model="appearanceConfigurationRef.availableLocales"
@@ -59,12 +62,13 @@
       </q-expansion-item>
 
       <q-expansion-item
+        data-test="appearance-config-language"
         group="appearanceConfig"
         header-class="bg-primary text-white"
         class="list-entry"
         expand-separator
         expand-icon-class="text-white"
-        v-if="desktopStore.isDesktopModeEnabled"
+        v-if="profilesStore.isDesktopModeEnabled"
       >
         <template v-slot:header>
           <q-item-section class="list-entry-label">
@@ -77,15 +81,25 @@
               {{ $t('ArtivactAppearanceConfigurationEditor.list.applicationLocale.description') }}
             </div>
             <q-select
+              data-test="appearance-config-language-selection"
               outlined
               emit-value
               v-model="appearanceConfigurationRef.applicationLocale"
-              :options="availableApplicationLocaleOptions"/>
+              :options="availableApplicationLocaleOptions">
+              <template v-slot:option="scope">
+                <q-item :data-test="'appearance-config-language-selection-' + scope.opt.value" v-bind="scope.itemProps">
+                  <q-item-section>
+                    <q-item-label>{{ scope.opt.label }}</q-item-label>
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
           </q-card-section>
         </q-card>
       </q-expansion-item>
 
       <q-expansion-item
+        data-test="appearance-config-color-theme"
         group="appearanceConfig"
         header-class="bg-primary text-white"
         class="list-entry"
@@ -172,8 +186,9 @@
       </q-expansion-item>
 
       <q-expansion-item
+        data-test="appearance-config-favicon"
         group="appearanceConfig"
-        v-if="!desktopStore.isDesktopModeEnabled"
+        v-if="profilesStore.isServerModeEnabled"
         header-class="bg-primary text-white"
         class="list-entry"
         expand-separator
@@ -238,8 +253,8 @@ import {PropType, toRef} from 'vue';
 import {AppearanceConfiguration, SelectboxModel} from 'components/artivact-models';
 import ArtivactThemeColorEditor from 'components/ArtivactThemeColorEditor.vue';
 import {QUploader, useQuasar} from 'quasar';
-import {useDesktopStore} from 'stores/desktop';
 import {useI18n} from 'vue-i18n';
+import {useProfilesStore} from 'stores/profiles';
 
 const props = defineProps({
   appearanceConfiguration: {
@@ -251,7 +266,7 @@ const props = defineProps({
 const quasar = useQuasar();
 const i18n = useI18n();
 
-const desktopStore = useDesktopStore();
+const profilesStore = useProfilesStore();
 
 const appearanceConfigurationRef = toRef(props, 'appearanceConfiguration');
 

@@ -48,7 +48,7 @@
           <q-tab name="media" icon="image" :label="$t('ItemEditPage.tab.media')" class="nav-tab"/>
           <q-tab name="properties" icon="library_books" :label="$t('ItemEditPage.tab.properties')" class="nav-tab"/>
           <q-tab name="creation" icon="auto_awesome" :label="$t('ItemEditPage.tab.creation')" class="nav-tab"
-                 v-if="desktopStore.isDesktopModeEnabled"/>
+                 v-if="profilesStore.isDesktopModeEnabled"/>
         </q-tabs>
 
         <!-- BASE DATA -->
@@ -187,7 +187,7 @@
         </div>
 
         <!-- MEDIA-CREATION -->
-        <div v-if="desktopStore.isDesktopModeEnabled" v-show="tabRef == 'creation'">
+        <div v-if="profilesStore.isDesktopModeEnabled" v-show="tabRef == 'creation'">
           <h2 class="av-text-h2">{{ $t('ItemEditPage.label.images') }}</h2>
           <div class="q-mb-xl">
             <artivact-item-image-set-editor ref="imageSetEditorRef"
@@ -219,13 +219,13 @@ import ArtivactPropertyCategoryEditor from 'components/ArtivactPropertyCategoryE
 import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
 import {useBreadcrumbsStore} from 'stores/breadcrumbs';
 import {useUserdataStore} from 'stores/userdata';
-import {useDesktopStore} from 'stores/desktop';
 import ArtivactDialog from 'components/ArtivactDialog.vue';
 import {useI18n} from 'vue-i18n';
 import ArtivactItemModelEditor from 'components/ArtivactItemModelEditor.vue';
 import ArtivactItemImageEditor from 'components/ArtivactItemImageEditor.vue';
 import ArtivactItemImageSetEditor from 'components/ArtivactItemImageSetEditor.vue';
 import ArtivactItemModelSetEditor from 'components/ArtivactItemModelSetEditor.vue';
+import {useProfilesStore} from 'stores/profiles';
 
 const quasar = useQuasar();
 const route = useRoute();
@@ -234,7 +234,7 @@ const i18n = useI18n();
 const localeStore = useLocaleStore();
 const breadcrumbsStore = useBreadcrumbsStore();
 const userdataStore = useUserdataStore();
-const desktopStore = useDesktopStore();
+const profilesStore = useProfilesStore();
 
 const itemDataRef = ref<ItemDetails>();
 const propertiesDataRef = ref();

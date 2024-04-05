@@ -7,6 +7,7 @@ import com.arassec.artivact.backend.service.model.account.Account;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -45,6 +46,12 @@ public class AccountService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
 
     /**
+     * Initial administrator password. Can be set per JVM parameter for integration testing.
+     */
+    @Value("${artivact.initial.password:}")
+    private String initialPassword;
+
+    /**
      * Initializes the application by creating an initial user account if none is available. The password is printed
      * to the application's log.
      */
@@ -52,7 +59,9 @@ public class AccountService implements UserDetailsService {
     public void initialize() {
         if (!accountEntityRepository.findAll().iterator().hasNext()) {
 
-            String initialPassword = UUID.randomUUID().toString().split("-")[0];
+            if (!StringUtils.hasText(initialPassword)) {
+                initialPassword = UUID.randomUUID().toString().split("-")[0];
+            }
 
             create(Account.builder()
                     .username(INITIAL_USERNAME)

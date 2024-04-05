@@ -8,7 +8,7 @@
   >
     <template v-slot:widget-content>
       <artivact-content>
-        <div class="column">
+        <div data-test="text-widget-editor-heading" class="column">
           <h1 class="av-label-h1" v-if="widgetDataRef.heading">
             {{ translate(widgetDataRef.heading) }}
           </h1>

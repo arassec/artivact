@@ -144,18 +144,7 @@ public class PageService extends BaseFileService {
     @RestrictResult
     public PageContent loadIndexPageContent() {
         Optional<PageEntity> indexPageOptional = pageEntityRepository.findFirstByIndexPage(true);
-        if (indexPageOptional.isPresent()) {
-            return convertPageEntity(indexPageOptional.get());
-        } else {
-            TranslatableString fallbackText = new TranslatableString();
-            fallbackText.setValue("No index page has been defined yet. "
-                    + "Create a menu, add a page to it and edit it to be the index page.");
-            TextWidget fallbackTextWidget = new TextWidget();
-            fallbackTextWidget.setContent(fallbackText);
-            PageContent fallbackIndexPage = new PageContent();
-            fallbackIndexPage.getWidgets().add(fallbackTextWidget);
-            return fallbackIndexPage;
-        }
+        return indexPageOptional.map(this::convertPageEntity).orElseGet(PageContent::new);
     }
 
     /**

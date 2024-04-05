@@ -422,9 +422,11 @@ export default {
       indexPageNo: 'Dies ist NICHT die Hauptseite',
     },
     label: {
+      noIndexPage: 'Es wurde noch keine Index-Seite definiert. Erstellen Sie ein Menu, fügen Sie eine Seite hinzu und konfigurieren Sie diese als Index-Seite.',
       addWidget: 'Widget hinzufügen',
       pageTitle: 'Seitentitel',
       textTitle: 'Texttitel',
+      textContent: 'Textinhalt',
       text: 'Text',
       infoBoxTitle: 'Info-Box Titel',
       infoBoxContent: 'Info-Box Inhalt',
@@ -736,6 +738,9 @@ export default {
 
   WidgetTemplate: {
     tooltip: {
+      edit: 'Rechtsklick zum Bearbeiten des Widgets'
+    },
+    label: {
       edit: 'Widget bearbeiten',
       close: 'Widget Editor schließen',
       moveUp: 'Widget nach oben bewegen',
