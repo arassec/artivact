@@ -1,6 +1,7 @@
 <template>
 
   <q-btn
+    data-test="item-creation-camera-button"
     text-color="primary"
     class="q-mr-md"
     round

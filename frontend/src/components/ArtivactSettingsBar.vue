@@ -59,6 +59,7 @@
       >
         <q-list>
           <q-item
+            data-test="create-item-button"
             clickable
             v-close-popup
             @click="createItem"
@@ -77,6 +78,7 @@
             </q-item-section>
           </q-item>
           <q-item
+            data-test="import-items-button"
             clickable
             v-close-popup
             @click="gotoItemImportPage"

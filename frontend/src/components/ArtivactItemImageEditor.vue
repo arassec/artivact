@@ -1,6 +1,7 @@
 <template>
   <div>
     <q-btn
+      data-test="item-media-images-folder-button"
       v-if="profilesStore.isDesktopModeEnabled"
       text-color="primary"
       class="q-mr-md"
@@ -12,6 +13,7 @@
       <q-tooltip>{{ $t('ItemImageEditor.tooltip.open') }}</q-tooltip>
     </q-btn>
     <q-btn
+      data-test="item-media-images-upload-button"
       text-color="primary"
       round
       dense

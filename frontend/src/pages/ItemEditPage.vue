@@ -6,6 +6,7 @@
         <div class="absolute-top-left q-ma-md">
           <router-link :to="'/item/' + itemDataRef.id">
             <q-btn
+              data-test="close-button"
               round
               color="primary"
               icon="close"
@@ -19,6 +20,7 @@
         <div class="absolute-top-right q-ma-md">
           <q-form :action="'/api/exchange/item/' + itemDataRef.id + '/export'" method="get">
             <q-btn
+              data-test="download-button"
               round
               color="primary"
               icon="download"
@@ -26,7 +28,9 @@
               class="q-mr-sm main-nav-button">
               <q-tooltip>{{ $t('ItemEditPage.button.tooltip.download') }}</q-tooltip>
             </q-btn>
-            <q-btn :disable="tabRef == 'creation'"
+            <q-btn
+              data-test="save-button"
+              :disable="tabRef == 'creation'"
                    round
                    color="primary"
                    icon="save"
@@ -41,13 +45,13 @@
 
       <div class="col q-mt-xl lt-md"/> <!-- Space on mobile resolution -->
 
-      <div class="col items-center">
+      <div data-test="edit-item-contents" class="col items-center">
 
-        <q-tabs v-model="tabRef" class="q-mb-lg">
-          <q-tab name="base" icon="text_snippet" :label="$t('ItemEditPage.tab.base')" class="nav-tab"/>
-          <q-tab name="media" icon="image" :label="$t('ItemEditPage.tab.media')" class="nav-tab"/>
-          <q-tab name="properties" icon="library_books" :label="$t('ItemEditPage.tab.properties')" class="nav-tab"/>
-          <q-tab name="creation" icon="auto_awesome" :label="$t('ItemEditPage.tab.creation')" class="nav-tab"
+        <q-tabs data-test="edit-item-tabs" v-model="tabRef" class="q-mb-lg">
+          <q-tab data-test="edit-item-base-tab" name="base" icon="text_snippet" :label="$t('ItemEditPage.tab.base')" class="nav-tab"/>
+          <q-tab data-test="edit-item-media-tab" name="media" icon="image" :label="$t('ItemEditPage.tab.media')" class="nav-tab"/>
+          <q-tab data-test="edit-item-properties-tab" name="properties" icon="library_books" :label="$t('ItemEditPage.tab.properties')" class="nav-tab"/>
+          <q-tab data-test="edit-item-creation-tab" name="creation" icon="auto_awesome" :label="$t('ItemEditPage.tab.creation')" class="nav-tab"
                  v-if="profilesStore.isDesktopModeEnabled"/>
         </q-tabs>
 

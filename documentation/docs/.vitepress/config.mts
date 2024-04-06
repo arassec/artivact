@@ -60,6 +60,14 @@ export default defineConfig({
                         {text: 'Pages', link: '/user-manual/content-management/pages'},
                     ]
                 },
+                {
+                    text: 'Item Management',
+                    items: [
+                        {text: 'Create Items', link: '/user-manual/item-management/create-items'},
+                        {text: 'Item Editing', link: '/user-manual/item-management/item-editing'},
+                        {text: 'Item Details', link: '/user-manual/item-management/item-details'},
+                    ]
+                },
             ],
             '/tutorials/': [
                 {
@@ -141,6 +149,14 @@ export default defineConfig({
                                 {text: 'Einführung', link: '/de/user-manual/content-management/introduction'},
                                 {text: 'Menus', link: '/de/user-manual/content-management/menus'},
                                 {text: 'Seiten', link: '/de/user-manual/content-management/pages'},
+                            ]
+                        },
+                        {
+                            text: 'Sammlungsstücke Verwalten',
+                            items: [
+                                {text: 'Erstellen', link: '/de/user-manual/item-management/create-items'},
+                                {text: 'Bearbeiten', link: '/de/user-manual/item-management/item-editing'},
+                                {text: 'Anzeigen', link: '/de/user-manual/item-management/item-details'},
                             ]
                         },
                     ],

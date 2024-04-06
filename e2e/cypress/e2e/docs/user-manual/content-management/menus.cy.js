@@ -1,6 +1,6 @@
 import {createMenu, createMenuEntry, deleteMenu} from '../../../../support/menu-utils';
 
-describe('User Manual -> Content Management -> Menu Management', () => {
+describe('User Manual -> Content Management -> Menus', () => {
 
     Cypress.env('locales').forEach((locale) => {
 

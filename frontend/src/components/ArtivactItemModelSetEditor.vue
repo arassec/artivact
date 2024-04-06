@@ -1,5 +1,6 @@
 <template>
   <q-btn
+    data-test="item-creation-create-model-button"
     text-color="primary"
     class="q-mr-md"
     round
