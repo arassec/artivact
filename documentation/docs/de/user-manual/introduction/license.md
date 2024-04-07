@@ -1,6 +1,6 @@
-# Lizenz
+# License
 
-Artivact wird unter der MIT-Lizenz veröffentlicht:
+Artivact is provided under the MIT license:
 
 ```
 MIT License

@@ -6,7 +6,7 @@ Artivact is written in Java using the popular open source [Spring framework](htt
 As such, the application is provided as self-contained JAR file.
 
 The latest release can be downloaded from the
-project's [Github page](https://github.com/arassec/artivact/releases/latest).
+project's [GitHub page](https://github.com/arassec/artivact/releases/latest).
 
 The file to download contains 'server' in its name, e.g. ``artivact-server-v0.0.0.jar``
 

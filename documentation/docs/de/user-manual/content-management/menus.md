@@ -42,9 +42,9 @@ When right-clicking on an existing menu entry, a context menu opens
 
 which offers the following options:
 
-| Option            | Description                                                                             |
-|:------------------|:----------------------------------------------------------------------------------------|
-| Edit Menu Entry   | Opens the menu entry dialog and lets you change the menu entrie's name or restrictions. |
-| Delete Menu Entry | Deletes the menu entry and its associated page!                                         |
-| Move Up           | Moves the menu entry one step up.                                                       |
-| Move Down         | Moves the menu one step down.                                                           |
+| Option            | Description                                                                            |
+|:------------------|:---------------------------------------------------------------------------------------|
+| Edit Menu Entry   | Opens the menu entry dialog and lets you change the menu entry's name or restrictions. |
+| Delete Menu Entry | Deletes the menu entry and its associated page!                                        |
+| Move Up           | Moves the menu entry one step up.                                                      |
+| Move Down         | Moves the menu one step down.                                                          |

@@ -48,9 +48,9 @@ Zur möglichst automatischen Erzeugung von Fotos auf dem PC kann die folgende So
 
 Eine, von der jeweiligen Software unterstützte, Kamera muss an den PC angeschlossen sein.
 
-Um ein vollständiges 3D-Modell zu erzeugen kann es notwendig sein, die erzeugten Fotos freizustellen, d.h. den
+Um ein vollständiges 3D-Modell zu erzeugen, kann es notwendig sein, die erzeugten Fotos freizustellen, d.h. den
 Bildhintergrund zu entfernen.
-Um dies zu automatisieren kann das folgende Tool über Artivact verwendet werden:
+Um dies zu automatisieren, kann das folgende Tool über Artivact verwendet werden:
 
 | Windows & Linux |
 | :-------------: |
@@ -68,7 +68,7 @@ Nutzung wieder zu Artivact zurück.
 
 ### 3D-Modell Bearbeitung
 
-Um die per Fotogrammetrie erzeugten 3D-Modelle zu bearbeiten kann das folgende Tool verwendet werden:
+Um die per Fotogrammetrie erzeugten 3D-Modelle zu bearbeiten, kann das folgende Tool verwendet werden:
 
 | Windows & Linux |
 | :-------------: |

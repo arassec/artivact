@@ -14,11 +14,9 @@ Die Exportkonfiguration in den bereitgestellten Workflows darf *nicht* angepasst
 OBJ-Dateien an der vorkonfigurierten Stelle erwartet.
 :::
 
-### Meshroom Pipeline
+Details zur Konfiguration sind im [Benutzerhandbuch](../../user-manual/settings/peripherals) beschrieben.
 
-::: tip Unterstützte Version
-Die Meshroom-Integration wurde mit Version 2023.3 von Meshroom getestet.
-:::
+### Meshroom Pipeline
 
 Wenn Meshroom aus Artivact heraus gestartet wird, öffnet sich direkt die Beispiel-Pipeline, die bereits Knoten für die
 Mesh-Reduktion und den Export enthält.
@@ -28,12 +26,8 @@ Falls Warnungen über neuere Knoten-IDs angezeigt werden, können die Knoten üb
 
 ### Metashape Workflow
 
-::: tip Unterstützte Version
-Die Metashape-Integration wurde mit Version 2.1 von Metashape getestet.
-:::
-
 Agisoft Metashape's Standardedition erlaubt nicht, den Beispiel-Workflow direkt beim Programmstart zu öffnen.
-Der Artivcat Beispiel-Workflow wird bereitgestellt im Projektverzeichnis unter:
+Der Artivact Beispiel-Workflow wird bereitgestellt im Projektverzeichnis unter:
 
 ```
 utils/Metashape/artivact-metashape-workflow.xml

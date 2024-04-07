@@ -58,6 +58,8 @@ export default defineConfig({
                         {text: 'Introduction', link: '/user-manual/content-management/introduction'},
                         {text: 'Menus', link: '/user-manual/content-management/menus'},
                         {text: 'Pages', link: '/user-manual/content-management/pages'},
+                        {text: 'Widgets', link: '/user-manual/content-management/widgets'},
+                        {text: 'I18N', link: '/user-manual/content-management/internationalization'},
                     ]
                 },
                 {
@@ -66,6 +68,32 @@ export default defineConfig({
                         {text: 'Create Items', link: '/user-manual/item-management/create-items'},
                         {text: 'Item Editing', link: '/user-manual/item-management/item-editing'},
                         {text: 'Item Details', link: '/user-manual/item-management/item-details'},
+                    ]
+                },
+                {
+                    text: 'System Settings',
+                    items: [
+                        {text: 'Properties', link: '/user-manual/settings/properties'},
+                        {text: 'Tags', link: '/user-manual/settings/tags'},
+                        {text: 'License', link: '/user-manual/settings/license'},
+                        {text: 'Appearance', link: '/user-manual/settings/appearance'},
+                        {text: 'Peripherals', link: '/user-manual/settings/peripherals'},
+                        {text: 'Exchange', link: '/user-manual/settings/exchange'},
+                        {text: 'Search', link: '/user-manual/settings/search'},
+                    ]
+                },
+                {
+                    text: 'Account Management',
+                    items: [
+                        {text: 'Accounts & Roles', link: '/user-manual/account-management/accounts'},
+                    ]
+                },
+                {
+                    text: 'Exhibitions',
+                    items: [
+                        {text: 'Introduction', link: '/user-manual/exhibitions/introduction'},
+                        {text: 'Create', link: '/user-manual/exhibitions/create'},
+                        {text: 'Publish', link: '/user-manual/exhibitions/publish'},
                     ]
                 },
             ],
@@ -147,8 +175,10 @@ export default defineConfig({
                             text: 'Content-Management',
                             items: [
                                 {text: 'Einführung', link: '/de/user-manual/content-management/introduction'},
-                                {text: 'Menus', link: '/de/user-manual/content-management/menus'},
+                                {text: 'Menüs', link: '/de/user-manual/content-management/menus'},
                                 {text: 'Seiten', link: '/de/user-manual/content-management/pages'},
+                                {text: 'Widgets', link: '/de/user-manual/content-management/widgets'},
+                                {text: 'I18N', link: '/de/user-manual/content-management/internationalization'},
                             ]
                         },
                         {
@@ -157,6 +187,32 @@ export default defineConfig({
                                 {text: 'Erstellen', link: '/de/user-manual/item-management/create-items'},
                                 {text: 'Bearbeiten', link: '/de/user-manual/item-management/item-editing'},
                                 {text: 'Anzeigen', link: '/de/user-manual/item-management/item-details'},
+                            ]
+                        },
+                        {
+                            text: 'Einstellungen',
+                            items: [
+                                {text: 'Eigenschaften', link: '/de/user-manual/settings/properties'},
+                                {text: 'Tags', link: '/de/user-manual/settings/tags'},
+                                {text: 'Lizenz', link: '/de/user-manual/settings/license'},
+                                {text: 'Darstellung', link: '/de/user-manual/settings/appearance'},
+                                {text: 'Peripheriegeräte', link: '/de/user-manual/settings/peripherals'},
+                                {text: 'Austausch', link: '/de/user-manual/settings/exchange'},
+                                {text: 'Suchmaschine', link: '/de/user-manual/settings/search'},
+                            ]
+                        },
+                        {
+                            text: 'Account-Management',
+                            items: [
+                                {text: 'Accounts & Rollen', link: '/de/user-manual/account-management/accounts'},
+                            ]
+                        },
+                        {
+                            text: 'Ausstellungen',
+                            items: [
+                                {text: 'Einführung', link: '/de/user-manual/exhibitions/introduction'},
+                                {text: 'Erstellen', link: '/de/user-manual/exhibitions/create'},
+                                {text: 'Veröffentlichen ', link: '/de/user-manual/exhibitions/publish'},
                             ]
                         },
                     ],

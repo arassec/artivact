@@ -2,7 +2,7 @@
 
 ## Installation
 
-The latest release can be downloaded from the project's [Github page](https://github.com/arassec/artivact/releases/latest). 
+The latest release can be downloaded from the project's [GitHub page](https://github.com/arassec/artivact/releases/latest). 
 
 The files to download contain 'desktop' in their name, e.g.
 

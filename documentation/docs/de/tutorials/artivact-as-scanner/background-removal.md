@@ -27,27 +27,4 @@ werden. Dies kann dazu führen, dass einige Fotogrammetrie-Anwendungen diese lan
 verarbeiten können. Meshroom und Metashape haben diesbezüglich bisher keine Probleme gezeigt.
 :::
 
-## rembg
-
-::: tip Unterstütze Version
-Die rembg-Integration wurde mit der Version 2.0 von rembg getestet.
-:::
-
-Artivact kann für das automatische Freistellen das Open-Source-Tool [rembg](https://github.com/danielgatis/rembg) von Daniel Gatis verwenden.
-
-Die Software muss mit dem bereitgestellten Docker-Image als Web-Endpunkt installiert werden:
-
-```
-docker run -d -p 7000:7000 --name=rembg --restart=always danielgatis/rembg s
-```
-
-Die offizielle [Docker-Dokumentation](https://docs.docker.com/manuals/) bietet weitere Informationen, wie das rembg-Docker-Image auf verschiedenen
-Systemen installiert werden kann.
-
-Nach der Installation kann das Tool in Artivact konfiguriert werden:
-
-``Einstellungen`` -> ``Peripheriegeräte`` -> ``Automatisches Freistellen``
-
-|     Selection      |                Configuration Value                 |               Example                |
-|:------------------:|:--------------------------------------------------:|:------------------------------------:|
-| ``rembg (Remote)`` | Der Web-API-Endpunkt des Docker-Images. | ``http://localhost:7000/api/remove`` |
+Details zur Konfiguration sind im [Benutzerhandbuch](../../user-manual/settings/peripherals) beschrieben.

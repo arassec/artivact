@@ -10,14 +10,14 @@ Virtuelle Ausstellungsstücke und ihre 3D-Modelle bleiben trotz allem Aufwand au
 Sie in VR/AR zu erleben fügt ihnen eine völlig neue Dimension hinzu.
 
 ArtivactVR ist die VR app für mobile VR-Headsets.
-Es wird mithilfe der Open-Source Gameengine [Godot](https://godotengine.org/) entwickelt.
+Es wird mithilfe der Open-Source Game-Engine [Godot](https://godotengine.org/) entwickelt.
 
 Aktuell steht noch kein Release der app zur Verfügung.
 Diese Dokumentation wird mit dem weiteren Projektfortschritt aktualisiert.
 
 ## Proof-of-Concept
 
-Die app bietet aktuell nur Basisfunktionalität um mit Artivact erstellte Ausstellungen zu präsentieren.
+Die app bietet aktuell nur Basisfunktionalität, um mit Artivact erstellte Ausstellungen zu präsentieren.
 Der Hauptzweck ist die Erbringung des Beweises, dass per Fotogrammetrie erstellte 3D-Modell auf mobilen VR-Headsets verwendet werden können.
 
 Ein kurzes Demo-Video (ohne Sound oder Kommentare) steht zum Download zur Verfügung:

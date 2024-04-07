@@ -13,11 +13,9 @@ Export configuration in the provided workflows must *not* be changed, since Arti
 in the there configured place!
 :::
 
-### Meshroom Pipeline
+Details on the configuration can be found in the [User Manual](../../user-manual/settings/peripherals)
 
-::: tip Supported Version
-Meshroom integration has been tested for Version 2023.3.
-:::
+### Meshroom Pipeline
 
 When Meshroom is started from within Artivact, it will open with a default pipeline which already includes
 mesh reduction and export nodes. 
@@ -27,11 +25,7 @@ If warnings about newer Node IDs appear, update the node's UUIDs using Meshroom.
 
 ### Metashape Workflow
 
-::: tip Supported Version
-Metashape integration has been tested for Version 2.1
-:::
-
-Agisoft Metashape's standard edition doesn't allow to open any workflow with when opening the program.
+Agisoft Metashape's standard edition does not allow to open any workflow with when opening the program.
 The user has to open a batch processing workflow by hand.
 
 A minimal workflow is provided by Artivact under the project root directory in:
@@ -48,3 +42,4 @@ directory icon:
 Then the following workflow will be executed by Metashape when clicking on ``OK``:
 
 ![Metashape batch process](/assets/tutorials/artivact-as-scanner/model-creation-metashape-two.png)
+
