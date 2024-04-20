@@ -4,3 +4,5 @@ widgets/**/*_*.jpg
 widgets/**/*_*.png
 items/**/*-*.jpg
 items/**/*-*.png
+!sedata/readme.md
+sedata/*

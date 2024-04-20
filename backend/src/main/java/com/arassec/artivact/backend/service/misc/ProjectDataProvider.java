@@ -78,7 +78,7 @@ public class ProjectDataProvider {
     @PostConstruct
     public void initializeProjectDir() {
         fileUtil.updateProjectDirectory(projectRoot, List.of(
-                new FileModification("utils/Metashape/artivact-metashape-workflow.xml", "##EXPORT_PATH##",
+                new FileModification("utils/Metashape/artivact-metashape-2.1.1-workflow.xml", "##EXPORT_PATH##",
                         projectRoot.resolve("temp/export/metashape-export.obj").toAbsolutePath().toString()),
                 new FileModification("utils/Meshroom/artivact-meshroom-workflow.mg", "##EXPORT_PATH##",
                         projectRoot.resolve("temp/export/").toAbsolutePath().toString().replace("\\", "/"))

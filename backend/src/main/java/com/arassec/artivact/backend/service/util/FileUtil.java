@@ -5,6 +5,7 @@ import com.arassec.artivact.backend.service.misc.FileModification;
 import com.arassec.artivact.backend.service.misc.ProjectDataProvider;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -48,10 +49,9 @@ public class FileUtil {
         try (Stream<Path> files = Files.list(projectSetupDir)) {
             files.forEach(file -> {
                 if (Files.isDirectory(file)) {
-                    Path copiedFile = projectRoot.resolve(file.getFileName());
-                    deleteDir(copiedFile);
                     try {
-                        FileUtils.copyDirectory(file.toFile(), projectRoot.resolve(file.getFileName()).toFile());
+                        FileUtils.copyDirectory(file.toFile(), projectRoot.resolve(file.getFileName()).toFile(),
+                                FileFilterUtils.trueFileFilter(), true, StandardCopyOption.REPLACE_EXISTING);
                     } catch (IOException e) {
                         throw new ArtivactException("Could not copy project directory!", e);
                     }
