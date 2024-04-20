@@ -21,10 +21,20 @@ hero:
       
 features:
   - title: Create
+    icon: 
+      src: assets/icons/create-icon.png
     details: Run Artivact on your local computer to virtualize and manage your collection items.
   - title: Present
+    icon:
+      src: assets/icons/present-icon.png
     details: Run Artivact as web server to manage and present your virtual collection online.
   - title: Experience
+    icon:
+      src: assets/icons/experience-icon.png
     details: Use Artivact to create and experience your virtual exhibitions in the metaverse.
 
 ---
+
+## Getting Started
+
+You can get started using Artivact right away using the [desktop version](quick-start/local-installation/installation.html)!

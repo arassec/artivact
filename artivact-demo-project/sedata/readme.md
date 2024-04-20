@@ -1,0 +1,3 @@
+# Search-Index Re-Creation
+
+After startup of the demo project, re-recreate the search index to see search results...

@@ -9,6 +9,7 @@
     />
 
     <q-input
+      type="textarea"
       outlined
       v-model="widgetDataRef.searchTerm"
       :label="$t('ArtivactItemSearchInput.label.term')"

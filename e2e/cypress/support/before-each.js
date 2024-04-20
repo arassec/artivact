@@ -25,4 +25,5 @@ before(() => {
 
 beforeEach(() => {
     cy.intercept('GET', '/api/item/**').as('itemDetailsPage')
+    cy.intercept('GET', 'api/configuration/property').as('propertiesSettingsPage')
 });

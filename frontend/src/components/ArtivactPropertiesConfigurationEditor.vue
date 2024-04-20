@@ -9,6 +9,7 @@
       >
         <template #item="{ element }">
           <q-expansion-item
+            data-test="category-expansion-item"
             :label="element.value"
             group="categories"
             header-class="bg-primary text-white"
@@ -51,6 +52,7 @@
 
               <q-card-section>
                 <artivact-restricted-translatable-item-editor
+                  data-test="category-name-input"
                   :translatable-string="element"
                   :restricted-item="element"
                   :locales="locales"
@@ -115,6 +117,7 @@
                   </q-btn>
 
                   <artivact-restricted-translatable-item-editor
+                    data-test="property-name-input"
                     :translatable-string="property"
                     :restricted-item="property"
                     :locales="locales"
@@ -134,7 +137,9 @@
               <q-card-section>
                 <div class="row">
                   <q-space></q-space>
-                  <q-btn :label="$t('ArtivactPropertiesConfigurationEditor.button.addProperty')" @click="addProperty(element)"/>
+                  <q-btn
+                    data-test="add-property-button"
+                    :label="$t('ArtivactPropertiesConfigurationEditor.button.addProperty')" @click="addProperty(element)"/>
                 </div>
               </q-card-section>
             </q-card>
@@ -145,7 +150,9 @@
 
     <div class="row">
       <q-space></q-space>
-      <q-btn :label="$t('ArtivactPropertiesConfigurationEditor.button.addCategory')" @click="addCategory" color="primary"/>
+      <q-btn
+        data-test="add-category-button"
+        :label="$t('ArtivactPropertiesConfigurationEditor.button.addCategory')" @click="addCategory" color="primary"/>
     </div>
   </div>
 </template>

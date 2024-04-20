@@ -26,6 +26,7 @@
       <q-separator class="q-mt-md q-mb-md" />
 
       <q-btn
+        data-test="save-properties-button"
         :label="$t('Common.save')"
         color="primary"
         class="float-right q-mb-lg"
