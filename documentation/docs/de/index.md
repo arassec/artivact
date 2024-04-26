@@ -21,9 +21,15 @@ hero:
 
 features:
   - title: Erstelle
+    icon:
+      src: /create-icon.png
     details: Auf deinem Computer installiert kann dir Artivact dabei helfen, deine Sammlung zu virtualisieren und zu verwalten.
   - title: Präsentiere
+    icon:
+      src: /present-icon.png
     details: Artivact kann als Webserver betrieben werden um deine virtuelle Sammlung einfach im Netz zu präsentieren.
   - title: Erlebe
+    icon:
+      src: /experience-icon.png
     details: Mit Artivact kannst du virtuelle Ausstellungen im Metaversum erstellen und erleben.
 ---

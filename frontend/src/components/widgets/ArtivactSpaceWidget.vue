@@ -9,7 +9,7 @@
     <template v-slot:widget-content>
       <artivact-content
         v-if="widgetDataRef"
-        :style="'margin-top: ' + widgetDataRef.size + 'em;'"
+        :style="'padding-top: ' + widgetDataRef.size + 'em;'"
       >
       </artivact-content>
     </template>
@@ -17,7 +17,7 @@
     <template v-slot:widget-editor-preview>
       <artivact-content
         v-if="widgetDataRef"
-        :style="'margin-top: ' + widgetDataRef.size + 'em;'"
+        :style="'padding-top: ' + widgetDataRef.size + 'em;'"
       >
       </artivact-content>
     </template>

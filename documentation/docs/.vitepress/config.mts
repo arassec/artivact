@@ -1,10 +1,13 @@
-import {defineConfig} from 'vitepress'
+import {defineConfig, HeadConfig} from 'vitepress'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
     base: '/artivact/',
     title: 'Artivact Documentation',
     description: 'Documentation of the Artivact project.',
+    head: [
+        ['link', { rel: 'icon', href: '/artivact/favicon.ico', sizes: 'any' }],
+    ],
     themeConfig: {
         // https://vitepress.dev/reference/default-theme-config
         logo: '/logo.png',
@@ -233,5 +236,4 @@ export default defineConfig({
             }
         }
     },
-
 })
