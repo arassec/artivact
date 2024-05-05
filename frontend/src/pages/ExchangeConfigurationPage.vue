@@ -2,8 +2,10 @@
   <artivact-content>
     <div class="full-width">
       <h1 class="av-text-h1">{{$t('ExchangeConfigurationPage.heading')}}</h1>
+
+      <h2 class="av-text-h2">{{ $t('ExchangeConfigurationPage.exchange.heading') }}</h2>
       <div class="q-mb-lg">
-        {{$t('ExchangeConfigurationPage.description')}}
+        {{ $t('ExchangeConfigurationPage.exchange.description') }}
       </div>
       <artivact-exchange-configuration-editor :exchange-configuration="exchangeConfigurationRef"
                                               v-if="exchangeConfigurationRef"/>
@@ -14,6 +16,42 @@
         @click="saveExchangeConfiguration()"
       />
     </div>
+
+    <div class="full-width">
+      <h2 class="av-text-h2">{{ $t('ExchangeConfigurationPage.contentExport.heading') }}</h2>
+      <div class="q-mb-lg">
+        {{ $t('ExchangeConfigurationPage.contentExport.description') }}
+      </div>
+      <artivact-content-export-configuration-editor :content-exports="contentExportsRef"
+                                                    v-if="contentExportsRef"
+                                                    v-on:delete-content-export="confirmDeleteContentExport"/>
+    </div>
+
+    <!-- DELETE CONFIRMATION DIALOG -->
+    <artivact-dialog :dialog-model="showDeleteContentExportModalRef" :warn="true">
+      <template v-slot:header>
+        {{ $t('ExchangeConfigurationPage.dialog.delete.heading') }}
+      </template>
+
+      <template v-slot:body>
+        <q-card-section>
+          {{ $t('ExchangeConfigurationPage.dialog.delete.description') }}
+        </q-card-section>
+      </template>
+
+      <template v-slot:cancel>
+        <q-btn :label="$t('Common.cancel')" color="primary" @click="showDeleteContentExportModalRef = false"/>
+      </template>
+
+      <template v-slot:approve>
+        <q-btn
+          :label="$t('ExchangeConfigurationPage.dialog.delete.approve')"
+          color="primary"
+          @click="deleteContentExport"
+        />
+      </template>
+    </artivact-dialog>
+
   </artivact-content>
 </template>
 
@@ -22,15 +60,21 @@ import ArtivactContent from 'components/ArtivactContent.vue';
 import ArtivactExchangeConfigurationEditor from 'components/ArtivactExchangeConfigurationEditor.vue';
 import {useQuasar} from 'quasar';
 import {onMounted, ref, Ref} from 'vue';
-import {ExchangeConfiguration} from 'components/artivact-models';
+import {ContentExport, ExchangeConfiguration} from 'components/artivact-models';
 import {api} from 'boot/axios';
 import {useI18n} from 'vue-i18n';
+import ArtivactContentExportConfigurationEditor from 'components/ArtivactContentExportConfigurationEditor.vue';
+import ArtivactDialog from 'components/ArtivactDialog.vue';
 
 const quasar = useQuasar();
 const i18n = useI18n();
 
-const exchangeConfigurationRef: Ref<ExchangeConfiguration | null> =
-  ref(null);
+const exchangeConfigurationRef: Ref<ExchangeConfiguration | null> = ref(null);
+const contentExportsRef: Ref<Array<ContentExport> | null> = ref(null);
+
+const selectedContentExportRef: Ref<ContentExport | null> = ref(null);
+
+const showDeleteContentExportModalRef = ref(false);
 
 function loadExchangeConfiguration() {
   api
@@ -43,6 +87,22 @@ function loadExchangeConfiguration() {
         color: 'negative',
         position: 'bottom',
         message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.configuration.exchange')}),
+        icon: 'report_problem',
+      });
+    });
+}
+
+function loadContentExports() {
+  api
+    .get('/api/export/content')
+    .then((response) => {
+      contentExportsRef.value = response.data;
+    })
+    .catch(() => {
+      quasar.notify({
+        color: 'negative',
+        position: 'bottom',
+        message: i18n.t('Common.messages.loading.failed', {item: i18n.t('Common.items.configuration.exports')}),
         icon: 'report_problem',
       });
     });
@@ -69,8 +129,40 @@ function saveExchangeConfiguration() {
     });
 }
 
+function confirmDeleteContentExport(contentExport: ContentExport) {
+  selectedContentExportRef.value = contentExport;
+  showDeleteContentExportModalRef.value = true;
+}
+
+function deleteContentExport() {
+  if (!selectedContentExportRef.value?.id) {
+    return;
+  }
+  api
+    .delete('/api/export/content/' + selectedContentExportRef.value?.id)
+    .then(() => {
+      showDeleteContentExportModalRef.value = false;
+      loadContentExports();
+      quasar.notify({
+        color: 'positive',
+        position: 'bottom',
+        message: i18n.t('Common.messages.deleting.success', {item: i18n.t('Common.items.export')}),
+        icon: 'check',
+      });
+    })
+    .catch(() => {
+      quasar.notify({
+        color: 'negative',
+        position: 'bottom',
+        message: i18n.t('Common.messages.deleting.failed', {item: i18n.t('Common.items.export')}),
+        icon: 'report_problem',
+      });
+    });
+}
+
 onMounted(() => {
   loadExchangeConfiguration();
+  loadContentExports();
 });
 
 </script>

@@ -80,7 +80,6 @@ const routes: RouteRecordRaw[] = [
       {path: '/administration/configuration/license', component: () => import('pages/LicenseConfigurationPage.vue')},
       {path: '/administration/configuration/appearance', component: () => import('pages/AppearanceConfigurationPage.vue')},
       {path: '/administration/configuration/peripherals', component: () => import('pages/PeripheralsConfigurationPage.vue')},
-      {path: '/administration/configuration/exhibitions', component: () => import('pages/ExhibitionsConfigurationPage.vue')},
       {path: '/administration/configuration/exchange', component: () => import('pages/ExchangeConfigurationPage.vue')},
       {path: '/administration/configuration/search', component: () => import('pages/SearchConfigurationPage.vue')},
     ],

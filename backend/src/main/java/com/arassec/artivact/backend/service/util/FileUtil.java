@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -21,6 +23,16 @@ import java.util.stream.Stream;
 @Component
 @RequiredArgsConstructor
 public class FileUtil {
+
+    /**
+     * Suffix for ZIP files.
+     */
+    public static final String ZIP_FILE_SUFFIX = ".zip";
+
+    /**
+     * Suffix for JSON files.
+     */
+    public static final String JSON_FILE_SUFFIX = ".json";
 
     /**
      * Spring's {@link Environment}.
@@ -84,7 +96,7 @@ public class FileUtil {
      * @param directory The directory to empty.
      */
     public void emptyDir(Path directory) {
-        deleteDir(directory);
+        delete(directory);
         createDirIfRequired(directory);
     }
 
@@ -120,14 +132,14 @@ public class FileUtil {
     }
 
     /**
-     * Deletes a directory recursively.
+     * Deletes a file or a complete path recursively.
      *
-     * @param directory The directory to delete.
+     * @param path The path to delete.
      */
-    public void deleteDir(Path directory) {
+    public void delete(Path path) {
         try {
-            if (Files.exists(directory)) {
-                Files.walkFileTree(directory, new SimpleFileVisitor<>() {
+            if (Files.exists(path) && Files.isDirectory(path)) {
+                Files.walkFileTree(path, new SimpleFileVisitor<>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                         Files.delete(file);
@@ -140,9 +152,11 @@ public class FileUtil {
                         return FileVisitResult.CONTINUE;
                     }
                 });
+            } else if (Files.exists(path)) {
+                Files.delete(path);
             }
         } catch (IOException e) {
-            throw new ArtivactException("Could not delete directory!", e);
+            throw new ArtivactException("Could not delete path!", e);
         }
     }
 
@@ -163,6 +177,109 @@ public class FileUtil {
             Runtime.getRuntime().exec(cmdArray);
         } catch (IOException e) {
             throw new ArtivactException("Could not open directory!", e);
+        }
+    }
+
+    /**
+     * Checks if a path exists or not.
+     *
+     * @param path The path to check.
+     * @return {@code true}, if the path exists, {@code false} otherwise.
+     */
+    public boolean exists(Path path) {
+        return Files.exists(path);
+    }
+
+    /**
+     * Copies a file from source to target.
+     *
+     * @param source      The source path.
+     * @param target      The target path.
+     * @param copyOptions The options to use for copying.
+     * @return The path to the target file.
+     */
+    public Path copy(Path source, Path target, CopyOption... copyOptions) {
+        try {
+            return Files.copy(source, target, copyOptions);
+        } catch (IOException e) {
+            throw new ArtivactException("Could not copy resource!", e);
+        }
+    }
+
+    /**
+     * Returns a path to the subdirectory folder for the given ID.
+     * <p>
+     * E.g. a root of '/root/path' and an ID of 'ABC123' will lead to the path '/root/path/ABC/123/ABC123'.
+     *
+     * @param root The root path to start from.
+     * @param id   The ID to use for subdirectory generation.
+     * @return The path to the subdir.
+     */
+    public Path getDirFromId(Path root, String id) {
+        return root.resolve(getSubDir(id, 0)).resolve(getSubDir(id, 1)).resolve(id);
+    }
+
+    /**
+     * Returns the path to the subdir based on the root path and subdirectories based on the given ID.
+     * <p>
+     * E.g. a root of '/root/path' and an ID of 'ABC123' with subdir 'subdir' will lead to the path
+     * '/root/path/ABC/123/ABC123/subdir'.
+     *
+     * @param root   The root path to start from.
+     * @param id     The ID to use for subdirectory generation.
+     * @param subdir The final subdir at the end of the path.
+     * @return The path to the subdir.
+     */
+    public Path getSubdirFilePath(Path root, String id, String subdir) {
+        if (subdir != null) {
+            return root.resolve(getSubDir(id, 0)).resolve(getSubDir(id, 1)).resolve(id).resolve(subdir);
+        }
+        return root.resolve(getSubDir(id, 0)).resolve(getSubDir(id, 1)).resolve(id);
+    }
+
+    /**
+     * Returns a subdirectory from the given ID.
+     * <p>
+     * E.g. with an ID of 'ABC123' and an index of 1 will lead to the result: '123'.
+     *
+     * @param id    The ID to use for subdir determination.
+     * @param index The index of the subdir to get.
+     * @return The subdirectory as string.
+     */
+    public String getSubDir(String id, int index) {
+        if (index == 0) {
+            return id.substring(0, 3);
+        } else if (index == 1) {
+            return id.substring(3, 6);
+        }
+        throw new IllegalArgumentException("Index not supported: " + index);
+    }
+
+    /**
+     * Lists the files in the given directory.
+     *
+     * @param dir The directory to list files of.
+     * @return Stream of paths found in the given directory.
+     */
+    public Stream<Path> list(Path dir) {
+        try {
+            return Files.list(dir);
+        } catch (IOException e) {
+            throw new ArtivactException("Could not list files!", e);
+        }
+    }
+
+    /**
+     * Returns the last modification time of a file or directory.
+     *
+     * @param path The path to get the time from.
+     * @return The last modification time within the system's timezone.
+     */
+    public ZonedDateTime lastModified(Path path) {
+        try {
+            return Files.getLastModifiedTime(path).toInstant().atZone(ZoneId.systemDefault());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

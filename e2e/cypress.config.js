@@ -6,7 +6,7 @@ module.exports = defineConfig({
             // implement node event listeners here
         },
         env: {
-            "locales": [ "en" ]
+            'locales': ['en', 'de']
         },
         trashAssetsBeforeRuns: true,
         watchForFileChanges: false,

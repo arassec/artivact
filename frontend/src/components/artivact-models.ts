@@ -92,12 +92,8 @@ export interface Menu extends BaseTranslatableRestrictedObject {
   parentId: string | null;
   menuEntries: Menu[];
   targetPageId: string;
-}
-
-export interface MenuTreeNode extends Menu {
-  disabled: boolean;
-  selectable: boolean;
-  expandable: boolean;
+  exportTitle: TranslatableString;
+  exportDescription: TranslatableString;
 }
 
 export interface Account {
@@ -214,9 +210,16 @@ export interface OperationProgress {
   error: string;
 }
 
-export interface ExhibitionSummary {
-  exhibitionId: string | null;
+export interface ExportParams {
+  exportType: string;
+  zipResults: boolean;
+  applyRestrictions: boolean;
+  optimizeSize: boolean;
+}
+
+export interface ContentExport {
+  id: string;
   title: TranslatableString;
   description: TranslatableString;
-  menuIds: string[];
+  lastModified: string;
 }

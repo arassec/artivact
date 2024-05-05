@@ -10,6 +10,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,6 +21,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Base for services that need file handling.
@@ -45,7 +49,7 @@ public abstract class BaseFileService extends BaseService {
         if (subDir != null) {
             targetPath = targetPath.resolve(subDir);
         }
-        if (Files.exists(targetPath)) {
+        if (getFileUtil().exists(targetPath)) {
             try (Stream<Path> files = Files.list(targetPath)) {
                 return files.filter(filePath -> !Files.isDirectory(filePath)).map(filePath -> filePath.getFileName().toString()).filter(file -> {
                     for (ImageSize imageSize : ImageSize.values()) {
@@ -61,6 +65,37 @@ public abstract class BaseFileService extends BaseService {
             }
         }
         return new LinkedList<>();
+    }
+
+    /**
+     * ZIPs the provided media files into a file written to the given output stream.
+     *
+     * @param zipOutputStream The target stream.
+     * @param mediaFiles      The list of files to pack.
+     */
+    public void zipMediaFiles(ZipOutputStream zipOutputStream, List<String> mediaFiles) {
+        ZipEntry zipEntry;
+        for (String mediaFile : mediaFiles) {
+            File file = new File(mediaFile);
+            zipEntry = new ZipEntry(file.getName());
+
+            try (var inputStream = new FileInputStream(file)) {
+                zipOutputStream.putNextEntry(zipEntry);
+                byte[] bytes = new byte[1024];
+                int length;
+                while ((length = inputStream.read(bytes)) >= 0) {
+                    zipOutputStream.write(bytes, 0, length);
+                }
+            } catch (IOException e) {
+                throw new ArtivactException("Exception while reading and streaming data!", e);
+            }
+        }
+
+        try {
+            zipOutputStream.close();
+        } catch (IOException e) {
+            throw new ArtivactException("Could not create ZIP file!", e);
+        }
     }
 
     /**
@@ -148,37 +183,6 @@ public abstract class BaseFileService extends BaseService {
     }
 
     /**
-     * Returns the path to the subdir based on the root path and subdirectories based on the given ID.
-     * <p>
-     * E.g. a root of '/root/path' and an ID of 'ABC123' with subdir 'subdir' will lead to the path
-     * '/root/path/ABC/123/ABC123/subdir'.
-     *
-     * @param root   The root path to start from.
-     * @param id     The ID to use for subdirectory generation.
-     * @param subdir The final subdir at the end of the path.
-     * @return The path to the subdir.
-     */
-    protected Path getSubdirFilePath(Path root, String id, String subdir) {
-        if (subdir != null) {
-            return root.resolve(getSubDir(id, 0)).resolve(getSubDir(id, 1)).resolve(id).resolve(subdir);
-        }
-        return  root.resolve(getSubDir(id, 0)).resolve(getSubDir(id, 1)).resolve(id);
-    }
-
-    /**
-     * Returns a path to the subdirectory folder for the given ID.
-     * <p>
-     * E.g. a root of '/root/path' and an ID of 'ABC123' will lead to the path '/root/path/ABC/123/ABC123'.
-     *
-     * @param root The root path to start from.
-     * @param id   The ID to use for subdirectory generation.
-     * @return The path to the subdir.
-     */
-    protected Path getDirFromId(Path root, String id) {
-        return root.resolve(getSubDir(id, 0)).resolve(getSubDir(id, 1)).resolve(id);
-    }
-
-    /**
      * Deletes the given directory and both direct parent directories, if they are empty after deleting the original
      * directory.
      *
@@ -186,7 +190,7 @@ public abstract class BaseFileService extends BaseService {
      */
     protected void deleteDirAndEmptyParents(Path directory) {
         try {
-            getFileUtil().deleteDir(directory);
+            getFileUtil().delete(directory);
 
             Path firstParent = directory.getParent();
             if (Files.exists(firstParent) && Objects.requireNonNull(firstParent.toFile().listFiles()).length == 0) {
@@ -215,26 +219,9 @@ public abstract class BaseFileService extends BaseService {
      * @return The path to the file.
      */
     private Path getSimpleFilePath(Path root, String id, String filename) {
-        return root.resolve(getSubDir(id, 0)).resolve(getSubDir(id, 1)).resolve(id).resolve(filename);
+        return root.resolve(getFileUtil().getSubDir(id, 0)).resolve(getFileUtil().getSubDir(id, 1)).resolve(id).resolve(filename);
     }
 
-    /**
-     * Returns a subdirectory from the given ID.
-     * <p>
-     * E.g. with an ID of 'ABC123' and an index of 1 will lead to the result: '123'.
-     *
-     * @param id    The ID to use for subdir determination.
-     * @param index The index of the subdir to get.
-     * @return The subdirectory as string.
-     */
-    private String getSubDir(String id, int index) {
-        if (index == 0) {
-            return id.substring(0, 3);
-        } else if (index == 1) {
-            return id.substring(3, 6);
-        }
-        throw new IllegalArgumentException("Index not supported: " + index);
-    }
 
 
 }

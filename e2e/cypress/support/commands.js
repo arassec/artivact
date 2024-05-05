@@ -67,7 +67,7 @@ Cypress.Commands.add('switchLanguage', (language) => {
             cy.get('[data-test=artivact-notify-success]')
                 .should('be.visible')
                 .find('button')
-                .click()
+                .click({multiple: true})
         })
 })
 

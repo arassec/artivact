@@ -17,7 +17,7 @@ public class PageContent extends BaseRestrictedObject {
     /**
      * If {@code true}, this page is considered to be the index page.
      */
-    private boolean indexPage;
+    private Boolean indexPage;
 
     /**
      * Widgets of the page.

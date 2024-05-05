@@ -1,6 +1,8 @@
 <template>
   <div data-test="artivact-menu-bar" class="row gt-sm">
     <template v-for="(menu, index) in menuStore.menus" :key="menu.id">
+
+      <!-- SINGLE MENU WITH PAGE -->
       <!-- Only menu with defined target, no entries defined: -->
       <q-btn
         :data-test="'menu-' + menu.value"
@@ -59,6 +61,25 @@
               </q-item-section>
             </q-item>
             <q-item
+              :data-test="'menu-export-button-' + menu.value"
+              clickable
+              v-close-popup
+              @click="showExportConfiguration(menu)"
+              class="menu-entry"
+            >
+              <q-item-section>
+                <label class="menu-label">
+                  <q-icon
+                    name="file_download"
+                    size="xs"
+                    color="primary"
+                    class="q-mr-sm"
+                  />
+                  {{ $t('ArtivactMenuBar.label.export') }}</label
+                >
+              </q-item-section>
+            </q-item>
+            <q-item
               :data-test="'menu-move-left-button-' + menu.value"
               v-if="index > 0"
               clickable
@@ -102,6 +123,7 @@
         </q-menu>
       </q-btn>
 
+      <!-- MENU WITH SUB-ENTRIES -->
       <!-- Menu with entries or no entries and no page-->
       <q-btn
         :data-test="'menu-' + menu.value"
@@ -189,6 +211,25 @@
                                 class="q-mr-sm"
                               />
                               {{ $t('ArtivactMenuBar.label.deleteEntry') }}</label
+                            >
+                          </q-item-section>
+                        </q-item>
+                        <q-item
+                          :data-test="'menu-export-button-' + menu.value"
+                          clickable
+                          v-close-popup
+                          @click="showExportConfiguration(menuEntry)"
+                          class="menu-entry"
+                        >
+                          <q-item-section>
+                            <label class="menu-label">
+                              <q-icon
+                                name="file_download"
+                                size="xs"
+                                color="primary"
+                                class="q-mr-sm"
+                              />
+                              {{ $t('ArtivactMenuBar.label.export') }}</label
                             >
                           </q-item-section>
                         </q-item>
@@ -333,6 +374,25 @@
               </q-item-section>
             </q-item>
             <q-item
+              :data-test="'menu-export-button-' + menu.value"
+              clickable
+              v-close-popup
+              @click="showExportConfiguration(menu)"
+              class="menu-entry"
+            >
+              <q-item-section>
+                <label class="menu-label">
+                  <q-icon
+                    name="file_download"
+                    size="xs"
+                    color="primary"
+                    class="q-mr-sm"
+                  />
+                  {{ $t('ArtivactMenuBar.label.export') }}</label
+                >
+              </q-item-section>
+            </q-item>
+            <q-item
               :data-test="'menu-move-left-button-' + menu.value"
               v-if="index > 0"
               clickable
@@ -410,9 +470,23 @@
             :locales="localeStore.locales"
             :translatable-string="menuRef"
             :restricted-item="menuRef"
-            label="Menu"
-            :show-separator="false"
+            :label="$t('ArtivactMenuBar.label.menu')"
+            :show-separator="true"
           />
+          {{ $t('ArtivactMenuBar.dialog.exportDescription') }}
+          <artivact-restricted-translatable-item-editor
+            :dataTest="'add-menu-modal-export-title'"
+            :locales="localeStore.locales"
+            :translatable-string="menuRef.exportTitle"
+            :label="$t('ArtivactMenuBar.label.exportTitle')"
+            :show-separator="false"/>
+          <artivact-restricted-translatable-item-editor
+            :dataTest="'add-menu-modal-export-description'"
+            :locales="localeStore.locales"
+            :translatable-string="menuRef.exportDescription"
+            :label="$t('ArtivactMenuBar.label.exportDescription')"
+            :textarea="true"
+            :show-separator="false"/>
         </q-card-section>
       </template>
 
@@ -458,6 +532,46 @@
           @click="deleteMenu"
         />
       </template>
+    </artivact-dialog>
+
+    <!-- EXPORT CONFIGURATION MODAL -->
+    <artivact-dialog :dialog-model="showExportParamsModal">
+      <template v-slot:header>
+        <q-card-section>
+          {{ $t('ArtivactMenuBar.dialog.exportParams') }}
+        </q-card-section>
+      </template>
+
+      <template v-slot:body>
+        <q-card-section>
+          <div>
+            <q-checkbox v-model="exportParams.optimizeSize"
+                        :label="$t('ArtivactMenuBar.label.exportParams.optimizeSize')"/>
+          </div>
+          <div>
+            <q-checkbox v-model="exportParams.zipResults"
+                        :label="$t('ArtivactMenuBar.label.exportParams.zipResults')"/>
+          </div>
+          <div>
+            <q-checkbox v-model="exportParams.applyRestrictions"
+                        :label="$t('ArtivactMenuBar.label.exportParams.applyRestrictions')"/>
+          </div>
+        </q-card-section>
+      </template>
+
+      <template v-slot:cancel>
+        <q-btn :label="$t('Common.cancel')" color="primary" @click="showExportParamsModal = false"/>
+      </template>
+
+      <template v-slot:approve>
+        <q-btn
+          data-test="export-approve-button"
+          :label="$t('ArtivactMenuBar.dialog.exportApprove')"
+          color="primary"
+          @click="exportContent()"
+        />
+      </template>
+
     </artivact-dialog>
 
   </div>
@@ -515,6 +629,12 @@
       </q-list>
     </q-menu>
   </q-btn>
+
+  <!-- LONG-RUNNING OPERATION -->
+  <artivact-operation-in-progress-dialog :progress-monitor-ref="progressMonitorRef"
+                                         :dialog-model="showOperationInProgressModalRef"
+                                         @close-dialog="showOperationInProgressModalRef = false"/>
+
 </template>
 
 <script setup lang="ts">
@@ -527,11 +647,12 @@ import {ref} from 'vue';
 import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
 import {useLocaleStore} from 'stores/locale';
 import {moveDown, moveUp, translate} from 'components/artivact-utils';
-import {Menu} from 'components/artivact-models';
+import {ExportParams, Menu, OperationProgress, TranslatableString} from 'components/artivact-models';
 import {useBreadcrumbsStore} from 'stores/breadcrumbs';
 import ArtivactDialog from 'components/ArtivactDialog.vue';
 import {useI18n} from 'vue-i18n';
 import {useProfilesStore} from 'stores/profiles';
+import ArtivactOperationInProgressDialog from 'components/ArtivactOperationInProgressDialog.vue';
 
 const quasar = useQuasar();
 const router = useRouter();
@@ -551,6 +672,18 @@ const menuRef = ref(menu);
 
 const confirmDeleteRef = ref(false);
 
+const showExportParamsModal = ref(false);
+const selectedMenu = ref({} as Menu);
+const exportParams = ref({
+  optimizeSize: true,
+  zipResults: true,
+  applyRestrictions: false,
+  exportType: 'JSON'
+} as ExportParams);
+
+const showOperationInProgressModalRef = ref(false);
+const progressMonitorRef = ref<OperationProgress>();
+
 function createEmptyMenuRef(): Menu {
   return {
     id: '',
@@ -561,6 +694,8 @@ function createEmptyMenuRef(): Menu {
     parentId: null,
     menuEntries: [],
     targetPageId: '',
+    exportTitle: {} as TranslatableString,
+    exportDescription: {} as TranslatableString
   };
 }
 
@@ -768,6 +903,63 @@ function hideMenus() {
     showMenuRef.value[prop] = false;
   }
 }
+
+function showExportConfiguration(menu: Menu) {
+  showExportParamsModal.value = true;
+  selectedMenu.value = menu;
+}
+
+function exportContent() {
+  showExportParamsModal.value = false;
+  api
+    .post('/api/export/content/' + selectedMenu.value.id, exportParams.value)
+    .then((response) => {
+      if (response) {
+        showOperationInProgressModalRef.value = true;
+        progressMonitorRef.value = response.data;
+        updateOperationProgress();
+      }
+    })
+    .catch(() => {
+      quasar.notify({
+        color: 'negative',
+        position: 'bottom',
+        message: i18n.t('ArtivactMenuBar.messages.movingFailed'),
+        icon: 'report_problem',
+      });
+    });
+}
+
+function updateOperationProgress() {
+  api
+    .get('/api/export/progress')
+    .then((response) => {
+      if (response.data) {
+        progressMonitorRef.value = response.data;
+        if (!progressMonitorRef.value?.error) {
+          setTimeout(() => updateOperationProgress(), 1000);
+        }
+      } else {
+        progressMonitorRef.value = undefined;
+        showOperationInProgressModalRef.value = false;
+        quasar.notify({
+          color: 'positive',
+          position: 'bottom',
+          message: i18n.t('Common.messages.saving.success', {item: i18n.t('Common.items.export')}),
+          icon: 'check',
+        });
+      }
+    })
+    .catch(() => {
+      quasar.notify({
+        color: 'negative',
+        position: 'bottom',
+        message: i18n.t('Common.messages.saving.failed', {item: i18n.t('Common.items.export')}),
+        icon: 'report_problem',
+      });
+    });
+}
+
 </script>
 
 <style scoped>

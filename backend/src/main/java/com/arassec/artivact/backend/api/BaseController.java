@@ -1,22 +1,17 @@
 package com.arassec.artivact.backend.api;
 
 import com.arassec.artivact.backend.api.model.OperationProgress;
-import com.arassec.artivact.backend.service.exception.ArtivactException;
-import com.arassec.artivact.backend.service.model.item.Item;
 import com.arassec.artivact.backend.service.misc.ProgressMonitor;
+import com.arassec.artivact.backend.service.model.item.Item;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.http.ResponseEntity;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 /**
  * Base for REST-Controllers with utility methods.
@@ -136,37 +131,6 @@ public abstract class BaseController {
             return ResponseEntity.ok(operationProgress);
         }
         return ResponseEntity.ok().build();
-    }
-
-    /**
-     * ZIPs the provided media files into a file written to the given output stream.
-     *
-     * @param zipOutputStream The target stream.
-     * @param mediaFiles      The list of files to pack.
-     */
-    protected void zipMediaFiles(ZipOutputStream zipOutputStream, List<String> mediaFiles) {
-        ZipEntry zipEntry;
-        for (String mediaFile : mediaFiles) {
-            File file = new File(mediaFile);
-            zipEntry = new ZipEntry(file.getName());
-
-            try (var inputStream = new FileInputStream(file)) {
-                zipOutputStream.putNextEntry(zipEntry);
-                byte[] bytes = new byte[1024];
-                int length;
-                while ((length = inputStream.read(bytes)) >= 0) {
-                    zipOutputStream.write(bytes, 0, length);
-                }
-            } catch (IOException e) {
-                throw new ArtivactException("Exception while reading and streaming data!", e);
-            }
-        }
-
-        try {
-            zipOutputStream.close();
-        } catch (IOException e) {
-            throw new ArtivactException("Could not create ZIP file!", e);
-        }
     }
 
 }

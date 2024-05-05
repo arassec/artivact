@@ -100,14 +100,6 @@
       </q-menu>
     </q-btn>
 
-    <!-- EXHIBITION CONFIGURATION -->
-    <router-link data-test="exhibitions-button"
-                 to="/administration/configuration/exhibitions">
-      <q-btn flat color="white" icon="collections" v-if="userdataStore.isUserOrAdmin">
-        <q-tooltip>{{ $t('Common.items.exhibitions') }}</q-tooltip>
-      </q-btn>
-    </router-link>
-
     <!-- SYSTEM SETTINGS -->
     <q-btn data-test="system-settings-button" flat color="white" icon="settings" v-if="userdataStore.isAdmin">
       <q-tooltip v-if="!systemMenuOpen">{{ $t('ArtivactSettingsBar.tooltip.systemSettings') }}</q-tooltip>
@@ -416,17 +408,6 @@
           </q-menu>
         </q-item>
 
-        <!-- EXHIBITION CONFIGURATION -->
-        <q-item clickable v-close-popup @click="gotoExhibitionsConfigurationPage"
-                class="menu-entry" v-if="userdataStore.isUserOrAdmin">
-          <q-item-section>
-            <label class="menu-label">
-              <q-icon name="collections" size="sm" class="q-mr-sm"/>
-              <label>{{ $t('ArtivactSettingsBar.exhib') }}</label>
-            </label>
-          </q-item-section>
-        </q-item>
-
         <!-- SYSTEM SETTINGS -->
         <q-item clickable class="menu-entry" v-if="userdataStore.isAdmin">
           <q-item-section>
@@ -656,10 +637,6 @@ function gotoExchangeConfigurationPage() {
 
 function gotoSearchConfigurationPage() {
   route.push('/administration/configuration/search');
-}
-
-function gotoExhibitionsConfigurationPage() {
-  route.push('/administration/configuration/exhibitions');
 }
 
 function gotoAccountPage() {

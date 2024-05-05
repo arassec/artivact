@@ -7,13 +7,11 @@ import com.arassec.artivact.backend.service.aop.RestrictResult;
 import com.arassec.artivact.backend.service.aop.TranslateResult;
 import com.arassec.artivact.backend.service.misc.ProjectDataProvider;
 import com.arassec.artivact.backend.service.model.BaseRestrictedObject;
-import com.arassec.artivact.backend.service.model.TranslatableString;
 import com.arassec.artivact.backend.service.model.item.ImageSize;
 import com.arassec.artivact.backend.service.model.page.FileProcessingWidget;
 import com.arassec.artivact.backend.service.model.page.Page;
 import com.arassec.artivact.backend.service.model.page.PageContent;
 import com.arassec.artivact.backend.service.model.page.Widget;
-import com.arassec.artivact.backend.service.model.page.widget.TextWidget;
 import com.arassec.artivact.backend.service.util.FileUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
@@ -114,7 +112,7 @@ public class PageService extends BaseFileService {
         if (pageEntityOptional.isPresent()) {
             PageEntity pageEntity = pageEntityOptional.get();
             PageContent pageContent = fromJson(pageEntity.getContentJson(), PageContent.class);
-            pageContent.getWidgets().forEach(widget -> deleteDirAndEmptyParents(getDirFromId(widgetFilesDir, widget.getId())));
+            pageContent.getWidgets().forEach(widget -> deleteDirAndEmptyParents(fileUtil.getDirFromId(widgetFilesDir, widget.getId())));
             pageEntityRepository.deleteById(pageId);
         }
     }
@@ -181,14 +179,14 @@ public class PageService extends BaseFileService {
                 .map(BaseRestrictedObject::getId)
                 .toList());
 
-        widgetIdsToDelete.forEach(widgetId -> deleteDirAndEmptyParents(getDirFromId(widgetFilesDir, widgetId)));
+        widgetIdsToDelete.forEach(widgetId -> deleteDirAndEmptyParents(fileUtil.getDirFromId(widgetFilesDir, widgetId)));
 
         pageContent.getWidgets().forEach(widget ->
                 getDanglingImages(widget).forEach(imageToDelete -> {
                     try {
-                        Files.deleteIfExists(getSubdirFilePath(widgetFilesDir, widget.getId(), null).resolve(imageToDelete));
+                        Files.deleteIfExists(fileUtil.getSubdirFilePath(widgetFilesDir, widget.getId(), null).resolve(imageToDelete));
                         for (ImageSize imageSize : ImageSize.values()) {
-                            Files.deleteIfExists(getSubdirFilePath(widgetFilesDir, widget.getId(), null)
+                            Files.deleteIfExists(fileUtil.getSubdirFilePath(widgetFilesDir, widget.getId(), null)
                                     .resolve(imageSize.name() + "-" + imageToDelete));
                         }
                     } catch (IOException e) {
@@ -197,7 +195,7 @@ public class PageService extends BaseFileService {
                 })
         );
 
-        pageEntity.setIndexPage(pageContent.isIndexPage());
+        pageEntity.setIndexPage(Boolean.TRUE.equals(pageContent.getIndexPage()));
         pageEntity.setContentJson(toJson(pageContent));
         pageEntityRepository.save(pageEntity);
         return pageContent;
@@ -213,7 +211,7 @@ public class PageService extends BaseFileService {
     private List<String> getDanglingImages(Widget widget) {
         if (widget instanceof FileProcessingWidget fileProcessingWidget) {
             List<String> imagesInWidget = fileProcessingWidget.usedFiles();
-            List<String> allImagesInFolder = getFiles(getDirFromId(widgetFilesDir, widget.getId()), null);
+            List<String> allImagesInFolder = getFiles(fileUtil.getDirFromId(widgetFilesDir, widget.getId()), null);
             allImagesInFolder.removeAll(imagesInWidget);
             return allImagesInFolder;
         }
@@ -269,7 +267,7 @@ public class PageService extends BaseFileService {
 
         PageContent result = new PageContent();
         result.setId(pageContent.getId());
-        result.setIndexPage(pageContent.isIndexPage());
+        result.setIndexPage(pageContent.getIndexPage());
         result.setWidgets(pageContent.getWidgets());
 
         return result;

@@ -60,7 +60,6 @@ public class ConfigurationService extends BaseService {
      *
      * @return The properties currently configured.
      */
-    @RestrictResult
     public PropertiesConfiguration loadPropertiesConfiguration() {
         ConfigurationEntity entity = loadOrCreateEntity(ConfigurationType.PROPERTIES.name());
         if (StringUtils.hasText(entity.getContentJson())) {
@@ -86,7 +85,7 @@ public class ConfigurationService extends BaseService {
      */
     @TranslateResult
     @RestrictResult
-    public List<PropertyCategory> loadTranslatedProperties() {
+    public List<PropertyCategory> loadTranslatedRestrictedProperties() {
         PropertiesConfiguration propertiesConfiguration = loadPropertiesConfiguration();
         return propertiesConfiguration.getCategories();
     }
@@ -195,11 +194,20 @@ public class ConfigurationService extends BaseService {
      *
      * @return The current tag configuration.
      */
-    @RestrictResult
-    @TranslateResult
     public TagsConfiguration loadTagsConfiguration() {
         ConfigurationEntity entity = loadOrCreateEntity(ConfigurationType.TAGS.name());
         return fromJson(entity.getContentJson(), TagsConfiguration.class);
+    }
+
+    /**
+     * Loads the current tag configuration, restricted and translated.
+     *
+     * @return The current tag configuration.
+     */
+    @RestrictResult
+    @TranslateResult
+    public TagsConfiguration loadTranslatedRestrictedTags() {
+        return loadTagsConfiguration();
     }
 
     /**
@@ -326,8 +334,17 @@ public class ConfigurationService extends BaseService {
     @RestrictResult
     @TranslateResult
     public List<Menu> loadTranslatedMenus() {
-        return fromJson(
-                loadOrCreateEntity(ConfigurationType.MENU.name()).getContentJson(), MenuConfiguration.class).getMenus();
+        MenuConfiguration menuConfiguration = fromJson(
+                loadOrCreateEntity(ConfigurationType.MENU.name()).getContentJson(), MenuConfiguration.class);
+        menuConfiguration.getMenus().forEach(menu -> {
+            if (menu.getExportTitle() == null) {
+                menu.setExportTitle(new TranslatableString());
+            }
+            if (menu.getExportDescription() == null) {
+                menu.setExportDescription(new TranslatableString());
+            }
+        });
+        return menuConfiguration.getMenus();
     }
 
     /**
@@ -383,6 +400,8 @@ public class ConfigurationService extends BaseService {
             existingMenu.setRestrictions(menu.getRestrictions());
             existingMenu.setTargetPageId(menu.getTargetPageId());
             existingMenu.setMenuEntries(menu.getMenuEntries());
+            existingMenu.setExportTitle(menu.getExportTitle());
+            existingMenu.setExportDescription(menu.getExportDescription());
         } else {
             menuConfiguration.getMenus().add(menu);
         }

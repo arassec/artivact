@@ -2,3 +2,8 @@
     --vp-c-brand-1: #6e7e85;
     --vp-c-brand-2: #364958;
 }
+
+img:not(.VPImage) {
+    border: 1px solid lightgrey;
+    padding: 5px;
+}

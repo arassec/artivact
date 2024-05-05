@@ -1,6 +1,7 @@
 package com.arassec.artivact.backend.service.model.menu;
 
 import com.arassec.artivact.backend.service.model.BaseTranslatableRestrictedObject;
+import com.arassec.artivact.backend.service.model.TranslatableString;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,5 +33,15 @@ public class Menu extends BaseTranslatableRestrictedObject {
      * The ID of the target page, if any.
      */
     private String targetPageId;
+
+    /**
+     * Title of an export based on this menu.
+     */
+    private TranslatableString exportTitle;
+
+    /**
+     * Description of an export based on this menu.
+     */
+    private TranslatableString exportDescription;
 
 }

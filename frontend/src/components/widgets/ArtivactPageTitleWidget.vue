@@ -17,7 +17,7 @@
               widgetDataRef.backgroundImage +
               '?imageSize=PAGE_TITLE'
             "
-            class="darkened-parallax-container"
+            class="darkened-parallax-container title-image"
           >
             <artivact-content v-if="widgetDataRef.title">
               <h1 class="page-title gt-sm">
@@ -261,4 +261,5 @@ const widgetDataRef = toRef(props, 'widgetData');
 .page-title-small {
   background: rgba(0, 0, 0, 0.25);
 }
+
 </style>

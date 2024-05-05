@@ -140,6 +140,10 @@ public class SearchService extends BaseService {
      */
     @SuppressWarnings("java:S6204") // Result list needs to be modifiable!
     public List<Item> search(String query, int maxResults) {
+        if (!StringUtils.hasText(query)) {
+            return new LinkedList<>();
+        }
+
         if ("*".equals(query)) {
             Pageable limit = PageRequest.of(0, maxResults);
             return itemEntityRepository.findAll(limit).stream()

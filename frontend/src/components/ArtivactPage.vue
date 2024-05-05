@@ -1,18 +1,19 @@
 <template>
   <div v-if="pageContentRef && pageId">
 
-    <div class="sticky">
+    <div class="col items-center sticky" v-if="userdataStore.isUserOrAdmin && pageId !== 'INDEX' && !inEditMode">
+      <div class="absolute-top-right q-ma-md">
       <q-btn id="sticky-item"
              data-test="edit-page-button"
              round
              color="primary"
              icon="edit"
-             class="q-ma-md edit-page-button float-right"
+             class="edit-page-button float-right"
              @click="inEditMode = true"
-             v-if="userdataStore.isUserOrAdmin && pageId !== 'INDEX' && !inEditMode"
       >
         <q-tooltip>{{ $t('ArtivactPage.tooltip.edit') }}</q-tooltip>
       </q-btn>
+      </div>
     </div>
 
     <div class="col items-center sticky" v-if="inEditMode">
@@ -74,7 +75,7 @@
       v-bind:key="widgetData.id"
     >
       <artivact-page-title-widget
-        class="widget"
+        :class="inEditMode ? 'widget' : ''"
         v-if="widgetData.type === 'PAGE_TITLE'"
         :widget-data="widgetData as PageTitleWidgetData"
         :in-edit-mode="inEditMode"
@@ -88,7 +89,7 @@
       />
 
       <artivact-text-widget
-        class="widget"
+        :class="inEditMode ? 'widget' : ''"
         v-if="widgetData.type === 'TEXT'"
         :widget-data="widgetData as TextWidgetData"
         :in-edit-mode="inEditMode"
@@ -100,7 +101,7 @@
       />
 
       <artivact-image-text-widget
-        class="widget"
+        :class="inEditMode ? 'widget' : ''"
         v-if="widgetData.type === 'IMAGE_TEXT'"
         :widget-data="widgetData as ImageTextWidgetData"
         :in-edit-mode="inEditMode"
@@ -114,7 +115,7 @@
       />
 
       <artivact-item-search-widget
-        class="widget"
+        :class="inEditMode ? 'widget' : ''"
         v-if="widgetData.type === 'ITEM_SEARCH'"
         :widget-data="widgetData as SearchBasedWidgetData"
         :in-edit-mode="inEditMode"
@@ -126,7 +127,7 @@
       />
 
       <artivact-item-carousel-widget
-        class="widget"
+        :class="inEditMode ? 'widget' : ''"
         v-if="widgetData.type === 'ITEM_CAROUSEL'"
         :widget-data="widgetData as SearchBasedWidgetData"
         :in-edit-mode="inEditMode"
@@ -138,7 +139,7 @@
       />
 
       <artivact-info-box-widget
-        class="widget"
+        :class="inEditMode ? 'widget' : ''"
         v-if="widgetData.type === 'INFO_BOX'"
         :widget-data="widgetData as InfoBoxWidgetData"
         :in-edit-mode="inEditMode"
@@ -150,7 +151,7 @@
       />
 
       <artivact-avatar-widget
-        class="widget"
+        :class="inEditMode ? 'widget' : ''"
         v-if="widgetData.type === 'AVATAR'"
         :widget-data="widgetData as AvatarWidgetData"
         :in-edit-mode="inEditMode"
@@ -164,7 +165,7 @@
       />
 
       <artivact-space-widget
-        class="widget"
+        :class="inEditMode ? 'widget' : ''"
         v-if="widgetData.type === 'SPACE'"
         :widget-data="widgetData as SpaceWidgetData"
         :in-edit-mode="inEditMode"
@@ -430,6 +431,7 @@ function fileAdded(propertyName: string, widgetId: string) {
 .sticky {
   position: sticky;
   top: 3.5em;
+  z-index: 2;
 }
 
 .widget:hover {

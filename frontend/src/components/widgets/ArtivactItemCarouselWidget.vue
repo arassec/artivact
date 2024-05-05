@@ -9,14 +9,14 @@
   >
     <template v-slot:widget-content>
       <artivact-content
-        v-if="
+        class="gt-sm"
+      >
+        <q-carousel
+          v-if="
           searchResultRef &&
           searchResultRef.data &&
           searchResultRef.data.length > 0
         "
-        class="gt-sm"
-      >
-        <q-carousel
           v-model="slideRef"
           transition-prev="slide-right"
           transition-next="slide-left"
@@ -275,4 +275,9 @@ onMounted(() => {
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.carousel {
+  min-height: 300px;
+}
+
+</style>

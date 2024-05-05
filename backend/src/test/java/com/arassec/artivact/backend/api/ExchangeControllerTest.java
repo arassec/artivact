@@ -112,7 +112,7 @@ class ExchangeControllerTest {
     @SneakyThrows
     void testExportTagsConfiguration() {
         TagsConfiguration tagsConfiguration = new TagsConfiguration();
-        when(configurationService.loadTagsConfiguration()).thenReturn(tagsConfiguration);
+        when(configurationService.loadTranslatedRestrictedTags()).thenReturn(tagsConfiguration);
 
         when(objectMapper.writeValueAsString(tagsConfiguration)).thenReturn("tags-configuration-json");
 

@@ -64,11 +64,6 @@ public class ArtivactServerSecurityConfiguration {
     private static final String API_SEARCH_INDEX_PATTERN = "/api/search/index";
 
     /**
-     * API path for exhibition administration.
-     */
-    private static final String API_EXHIBITION_PATTERN = "/api/exhibition";
-
-    /**
      * API path for exchange handling.
      */
     private static final String API_EXCHANGE_PATTERN = "/api/exchange";
@@ -98,7 +93,6 @@ public class ArtivactServerSecurityConfiguration {
                         .requestMatchers(API_EXCHANGE_SYNC_PATTERN).permitAll()
                         .requestMatchers(API_EXCHANGE_PATTERN).hasRole(Roles.ADMIN)
                         .requestMatchers(API_ITEM_MEDIA_CREATION_PATTERN).hasAnyRole(Roles.ADMIN, Roles.USER)
-                        .requestMatchers(API_EXHIBITION_PATTERN).hasAnyRole(Roles.ADMIN, Roles.USER)
                         .requestMatchers(HttpMethod.POST, API_ITEM_PATTERN).hasAnyRole(Roles.ADMIN, Roles.USER)
                         .requestMatchers(HttpMethod.PUT, API_ITEM_PATTERN).hasAnyRole(Roles.ADMIN, Roles.USER)
                         .requestMatchers(HttpMethod.DELETE, API_ITEM_PATTERN).hasAnyRole(Roles.ADMIN, Roles.USER)

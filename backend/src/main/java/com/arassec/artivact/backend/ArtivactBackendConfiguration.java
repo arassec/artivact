@@ -1,8 +1,6 @@
 package com.arassec.artivact.backend;
 
-import com.arassec.artivact.backend.service.mapper.ToolDeserializer;
 import com.arassec.artivact.backend.service.mapper.WidgetDeserializer;
-import com.arassec.artivact.backend.service.model.exhibition.Tool;
 import com.arassec.artivact.backend.service.model.page.Widget;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -48,7 +46,6 @@ public class ArtivactBackendConfiguration {
     public ObjectMapper objectMapper() {
         var artivactMapperModule = new SimpleModule();
         artivactMapperModule.addDeserializer(Widget.class, new WidgetDeserializer());
-        artivactMapperModule.addDeserializer(Tool.class, new ToolDeserializer());
 
         ObjectMapper objectMapper = new ObjectMapper();
 

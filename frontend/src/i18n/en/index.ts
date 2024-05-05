@@ -38,15 +38,14 @@ export default {
       property: 'Property',
       tags: 'Tags',
       tag: 'Tag',
-      exhibitions: 'Exhibitions',
-      exhibition: 'Exhibition',
+      exports: 'Exports',
+      export: 'Export',
       menus: 'Menus',
       menu: 'Menu',
       applicationLocale: 'Application Locale',
       configuration: {
         appearance: 'Appearance configuration',
         exchange: 'Exchange configuration',
-        exhibitions: 'Exhibitions configuration',
         license: 'License configuration',
         peripherals: 'Peripherals configuration',
         properties: 'Properties configuration',
@@ -120,11 +119,21 @@ export default {
 
   ExchangeConfigurationPage: {
     heading: 'Exchange Configuration',
-    description: 'On this page you can configure exchange parameters.'
-  },
-
-  ExhibitionsConfigurationPage: {
-    heading: 'Item Exhibitions'
+    exchange: {
+      heading: 'Synchronization',
+      description: 'Here you can configure exchange parameters for syncing items with remote Artivact instances.'
+    },
+    contentExport: {
+      heading: 'Content Exports',
+      description: 'Here you can manage content exports. Exports can be created by right-clicking on a menu and selecting \'Export Content\'.'
+    },
+    dialog: {
+      delete: {
+        heading: 'Delete Export?',
+        description: 'Are you sure you want to delete this export? This action cannot be undone!',
+        approve: 'Delete Export'
+      }
+    }
   },
 
   ItemDetailsPage: {
@@ -300,6 +309,15 @@ export default {
     }
   },
 
+  ArtivactContentExportConfigurationEditor: {
+    tooltip: {
+      deleteContentExport: 'Delete Export'
+    },
+    label: {
+      lastModified: 'Last modified: '
+    }
+  },
+
   ArtivactExchangeConfigurationEditor: {
     synchronization: {
       heading: 'Synchronization Configuration',
@@ -311,26 +329,6 @@ export default {
         description: 'API token to use for synchronization. The token configured here must also be configured for a user account on the remote server. This user will be used on the remote side for authentication and authorization.',
         label: 'API Token'
       }
-    }
-  },
-
-  ArtivactExhibitionsConfigurationEditor: {
-    description: 'Configures exhibitions of items. Exhibitions are published as ZIP files and can be downloaded and experienced in an Artivact viewer application.',
-    add: 'Add Exhibition',
-    button: {
-      delete: 'Delete exhibition',
-      edit: 'Edit exhibition'
-    },
-    dialog: {
-      addExhibition: 'Add Exhibition',
-      editExhibition: 'Edit Exhibition',
-      title: 'Title',
-      description: 'Description',
-      pages: 'Create Exhibition from Page(s)',
-      deleteExhibition: 'Delete Exhibition?',
-      deleteDescription: 'Are you sure you want to delete this Exhibition and all its files? This action cannot be undone!',
-      deleteLabel: 'Delete Exhibition',
-      progress: 'Creating exhibition file...'
     }
   },
 
@@ -378,8 +376,10 @@ export default {
       edit: 'Right click to edit menu'
     },
     label: {
+      menu: 'Menu',
       edit: 'Edit Menu',
       delete: 'Delete Menu',
+      export: 'Export Content',
       left: 'Move Left',
       right: 'Move Right',
       editEntry: 'Edit Menu Entry',
@@ -387,7 +387,14 @@ export default {
       up: 'Move Up',
       down: 'Move Down',
       add: 'Add Page',
-      addEntry: 'Add Entry'
+      addEntry: 'Add Entry',
+      exportTitle: 'Export Title',
+      exportDescription: 'Export Description',
+      exportParams: {
+        optimizeSize: 'Optimize export size',
+        zipResults: 'ZIP export folder',
+        applyRestrictions: 'Exclude restricted elements',
+      }
     },
     dialog: {
       add: 'Add Menu',
@@ -400,10 +407,14 @@ export default {
       deleteEntry: 'Delete Menu Entry?',
       deleteDescription: 'Are you sure you want to delete this menu including its page and menu entries? This action cannot be undone!',
       deleteApprove: 'Delete Menu',
-      deleteApproveEntry: 'Delete Menu Entry'
+      deleteApproveEntry: 'Delete Menu Entry',
+      exportDescription: 'Optional title and description for exports based on this menu.',
+      exportParams: 'Export Configuration',
+      exportApprove: 'Export Content'
     },
     messages: {
-      movingFailed: 'Moving failed'
+      movingFailed: 'Moving failed',
+      exportFinished: 'Export finished'
     }
   },
 
@@ -776,9 +787,9 @@ export default {
       createIndex: '(Re-)Creating search index...',
       createIndexFailed: '(Re-)Creation of search index failed!',
     },
-    ExhibitionService: {
-      createOrUpdate: 'Creating/Updating exhibition...',
-      createOrUpdateFailed: 'Creating/Updating exhibition failed!'
+    ExportService: {
+      exportContent: 'Creating export...',
+      exportContentFailed: 'Export creation failed!'
     }
   },
 

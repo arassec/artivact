@@ -12,7 +12,6 @@ describe('User Manual -> Introduction -> About', () => {
 
             cy.takeScreenshot('locale-selection-button', locale)
             cy.takeScreenshot('item-settings-button', locale)
-            cy.takeScreenshot('exhibitions-button', locale)
             cy.takeScreenshot('system-settings-button', locale)
             cy.takeScreenshot('account-settings-button', locale)
             cy.takeScreenshot('documentation-button', locale)

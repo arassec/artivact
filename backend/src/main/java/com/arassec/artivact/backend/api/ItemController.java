@@ -1,13 +1,12 @@
 package com.arassec.artivact.backend.api;
 
-import com.arassec.artivact.backend.service.model.item.Asset;
 import com.arassec.artivact.backend.api.model.ImageSet;
 import com.arassec.artivact.backend.api.model.ItemDetails;
 import com.arassec.artivact.backend.api.model.ModelSet;
 import com.arassec.artivact.backend.service.ItemService;
 import com.arassec.artivact.backend.service.exception.ArtivactException;
-import com.arassec.artivact.backend.service.model.item.*;
 import com.arassec.artivact.backend.service.misc.ProjectDataProvider;
+import com.arassec.artivact.backend.service.model.item.*;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -202,7 +201,7 @@ public class ItemController extends BaseController {
 
         StreamingResponseBody streamResponseBody = out -> {
             final ZipOutputStream zipOutputStream = new ZipOutputStream(response.getOutputStream());
-            zipMediaFiles(zipOutputStream, mediaFiles);
+            itemService.zipMediaFiles(zipOutputStream, mediaFiles);
         };
 
         response.setContentType(TYPE_ZIP);

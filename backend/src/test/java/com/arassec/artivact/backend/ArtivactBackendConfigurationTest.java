@@ -1,15 +1,15 @@
 package com.arassec.artivact.backend;
 
 import com.arassec.artivact.backend.service.model.TranslatableString;
-import com.arassec.artivact.backend.service.model.exhibition.Exhibition;
-import com.arassec.artivact.backend.service.model.exhibition.ToolType;
-import com.arassec.artivact.backend.service.model.exhibition.Topic;
-import com.arassec.artivact.backend.service.model.exhibition.tool.TitleTool;
+import com.arassec.artivact.backend.service.model.page.WidgetType;
+import com.arassec.artivact.backend.service.model.page.widget.TextWidget;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -44,21 +44,19 @@ class ArtivactBackendConfigurationTest {
         TranslatableString title = new TranslatableString();
         title.setValue("testObjectMapper");
 
-        TitleTool tool = new TitleTool();
-        tool.setTitle(title);
+        TextWidget textWidget = new TextWidget();
+        textWidget.setId("123abc");
+        textWidget.setRestrictions(Set.of("ROLE_ADMIN"));
+        textWidget.setHeading(title);
 
-        Topic topic = new Topic();
-        topic.setTitle(title);
-        topic.getTools().add(tool);
+        String serializedWidget = objectMapper.writeValueAsString(textWidget);
+        log.info("Serialized widget: {}", serializedWidget);
 
-        Exhibition exhibition = new Exhibition();
-        exhibition.getTopics().add(topic);
-
-        String serializedExhibition = objectMapper.writeValueAsString(exhibition);
-        log.info("Serialized exhibition: {}", serializedExhibition);
-
-        Exhibition deserializedExhibition = objectMapper.readValue(serializedExhibition, Exhibition.class);
-        assertEquals(ToolType.TITLE, deserializedExhibition.getTopics().getFirst().getTools().getFirst().getType());
+        TextWidget deserializedWidget = objectMapper.readValue(serializedWidget, TextWidget.class);
+        assertEquals(WidgetType.TEXT, deserializedWidget.getType());
+        assertEquals("testObjectMapper", deserializedWidget.getHeading().getValue());
+        assertEquals("123abc", deserializedWidget.getId());
+        assertEquals("ROLE_ADMIN", deserializedWidget.getRestrictions().stream().findFirst().orElseThrow());
     }
 
 

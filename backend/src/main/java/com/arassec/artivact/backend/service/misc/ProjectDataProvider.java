@@ -22,19 +22,9 @@ public class ProjectDataProvider {
     public static final String ITEMS_DIR = "items";
 
     /**
-     * The directory containing the project's exhibitions.
+     * The directory containing the project's exported content.
      */
-    public static final String EXHIBITIONS_DIR = "exhibitions";
-
-    /**
-     * The directory containing an item's images.
-     */
-    public static final String IMAGES_DIR = "images";
-
-    /**
-     * The directory containing an item's models.
-     */
-    public static final String MODELS_DIR = "models";
+    public static final String EXPORT_DIR = "exports";
 
     /**
      * The directory containing temporary files during e.g. model creation.
@@ -50,6 +40,16 @@ public class ProjectDataProvider {
      * Directory containing search-engine data.
      */
     public static final String SEARCH_INDEX_DIR = "sedata";
+
+    /**
+     * The directory containing an item's images.
+     */
+    public static final String IMAGES_DIR = "images";
+
+    /**
+     * The directory containing an item's models.
+     */
+    public static final String MODELS_DIR = "models";
 
     /**
      * Path to the project's root directory.
@@ -77,6 +77,12 @@ public class ProjectDataProvider {
      */
     @PostConstruct
     public void initializeProjectDir() {
+        fileUtil.createDirIfRequired(projectRoot.resolve(ITEMS_DIR));
+        fileUtil.createDirIfRequired(projectRoot.resolve(EXPORT_DIR));
+        fileUtil.createDirIfRequired(projectRoot.resolve(TEMP_DIR));
+        fileUtil.createDirIfRequired(projectRoot.resolve(WIDGETS_FILE_DIR));
+        fileUtil.createDirIfRequired(projectRoot.resolve(SEARCH_INDEX_DIR));
+
         fileUtil.updateProjectDirectory(projectRoot, List.of(
                 new FileModification("utils/Metashape/artivact-metashape-2.1.1-workflow.xml", "##EXPORT_PATH##",
                         projectRoot.resolve("temp/export/metashape-export.obj").toAbsolutePath().toString()),

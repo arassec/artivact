@@ -1,4 +1,4 @@
-import {defineConfig, HeadConfig} from 'vitepress'
+import {defineConfig} from 'vitepress'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -89,14 +89,6 @@ export default defineConfig({
                     text: 'Account Management',
                     items: [
                         {text: 'Accounts & Roles', link: '/user-manual/account-management/accounts'},
-                    ]
-                },
-                {
-                    text: 'Exhibitions',
-                    items: [
-                        {text: 'Introduction', link: '/user-manual/exhibitions/introduction'},
-                        {text: 'Create', link: '/user-manual/exhibitions/create'},
-                        {text: 'Publish', link: '/user-manual/exhibitions/publish'},
                     ]
                 },
             ],
@@ -208,14 +200,6 @@ export default defineConfig({
                             text: 'Account-Management',
                             items: [
                                 {text: 'Accounts & Rollen', link: '/de/user-manual/account-management/accounts'},
-                            ]
-                        },
-                        {
-                            text: 'Ausstellungen',
-                            items: [
-                                {text: 'Einführung', link: '/de/user-manual/exhibitions/introduction'},
-                                {text: 'Erstellen', link: '/de/user-manual/exhibitions/create'},
-                                {text: 'Veröffentlichen ', link: '/de/user-manual/exhibitions/publish'},
                             ]
                         },
                     ],

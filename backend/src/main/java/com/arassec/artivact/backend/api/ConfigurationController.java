@@ -117,7 +117,7 @@ public class ConfigurationController {
      */
     @GetMapping(value = "/public/property")
     public List<PropertyCategory> getPublicPropertyCategories() {
-        return configurationService.loadTranslatedProperties();
+        return configurationService.loadTranslatedRestrictedProperties();
     }
 
     /**
@@ -137,7 +137,7 @@ public class ConfigurationController {
      */
     @GetMapping(value = "/public/tag")
     public TagsConfiguration getPublicTagsConfiguration() {
-        return configurationService.loadTagsConfiguration();
+        return configurationService.loadTranslatedRestrictedTags();
     }
 
     /**

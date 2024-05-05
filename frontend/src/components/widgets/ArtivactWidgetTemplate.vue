@@ -9,7 +9,7 @@
     <!-- Editor -->
     <div v-if="inEditMode" class="col-grow widget-editor">
       <q-tooltip>{{ $t('WidgetTemplate.tooltip.edit') }}</q-tooltip>
-      <div class="q-mb-lg">
+      <div class="q-pb-lg">
 
         <q-menu
           data-test="widget-context-menu"

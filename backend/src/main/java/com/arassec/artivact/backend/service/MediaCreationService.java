@@ -400,7 +400,7 @@ public class MediaCreationService {
     public void deleteModelSet(String itemId, int modelSetIndex) {
         Item item = itemService.loadTranslatedRestricted(itemId);
         CreationModelSet creationModelSet = item.getMediaCreationContent().getModelSets().get(modelSetIndex);
-        fileUtil.deleteDir(projectDataProvider.getProjectRoot().resolve(Path.of(creationModelSet.getDirectory())).toAbsolutePath());
+        fileUtil.delete(projectDataProvider.getProjectRoot().resolve(Path.of(creationModelSet.getDirectory())).toAbsolutePath());
         item.getMediaCreationContent().getModelSets().remove(modelSetIndex);
         itemService.save(item);
     }

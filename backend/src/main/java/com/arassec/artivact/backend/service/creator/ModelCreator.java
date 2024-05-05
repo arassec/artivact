@@ -1,22 +1,22 @@
 package com.arassec.artivact.backend.service.creator;
 
-import com.arassec.artivact.backend.service.creator.adapter.model.creator.FallbackModelCreatorAdapter;
-import com.arassec.artivact.backend.service.model.item.Asset;
 import com.arassec.artivact.backend.service.ConfigurationService;
 import com.arassec.artivact.backend.service.creator.adapter.Adapter;
 import com.arassec.artivact.backend.service.creator.adapter.AdapterImplementation;
+import com.arassec.artivact.backend.service.creator.adapter.model.creator.FallbackModelCreatorAdapter;
 import com.arassec.artivact.backend.service.creator.adapter.model.creator.ModelCreationResult;
 import com.arassec.artivact.backend.service.creator.adapter.model.creator.ModelCreatorAdapter;
 import com.arassec.artivact.backend.service.creator.adapter.model.creator.ModelCreatorInitParams;
 import com.arassec.artivact.backend.service.creator.adapter.model.editor.ModelEditorAdapter;
 import com.arassec.artivact.backend.service.creator.adapter.model.editor.ModelEditorInitParams;
 import com.arassec.artivact.backend.service.exception.ArtivactException;
+import com.arassec.artivact.backend.service.misc.ProgressMonitor;
+import com.arassec.artivact.backend.service.misc.ProjectDataProvider;
 import com.arassec.artivact.backend.service.model.configuration.AdapterConfiguration;
+import com.arassec.artivact.backend.service.model.item.Asset;
 import com.arassec.artivact.backend.service.model.item.CreationImageSet;
 import com.arassec.artivact.backend.service.model.item.CreationModelSet;
 import com.arassec.artivact.backend.service.util.FileUtil;
-import com.arassec.artivact.backend.service.misc.ProgressMonitor;
-import com.arassec.artivact.backend.service.misc.ProjectDataProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -116,7 +116,7 @@ public class ModelCreator extends BaseCreator {
 
         try (Stream<Path> stream = Files.list(sourceDir)) {
             if (stream.findAny().isEmpty() && !(modelCreatorAdapter instanceof FallbackModelCreatorAdapter)) {
-                fileUtil.deleteDir(targetDirWithProjectRoot);
+                fileUtil.delete(targetDirWithProjectRoot);
                 throw new ArtivactException("No model files found in export directory: " + sourceDir);
             }
 
@@ -129,14 +129,14 @@ public class ModelCreator extends BaseCreator {
                     try {
                         Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
                     } catch (IOException e) {
-                        fileUtil.deleteDir(targetDirWithProjectRoot);
+                        fileUtil.delete(targetDirWithProjectRoot);
                         throw new ArtivactException("Could not copy model files!", e);
                     }
                 });
             }
 
         } catch (IOException e) {
-            fileUtil.deleteDir(targetDirWithProjectRoot);
+            fileUtil.delete(targetDirWithProjectRoot);
             throw new ArtivactException("Could not copy asset directory!", e);
         }
 

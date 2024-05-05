@@ -116,7 +116,7 @@ public class ItemService extends BaseFileService {
      * @return The newly created item.
      */
     public Item create() {
-        TagsConfiguration tagsConfiguration = configurationService.loadTagsConfiguration();
+        TagsConfiguration tagsConfiguration = configurationService.loadTranslatedRestrictedTags();
 
         List<Tag> defaultTags = tagsConfiguration.getTags().stream()
                 .filter(Tag::isDefaultTag)
@@ -144,7 +144,7 @@ public class ItemService extends BaseFileService {
     public Item load(String itemId) {
         Optional<ItemEntity> itemEntityOptional = itemEntityRepository.findById(itemId);
         if (itemEntityOptional.isPresent()) {
-            TagsConfiguration tagsConfiguration = configurationService.loadTagsConfiguration();
+            TagsConfiguration tagsConfiguration = configurationService.loadTranslatedRestrictedTags();
             ItemEntity itemEntity = itemEntityOptional.get();
             Item item = fromJson(itemEntity.getContentJson(), Item.class);
             item.setVersion(itemEntity.getVersion());
@@ -210,9 +210,9 @@ public class ItemService extends BaseFileService {
 
         getDanglingImages(item).forEach(imageToDelete -> {
             try {
-                Files.deleteIfExists(getSubdirFilePath(itemsDir, item.getId(), ProjectDataProvider.IMAGES_DIR).resolve(imageToDelete));
+                Files.deleteIfExists(fileUtil.getSubdirFilePath(itemsDir, item.getId(), ProjectDataProvider.IMAGES_DIR).resolve(imageToDelete));
                 for (ImageSize imageSize : ImageSize.values()) {
-                    Files.deleteIfExists(getSubdirFilePath(itemsDir, item.getId(), ProjectDataProvider.IMAGES_DIR)
+                    Files.deleteIfExists(fileUtil.getSubdirFilePath(itemsDir, item.getId(), ProjectDataProvider.IMAGES_DIR)
                             .resolve(imageSize.name() + "-" + imageToDelete));
                 }
             } catch (IOException e) {
@@ -222,11 +222,11 @@ public class ItemService extends BaseFileService {
 
         List<String> modelsInItem = item.getMediaContent().getModels();
 
-        List<String> modelsToDelete = getFiles(getDirFromId(itemsDir, item.getId()), ProjectDataProvider.MODELS_DIR);
+        List<String> modelsToDelete = getFiles(fileUtil.getDirFromId(itemsDir, item.getId()), ProjectDataProvider.MODELS_DIR);
         modelsToDelete.removeAll(modelsInItem);
         modelsToDelete.forEach(imageToDelete -> {
             try {
-                Files.deleteIfExists(getSubdirFilePath(itemsDir, item.getId(), ProjectDataProvider.MODELS_DIR).resolve(imageToDelete));
+                Files.deleteIfExists(fileUtil.getSubdirFilePath(itemsDir, item.getId(), ProjectDataProvider.MODELS_DIR).resolve(imageToDelete));
             } catch (IOException e) {
                 log.error("Could not delete obsolete model from filesystem!", e);
             }
@@ -251,7 +251,7 @@ public class ItemService extends BaseFileService {
         List<String> imagesInItem = new LinkedList<>(item.getMediaContent().getImages());
         item.getMediaCreationContent().getImageSets().forEach(creationImageSet -> imagesInItem.addAll(creationImageSet.getFiles()));
 
-        List<String> allImagesInFolder = getFiles(getDirFromId(itemsDir, item.getId()), ProjectDataProvider.IMAGES_DIR);
+        List<String> allImagesInFolder = getFiles(fileUtil.getDirFromId(itemsDir, item.getId()), ProjectDataProvider.IMAGES_DIR);
         allImagesInFolder.removeAll(imagesInItem);
 
         return allImagesInFolder;
@@ -264,7 +264,7 @@ public class ItemService extends BaseFileService {
      */
     public void delete(String itemId) {
         itemEntityRepository.deleteById(itemId);
-        deleteDirAndEmptyParents(getDirFromId(itemsDir, itemId));
+        deleteDirAndEmptyParents(fileUtil.getDirFromId(itemsDir, itemId));
     }
 
     /**
@@ -408,24 +408,6 @@ public class ItemService extends BaseFileService {
     }
 
     /**
-     * Copies an item's file to the target directory.
-     *
-     * @param itemId    The item's ID.
-     * @param filename  The file to copy.
-     * @param subDir    The subdirectory the file lies in.
-     * @param targetDir The target directory to copy the file to.
-     */
-    public void copyFile(String itemId, String filename, String subDir, Path targetDir) {
-        Path sourceDir = getSubdirFilePath(itemsDir, itemId, subDir);
-        try {
-            Files.copy(sourceDir.resolve(filename).toAbsolutePath(), targetDir.resolve(filename).toAbsolutePath(),
-                    StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            throw new ArtivactException("Could not copy file!", e);
-        }
-    }
-
-    /**
      * Saves a file to the item and provides it with a new asset number (if required).
      *
      * @param itemId                The item's ID.
@@ -437,7 +419,7 @@ public class ItemService extends BaseFileService {
      * @return The new file name.
      */
     private String saveFile(String itemId, String filename, InputStream data, String subDir, String requiredFileExtension, boolean keepAssetNumber) {
-        Path targetDir = getSubdirFilePath(itemsDir, itemId, subDir);
+        Path targetDir = fileUtil.getSubdirFilePath(itemsDir, itemId, subDir);
 
         int assetNumber = getNextAssetNumber(targetDir);
         if (keepAssetNumber) {

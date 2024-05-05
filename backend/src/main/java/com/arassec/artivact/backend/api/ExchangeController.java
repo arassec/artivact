@@ -110,7 +110,7 @@ public class ExchangeController extends BaseController {
     @GetMapping(value = "/tags/export")
     public ResponseEntity<StreamingResponseBody> exportTagsConfiguration(HttpServletResponse response) {
 
-        TagsConfiguration tagsConfiguration = configurationService.loadTagsConfiguration();
+        TagsConfiguration tagsConfiguration = configurationService.loadTranslatedRestrictedTags();
 
         try {
             String tagsConfigurationJson = objectMapper.writeValueAsString(tagsConfiguration);

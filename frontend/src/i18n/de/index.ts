@@ -38,17 +38,16 @@ export default {
       property: 'Eigenschaft',
       tags: 'Tags',
       tag: 'Tag',
-      exhibitions: 'Ausstellungen',
-      exhibition: 'Ausstellung',
+      exports: 'Exporte',
+      export: 'Export',
       menus: 'Menüs',
       menu: 'Menü',
       applicationLocale: 'Anwendungssprache',
       configuration: {
         appearance: 'Darstellungskonfiguration',
         exchange: 'Austausch-Konfiguration',
-        exhibitions: 'Ausstellung-Konfiguration',
         license: 'Lizenzkonfiguration',
-        peripherals: 'Peripheriegeräte-Konfiguration',
+        peripherals: 'Peripherie-Konfiguration',
         properties: 'Eigenschaften-Konfiguration',
         tags: 'Tags-Konfiguration'
       }
@@ -120,11 +119,21 @@ export default {
 
   ExchangeConfigurationPage: {
     heading: 'Austausch-Konfiguration',
-    description: 'Auf dieser Seite können Parameter für den Austausch von Objekten zwischen verschiedenen Systemen konfiguriert werden.'
-  },
-
-  ExhibitionsConfigurationPage: {
-    heading: 'Ausstellungs-Konfiguration'
+    exchange: {
+      heading: 'Synchronisation',
+      description: 'Hier können Parameter für den Austausch von Objekten zwischen verschiedenen Artivact-Instanzen konfiguriert werden.'
+    },
+    contentExport: {
+      heading: 'Exporte',
+      description: 'Hier können Exporte verwaltet werden. Exporte können per Rechtsklick auf ein Menu mit der Auswahl \'Inhalte Exportieren\' erstellt werden.'
+    },
+    dialog: {
+      delete: {
+        heading: 'Export löschen?',
+        description: 'Sind Sie sicher, dass Sie den gewählten Export löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden!',
+        approve: 'Export löschen'
+      }
+    }
   },
 
   ItemDetailsPage: {
@@ -216,7 +225,7 @@ export default {
   },
 
   PeripheralsConfigurationPage: {
-    heading: 'Peripheriegeräte-Konfiguration'
+    heading: 'Peripherie-Konfiguration'
   },
 
   PropertiesConfigurationPage: {
@@ -300,6 +309,15 @@ export default {
     }
   },
 
+  ArtivactContentExportConfigurationEditor: {
+    tooltip: {
+      deleteContentExport: 'Export löschen'
+    },
+    label: {
+      lastModified: 'Letzte Änderung: '
+    }
+  },
+
   ArtivactExchangeConfigurationEditor: {
     synchronization: {
       heading: 'Synchronisations-Konfiguration',
@@ -311,26 +329,6 @@ export default {
         description: 'API-Token zur Authentifizierung und Autorisierung bei der Synchronisation. Das hier konfigurierte Token muss ebenfalls im Artivact-Server einem Benutzerkonto über die Benutzerkontenverwaltung zugewiesen werden.',
         label: 'API-Token'
       }
-    }
-  },
-
-  ArtivactExhibitionsConfigurationEditor: {
-    description: 'Konfiguriert Ausstellungen. Diese werden als ZIP-Datei veröffentlicht und können über die Artivact-VR-Anwendung heruntergeladen und benutzt werden.',
-    add: 'Ausstellung hinzufügen',
-    button: {
-      delete: 'Ausstellung löschen',
-      edit: 'Ausstellung bearbeiten'
-    },
-    dialog: {
-      addExhibition: 'Ausstellung hinzufügen',
-      editExhibition: 'Ausstellung bearbeiten',
-      title: 'Titel',
-      description: 'Beschreibung',
-      pages: 'Ausstellung aus Seite(n) erstellen',
-      deleteExhibition: 'Ausstellung löschen?',
-      deleteDescription: 'Sind Sie sicher, dass sie die ausgewählte Ausstellung löschen möchten? Dies kann nicht rückgängig gemacht werden!',
-      deleteLabel: 'Ausstellung löschen',
-      progress: 'Erzeuge Ausstellungs-Datei...'
     }
   },
 
@@ -378,8 +376,10 @@ export default {
       edit: 'Rechtsklick zum Bearbeiten des Menüs'
     },
     label: {
+      menu: 'Menü',
       edit: 'Menü bearbeiten',
       delete: 'Menü löschen',
+      export: 'Inhalte exportieren',
       left: 'Nach links bewegen',
       right: 'Nach rechts bewegen',
       editEntry: 'Menüeintrag bearbeiten',
@@ -387,7 +387,14 @@ export default {
       up: 'Nach oben bewegen',
       down: 'Nach unten bewegen',
       add: 'Seite hinzufügen',
-      addEntry: 'Menüeintrag hinzufügen'
+      addEntry: 'Menüeintrag hinzufügen',
+      exportTitle: 'Export Titel',
+      exportDescription: 'Export Beschreibung',
+      exportParams: {
+        optimizeSize: 'Exportgröße optimieren',
+        zipResults: 'Exportverzeichnis packen (ZIP)',
+        applyRestrictions: 'Eingeschränkte Elemente ausschließen',
+      }
     },
     dialog: {
       add: 'Menü hinzufügen',
@@ -400,10 +407,14 @@ export default {
       deleteEntry: 'Menüeintrag löschen?',
       deleteDescription: 'Sind Sie sicher, dass Sie das ausgewählte Menü und alle seine Einträge und dazugehörigen Seiten löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden!',
       deleteApprove: 'Menü löschen',
-      deleteApproveEntry: 'Menüeintrag löschen'
+      deleteApproveEntry: 'Menüeintrag löschen',
+      exportDescription: 'Optionaler Titel und Beschreibung für Exporte, die auf Basis dieses Menüs erstellt werden.',
+      exportParams: 'Export Konfiguration',
+      exportApprove: 'Inhalte exportieren'
     },
     messages: {
-      movingFailed: 'Bewegen fehlgeschlagen!'
+      movingFailed: 'Bewegen fehlgeschlagen!',
+      exportFinished: 'Export abgeschlossen'
     }
   },
 
@@ -532,7 +543,7 @@ export default {
     importItems: 'Objekte importieren',
     license: 'Lizenz',
     appearance: 'Darstellung',
-    peripherals: 'Peripheriegeräte',
+    peripherals: 'Peripherie',
     exchange: 'Austausch',
     locale: 'Sprache',
     exhib: 'Ausstellung',
@@ -777,9 +788,9 @@ export default {
       createIndex: 'Erstelle Suchindex...',
       createIndexFailed: 'Fehler bei Erstellung/Aktualisierung des Suchindexes!',
     },
-    ExhibitionService: {
-      createOrUpdate: 'Bearbeite Ausstellung...',
-      createOrUpdateFailed: 'Bearbeiten der Ausstellung fehlgeschlagen!'
+    ExportService: {
+      exportContent: 'Erstelle Export...',
+      exportContentFailed: 'Erstellung des Exports fehlgeschlagen!'
     }
   },
 
