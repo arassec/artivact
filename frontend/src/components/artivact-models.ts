@@ -59,7 +59,7 @@ export interface ItemDetails extends BaseRestrictedObject {
   models: Asset[];
   creationImageSets: ImageSet[];
   creationModelSets: ModelSet[];
-  properties: Record<string, string>;
+  properties: Record<string, TranslatableString>;
   tags: Tag[];
 }
 

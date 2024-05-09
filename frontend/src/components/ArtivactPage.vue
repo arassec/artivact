@@ -1,7 +1,7 @@
 <template>
   <div v-if="pageContentRef && pageId">
 
-    <div class="col items-center sticky" v-if="userdataStore.isUserOrAdmin && pageId !== 'INDEX' && !inEditMode">
+    <div class="col items-center sticky gt-md" v-if="userdataStore.isUserOrAdmin && pageId !== 'INDEX' && !inEditMode">
       <div class="absolute-top-right q-ma-md">
       <q-btn id="sticky-item"
              data-test="edit-page-button"
@@ -16,7 +16,7 @@
       </div>
     </div>
 
-    <div class="col items-center sticky" v-if="inEditMode">
+    <div class="col items-center sticky gt-md" v-if="inEditMode">
       <div class="absolute-top-left q-ma-md">
         <q-btn
           data-test="close-button"
@@ -339,7 +339,7 @@ function addWidget() {
       type: 'ITEM_CAROUSEL',
       id: '',
       restrictions: [] as string[],
-      searchTerm: '',
+      searchTerm: '*',
       maxResults: 9,
     } as SearchBasedWidgetData);
   } else if (selectedWidgetTypeRef.value === 'INFO_BOX') {

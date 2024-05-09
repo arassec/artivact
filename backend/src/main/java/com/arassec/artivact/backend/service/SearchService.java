@@ -134,7 +134,7 @@ public class SearchService extends BaseService {
     /**
      * Searches for items without restrictions and without translating results.
      *
-     * @param query The search query to use.
+     * @param query      The search query to use.
      * @param maxResults The maximum number of results.
      * @return The list of found items.
      */
@@ -235,8 +235,16 @@ public class SearchService extends BaseService {
             }
 
             item.getProperties().forEach((key, value) -> {
-                luceneDocument.add(new TextField(key, value, Field.Store.YES));
-                appendField(fulltext, key, value);
+                if (!StringUtils.hasText(value.getValue())) {
+                    return;
+                }
+                luceneDocument.add(new TextField(key, value.getValue(), Field.Store.YES));
+                appendField(fulltext, key, value.getValue());
+                if (!value.getTranslations().isEmpty()) {
+                    value.getTranslations().forEach((translationKey, translationValue)
+                            -> appendField(fulltext, key + "_" + translationKey, translationValue)
+                    );
+                }
             });
 
             item.getTags().forEach(tag -> {

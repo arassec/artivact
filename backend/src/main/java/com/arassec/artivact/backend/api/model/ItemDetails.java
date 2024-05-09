@@ -68,7 +68,7 @@ public class ItemDetails {
     /**
      * The item's properties.
      */
-    private Map<String, String> properties;
+    private Map<String, TranslatableString> properties;
 
     /**
      * The item's tags.

@@ -1,59 +1,63 @@
 <template>
-  <ArtivactContent v-if="itemDataDetailsRef">
+  <div v-if="itemDataDetailsRef">
 
-    <!-- BREADCRUMBS -->
-    <div v-if="breadcrumbsStore.breadcrumbs.length > 1" class="q-mb-md">
-      <q-breadcrumbs>
-        <template
-          v-for="(breadcrumb, index) in breadcrumbsStore.breadcrumbs"
-          v-bind:key="index"
-        >
-          <q-breadcrumbs-el
-            :label="breadcrumb.label"
-            :to="'/page/' + breadcrumb.target"
-            v-if="breadcrumb.label && breadcrumb.target"
-            style="text-decoration: underline"
-          />
-          <q-breadcrumbs-el :label="breadcrumb.label" v-else/>
-        </template>
-      </q-breadcrumbs>
+    <div class="col items-center sticky gt-md">
+      <div class="absolute-top-left q-ma-md" v-if="userdataStore.authenticated">
+        <q-btn
+          round
+          color="primary"
+          icon="delete"
+          class="main-nav-button"
+          @click="confirmDeleteRef = true">
+          <q-tooltip>{{ $t('ItemDetailsPage.button.tooltip.delete') }}</q-tooltip>
+        </q-btn>
+      </div>
+
+      <div class="absolute-top-right q-ma-md" v-if="userdataStore.authenticated">
+        <!-- SYNC UP BUTTON -->
+        <q-btn
+          round
+          color="primary"
+          icon="cloud_upload"
+          class="q-mr-sm main-nav-button"
+          @click="synchronizeUp()">
+          <q-tooltip>{{ $t('ItemDetailsPage.button.tooltip.sync') }}</q-tooltip>
+        </q-btn>
+        <!-- EDIT ITEM BUTTON -->
+        <router-link :to="'/administration/configuration/item/' + itemDataDetailsRef.id">
+          <q-btn
+            round
+            color="primary"
+            icon="edit"
+            class="main-nav-button">
+            <q-tooltip>{{ $t('ItemDetailsPage.button.tooltip.edit') }}</q-tooltip>
+          </q-btn>
+        </router-link>
+      </div>
     </div>
 
-    <div class="col-12">
+    <ArtivactContent>
 
-      <div class="col items-center">
-        <div class="absolute-top-left q-ma-md" v-if="userdataStore.authenticated">
-          <q-btn
-            round
-            color="primary"
-            icon="delete"
-            class="main-nav-button"
-            @click="confirmDeleteRef = true">
-            <q-tooltip>{{ $t('ItemDetailsPage.button.tooltip.delete') }}</q-tooltip>
-          </q-btn>
-        </div>
+      <!-- BREADCRUMBS -->
+      <div v-if="breadcrumbsStore.breadcrumbs.length > 1" class="q-mb-md">
+        <q-breadcrumbs>
+          <template
+            v-for="(breadcrumb, index) in breadcrumbsStore.breadcrumbs"
+            v-bind:key="index"
+          >
+            <q-breadcrumbs-el
+              :label="breadcrumb.label"
+              :to="'/page/' + breadcrumb.target"
+              v-if="breadcrumb.label && breadcrumb.target"
+              style="text-decoration: underline"
+            />
+            <q-breadcrumbs-el :label="breadcrumb.label" v-else/>
+          </template>
+        </q-breadcrumbs>
+      </div>
 
-        <div class="absolute-top-right q-ma-md" v-if="userdataStore.authenticated">
-          <!-- SYNC UP BUTTON -->
-          <q-btn
-            round
-            color="primary"
-            icon="cloud_upload"
-            class="q-mr-sm main-nav-button"
-            @click="synchronizeUp()">
-            <q-tooltip>{{ $t('ItemDetailsPage.button.tooltip.sync') }}</q-tooltip>
-          </q-btn>
-          <!-- EDIT ITEM BUTTON -->
-          <router-link :to="'/administration/configuration/item/' + itemDataDetailsRef.id">
-            <q-btn
-              round
-              color="primary"
-              icon="edit"
-              class="main-nav-button">
-              <q-tooltip>{{ $t('ItemDetailsPage.button.tooltip.edit') }}</q-tooltip>
-            </q-btn>
-          </router-link>
-        </div>
+      <div class="col-12">
+
 
         <div class="col q-mt-xl lt-md"/> <!-- Space on mobile resolution -->
 
@@ -100,56 +104,57 @@
 
         <!-- MEDIA-CAROUSEL -->
         <artivact-item-media-carousel :show-images="!openModelRef"
-                             v-if=" itemDataDetailsRef.images.length > 0 ||
+                                      v-if=" itemDataDetailsRef.images.length > 0 ||
             itemDataDetailsRef.models.length > 0"
-                             :item-details="itemDataDetailsRef"
+                                      :item-details="itemDataDetailsRef"
         />
       </div>
-    </div>
 
-    <!-- PROPERTIES -->
-    <div v-if="itemDataDetailsRef && propertiesDataRef" class="col-12 q-mt-lg row">
-      <div v-for="(category, index) in propertiesDataRef" :key="index" class="col-6 property-category">
-        <artivact-property-category-viewer
-          :margin-right="(index % 2) == 0"
-          :category="category"
-          :properties="itemDataDetailsRef.properties"
-        />
+      <!-- PROPERTIES -->
+      <div v-if="itemDataDetailsRef && propertiesDataRef" class="col-12 q-mt-lg row">
+        <div v-for="(category, index) in propertiesDataRef" :key="index" class="col-6 property-category">
+          <artivact-property-category-viewer
+            :margin-right="(index % 2) == 0"
+            :category="category"
+            :properties="itemDataDetailsRef.properties"
+          />
+        </div>
       </div>
-    </div>
 
-    <!-- LONG-RUNNING OPERATION -->
-    <artivact-operation-in-progress-dialog :progress-monitor-ref="progressMonitorRef"
-                                           :dialog-model="showOperationInProgressModalRef"
-                                           @close-dialog="showOperationInProgressModalRef = false"/>
+      <!-- LONG-RUNNING OPERATION -->
+      <artivact-operation-in-progress-dialog :progress-monitor-ref="progressMonitorRef"
+                                             :dialog-model="showOperationInProgressModalRef"
+                                             @close-dialog="showOperationInProgressModalRef = false"/>
 
 
-    <!-- DELETE CONFIRMATION -->
-    <artivact-dialog :dialog-model="confirmDeleteRef" :warn="true">
-      <template v-slot:header>
-        {{$t('ItemDetailsPage.dialog.delete.heading')}}
-      </template>
+      <!-- DELETE CONFIRMATION -->
+      <artivact-dialog :dialog-model="confirmDeleteRef" :warn="true">
+        <template v-slot:header>
+          {{ $t('ItemDetailsPage.dialog.delete.heading') }}
+        </template>
 
-      <template v-slot:body>
-        <q-card-section>
-          {{$t('ItemDetailsPage.dialog.delete.description')}}
-        </q-card-section>
-      </template>
+        <template v-slot:body>
+          <q-card-section>
+            {{ $t('ItemDetailsPage.dialog.delete.description') }}
+          </q-card-section>
+        </template>
 
-      <template v-slot:cancel>
-        <q-btn :label="$t('Common.cancel')" color="primary" @click="confirmDeleteRef = false"/>
-      </template>
+        <template v-slot:cancel>
+          <q-btn :label="$t('Common.cancel')" color="primary" @click="confirmDeleteRef = false"/>
+        </template>
 
-      <template v-slot:approve>
-        <q-btn
-          :label="$t('ItemDetailsPage.dialog.delete.button')"
-          color="primary"
-          @click="deleteItem"
-        />
-      </template>
-    </artivact-dialog>
+        <template v-slot:approve>
+          <q-btn
+            :label="$t('ItemDetailsPage.dialog.delete.button')"
+            color="primary"
+            @click="deleteItem"
+          />
+        </template>
+      </artivact-dialog>
 
-  </ArtivactContent>
+    </ArtivactContent>
+  </div>
+
 </template>
 
 <script setup lang="ts">
@@ -209,7 +214,7 @@ function loadData(itemId: string | string[]) {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.item')}),
+        message: i18n.t('Common.messages.loading.failed', {item: i18n.t('Common.items.item')}),
         icon: 'report_problem',
       });
     });
@@ -225,7 +230,7 @@ function loadPropertiesData() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.properties')}),
+        message: i18n.t('Common.messages.loading.failed', {item: i18n.t('Common.items.properties')}),
         icon: 'report_problem',
       });
     });
@@ -288,7 +293,7 @@ function deleteItem() {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: i18n.t('Common.messages.deleting.success', { item: i18n.t('Common.items.item')}),
+        message: i18n.t('Common.messages.deleting.success', {item: i18n.t('Common.items.item')}),
         icon: 'done',
       });
     })
@@ -296,7 +301,7 @@ function deleteItem() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.deleting.failed', { item: i18n.t('Common.items.item')}),
+        message: i18n.t('Common.messages.deleting.failed', {item: i18n.t('Common.items.item')}),
         icon: 'report_problem',
       });
     });
@@ -341,4 +346,11 @@ onMounted(() => {
   text-decoration: none;
   color: white;
 }
+
+.sticky {
+  position: sticky;
+  top: 3.5em;
+  z-index: 2;
+}
+
 </style>

@@ -123,10 +123,6 @@ const props = defineProps({
     required: false,
     type: Object as PropType<BaseRestrictedObject>,
   },
-  locales: {
-    required: true,
-    type: Object as PropType<string[]>,
-  },
   dataTest: {
     required: false,
     type: String

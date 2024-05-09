@@ -11,10 +11,10 @@
 </template>
 
 <script setup lang="ts">
-import { PropType, toRef } from 'vue';
+import {PropType, toRef} from 'vue';
 import ArtivactPropertyEditor from 'components/ArtivactPropertyEditor.vue';
-import { PropertyCategory } from 'components/artivact-models';
-import { translate } from './artivact-utils';
+import {PropertyCategory, TranslatableString} from 'components/artivact-models';
+import {translate} from './artivact-utils';
 
 const props = defineProps({
   category: {
@@ -23,7 +23,7 @@ const props = defineProps({
   },
   properties: {
     required: true,
-    type: Object as PropType<Record<string, string>>,
+    type: Object as PropType<Record<string, TranslatableString>>,
   },
 });
 const categoryRef = toRef(props, 'category');

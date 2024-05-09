@@ -262,8 +262,6 @@ function calculateSlides(numPerPage: number): number[] {
   if (searchResultRef.value && searchResultRef.value.data.length > 0) {
     let result = Math.ceil(searchResultRef.value.data.length / numPerPage);
     if (result > 0) {
-      console.log('RESULT: ' + result);
-      console.log('KEYS: ' + Array.from(Array(result).keys()));
       return Array.from(Array(result).keys());
     }
   }
@@ -276,8 +274,5 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.carousel {
-  min-height: 300px;
-}
 
 </style>

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Implements the {@link TranslateResult} aspect.
@@ -80,6 +81,13 @@ public class TranslateResultAspect {
                     field.setAccessible(true);
                     Collection<?> collection = (Collection<?>) field.get(object);
                     collection.forEach(collectionEntry -> translateIfPossible(collectionEntry, locale));
+                } else if (Map.class.isAssignableFrom(field.getType())) {
+                    field.setAccessible(true);
+                    Map<?, ?> map = (Map<?, ?>) field.get(object);
+                    map.forEach((key, value) -> {
+                        translateIfPossible(key, locale);
+                        translateIfPossible(value, locale);
+                    });
                 }
             } catch (IllegalAccessException e) {
                 throw new ArtivactException("Could not translate method result!", e);

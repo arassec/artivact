@@ -35,9 +35,7 @@
 
 <script setup lang="ts">
 import {PropType, Ref, toRef} from 'vue';
-import {
-  Property, PropertyCategory
-} from 'components/artivact-models';
+import {Property, PropertyCategory, TranslatableString} from 'components/artivact-models';
 import {translate} from 'components/artivact-utils';
 
 const props = defineProps({
@@ -47,7 +45,7 @@ const props = defineProps({
   },
   properties: {
     required: true,
-    type: Object as PropType<Record<string, string>>,
+    type: Object as PropType<Record<string, TranslatableString>>,
   },
   marginRight: {
     required: true,
@@ -56,15 +54,18 @@ const props = defineProps({
 });
 
 const categoryRef: Ref<PropertyCategory> = toRef(props, 'category');
-const propertiesRef: Ref<Record<string, string>> = toRef(props, 'properties');
+const propertiesRef: Ref<Record<string, TranslatableString>> = toRef(props, 'properties');
 
 function getPropertyValue(property: Property) {
+  if (!propertiesRef.value[property.id]) {
+    return '';
+  }
   if (property.valueRange.length === 0) {
-    return propertiesRef.value[property.id];
+    return propertiesRef.value[property.id].translatedValue;
   } else {
     let result = '';
     property.valueRange.forEach((valueRangeEntry) => {
-      if (valueRangeEntry.value === propertiesRef.value[property.id]) {
+      if (valueRangeEntry.value === propertiesRef.value[property.id].value) {
         result = translate(valueRangeEntry);
       }
     });

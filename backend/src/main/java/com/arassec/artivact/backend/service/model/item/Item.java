@@ -36,7 +36,7 @@ public class Item extends BaseRestrictedObject {
     /**
      * The item's property values.
      */
-    private Map<String, String> properties = new HashMap<>();
+    private Map<String, TranslatableString> properties = new HashMap<>();
 
     /**
      * Assigned tags.

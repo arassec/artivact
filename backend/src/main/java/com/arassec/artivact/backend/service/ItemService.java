@@ -163,7 +163,13 @@ public class ItemService extends BaseFileService {
             if (item.getMediaCreationContent() == null) {
                 item.setMediaCreationContent(new MediaCreationContent());
             }
-
+            // Create an empty TranslatableString value for every property:
+            configurationService.loadTranslatedRestrictedProperties().forEach(propertyCategory ->
+                    propertyCategory.getProperties().forEach(property -> {
+                        if (!item.getProperties().containsKey(property.getId())) {
+                            item.getProperties().put(property.getId(), new TranslatableString());
+                        }
+                    }));
             return item;
         }
 

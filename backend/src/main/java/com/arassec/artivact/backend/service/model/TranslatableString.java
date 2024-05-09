@@ -36,6 +36,20 @@ public class TranslatableString implements TranslatableObject {
     private Map<String, String> translations = new HashMap<>();
 
     /**
+     * Creates a new instance.
+     * <p>
+     * This constructor is required as fallback for Jackson JSON deserialization. In case a string should be treated
+     * as {@link TranslatableString} after being persisted already, this constructor will take care of the conversion
+     * on the fly.
+     *
+     * @param value The untranslated value.
+     */
+    public TranslatableString(String value) {
+        this.value = value;
+        this.translations = new HashMap<>();
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override

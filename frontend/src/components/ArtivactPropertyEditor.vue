@@ -1,15 +1,9 @@
 <template>
   <div v-if="propertyRef">
-    <q-input
-      class="q-mb-md"
-      outlined
-      v-model="enteredValueRef"
-      :label="translate(propertyRef)"
-      @change="updateValue"
-      v-if="propertyRef.valueRange.length === 0"
-      clearable
-      @clear="deleteValue"
-    />
+    <artivact-restricted-translatable-item-editor :label="translate(propertyRef)"
+                                                  :translatable-string="enteredValueRef"
+                                                  v-if="propertyRef.valueRange.length === 0"
+                                                  :show-separator="false"/>
     <q-select
       class="q-mb-md"
       outlined
@@ -25,9 +19,10 @@
 </template>
 
 <script setup lang="ts">
-import {computed, PropType, ref, toRef} from 'vue';
-import {Property, SelectboxModel} from 'components/artivact-models';
+import {computed, PropType, Ref, ref, toRef} from 'vue';
+import {Property, SelectboxModel, TranslatableString} from 'components/artivact-models';
 import {translate} from 'components/artivact-utils';
+import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
 
 const props = defineProps({
   property: {
@@ -36,25 +31,31 @@ const props = defineProps({
   },
   properties: {
     required: true,
-    type: Object as PropType<Record<string, string>>,
+    type: Object as PropType<Record<string, TranslatableString>>,
   },
 });
+
 const propertyRef = toRef(props, 'property');
 const propertiesRef = toRef(props, 'properties');
 const optionsRef = ref(calcOptions());
 
-const enteredValueRef = ref(propertiesRef.value[propertyRef.value.id]);
+const enteredValueRef: Ref<TranslatableString> = ref(propertiesRef.value[propertyRef.value.id]);
 const selectedValueRef = ref(
   optionsRef.value.find((option) => {
-    return option.value === propertiesRef.value[propertyRef.value.id];
+    return option.value === (propertiesRef.value[propertyRef.value.id] ? propertiesRef.value[propertyRef.value.id].value : undefined);
   })
 );
 
 function updateValue() {
-  if (propertyRef.value.valueRange.length === 0) {
-    propertiesRef.value[propertyRef.value.id] = enteredValueRef.value;
-  } else if (selectedValueRef.value) {
-    propertiesRef.value[propertyRef.value.id] = selectedValueRef.value.value;
+  if (selectedValueRef.value) {
+    if (!propertiesRef.value[propertyRef.value.id]) {
+      propertiesRef.value[propertyRef.value.id] = {
+        value: '',
+        translatedValue: '',
+        translations: {}
+      }
+    }
+    propertiesRef.value[propertyRef.value.id].value = selectedValueRef.value.value;
   }
 }
 
@@ -85,6 +86,7 @@ const availableOptions = computed(() => {
   });
   return options;
 });
+
 </script>
 
 <style scoped></style>
