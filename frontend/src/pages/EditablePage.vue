@@ -6,21 +6,47 @@
     v-on:update-page-content="updatePageContent"
     v-on:file-added="fileAdded"
   />
+
+  <artivact-dialog :dialog-model="showUnsavedChangesExistDialog" :warn="true">
+    <template v-slot:header>
+      {{ $t('EditablePage.dialog.heading') }}
+    </template>
+
+    <template v-slot:body>
+      <q-card-section>
+        {{ $t('EditablePage.dialog.content') }}
+      </q-card-section>
+    </template>
+
+    <template v-slot:cancel>
+      <q-btn :label="$t('Common.cancel')" color="primary" @click="showUnsavedChangesExistDialog = false"/>
+    </template>
+
+    <template v-slot:approve>
+      <q-btn
+        :label="$t('EditablePage.dialog.approve')"
+        color="primary"
+        @click="proceed"
+      />
+    </template>
+  </artivact-dialog>
 </template>
 
 <script setup lang="ts">
-import { useQuasar } from 'quasar';
-import { useRoute } from 'vue-router';
-import { api } from 'boot/axios';
-import { onMounted, ref } from 'vue';
+import {useQuasar} from 'quasar';
+import {onBeforeRouteLeave, onBeforeRouteUpdate, RouteLocationNormalized, useRoute, useRouter} from 'vue-router';
+import {api} from 'boot/axios';
+import {onMounted, ref} from 'vue';
 import ArtivactPage from 'components/ArtivactPage.vue';
-import { PageContent, Widget } from 'components/artivact-models';
-import { useBreadcrumbsStore } from 'stores/breadcrumbs';
+import {PageContent, Widget} from 'components/artivact-models';
+import {useBreadcrumbsStore} from 'stores/breadcrumbs';
 import {useMenuStore} from 'stores/menu';
 import {useI18n} from 'vue-i18n';
+import ArtivactDialog from 'components/ArtivactDialog.vue';
 
 const quasar = useQuasar();
 const route = useRoute();
+const router = useRouter();
 const i18n = useI18n();
 
 const breadcrumbsStore = useBreadcrumbsStore();
@@ -30,6 +56,10 @@ const pageContentRef = ref();
 const pageIdRef = ref('');
 
 const editModeRef = ref(false);
+
+let originalPageContentJson: string;
+let nextRoute: RouteLocationNormalized;
+const showUnsavedChangesExistDialog = ref(false);
 
 function loadPage(pageId: string | string[]) {
   pageIdRef.value = Array.isArray(pageId) ? pageId[0] : pageId;
@@ -43,6 +73,7 @@ function loadPage(pageId: string | string[]) {
     .get(url)
     .then((response) => {
       pageContentRef.value = response.data;
+      originalPageContentJson = JSON.stringify(response.data);
       // With only one page yet, "index page" should be checked by default:
       let menus = menuStore.availableMenus;
       if (menus.length == 1) {
@@ -70,6 +101,7 @@ function loadPage(pageId: string | string[]) {
 
 function updatePageContent(pageContent: PageContent) {
   pageContentRef.value = pageContent;
+  originalPageContentJson = JSON.stringify(pageContent);
 }
 
 function fileAdded(widgetId: string, propertyName: string) {
@@ -101,9 +133,34 @@ function fileAdded(widgetId: string, propertyName: string) {
     });
 }
 
+function proceed() {
+  showUnsavedChangesExistDialog.value = false;
+  originalPageContentJson = JSON.stringify(pageContentRef.value);
+  router.push(nextRoute);
+}
+
+onBeforeRouteLeave((to) => {
+  let currentPageContentJson = JSON.stringify(pageContentRef.value);
+  if (currentPageContentJson !== originalPageContentJson) {
+    nextRoute = to;
+    showUnsavedChangesExistDialog.value = true;
+    return false;
+  }
+})
+
+onBeforeRouteUpdate((to) => {
+  let currentPageContentJson = JSON.stringify(pageContentRef.value);
+  if (currentPageContentJson !== originalPageContentJson) {
+    nextRoute = to;
+    showUnsavedChangesExistDialog.value = true;
+    return false;
+  }
+})
+
 onMounted(() => {
   loadPage(route.params.pageId);
 });
+
 </script>
 
 <style scoped></style>

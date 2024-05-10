@@ -112,6 +112,14 @@ export default {
     heading: 'Darstellungs-Konfiguration'
   },
 
+  EditablePage: {
+    dialog: {
+      heading: 'Änderungen Verwerfen?',
+      content: 'Die neue Seitenkonfiguration wurden noch nicht gespeichert. Die Änderungen gehen beim Verlassen der Seite verloren. Möchten Sie trotzdem fortfahren',
+      approve: 'Fortfahren'
+    }
+  },
+
   ErrorNotFoundPage: {
     heading: '404',
     description: 'Seite nicht gefunden...'
@@ -185,6 +193,11 @@ export default {
     dialog: {
       addTag: {
         heading: 'Tag hinzufügen'
+      },
+      unsavedChanges: {
+        heading: 'Änderungen Verwerfen?',
+        content: 'Die neue Konfiguration wurden noch nicht gespeichert. Die Änderungen gehen beim Verlassen der Seite verloren. Möchten Sie trotzdem fortfahren',
+        approve: 'Fortfahren'
       }
     },
     editor: {

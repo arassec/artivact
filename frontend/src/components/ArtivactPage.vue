@@ -58,7 +58,7 @@
           color="primary"
           icon="save"
           class="main-nav-button"
-          @click="savePage(true)">
+          @click="savePage(false)">
           <q-tooltip>{{ $t('Common.save') }}</q-tooltip>
         </q-btn>
       </div>

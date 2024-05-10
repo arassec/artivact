@@ -215,13 +215,39 @@
       </div>
 
     </ArtivactContent>
+
+    <!-- "Unsaved Changes Exist"-Dialog -->
+    <artivact-dialog :dialog-model="showUnsavedChangesExistDialog" :warn="true">
+      <template v-slot:header>
+        {{ $t('ItemEditPage.dialog.unsavedChanges.heading') }}
+      </template>
+
+      <template v-slot:body>
+        <q-card-section>
+          {{ $t('ItemEditPage.dialog.unsavedChanges.content') }}
+        </q-card-section>
+      </template>
+
+      <template v-slot:cancel>
+        <q-btn :label="$t('Common.cancel')" color="primary" @click="showUnsavedChangesExistDialog = false"/>
+      </template>
+
+      <template v-slot:approve>
+        <q-btn
+          :label="$t('ItemEditPage.dialog.unsavedChanges.approve')"
+          color="primary"
+          @click="proceed"
+        />
+      </template>
+    </artivact-dialog>
+
   </div>
 </template>
 
 <script setup lang="ts">
 import {useQuasar} from 'quasar';
 import {computed, onMounted, ref} from 'vue';
-import {useRoute} from 'vue-router';
+import {onBeforeRouteLeave, onBeforeRouteUpdate, RouteLocationNormalized, useRoute, useRouter} from 'vue-router';
 import {api} from 'boot/axios';
 import ArtivactContent from 'components/ArtivactContent.vue';
 import ArtivactRestrictionsEditor from 'components/ArtivactRestrictionsEditor.vue';
@@ -241,6 +267,7 @@ import {useProfilesStore} from 'stores/profiles';
 
 const quasar = useQuasar();
 const route = useRoute();
+const router = useRouter();
 const i18n = useI18n();
 
 const localeStore = useLocaleStore();
@@ -260,6 +287,10 @@ const tagValueRef = ref(null);
 let savedItemId: string;
 
 const imageSetEditorRef = ref<InstanceType<typeof ArtivactItemImageSetEditor> | null>(null)
+
+let originalItemJson: string;
+let nextRoute: RouteLocationNormalized;
+const showUnsavedChangesExistDialog = ref(false);
 
 const availableTags = computed(() => {
   return tagsDataRef.value?.tags.filter((tag: Tag) => {
@@ -290,6 +321,7 @@ function loadItemData(itemId: string | string[]) {
     .get('/api/item/' + itemId)
     .then((response) => {
       itemDataRef.value = response.data;
+      originalItemJson = JSON.stringify(response.data);
     })
     .catch(() => {
       quasar.notify({
@@ -385,6 +417,7 @@ function saveItem() {
   api
     .put('/api/item', item)
     .then(() => {
+      originalItemJson = JSON.stringify(itemDataRef.value);
       quasar.notify({
         color: 'positive',
         position: 'bottom',
@@ -406,11 +439,36 @@ function cancel() {
   breadcrumbsStore.removeLastBreadcrumb();
 }
 
+function proceed() {
+  showUnsavedChangesExistDialog.value = false;
+  originalItemJson = JSON.stringify(itemDataRef.value);
+  router.push(nextRoute);
+}
+
+onBeforeRouteLeave((to) => {
+  let currentPageContentJson = JSON.stringify(itemDataRef.value);
+  if (currentPageContentJson !== originalItemJson) {
+    nextRoute = to;
+    showUnsavedChangesExistDialog.value = true;
+    return false;
+  }
+})
+
+onBeforeRouteUpdate((to) => {
+  let currentPageContentJson = JSON.stringify(itemDataRef.value);
+  if (currentPageContentJson !== originalItemJson) {
+    nextRoute = to;
+    showUnsavedChangesExistDialog.value = true;
+    return false;
+  }
+})
+
 onMounted(() => {
   loadPropertiesData();
   loadTagsData();
   loadItemData(route.params.itemId);
 });
+
 </script>
 
 <style scoped>

@@ -112,6 +112,14 @@ export default {
     heading: 'Appearance Configuration'
   },
 
+  EditablePage: {
+    dialog: {
+      heading: 'Unsaved Changes!',
+      content: 'There are unsaved changes to the page configuration. Do you really want to leave?',
+      approve: 'Leave'
+    }
+  },
+
   ErrorNotFoundPage: {
     heading: '404',
     description: 'Page not found...'
@@ -185,6 +193,11 @@ export default {
     dialog: {
       addTag: {
         heading: 'Add Tag'
+      },
+      unsavedChanges: {
+        heading: 'Unsaved Changes!',
+        content: 'There are unsaved changes to the item configuration. Do you really want to leave?',
+        approve: 'Leave'
       }
     },
     editor: {
