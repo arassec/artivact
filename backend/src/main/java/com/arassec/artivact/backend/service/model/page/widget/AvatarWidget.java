@@ -46,7 +46,10 @@ public class AvatarWidget extends Widget implements FileProcessingWidget {
      */
     @Override
     public List<String> usedFiles() {
-        return List.of(avatarImage);
+        if (avatarImage != null) {
+            return List.of(avatarImage);
+        }
+        return List.of();
     }
 
 }

@@ -46,7 +46,10 @@ public class ImageTextWidget extends Widget implements FileProcessingWidget {
      */
     @Override
     public List<String> usedFiles() {
-        return List.of(image);
+        if (image != null) {
+            return List.of(image);
+        }
+        return List.of();
     }
 
 }

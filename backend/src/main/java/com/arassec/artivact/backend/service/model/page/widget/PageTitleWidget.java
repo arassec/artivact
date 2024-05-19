@@ -46,7 +46,10 @@ public class PageTitleWidget extends Widget implements FileProcessingWidget {
      */
     @Override
     public List<String> usedFiles() {
-        return List.of(backgroundImage);
+        if (backgroundImage != null) {
+            return List.of(backgroundImage);
+        }
+        return List.of();
     }
 
 }
