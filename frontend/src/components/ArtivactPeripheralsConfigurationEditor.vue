@@ -172,6 +172,12 @@
               :label="$t('ArtivactPeripheralsConfigurationEditor.creator.metashape')"
               v-model="adapterConfigurationRef.configValues['METASHAPE_MODEL_CREATOR_ADAPTER']"
             />
+            <q-input
+              v-if="adapterConfigurationRef.modelCreatorImplementation.toString() === AdapterImplementation[AdapterImplementation.REALITY_CAPTURE_MODEL_CREATOR_ADAPTER]"
+              outlined
+              :label="$t('ArtivactPeripheralsConfigurationEditor.creator.RealityCapture')"
+              v-model="adapterConfigurationRef.configValues['REALITY_CAPTURE_MODEL_CREATOR_ADAPTER']"
+            />
           </q-card-section>
         </q-card>
       </q-expansion-item>
@@ -306,6 +312,11 @@ const availableModelCreatorOptions: SelectboxModel[] = [
     label: AdapterImplementation[AdapterImplementation.METASHAPE_MODEL_CREATOR_ADAPTER],
     value: AdapterImplementation[AdapterImplementation.METASHAPE_MODEL_CREATOR_ADAPTER],
     disable: isDisabled(adapterConfigurationRef.value?.availableModelCreatorAdapterImplementations, AdapterImplementation.METASHAPE_MODEL_CREATOR_ADAPTER)
+  },
+  {
+    label: AdapterImplementation[AdapterImplementation.REALITY_CAPTURE_MODEL_CREATOR_ADAPTER],
+    value: AdapterImplementation[AdapterImplementation.REALITY_CAPTURE_MODEL_CREATOR_ADAPTER],
+    disable: isDisabled(adapterConfigurationRef.value?.availableModelCreatorAdapterImplementations, AdapterImplementation.REALITY_CAPTURE_MODEL_CREATOR_ADAPTER)
   }
 ];
 

@@ -256,6 +256,7 @@ public class ConfigurationService extends BaseService {
             if (windowsOs) {
                 adapterConfiguration.getConfigValues().put(AdapterImplementation.MESHROOM_MODEL_CREATOR_ADAPTER, "C:/Users/<USER>/Tools/Meshroom/Meshroom.exe");
                 adapterConfiguration.getConfigValues().put(AdapterImplementation.METASHAPE_MODEL_CREATOR_ADAPTER, "C:/Program Files/Agisoft/Metashape/metashape.exe");
+                adapterConfiguration.getConfigValues().put(AdapterImplementation.REALITY_CAPTURE_MODEL_CREATOR_ADAPTER, "C:/Program Files/Capturing Reality/RealityCapture/RealityCapture.exe");
 
                 adapterConfiguration.getConfigValues().put(AdapterImplementation.BLENDER_MODEL_EDITOR_ADAPTER, "C:/Users/<USER>/Tools/Blender/blender.exe");
             } else {
@@ -264,6 +265,8 @@ public class ConfigurationService extends BaseService {
 
                 adapterConfiguration.getConfigValues().put(AdapterImplementation.BLENDER_MODEL_EDITOR_ADAPTER, "~/tools/blender/blender");
             }
+        } else if (windowsOs && adapterConfiguration.getConfigValues().get(AdapterImplementation.REALITY_CAPTURE_MODEL_CREATOR_ADAPTER) == null) {
+            adapterConfiguration.getConfigValues().put(AdapterImplementation.REALITY_CAPTURE_MODEL_CREATOR_ADAPTER, "C:/Program Files/Capturing Reality/RealityCapture/RealityCapture.exe");
         }
 
         // Initialize available options for the current platform:
@@ -276,6 +279,9 @@ public class ConfigurationService extends BaseService {
         adapterConfiguration.getAvailableModelCreatorAdapterImplementations().add(AdapterImplementation.FALLBACK_MODEL_CREATOR_ADAPTER);
         adapterConfiguration.getAvailableModelCreatorAdapterImplementations().add(AdapterImplementation.MESHROOM_MODEL_CREATOR_ADAPTER);
         adapterConfiguration.getAvailableModelCreatorAdapterImplementations().add(AdapterImplementation.METASHAPE_MODEL_CREATOR_ADAPTER);
+        if (windowsOs) {
+            adapterConfiguration.getAvailableModelCreatorAdapterImplementations().add(AdapterImplementation.REALITY_CAPTURE_MODEL_CREATOR_ADAPTER);
+        }
 
         adapterConfiguration.getAvailableModelEditorAdapterImplementations().add(AdapterImplementation.FALLBACK_MODEL_EDITOR_ADAPTER);
         adapterConfiguration.getAvailableModelEditorAdapterImplementations().add(AdapterImplementation.BLENDER_MODEL_EDITOR_ADAPTER);

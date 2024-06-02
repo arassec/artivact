@@ -491,7 +491,8 @@ export default {
       description: 'For 3D model creation currently "Metashape" and "Meshroom" are supported.',
       label: 'Photogrammetry Software to use',
       meshroom: 'Meshroom Executable',
-      metashape: 'Metashape Executable'
+      metashape: 'Metashape Executable',
+      RealityCapture: 'RealityCapture Executable'
     },
     editor: {
       heading: '3D Model-Editor',
@@ -837,6 +838,7 @@ export default {
   FALLBACK_MODEL_CREATOR_ADAPTER: 'Fallback',
   MESHROOM_MODEL_CREATOR_ADAPTER: 'Meshroom',
   METASHAPE_MODEL_CREATOR_ADAPTER: 'Metashape',
+  REALITY_CAPTURE_MODEL_CREATOR_ADAPTER: 'RealityCapture',
   FALLBACK_MODEL_EDITOR_ADAPTER: 'Fallback',
   BLENDER_MODEL_EDITOR_ADAPTER: 'Blender3D',
 

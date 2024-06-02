@@ -1,4 +1,4 @@
-[gd_resource type="OpenXRActionMap" load_steps=210 format=3 uid="uid://b0iiu3ldosji1"]
+[gd_resource type="OpenXRActionMap" load_steps=211 format=3 uid="uid://b0iiu3ldosji1"]
 
 [sub_resource type="OpenXRAction" id="OpenXRAction_nm8or"]
 resource_name = "trigger"
@@ -139,6 +139,10 @@ toplevel_paths = PackedStringArray("/user/hand/left", "/user/hand/right", "/user
 resource_name = "godot"
 localized_name = "Godot action set"
 actions = [SubResource("OpenXRAction_nm8or"), SubResource("OpenXRAction_7wii5"), SubResource("OpenXRAction_ajjev"), SubResource("OpenXRAction_7e0d2"), SubResource("OpenXRAction_cvqgr"), SubResource("OpenXRAction_ovbca"), SubResource("OpenXRAction_e1p68"), SubResource("OpenXRAction_0iwt4"), SubResource("OpenXRAction_6i556"), SubResource("OpenXRAction_dcpsi"), SubResource("OpenXRAction_rbilv"), SubResource("OpenXRAction_f0rga"), SubResource("OpenXRAction_k4oue"), SubResource("OpenXRAction_c85t5"), SubResource("OpenXRAction_t51o7"), SubResource("OpenXRAction_vhynv"), SubResource("OpenXRAction_6vque"), SubResource("OpenXRAction_itljr"), SubResource("OpenXRAction_uuq5a"), SubResource("OpenXRAction_d8icr"), SubResource("OpenXRAction_g3cwi"), SubResource("OpenXRAction_ohjln"), SubResource("OpenXRAction_kdd5f")]
+
+[sub_resource type="OpenXRActionSet" id="OpenXRActionSet_t1neb"]
+resource_name = "my_first_action_set"
+localized_name = "My first action set"
 
 [sub_resource type="OpenXRIPBinding" id="OpenXRIPBinding_al4ic"]
 action = SubResource("OpenXRAction_uuq5a")
@@ -881,5 +885,5 @@ interaction_profile_path = "/interaction_profiles/ext/eye_gaze_interaction"
 bindings = [SubResource("OpenXRIPBinding_tqx7p")]
 
 [resource]
-action_sets = [SubResource("OpenXRActionSet_cb3ja")]
+action_sets = [SubResource("OpenXRActionSet_cb3ja"), SubResource("OpenXRActionSet_t1neb")]
 interaction_profiles = [SubResource("OpenXRInteractionProfile_2b0v7"), SubResource("OpenXRInteractionProfile_vofl3"), SubResource("OpenXRInteractionProfile_4chjd"), SubResource("OpenXRInteractionProfile_sa4d1"), SubResource("OpenXRInteractionProfile_ai08g"), SubResource("OpenXRInteractionProfile_2kjas"), SubResource("OpenXRInteractionProfile_plmbw"), SubResource("OpenXRInteractionProfile_jocdl"), SubResource("OpenXRInteractionProfile_koejt"), SubResource("OpenXRInteractionProfile_8b42v"), SubResource("OpenXRInteractionProfile_2qvme"), SubResource("OpenXRInteractionProfile_ae2r6"), SubResource("OpenXRInteractionProfile_kbbp3")]

@@ -61,6 +61,11 @@ public enum AdapterImplementation {
     METASHAPE_MODEL_CREATOR_ADAPTER,
 
     /**
+     * RealityCapture adapter.
+     */
+    REALITY_CAPTURE_MODEL_CREATOR_ADAPTER,
+
+    /**
      * Fallback model editor.
      */
     FALLBACK_MODEL_EDITOR_ADAPTER,

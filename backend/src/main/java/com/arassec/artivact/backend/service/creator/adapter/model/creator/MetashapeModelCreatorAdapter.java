@@ -49,6 +49,7 @@ public class MetashapeModelCreatorAdapter extends BaseModelCreatorAdapter {
         Path resultDir = tempDir.resolve(EXPORT_DIR).toAbsolutePath();
 
         fileUtil.emptyDir(tempDir);
+        fileUtil.createDirIfRequired(resultDir);
 
         copyImages(images, tempDir, progressMonitor);
 

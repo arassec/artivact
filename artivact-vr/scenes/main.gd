@@ -24,17 +24,15 @@ func _ready():
 	SignalBus.register(SignalBus.SignalType.OPEN_EXHIBITION, open_exhibition)
 	SignalBus.register(SignalBus.SignalType.CLOSE_EXHIBITION, close_exhibition)
 	
-	#open_exhibition("7a2b5479-1813-4a29-88a1-78010ff20970")
-
 
 func _on_right_controller_input_vector_2_changed(eventName, value):
-	if eventName == "primary" and value.x == 1:
+	if eventName == "primary" and value.x >= 0.99:
 		SignalBus.trigger(SignalBus.SignalType.NEXT_ITEM)
-	elif eventName == "primary" and value.y == 1:
+	elif eventName == "primary" and value.y >= 0.99:
 		SignalBus.trigger(SignalBus.SignalType.ZOOM_MODEL_IN)
-	elif eventName == "primary" and value.y == -1:
+	elif eventName == "primary" and value.y <= -0.99:
 		SignalBus.trigger(SignalBus.SignalType.ZOOM_MODEL_OUT)
-	elif eventName == "primary" and value.y != 1 and value.y != -1:
+	elif eventName == "primary" and value.y < 0.99 and value.y > -0.99:
 		SignalBus.trigger(SignalBus.SignalType.ZOOM_MODEL_STOP)
 
 

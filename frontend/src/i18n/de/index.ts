@@ -491,7 +491,8 @@ export default {
       description: 'Zum erstellen von 3D-Modellen wird Photogrammetrie-Software verwendet. Momentan werden "Metashape" and "Meshroom" unterstützt.',
       label: 'Photogrammetrie-Software',
       meshroom: 'Meshroom Exe-Datei',
-      metashape: 'Metashape Exe-Datei'
+      metashape: 'Metashape Exe-Datei',
+      RealityCapture: 'RealityCapture Exe-Datei'
     },
     editor: {
       heading: '3D-Modell Bearbeitung',
@@ -840,6 +841,7 @@ export default {
   FALLBACK_MODEL_CREATOR_ADAPTER: 'Fallback',
   MESHROOM_MODEL_CREATOR_ADAPTER: 'Meshroom',
   METASHAPE_MODEL_CREATOR_ADAPTER: 'Metashape',
+  REALITY_CAPTURE_MODEL_CREATOR_ADAPTER: 'RealityCapture',
   FALLBACK_MODEL_EDITOR_ADAPTER: 'Fallback',
   BLENDER_MODEL_EDITOR_ADAPTER: 'Blender3D',
 
