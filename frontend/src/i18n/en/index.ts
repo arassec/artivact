@@ -769,7 +769,9 @@ export default {
       close: 'Close Widget Editor',
       moveUp: 'Move Widget Up',
       moveDown: 'Move Widget Down',
-      delete: 'Delete Widget'
+      delete: 'Delete Widget',
+      addAbove: 'Add Widget Above',
+      addBelow: 'Add Widget Below',
     }
   },
 

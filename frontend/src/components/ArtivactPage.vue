@@ -1,18 +1,40 @@
 <template>
-  <div v-if="pageContentRef && pageId">
+
+  <div v-if="pageContentRef && pageId" :class="inEditMode ? 'page' : ''">
+
+    <q-menu :context-menu="true" v-if="inEditMode">
+      <q-list>
+        <q-item
+          clickable
+          v-close-popup
+          @click="showAddWidgetDialogRef = true">
+          <q-item-section>
+            <label>
+              <q-icon
+                name="add"
+                size="xs"
+                color="primary"
+                class="q-mr-sm"
+              />
+              {{ $t('ArtivactPage.label.addWidget') }}</label
+            >
+          </q-item-section>
+        </q-item>
+      </q-list>
+    </q-menu>
 
     <div class="col items-center sticky gt-md" v-if="userdataStore.isUserOrAdmin && pageId !== 'INDEX' && !inEditMode">
       <div class="absolute-top-right q-ma-md">
-      <q-btn id="sticky-item"
-             data-test="edit-page-button"
-             round
-             color="primary"
-             icon="edit"
-             class="edit-page-button float-right"
-             @click="inEditMode = true"
-      >
-        <q-tooltip>{{ $t('ArtivactPage.tooltip.edit') }}</q-tooltip>
-      </q-btn>
+        <q-btn id="sticky-item"
+               data-test="edit-page-button"
+               round
+               color="primary"
+               icon="edit"
+               class="edit-page-button float-right"
+               @click="inEditMode = true"
+        >
+          <q-tooltip>{{ $t('ArtivactPage.tooltip.edit') }}</q-tooltip>
+        </q-btn>
       </div>
     </div>
 
@@ -42,16 +64,6 @@
       </div>
 
       <div class="absolute-top-right q-ma-md">
-        <q-btn
-          data-test="add-widget-button"
-          round
-          color="primary"
-          icon="add"
-          type="submit"
-          class="q-mr-sm main-nav-button"
-          @click="showAddWidgetDialogRef = true">
-          <q-tooltip>{{ $t('ArtivactPage.label.addWidget') }}</q-tooltip>
-        </q-btn>
         <q-btn
           data-test="save-button"
           round
@@ -83,6 +95,8 @@
         :move-down-enabled="index < pageContentRef.widgets.length - 1"
         @move-widget-up="moveWidgetUp(pageContentRef.widgets, index)"
         @move-widget-down="moveWidgetDown(pageContentRef.widgets, index)"
+        @add-widget-above="addWidgetAboveRef = widgetData.id; showAddWidgetDialogRef = true;"
+        @add-widget-below="addWidgetBelowRef = widgetData.id; showAddWidgetDialogRef = true;"
         @delete-widget="deleteWidget(index)"
         :page-id="pageId"
         v-on:image-added="fileAdded($event, widgetData.id)"
@@ -97,6 +111,8 @@
         :move-down-enabled="index < pageContentRef.widgets.length - 1"
         @move-widget-up="moveWidgetUp(pageContentRef.widgets, index)"
         @move-widget-down="moveWidgetDown(pageContentRef.widgets, index)"
+        @add-widget-above="addWidgetAboveRef = widgetData.id; showAddWidgetDialogRef = true;"
+        @add-widget-below="addWidgetBelowRef = widgetData.id; showAddWidgetDialogRef = true;"
         @delete-widget="deleteWidget(index)"
       />
 
@@ -109,6 +125,8 @@
         :move-down-enabled="index < pageContentRef.widgets.length - 1"
         @move-widget-up="moveWidgetUp(pageContentRef.widgets, index)"
         @move-widget-down="moveWidgetDown(pageContentRef.widgets, index)"
+        @add-widget-above="addWidgetAboveRef = widgetData.id; showAddWidgetDialogRef = true;"
+        @add-widget-below="addWidgetBelowRef = widgetData.id; showAddWidgetDialogRef = true;"
         @delete-widget="deleteWidget(index)"
         :page-id="pageId"
         v-on:image-added="fileAdded($event, widgetData.id)"
@@ -123,6 +141,8 @@
         :move-down-enabled="index < pageContentRef.widgets.length - 1"
         @move-widget-up="moveWidgetUp(pageContentRef.widgets, index)"
         @move-widget-down="moveWidgetDown(pageContentRef.widgets, index)"
+        @add-widget-above="addWidgetAboveRef = widgetData.id; showAddWidgetDialogRef = true;"
+        @add-widget-below="addWidgetBelowRef = widgetData.id; showAddWidgetDialogRef = true;"
         @delete-widget="deleteWidget(index)"
       />
 
@@ -135,6 +155,8 @@
         :move-down-enabled="index < pageContentRef.widgets.length - 1"
         @move-widget-up="moveWidgetUp(pageContentRef.widgets, index)"
         @move-widget-down="moveWidgetDown(pageContentRef.widgets, index)"
+        @add-widget-above="addWidgetAboveRef = widgetData.id; showAddWidgetDialogRef = true;"
+        @add-widget-below="addWidgetBelowRef = widgetData.id; showAddWidgetDialogRef = true;"
         @delete-widget="deleteWidget(index)"
       />
 
@@ -147,6 +169,8 @@
         :move-down-enabled="index < pageContentRef.widgets.length - 1"
         @move-widget-up="moveWidgetUp(pageContentRef.widgets, index)"
         @move-widget-down="moveWidgetDown(pageContentRef.widgets, index)"
+        @add-widget-above="addWidgetAboveRef = widgetData.id; showAddWidgetDialogRef = true;"
+        @add-widget-below="addWidgetBelowRef = widgetData.id; showAddWidgetDialogRef = true;"
         @delete-widget="deleteWidget(index)"
       />
 
@@ -159,6 +183,8 @@
         :move-down-enabled="index < pageContentRef.widgets.length - 1"
         @move-widget-up="moveWidgetUp(pageContentRef.widgets, index)"
         @move-widget-down="moveWidgetDown(pageContentRef.widgets, index)"
+        @add-widget-above="addWidgetAboveRef = widgetData.id; showAddWidgetDialogRef = true;"
+        @add-widget-below="addWidgetBelowRef = widgetData.id; showAddWidgetDialogRef = true;"
         @delete-widget="deleteWidget(index)"
         :page-id="pageId"
         v-on:image-added="fileAdded($event, widgetData.id)"
@@ -173,6 +199,8 @@
         :move-down-enabled="index < pageContentRef.widgets.length - 1"
         @move-widget-up="moveWidgetUp(pageContentRef.widgets, index)"
         @move-widget-down="moveWidgetDown(pageContentRef.widgets, index)"
+        @add-widget-above="addWidgetAboveRef = widgetData.id; showAddWidgetDialogRef = true;"
+        @add-widget-below="addWidgetBelowRef = widgetData.id; showAddWidgetDialogRef = true;"
         @delete-widget="deleteWidget(index)"
       />
     </template>
@@ -283,6 +311,9 @@ const showAddWidgetDialogRef = ref(false);
 const selectedWidgetTypeRef = ref('PAGE_TITLE');
 const inEditMode = ref(false);
 
+const addWidgetAboveRef = ref('');
+const addWidgetBelowRef = ref('');
+
 const availableWidgetTypes = [
   'PAGE_TITLE',
   'TEXT',
@@ -295,8 +326,21 @@ const availableWidgetTypes = [
 ];
 
 function addWidget() {
+
+  let index = pageContentRef.value?.widgets.length;
+  if (addWidgetAboveRef.value !== '') {
+    index = pageContentRef.value?.widgets.findIndex((element) => element.id === addWidgetAboveRef.value);
+  } else if (addWidgetBelowRef.value !== '') {
+    index = pageContentRef.value?.widgets.findIndex((element) => element.id === addWidgetBelowRef.value) + 1;
+  }
+
+  console.log('INDEX: ' + index);
+
+  addWidgetAboveRef.value = '';
+  addWidgetBelowRef.value = '';
+
   if (selectedWidgetTypeRef.value === 'PAGE_TITLE') {
-    pageContentRef.value?.widgets.push({
+    pageContentRef.value?.widgets.splice(index, 0, {
       type: 'PAGE_TITLE',
       id: '',
       restrictions: [] as string[],
@@ -306,7 +350,7 @@ function addWidget() {
       backgroundImage: '',
     } as PageTitleWidgetData);
   } else if (selectedWidgetTypeRef.value === 'TEXT') {
-    pageContentRef.value?.widgets.push({
+    pageContentRef.value?.widgets.splice(index, 0, {
       type: 'TEXT',
       id: '',
       restrictions: [] as string[],
@@ -318,7 +362,7 @@ function addWidget() {
       } as TranslatableString,
     } as TextWidgetData);
   } else if (selectedWidgetTypeRef.value === 'IMAGE_TEXT') {
-    pageContentRef.value?.widgets.push({
+    pageContentRef.value?.widgets.splice(index, 0, {
       type: 'IMAGE_TEXT',
       id: '',
       restrictions: [] as string[],
@@ -327,7 +371,7 @@ function addWidget() {
       } as TranslatableString,
     } as ImageTextWidgetData);
   } else if (selectedWidgetTypeRef.value === 'ITEM_SEARCH') {
-    pageContentRef.value?.widgets.push({
+    pageContentRef.value?.widgets.splice(index, 0, {
       type: 'ITEM_SEARCH',
       id: '',
       restrictions: [] as string[],
@@ -335,7 +379,7 @@ function addWidget() {
       maxResults: 100,
     } as SearchBasedWidgetData);
   } else if (selectedWidgetTypeRef.value === 'ITEM_CAROUSEL') {
-    pageContentRef.value?.widgets.push({
+    pageContentRef.value?.widgets.splice(index, 0, {
       type: 'ITEM_CAROUSEL',
       id: '',
       restrictions: [] as string[],
@@ -343,7 +387,7 @@ function addWidget() {
       maxResults: 9,
     } as SearchBasedWidgetData);
   } else if (selectedWidgetTypeRef.value === 'INFO_BOX') {
-    pageContentRef.value?.widgets.push({
+    pageContentRef.value?.widgets.splice(index, 0, {
       type: 'INFO_BOX',
       id: '',
       restrictions: [] as string[],
@@ -356,7 +400,7 @@ function addWidget() {
       boxType: 'INFO',
     } as InfoBoxWidgetData);
   } else if (selectedWidgetTypeRef.value === 'AVATAR') {
-    pageContentRef.value?.widgets.push({
+    pageContentRef.value?.widgets.splice(index, 0, {
       type: 'AVATAR',
       id: '',
       restrictions: [] as string[],
@@ -366,7 +410,7 @@ function addWidget() {
       } as TranslatableString,
     } as AvatarWidgetData);
   } else if (selectedWidgetTypeRef.value === 'SPACE') {
-    pageContentRef.value?.widgets.push({
+    pageContentRef.value?.widgets.splice(index, 0, {
       type: 'SPACE',
       id: '',
       restrictions: [] as string[],
@@ -436,6 +480,16 @@ function fileAdded(propertyName: string, widgetId: string) {
 
 .widget:hover {
   background-color: #EAEAEA;
+}
+
+.page {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+}
+
+.page:hover {
+  cursor: pointer;
 }
 
 </style>

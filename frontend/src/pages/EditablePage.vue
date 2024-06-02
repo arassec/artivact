@@ -1,4 +1,5 @@
 <template>
+
   <artivact-page
     v-if="pageContentRef && pageIdRef && !editModeRef"
     :page-id="pageIdRef"

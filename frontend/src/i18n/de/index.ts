@@ -770,7 +770,9 @@ export default {
       close: 'Widget Editor schließen',
       moveUp: 'Widget nach oben bewegen',
       moveDown: 'Widget nach unten bewegen',
-      delete: 'Widget löschen'
+      delete: 'Widget löschen',
+      addAbove: 'Widget Oberhalb hinzufügen',
+      addBelow: 'Widget Unterhalb hinzufügen',
     }
   },
 

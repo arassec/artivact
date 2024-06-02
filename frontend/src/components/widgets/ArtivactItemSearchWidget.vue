@@ -214,7 +214,7 @@ function search(page: number) {
     .then((response) => {
       searchResultRef.value = response.data;
       searchResultRef.value.pageNumber += 1;
-      if (searchResultRef.value.data.length === 0) {
+      if (searchResultRef.value.data.length === 0 && !widgetDataRef.value?.searchTerm) {
         quasar.notify({
           color: 'warning',
           position: 'bottom',

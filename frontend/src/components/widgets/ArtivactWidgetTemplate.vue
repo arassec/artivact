@@ -11,19 +11,16 @@
       <q-tooltip>{{ $t('WidgetTemplate.tooltip.edit') }}</q-tooltip>
       <div class="q-pb-lg">
 
-        <q-menu
-          data-test="widget-context-menu"
-          :context-menu="true">
+        <q-menu :context-menu="true">
           <q-list data-test="widget-context-menu">
             <q-item
               data-test="widget-context-menu-edit-button"
               clickable
               v-close-popup
               @click="showDetailsRef = true"
-              class="menu-entry"
             >
               <q-item-section>
-                <label class="menu-label">
+                <label>
                   <q-icon
                     name="edit"
                     size="xs"
@@ -39,10 +36,9 @@
               clickable
               v-close-popup
               @click="$emit('move-widget-up')"
-              class="menu-entry"
             >
               <q-item-section>
-                <label class="menu-label">
+                <label>
                   <q-icon
                     name="arrow_upward"
                     size="xs"
@@ -58,10 +54,9 @@
               clickable
               v-close-popup
               @click="$emit('move-widget-down')"
-              class="menu-entry"
             >
               <q-item-section>
-                <label class="menu-label">
+                <label>
                   <q-icon
                     name="arrow_downward"
                     size="xs"
@@ -73,14 +68,49 @@
               </q-item-section>
             </q-item>
             <q-item
+              data-test="widget-context-menu-add-above"
+              clickable
+              v-close-popup
+              @click="$emit('add-widget-above')"
+            >
+              <q-item-section>
+                <label>
+                  <q-icon
+                    name="vertical_align_top"
+                    size="xs"
+                    color="primary"
+                    class="q-mr-sm"
+                  />
+                  {{ $t('WidgetTemplate.label.addAbove') }}</label
+                >
+              </q-item-section>
+            </q-item>
+            <q-item
+              data-test="widget-context-menu-add-below"
+              clickable
+              v-close-popup
+              @click="$emit('add-widget-below')"
+            >
+              <q-item-section>
+                <label>
+                  <q-icon
+                    name="vertical_align_bottom"
+                    size="xs"
+                    color="primary"
+                    class="q-mr-sm"
+                  />
+                  {{ $t('WidgetTemplate.label.addBelow') }}</label
+                >
+              </q-item-section>
+            </q-item>
+            <q-item
               data-test="widget-context-menu-delete"
               clickable
               v-close-popup
               @click="$emit('delete-widget')"
-              class="menu-entry"
             >
               <q-item-section>
-                <label class="menu-label">
+                <label>
                   <q-icon
                     name="delete"
                     size="xs"
@@ -155,6 +185,8 @@ const props = defineProps({
 defineEmits<{
   (e: 'move-widget-up'): void;
   (e: 'move-widget-down'): void;
+  (e: 'add-widget-above'): void;
+  (e: 'add-widget-below'): void;
   (e: 'delete-widget'): void;
 }>();
 
