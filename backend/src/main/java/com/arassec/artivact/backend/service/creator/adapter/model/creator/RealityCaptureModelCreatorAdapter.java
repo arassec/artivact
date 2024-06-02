@@ -59,20 +59,39 @@ public class RealityCaptureModelCreatorAdapter extends BaseModelCreatorAdapter {
 
         progressMonitor.updateLabelKey("createModelStart");
 
-        var cmdLine = new CommandLine(initParams.getAdapterConfiguration().getConfigValue(getSupportedImplementation()));
+        String command = initParams.getAdapterConfiguration().getConfigValue(getSupportedImplementation());
+        boolean headless = false;
+        String faceCount = "200000";
+        if (command.contains("#")) {
+            String[] commandParts = command.split("#");
+            command = commandParts[0];
+            if (commandParts.length > 1) {
+                headless = "headless".equals(commandParts[1]);
+            }
+            if (commandParts.length > 2) {
+                faceCount = commandParts[2];
+            }
+        }
+
+        var cmdLine = new CommandLine(command);
         cmdLine.addArgument("-addFolder");
         cmdLine.addArgument(tempDir.toAbsolutePath().toString());
         cmdLine.addArgument("-save");
         cmdLine.addArgument(tempDir.toAbsolutePath() + "/MyProject.rcproj");
-        cmdLine.addArgument("-align");
-        cmdLine.addArgument("-setReconstructionRegionAuto");
-        cmdLine.addArgument("-calculateNormalModel");
-        cmdLine.addArgument("-simplify");
-        cmdLine.addArgument("250000");
-        cmdLine.addArgument("-calculateTexture");
-        cmdLine.addArgument("-exportSelectedModel");
-        cmdLine.addArgument(resultDir.resolve("RealityCaptureExport.obj").toAbsolutePath().toString());
-        cmdLine.addArgument(initParams.getProjectRoot().resolve(REALITY_CAPTURE_EXPORT_SETTINGS).toAbsolutePath().toString());
+
+        if (headless) {
+            cmdLine.addArgument("-headless");
+            cmdLine.addArgument("-align");
+            cmdLine.addArgument("-setReconstructionRegionAuto");
+            cmdLine.addArgument("-calculateNormalModel");
+            cmdLine.addArgument("-simplify");
+            cmdLine.addArgument(faceCount);
+            cmdLine.addArgument("-calculateTexture");
+            cmdLine.addArgument("-exportSelectedModel");
+            cmdLine.addArgument(resultDir.resolve("RealityCaptureExport.obj").toAbsolutePath().toString());
+            cmdLine.addArgument(initParams.getProjectRoot().resolve(REALITY_CAPTURE_EXPORT_SETTINGS).toAbsolutePath().toString());
+            cmdLine.addArgument("-quit");
+        }
 
         cmdUtil.execute(cmdLine);
 

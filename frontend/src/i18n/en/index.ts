@@ -488,11 +488,11 @@ export default {
     },
     creator: {
       heading: '3D Model-Creator',
-      description: 'For 3D model creation currently "Metashape" and "Meshroom" are supported.',
+      description: 'For 3D model creation currently "Metashape", "Meshroom" and "RealityCapture" are supported.',
       label: 'Photogrammetry Software to use',
       meshroom: 'Meshroom Executable',
       metashape: 'Metashape Executable',
-      RealityCapture: 'RealityCapture Executable'
+      RealityCapture: 'RealityCapture Executable. Append "#headless#12345" to run in headless mode and limit faces to 12345.'
     },
     editor: {
       heading: '3D Model-Editor',
