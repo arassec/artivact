@@ -176,6 +176,17 @@ public class ExportController extends BaseController {
     }
 
     /**
+     * Called from the UI to start syncing all items with a remote application instance.
+     *
+     * @return The operation progress.
+     */
+    @PostMapping(value = "/remote/item")
+    public ResponseEntity<OperationProgress> exportItemsToRemoteInstance() {
+        exportService.exportItemsToRemoteInstance();
+        return getProgress();
+    }
+
+    /**
      * Returns the progress of a previously started long-running operation.
      *
      * @return The progress.

@@ -24,6 +24,11 @@ public class Item extends BaseRestrictedObject {
     private Integer version;
 
     /**
+     * Version of the last synchronization with a remote instance.
+     */
+    private Integer syncVersion;
+
+    /**
      * The item's title.
      */
     private TranslatableString title;

@@ -31,4 +31,9 @@ public class ItemEntity {
      */
     private String contentJson;
 
+    /**
+     * Version of the last synchronization with a remote instance.
+     */
+    private Integer syncVersion;
+
 }

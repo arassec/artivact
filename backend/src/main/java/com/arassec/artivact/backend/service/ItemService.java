@@ -148,6 +148,7 @@ public class ItemService extends BaseFileService {
             ItemEntity itemEntity = itemEntityOptional.get();
             Item item = fromJson(itemEntity.getContentJson(), Item.class);
             item.setVersion(itemEntity.getVersion());
+            item.setSyncVersion(itemEntity.getSyncVersion());
             item.setTags(item.getTags().stream()
                     .map(tag -> tagsConfiguration.getTags().stream()
                             .filter(configuredTag -> tag.getId().equals(configuredTag.getId()))
@@ -213,6 +214,7 @@ public class ItemService extends BaseFileService {
         itemEntity.setId(item.getId());
         itemEntity.setVersion(item.getVersion());
         itemEntity.setContentJson(toJson(item));
+        itemEntity.setSyncVersion(item.getSyncVersion());
 
         getDanglingImages(item).forEach(imageToDelete -> {
             try {
@@ -411,6 +413,15 @@ public class ItemService extends BaseFileService {
      */
     public void saveModel(String itemId, String filename, InputStream data, boolean keepAssetNumber) {
         saveFile(itemId, filename, data, ProjectDataProvider.MODELS_DIR, null, keepAssetNumber);
+    }
+
+    /**
+     * Returns the IDs of items that have to be updated on the remote instance.
+     *
+     * @return List of item IDs.
+     */
+    public List<String> getItemIdsForRemoteSync() {
+        return itemEntityRepository.findItemIdsForRemoteExport();
     }
 
     /**

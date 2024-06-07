@@ -280,59 +280,119 @@ public class ExportService extends BaseFileService {
 
         progressMonitor = new ProgressMonitor(getClass(), "packaging");
 
+        ExchangeConfiguration exchangeConfiguration = configurationService.loadExchangeConfiguration();
+        String remoteServer = exchangeConfiguration.getRemoteServer();
+        String apiToken = exchangeConfiguration.getApiToken();
+
         executorService.submit(() -> {
-            File exportFile = projectDataProvider.getProjectRoot()
-                    .resolve(ProjectDataProvider.TEMP_DIR)
-                    .resolve(itemId + ITEM_EXPORT_SUFFIX + FileUtil.ZIP_FILE_SUFFIX)
-                    .toAbsolutePath()
-                    .toFile();
-
-            try (FileOutputStream fileOutputStream = new FileOutputStream(exportFile)) {
-                StreamingResponseBody streamingResponseBody = createItemExportFile(itemId);
-                streamingResponseBody.writeTo(fileOutputStream);
-            } catch (IOException e) {
-                progressMonitor.updateProgress("exportFileCreationFailed", e);
-                log.error("Could not create export file to upload item to remote server!", e);
-            }
-
-            ExchangeConfiguration exchangeConfiguration = configurationService.loadExchangeConfiguration();
-            String remoteServer = exchangeConfiguration.getRemoteServer();
-            if (!StringUtils.hasText(remoteServer)) {
-                progressMonitor.updateProgress("configMissing", new ArtivactException("Configuration missing!"));
-            }
-            if (!remoteServer.endsWith("/")) {
-                remoteServer += "/";
-            }
-
-            progressMonitor.updateLabelKey("uploading");
-
-            try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
-                HttpPost httpPost = new HttpPost(remoteServer
-                        + "api/import/remote/item/"
-                        + exchangeConfiguration.getApiToken());
-
-                HttpEntity entity = MultipartEntityBuilder.create()
-                        .setMode(HttpMultipartMode.STRICT)
-                        .addPart("file", new FileBody(exportFile))
-                        .build();
-                httpPost.setEntity(entity);
-
-                httpclient.execute(httpPost, response -> {
-                    if (response.getCode() != 200) {
-                        progressMonitor.updateProgress("uploadFailed",
-                                new ArtivactException("HTTP result code: " + response.getCode()));
-                        log.error("Could not upload item file to remote server: HTTP result code {}", response.getCode());
-                    } else {
-                        progressMonitor = null;
-                    }
-                    return response;
-                });
-
-            } catch (Exception e) {
-                progressMonitor.updateProgress("uploadFailed", e);
-                log.error("Could not upload item file to remote server!", e);
+            exportItemToRemoteInstance(itemId, progressMonitor, remoteServer, apiToken);
+            if (progressMonitor.getException() == null) {
+                progressMonitor = null;
             }
         });
     }
 
+    /**
+     * Exports all items and uploads them to a remote application instance configured in the exchange configuration.
+     */
+    public synchronized void exportItemsToRemoteInstance() {
+
+        if (progressMonitor != null && progressMonitor.getException() == null) {
+            return;
+        }
+
+        List<String> itemIdsForRemoteSync = itemService.getItemIdsForRemoteSync();
+
+        log.debug("Found {} items to upload to remote instance.", itemIdsForRemoteSync.size());
+
+        progressMonitor = new ProgressMonitor(getClass(), "packaging");
+        progressMonitor.updateProgress(0, itemIdsForRemoteSync.size());
+
+        ExchangeConfiguration exchangeConfiguration = configurationService.loadExchangeConfiguration();
+        String remoteServer = exchangeConfiguration.getRemoteServer();
+        String apiToken = exchangeConfiguration.getApiToken();
+
+        executorService.submit(() -> {
+            itemIdsForRemoteSync.forEach(itemId -> {
+                if (progressMonitor.getException() == null) {
+                    log.debug("Processing item {}", itemId);
+                    exportItemToRemoteInstance(itemId, progressMonitor, remoteServer, apiToken);
+                    progressMonitor.updateProgress(progressMonitor.getCurrentAmount() + 1, itemIdsForRemoteSync.size());
+                }
+            });
+            if (progressMonitor.getException() == null) {
+                progressMonitor = null;
+            }
+        });
+    }
+
+    /**
+     * Exports the item with the given ID to the supplied remote instance.
+     *
+     * @param itemId          The ID of the item to upload.
+     * @param progressMonitor The progress monitor, which is updated during upload.
+     * @param remoteServer    The remote instance to upload the item to.
+     * @param apiToken        The API token for remote authentication and authorization.
+     */
+    private void exportItemToRemoteInstance(String itemId, final ProgressMonitor progressMonitor, String remoteServer, String apiToken) {
+
+        if (!StringUtils.hasText(remoteServer)) {
+            progressMonitor.updateProgress("configMissing", new ArtivactException("Remote server configuration missing!"));
+            return;
+        }
+        if (!remoteServer.endsWith("/")) {
+            remoteServer += "/";
+        }
+
+        if (!StringUtils.hasText(apiToken)) {
+            progressMonitor.updateProgress("configMissing", new ArtivactException("API token configuration missing!"));
+            return;
+        }
+
+        progressMonitor.updateLabelKey("packaging");
+
+        File exportFile = projectDataProvider.getProjectRoot()
+                .resolve(ProjectDataProvider.TEMP_DIR)
+                .resolve(itemId + ITEM_EXPORT_SUFFIX + FileUtil.ZIP_FILE_SUFFIX)
+                .toAbsolutePath()
+                .toFile();
+
+        try (FileOutputStream fileOutputStream = new FileOutputStream(exportFile)) {
+            StreamingResponseBody streamingResponseBody = createItemExportFile(itemId);
+            streamingResponseBody.writeTo(fileOutputStream);
+        } catch (IOException e) {
+            progressMonitor.updateProgress("exportFileCreationFailed", e);
+            log.error("Could not create export file to upload item to remote server!", e);
+            return;
+        }
+
+        progressMonitor.updateLabelKey("uploading");
+
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+            HttpPost httpPost = new HttpPost(remoteServer + "api/import/remote/item/" + apiToken);
+
+            HttpEntity entity = MultipartEntityBuilder.create()
+                    .setMode(HttpMultipartMode.STRICT)
+                    .addPart("file", new FileBody(exportFile))
+                    .build();
+            httpPost.setEntity(entity);
+
+            httpclient.execute(httpPost, response -> {
+                if (response.getCode() != 200) {
+                    progressMonitor.updateProgress("uploadFailed",
+                            new ArtivactException("HTTP result code: " + response.getCode()));
+                    log.error("Could not upload item file to remote server: HTTP result code {}", response.getCode());
+                } else {
+                    Item item = itemService.load(itemId);
+                    item.setSyncVersion(item.getVersion() + 1); // Saving the item will increase its version by one!
+                    itemService.save(item);
+                }
+                return response;
+            });
+
+        } catch (Exception e) {
+            progressMonitor.updateProgress("uploadFailed", e);
+            log.error("Could not upload item file to remote server!", e);
+        }
+    }
 }

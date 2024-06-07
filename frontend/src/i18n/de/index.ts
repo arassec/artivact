@@ -131,6 +131,9 @@ export default {
       heading: 'Synchronisation',
       description: 'Hier können Parameter für den Austausch von Objekten zwischen verschiedenen Artivact-Instanzen konfiguriert werden.'
     },
+    syncAllUp: {
+      button: 'Alle geänderten Objekte Hochladen'
+    },
     contentExport: {
       heading: 'Exporte',
       description: 'Hier können Exporte verwaltet werden. Exporte können per Rechtsklick auf ein Menu mit der Auswahl \'Inhalte Exportieren\' erstellt werden.'
@@ -140,6 +143,12 @@ export default {
         heading: 'Export löschen?',
         description: 'Sind Sie sicher, dass Sie den gewählten Export löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden!',
         approve: 'Export löschen'
+      }
+    },
+    messages: {
+      sync: {
+        success: 'Items synchronized',
+        failed: 'Synchronization failed'
       }
     }
   },

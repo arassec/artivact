@@ -131,6 +131,9 @@ export default {
       heading: 'Synchronization',
       description: 'Here you can configure exchange parameters for syncing items with remote Artivact instances.'
     },
+    syncAllUp: {
+      button: 'Upload all modified items'
+    },
     contentExport: {
       heading: 'Content Exports',
       description: 'Here you can manage content exports. Exports can be created by right-clicking on a menu and selecting \'Export Content\'.'
@@ -140,6 +143,12 @@ export default {
         heading: 'Delete Export?',
         description: 'Are you sure you want to delete this export? This action cannot be undone!',
         approve: 'Delete Export'
+      }
+    },
+    messages: {
+      sync: {
+        success: 'Items synchronized',
+        failed: 'Synchronization failed'
       }
     }
   },
