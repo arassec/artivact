@@ -120,6 +120,7 @@
                                 </goals>
                                 <configuration>
                                     <file>docs/user-manual/introduction/changelog.md</file>
+                                    <fromRevision>v0.2.0</fromRevision>
                                     <templateContent>
                                         <![CDATA[
 # Changelog

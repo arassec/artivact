@@ -64,10 +64,10 @@ public class ArtivactTurntableAdapter extends BaseTurntableAdapter {
 
             p.setComPortParameters(9600, 8, 1, 0); // default connection settings for Arduino
             p.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING, 0, 0); // block until bytes can be written
-            p.openPort();
-            log.trace("Serial port open: {}", p.isOpen());
 
-            if (p.isOpen()) {
+            if (p.openPort(500)) {
+                log.trace("Serial port open: {}", p.isOpen());
+
                 turntableFound.set(true);
 
                 liveSerialPort = p;
@@ -106,6 +106,10 @@ public class ArtivactTurntableAdapter extends BaseTurntableAdapter {
                     }
                 });
             }
+        }
+
+        if (!turntableFound.get()) {
+            throw new ArtivactException("No active turntable found on any serial port!");
         }
 
         log.trace("Turntable initialization finished.");

@@ -38,11 +38,13 @@ public class ContentExportFile {
     /**
      * The item properties.
      */
+    @Builder.Default
     private List<PropertyCategory> propertyCategories = new LinkedList<>();
 
     /**
      * The available tags.
      */
+    @Builder.Default
     private List<Tag> tags = new LinkedList<>();
 
 }
