@@ -39,7 +39,7 @@
 
       <div class="q-mb-md">
         {{ $t('PropertiesConfigurationPage.importexport.export') }}
-        <q-form :action="'/api/exchange/properties/export'" method="get">
+        <q-form :action="'/api/export/properties'" method="get">
           <q-btn
             icon="download"
             :label="$t('PropertiesConfigurationPage.importexport.button.export')"
@@ -53,7 +53,7 @@
       <div>
         {{ $t('PropertiesConfigurationPage.importexport.import') }}
         <q-uploader
-          :url="'/api/exchange/properties/import'"
+          :url="'/api/import/properties'"
           :label="$t('PropertiesConfigurationPage.importexport.button.import')"
           class="q-mt-md q-mb-md"
           accept=".artivact.properties-configuration.json"

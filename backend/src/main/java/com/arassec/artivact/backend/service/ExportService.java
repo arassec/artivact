@@ -271,12 +271,11 @@ public class ExportService extends BaseFileService {
      * configuration.
      *
      * @param itemId The item's ID.
-     * @return The progress monitor tracking the upload.
      */
-    public synchronized ProgressMonitor syncItemUp(String itemId) {
+    public synchronized void exportItemToRemoteInstance(String itemId) {
 
         if (progressMonitor != null && progressMonitor.getException() == null) {
-            return progressMonitor;
+            return;
         }
 
         progressMonitor = new ProgressMonitor(getClass(), "packaging");
@@ -309,7 +308,7 @@ public class ExportService extends BaseFileService {
 
             try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
                 HttpPost httpPost = new HttpPost(remoteServer
-                        + "api/exchange/sync/item/import/"
+                        + "api/import/remote/item/"
                         + exchangeConfiguration.getApiToken());
 
                 HttpEntity entity = MultipartEntityBuilder.create()
@@ -323,19 +322,17 @@ public class ExportService extends BaseFileService {
                         progressMonitor.updateProgress("uploadFailed",
                                 new ArtivactException("HTTP result code: " + response.getCode()));
                         log.error("Could not upload item file to remote server: HTTP result code {}", response.getCode());
-                        return progressMonitor;
+                    } else {
+                        progressMonitor = null;
                     }
                     return response;
                 });
 
-                progressMonitor = null;
             } catch (Exception e) {
                 progressMonitor.updateProgress("uploadFailed", e);
                 log.error("Could not upload item file to remote server!", e);
             }
         });
-
-        return progressMonitor;
     }
 
 }

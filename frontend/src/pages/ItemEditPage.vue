@@ -17,7 +17,7 @@
       </div>
 
       <div class="absolute-top-right q-ma-md">
-        <q-form :action="'/api/exchange/item/' + itemDataRef.id + '/export'" method="get">
+        <q-form :action="'/api/export/item/' + itemDataRef.id" method="get">
           <q-btn
             data-test="download-button"
             round

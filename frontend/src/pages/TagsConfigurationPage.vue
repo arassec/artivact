@@ -33,7 +33,7 @@
 
       <div class="q-mb-md">
         {{ $t('TagsConfigurationPage.importexport.export') }}
-        <q-form :action="'/api/exchange/tags/export'" method="get">
+        <q-form :action="'/api/export/tags'" method="get">
           <q-btn
             icon="download"
             :label="$t('TagsConfigurationPage.importexport.button.export')"
@@ -47,7 +47,7 @@
       <div>
         {{ $t('TagsConfigurationPage.importexport.import') }}
         <q-uploader
-          :url="'/api/exchange/tags/import'"
+          :url="'/api/import/tags'"
           :label="$t('TagsConfigurationPage.importexport.button.import')"
           class="q-mt-md q-mb-md"
           accept=".artivact.tags-configuration.json"
@@ -62,10 +62,10 @@
 </template>
 
 <script setup lang="ts">
-import { api } from 'boot/axios';
-import { useQuasar } from 'quasar';
-import { onMounted, Ref, ref } from 'vue';
-import { TagsConfiguration } from 'components/artivact-models';
+import {api} from 'boot/axios';
+import {useQuasar} from 'quasar';
+import {onMounted, Ref, ref} from 'vue';
+import {TagsConfiguration} from 'components/artivact-models';
 import ArtivactTagsConfigurationEditor from 'components/ArtivactTagsConfigurationEditor.vue';
 import ArtivactContent from 'components/ArtivactContent.vue';
 import {useI18n} from 'vue-i18n';

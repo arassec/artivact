@@ -54,24 +54,24 @@ public class ArtivactServerSecurityConfiguration {
     private static final String API_PAGE_PATTERN = "/api/page";
 
     /**
+     * API path for import handling in server-to-server communication.
+     */
+    private static final String API_IMPORT_REMOTE_PATTERN = "/api/import/remote";
+
+    /**
      * API path for import administration.
      */
     private static final String API_IMPORT_PATTERN = "/api/import";
 
     /**
+     * API path for export handling.
+     */
+    private static final String API_EXPORT_PATTERN = "/api/export";
+
+    /**
      * API path for search index administration.
      */
     private static final String API_SEARCH_INDEX_PATTERN = "/api/search/index";
-
-    /**
-     * API path for exchange handling.
-     */
-    private static final String API_EXCHANGE_PATTERN = "/api/exchange";
-
-    /**
-     * API path for exchange uploads.
-     */
-    private static final String API_EXCHANGE_SYNC_PATTERN = "/api/exchange/sync";
 
     /**
      * Provides a security filter-chain for Spring-Security when the application is run in server-mode.
@@ -86,12 +86,12 @@ public class ArtivactServerSecurityConfiguration {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, API_CONFIGURATION_PUBLIC_PATTERN).permitAll()
                         .requestMatchers(API_ACCOUNT_OWN_PATTERN).authenticated()
+                        .requestMatchers(API_IMPORT_REMOTE_PATTERN).permitAll()
                         .requestMatchers(API_IMPORT_PATTERN).hasRole(Roles.ADMIN)
+                        .requestMatchers(API_EXPORT_PATTERN).hasRole(Roles.ADMIN)
                         .requestMatchers(API_SEARCH_INDEX_PATTERN).hasRole(Roles.ADMIN)
                         .requestMatchers(API_ACCOUNT_PATTERN).hasRole(Roles.ADMIN)
                         .requestMatchers(API_CONFIGURATION_PATTERN).hasRole(Roles.ADMIN)
-                        .requestMatchers(API_EXCHANGE_SYNC_PATTERN).permitAll()
-                        .requestMatchers(API_EXCHANGE_PATTERN).hasRole(Roles.ADMIN)
                         .requestMatchers(API_ITEM_MEDIA_CREATION_PATTERN).hasAnyRole(Roles.ADMIN, Roles.USER)
                         .requestMatchers(HttpMethod.POST, API_ITEM_PATTERN).hasAnyRole(Roles.ADMIN, Roles.USER)
                         .requestMatchers(HttpMethod.PUT, API_ITEM_PATTERN).hasAnyRole(Roles.ADMIN, Roles.USER)

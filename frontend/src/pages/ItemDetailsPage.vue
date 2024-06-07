@@ -238,7 +238,7 @@ function loadPropertiesData() {
 
 function synchronizeUp() {
   api
-    .post('/api/exchange/item/' + itemDataDetailsRef.value.id + '/sync-up')
+    .post('/api/export/remote/item/' + itemDataDetailsRef.value.id)
     .then((response) => {
       showOperationInProgressModalRef.value = true;
       progressMonitorRef.value = response.data;
@@ -256,7 +256,7 @@ function synchronizeUp() {
 
 function updateOperationProgress() {
   api
-    .get('/api/exchange/progress')
+    .get('/api/export/progress')
     .then((response) => {
       if (response.data) {
         progressMonitorRef.value = response.data;

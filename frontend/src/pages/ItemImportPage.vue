@@ -25,7 +25,7 @@
       <div>
         {{ $t('ItemImportPage.description.upload') }}
         <q-uploader
-          :url="'/api/exchange/item/import'"
+          :url="'/api/import/item'"
           :label="$t('ItemImportPage.button.upload')"
           class="q-mt-md q-mb-md"
           accept=".artivact.item.zip"
@@ -50,7 +50,7 @@ const i18n = useI18n();
 
 function scanItems() {
   api
-    .post('/api/exchange/item/import/filesystem')
+    .post('/api/import/item/filesystem')
     .then(() => {
       quasar.notify({
         color: 'positive',

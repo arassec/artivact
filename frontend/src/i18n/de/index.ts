@@ -777,13 +777,6 @@ export default {
   },
 
   Progress: {
-    ExchangeService: {
-      packaging: 'Erstelle Exportdatei für Upload.',
-      exportFileCreationFailed: 'Konnte Exportdatei für Upload nicht erstellen!',
-      configMissing: 'Austausch-Konfiguration für Upload zu entferntem Artivact- Server fehlt!',
-      uploading: 'Lade Exportdatei zu entferntem Artivact-Server hoch.',
-      uploadFailed: 'Konnte Exportdatei nicht zu entferntem Artivact-Server hochladen!',
-    },
     MediaCreationService: {
       captureStart: 'Starte Fotoaufnahmen.',
       captureInProgress: 'Nehme Fotos auf...',
@@ -806,7 +799,12 @@ export default {
     },
     ExportService: {
       exportContent: 'Erstelle Export...',
-      exportContentFailed: 'Erstellung des Exports fehlgeschlagen!'
+      exportContentFailed: 'Erstellung des Exports fehlgeschlagen!',
+      packaging: 'Erstelle Exportdatei für Upload.',
+      exportFileCreationFailed: 'Konnte Exportdatei für Upload nicht erstellen!',
+      configMissing: 'Austausch-Konfiguration für Upload zu entferntem Artivact- Server fehlt!',
+      uploading: 'Lade Exportdatei zu entferntem Artivact-Server hoch.',
+      uploadFailed: 'Konnte Exportdatei nicht zu entferntem Artivact-Server hochladen!',
     }
   },
 

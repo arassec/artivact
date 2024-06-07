@@ -1,9 +1,9 @@
 package com.arassec.artivact.backend.api;
 
+
 import com.arassec.artivact.backend.api.model.OperationProgress;
 import com.arassec.artivact.backend.service.ConfigurationService;
 import com.arassec.artivact.backend.service.ExportService;
-import com.arassec.artivact.backend.service.ImportService;
 import com.arassec.artivact.backend.service.misc.ProgressMonitor;
 import com.arassec.artivact.backend.service.model.configuration.PropertiesConfiguration;
 import com.arassec.artivact.backend.service.model.configuration.TagsConfiguration;
@@ -20,24 +20,25 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 /**
- * Tests the {@link ExchangeController}.
+ * Tests the {@link ImportController}.
  */
 @ExtendWith(MockitoExtension.class)
-class ExchangeControllerTest {
+public class ExportControllerTest {
 
     /**
      * The controller under test.
      */
     @InjectMocks
-    private ExchangeController exchangeController;
+    private ExportController exportController;
 
     /**
      * The application's {@link ConfigurationService}.
@@ -50,12 +51,6 @@ class ExchangeControllerTest {
      */
     @Mock
     private ExportService exportService;
-
-    /**
-     * The application's {@link ImportService}.
-     */
-    @Mock
-    private ImportService importService;
 
     /**
      * The object mapper for exports.
@@ -77,7 +72,7 @@ class ExchangeControllerTest {
         HttpServletResponse httpServletResponse = mock(HttpServletResponse.class, Answers.RETURNS_DEEP_STUBS);
 
         ResponseEntity<StreamingResponseBody> streamingResponseBodyResponseEntity =
-                exchangeController.exportPropertiesConfiguration(httpServletResponse);
+                exportController.exportPropertiesConfiguration(httpServletResponse);
 
         assertEquals(HttpStatus.OK, streamingResponseBodyResponseEntity.getStatusCode());
 
@@ -85,24 +80,6 @@ class ExchangeControllerTest {
         verify(httpServletResponse, times(1)).setHeader(eq(HttpHeaders.CONTENT_DISPOSITION), anyString());
         verify(httpServletResponse, times(1)).addHeader(HttpHeaders.PRAGMA, "no-cache");
         verify(httpServletResponse, times(1)).addHeader(HttpHeaders.EXPIRES, "0");
-    }
-
-    /**
-     * Tests importing previously exported properties.
-     */
-    @Test
-    @SneakyThrows
-    void testImportPropertiesConfiguration() {
-        PropertiesConfiguration propertiesConfiguration = new PropertiesConfiguration();
-        when(objectMapper.readValue("properties-config-json", PropertiesConfiguration.class)).thenReturn(propertiesConfiguration);
-
-        MultipartFile file = mock(MultipartFile.class);
-        when(file.getBytes()).thenReturn("properties-config-json".getBytes());
-
-        ResponseEntity<String> stringResponseEntity = exchangeController.importPropertiesConfiguration(file);
-
-        assertEquals("Properties imported.", stringResponseEntity.getBody());
-        verify(configurationService, times(1)).savePropertiesConfiguration(propertiesConfiguration);
     }
 
     /**
@@ -119,7 +96,7 @@ class ExchangeControllerTest {
         HttpServletResponse httpServletResponse = mock(HttpServletResponse.class, Answers.RETURNS_DEEP_STUBS);
 
         ResponseEntity<StreamingResponseBody> streamingResponseBodyResponseEntity =
-                exchangeController.exportTagsConfiguration(httpServletResponse);
+                exportController.exportTagsConfiguration(httpServletResponse);
 
         assertEquals(HttpStatus.OK, streamingResponseBodyResponseEntity.getStatusCode());
 
@@ -130,24 +107,6 @@ class ExchangeControllerTest {
     }
 
     /**
-     * Tests importing previously exported tags.
-     */
-    @Test
-    @SneakyThrows
-    void testImportTagsConfiguration() {
-        TagsConfiguration tagsConfiguration = new TagsConfiguration();
-        when(objectMapper.readValue("tags-config-json", TagsConfiguration.class)).thenReturn(tagsConfiguration);
-
-        MultipartFile file = mock(MultipartFile.class);
-        when(file.getBytes()).thenReturn("tags-config-json".getBytes());
-
-        ResponseEntity<String> stringResponseEntity = exchangeController.importTagsConfiguration(file);
-
-        assertEquals("Tags imported.", stringResponseEntity.getBody());
-        verify(configurationService, times(1)).saveTagsConfiguration(tagsConfiguration);
-    }
-
-    /**
      * Tests item export.
      */
     @Test
@@ -155,7 +114,7 @@ class ExchangeControllerTest {
         HttpServletResponse httpServletResponse = mock(HttpServletResponse.class, Answers.RETURNS_DEEP_STUBS);
 
         ResponseEntity<StreamingResponseBody> streamingResponseBodyResponseEntity =
-                exchangeController.exportItem(httpServletResponse, "123-ABC");
+                exportController.exportItem(httpServletResponse, "123-ABC");
 
         assertEquals(HttpStatus.OK, streamingResponseBodyResponseEntity.getStatusCode());
 
@@ -168,47 +127,12 @@ class ExchangeControllerTest {
     }
 
     /**
-     * Tests item import.
-     */
-    @Test
-    void testImportItem() {
-        MultipartFile file = mock(MultipartFile.class);
-        ResponseEntity<String> stringResponseEntity = exchangeController.importItem(file);
-
-        assertEquals("Item imported.", stringResponseEntity.getBody());
-        verify(importService, times(1)).importItem(file, null);
-    }
-
-    /**
-     * Tests item import from the local filesystem.
-     */
-    @Test
-    void testImportItems() {
-        ResponseEntity<String> stringResponseEntity = exchangeController.importItems();
-
-        assertEquals("Items scanned.", stringResponseEntity.getBody());
-        verify(importService, times(1)).importItemsFromFilesystem();
-    }
-
-    /**
-     * Tests syncing an item.
-     */
-    @Test
-    void testSyncItem() {
-        MultipartFile file = mock(MultipartFile.class);
-        ResponseEntity<String> stringResponseEntity = exchangeController.syncItem(file, "api-token");
-
-        assertEquals("Item synchronized.", stringResponseEntity.getBody());
-        verify(importService, times(1)).importItem(file, "api-token");
-    }
-
-    /**
      * Tests the UI API for syncing items.
      */
     @Test
-    void testSyncItemUp() {
-        exchangeController.syncItemUp("123-abc");
-        verify(exportService, times(1)).syncItemUp("123-abc");
+    void testExportItemToRemoteInstance() {
+        exportController.exportItemToRemoteInstance("123-abc");
+        verify(exportService, times(1)).exportItemToRemoteInstance("123-abc");
     }
 
     /**
@@ -216,16 +140,16 @@ class ExchangeControllerTest {
      */
     @Test
     void testGetProgress() {
-        ProgressMonitor progressMonitor = new ProgressMonitor(ExchangeControllerTest.class, "test");
+        ProgressMonitor progressMonitor = new ProgressMonitor(ExportControllerTest.class, "test");
         progressMonitor.updateProgress(10, 25);
         progressMonitor.updateProgress("error", new Exception());
 
         when(exportService.getProgressMonitor()).thenReturn(progressMonitor);
 
-        ResponseEntity<OperationProgress> progress = exchangeController.getProgress();
+        ResponseEntity<OperationProgress> progress = exportController.getProgress();
 
         assertNotNull(progress.getBody());
-        assertEquals("Progress.ExchangeControllerTest.error", progress.getBody().getKey());
+        assertEquals("Progress.ExportControllerTest.error", progress.getBody().getKey());
         assertEquals(10, progress.getBody().getCurrentAmount());
         assertEquals(25, progress.getBody().getTargetAmount());
         assertNotNull(progress.getBody().getError());
