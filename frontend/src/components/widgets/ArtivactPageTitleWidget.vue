@@ -47,7 +47,7 @@
           >
             <div class="absolute-full flex flex-center page-title-small">
               <h2
-                class="page-title av-text-h2 text-white lt-md"
+                class="page-title-heading-small av-text-h2 text-white lt-md"
                 v-if="widgetDataRef.title"
               >
                 {{ translate(widgetDataRef.title) }}
@@ -253,6 +253,13 @@ const widgetDataRef = toRef(props, 'widgetData');
 
 <style scoped>
 .page-title {
+  font-weight: bold;
+  color: white;
+  filter: none;
+}
+
+.page-title-heading-small {
+  font-size: 10vw;
   font-weight: bold;
   color: white;
   filter: none;
