@@ -741,13 +741,14 @@ export default {
     }
   },
 
-  SearchWidget: {
+  ItemSearchWidget: {
     label: {
-      noSearchResults: 'No search results available!'
+      noSearchResults: 'No search results available!',
+      pageSize: 'Page size',
     },
     messages: {
       noSearchResults: 'No search results found!',
-      searchFailed: 'Search failed!'
+      searchFailed: 'Search failed!',
     }
   },
 

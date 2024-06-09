@@ -80,7 +80,7 @@
               !searchResultRef.data ||
               searchResultRef.data.length === 0)
           ">
-          {{ $t('SearchWidget.label.noSearchResults') }}
+          {{ $t('ItemSearchWidget.label.noSearchResults') }}
         </label>
 
         <div class="col">
@@ -138,7 +138,7 @@
     <template v-slot:widget-editor-content>
       <artivact-content>
         <q-input type="number" outlined v-model="widgetDataRef.pageSize" class="q-mb-md full-width"
-                 :label="$t('asdf')"/>
+                 :label="$t('ItemSearchWidget.label.pageSize')"/>
         <artivact-item-search-input
           :widget-data="widgetDataRef"
           @refresh-search-results="search(0)"
@@ -225,7 +225,7 @@ function search(page: number) {
         quasar.notify({
           color: 'warning',
           position: 'bottom',
-          message: i18n.t('SearchWidget.messages.noSearchResults'),
+          message: i18n.t('ItemSearchWidget.messages.noSearchResults'),
           icon: 'report_problem',
         });
       }
@@ -234,7 +234,7 @@ function search(page: number) {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('SearchWidget.messages.searchFailed'),
+        message: i18n.t('ItemSearchWidget.messages.searchFailed'),
         icon: 'report_problem',
       });
     });

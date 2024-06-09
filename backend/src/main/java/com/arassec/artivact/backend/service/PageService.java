@@ -260,6 +260,7 @@ public class PageService extends BaseFileService {
      * @param pageEntity The entity to convert.
      * @return The page's content.
      */
+    @SuppressWarnings("java:S6204") // Widget list must be modifiable!
     private PageContent convertPageEntity(PageEntity pageEntity) {
         PageContent pageContent = fromJson(pageEntity.getContentJson(), PageContent.class);
 
@@ -268,7 +269,8 @@ public class PageService extends BaseFileService {
         result.setIndexPage(pageContent.getIndexPage());
         result.setWidgets(pageContent.getWidgets().stream()
                 .filter(Objects::nonNull)
-                .toList());
+                .collect(Collectors.toList())
+        );
 
         return result;
     }

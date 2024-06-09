@@ -742,13 +742,14 @@ export default {
     }
   },
 
-  SearchWidget: {
+  ItemSearchWidget: {
     label: {
-      noSearchResults: 'Keine Suchergebnisse verfügbar!'
+      noSearchResults: 'Keine Suchergebnisse verfügbar!',
+      pageSize: 'Seitengröße',
     },
     messages: {
       noSearchResults: 'Keine Suchergebnisse verfügbar!',
-      searchFailed: 'Suche fehlgeschlagen!'
+      searchFailed: 'Suche fehlgeschlagen!',
     }
   },
 
