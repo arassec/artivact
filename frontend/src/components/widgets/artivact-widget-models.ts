@@ -1,24 +1,28 @@
 import {TranslatableString, Widget} from 'components/artivact-models';
 
+export interface SearchBasedWidgetData extends Widget {
+  searchTerm: string | null | undefined;
+  maxResults: number;
+}
+
 export interface PageTitleWidgetData extends Widget {
-    title: TranslatableString;
-    backgroundImage: string;
+  title: TranslatableString;
+  backgroundImage: string;
 }
 
 export interface TextWidgetData extends Widget {
-    heading: TranslatableString;
-    content: TranslatableString;
-}
-
-export interface SearchBasedWidgetData extends Widget {
-    searchTerm: string | null | undefined;
-    maxResults: number;
+  heading: TranslatableString;
+  content: TranslatableString;
 }
 
 export interface InfoBoxWidgetData extends Widget {
-    heading: TranslatableString;
-    content: TranslatableString;
-    boxType: string;
+  heading: TranslatableString;
+  content: TranslatableString;
+  boxType: string;
+}
+
+export interface ItemSearchWidget extends SearchBasedWidgetData {
+  pageSize: number;
 }
 
 export interface AvatarWidgetData extends Widget {
@@ -33,4 +37,5 @@ export interface SpaceWidgetData extends Widget {
 export interface ImageTextWidgetData extends Widget {
   image: string;
   text: TranslatableString;
+  fullscreenAllowed: boolean;
 }

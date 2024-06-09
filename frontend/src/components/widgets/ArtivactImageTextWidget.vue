@@ -17,6 +17,7 @@
                 class="shadow-2 rounded-borders"
               >
                 <q-carousel-slide
+                  v-if="widgetDataRef.image"
                   draggable="false"
                   name="image"
                   :img-src="
@@ -24,10 +25,11 @@
                     widgetDataRef.id +
                     '/' +
                     widgetDataRef.image +
-                    '?imageSize=CAROUSEL'
+                    '?imageSize=DETAIL'
                   "
                 >
                   <q-btn
+                    v-if="widgetDataRef.fullscreenAllowed"
                     round
                     dense
                     flat
@@ -57,7 +59,7 @@
               widgetDataRef.id +
               '/' +
               widgetDataRef.image +
-              '?imageSize=CAROUSEL'
+              '?imageSize=DETAIL'
             "
           >
           </q-img>
@@ -87,10 +89,11 @@
                     widgetDataRef.id +
                     '/' +
                     widgetDataRef.image +
-                    '?imageSize=CAROUSEL'
+                    '?imageSize=DETAIL'
                   "
                 >
                   <q-btn
+                    v-if="widgetDataRef.fullscreenAllowed"
                     round
                     dense
                     flat
@@ -142,7 +145,7 @@
               widgetDataRef.id +
               '/' +
               widgetDataRef.image +
-              '?imageSize=CAROUSEL'
+              '?imageSize=DETAIL'
             "
           >
           </q-img>
@@ -178,17 +181,22 @@
     <template v-slot:widget-editor-content>
       <artivact-content>
         <div class="column full-width">
-          <q-uploader
-            :label="$t('ImageTextWidget.label.image')"
-            auto-upload
-            field-name="file"
-            :no-thumbnails="true"
-            class="q-mb-md"
-            :url="'/api/page/' + pageIdRef + '/widget/' + widgetDataRef.id"
-            @uploaded="$emit('image-added', 'image')"
-            ref="imageUploader"
-          >
-          </q-uploader>
+          <div class="row">
+            <q-uploader
+              :label="$t('ImageTextWidget.label.image')"
+              auto-upload
+              field-name="file"
+              :no-thumbnails="true"
+              class="q-mb-md col"
+              :url="'/api/page/' + pageIdRef + '/widget/' + widgetDataRef.id"
+              @uploaded="$emit('image-added', 'image')"
+              ref="imageUploader"
+            >
+            </q-uploader>
+            <q-checkbox v-model="widgetDataRef.fullscreenAllowed" class="q-ml-md col full-height"
+                        :label="$t('ImageTextWidget.label.fullscreenAllowed')">
+            </q-checkbox>
+          </div>
           <artivact-restricted-translatable-item-editor
             :locales="localeStore.locales"
             :translatable-string="widgetDataRef.text"

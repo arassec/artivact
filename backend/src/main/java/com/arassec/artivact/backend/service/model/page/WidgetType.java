@@ -27,11 +27,6 @@ public enum WidgetType {
     ITEM_SEARCH(ItemSearchWidget.class),
 
     /**
-     * Item carousel.
-     */
-    ITEM_CAROUSEL(ItemCarouselWidget.class),
-
-    /**
      * An info box.
      */
     INFO_BOX(InfoBoxWidget.class),

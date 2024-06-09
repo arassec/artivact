@@ -1,5 +1,5 @@
 <template>
-  <div class="column full-width q-mb-md">
+  <div class="column full-width">
     <q-input
       outlined
       v-model="widgetDataRef.maxResults"

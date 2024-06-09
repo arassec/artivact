@@ -18,7 +18,7 @@
               class="q-mb-lg"
             >
               <template v-slot:append>
-                <q-icon v-if="searchTermRef === ''" name="search" />
+                <q-icon v-if="searchTermRef === ''" name="search"/>
                 <q-icon
                   v-else
                   name="clear"
@@ -92,7 +92,7 @@
               class="q-mb-lg"
             >
               <template v-slot:append>
-                <q-icon v-if="searchTermRef === ''" name="search" />
+                <q-icon v-if="searchTermRef === ''" name="search"/>
                 <q-icon
                   v-else
                   name="clear"
@@ -137,6 +137,8 @@
 
     <template v-slot:widget-editor-content>
       <artivact-content>
+        <q-input type="number" outlined v-model="widgetDataRef.pageSize" class="q-mb-md full-width"
+                 :label="$t('asdf')"/>
         <artivact-item-search-input
           :widget-data="widgetDataRef"
           @refresh-search-results="search(0)"
@@ -149,7 +151,7 @@
 <script setup lang="ts">
 import ArtivactContent from 'components/ArtivactContent.vue';
 import {onMounted, PropType, ref, toRef} from 'vue';
-import {SearchBasedWidgetData} from 'components/widgets/artivact-widget-models';
+import {ItemSearchWidget} from 'components/widgets/artivact-widget-models';
 import {SearchResult} from 'components/artivact-models';
 import {api} from 'boot/axios';
 import {useQuasar} from 'quasar';
@@ -174,7 +176,7 @@ const props = defineProps({
   },
   widgetData: {
     required: true,
-    type: Object as PropType<SearchBasedWidgetData>,
+    type: Object as PropType<ItemSearchWidget>,
   },
 });
 
@@ -202,14 +204,19 @@ function search(page: number) {
   if (maxSearchResults <= 0) {
     maxSearchResults = 100;
   }
+  let pageSize = widgetDataRef.value?.pageSize;
+  if (pageSize <= 0) {
+    pageSize = 9;
+  }
   api
     .get(
       '/api/search?query=' +
-        searchQuery +
-        '&pageNo=' +
-        page +
-        '&maxResults=' +
-        maxSearchResults
+      searchQuery +
+      '&pageNo=' +
+      page +
+      '&maxResults=' +
+      maxSearchResults +
+      '&pageSize=' + pageSize
     )
     .then((response) => {
       searchResultRef.value = response.data;

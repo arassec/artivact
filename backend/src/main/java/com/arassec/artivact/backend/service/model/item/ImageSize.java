@@ -19,9 +19,9 @@ public enum ImageSize {
     ITEM_CARD(300),
 
     /**
-     * Size to display an image in a carousel widget.
+     * Size to display an image in more detail, but not full resolution.
      */
-    CAROUSEL(1024),
+    DETAIL(1024),
 
     /**
      * Size for page title images.

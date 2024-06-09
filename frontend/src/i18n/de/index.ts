@@ -722,7 +722,8 @@ export default {
   ImageTextWidget: {
     label: {
       image: 'Bild',
-      text: 'Text'
+      text: 'Text',
+      fullscreenAllowed: 'Gibt an, ob das Bild als Vollbild-Detailansicht geöffnet werden kann.',
     }
   },
 
@@ -731,12 +732,6 @@ export default {
       heading: 'Überschrift',
       content: 'Inhalt',
       outlined: 'Art'
-    }
-  },
-
-  ItemCarouselWidget: {
-    messages: {
-      searchFailed: 'Suche fehlgeschlagen!'
     }
   },
 
@@ -830,8 +825,6 @@ export default {
   IMAGE_TEXT_DESCRIPTION: 'Ein Bild und daneben stehender Text. Der Text unterstützt Markdown-Makros zur Formatierung.',
   ITEM_SEARCH: 'Item-Suche',
   ITEM_SEARCH_DESCRIPTION: 'Zeigt entweder das Ergebnis einer vordefinierten Item-Suche an, oder gibt den Nutzer die Möglichkeit selber nach Items zu suchen.',
-  ITEM_CAROUSEL: 'Item-Karussell',
-  ITEM_CAROUSEL_DESCRIPTION: 'Zeigt jeweils drei Ergebnisse einer Item-Suche an und bietet die MÖglichkeit, durch weitere Seiten zu blättern',
   INFO_BOX: 'Info Box',
   INFO_BOX_DESCRIPTION: 'Eine text box mit optionaler Überschrift, die je nach Status eingefärbt wird: INFO, WARN and ALERT.',
   AVATAR: 'Avatar',

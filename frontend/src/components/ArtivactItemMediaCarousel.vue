@@ -17,7 +17,7 @@
         v-for="(mediaEntry, index) of itemDetailsRef.images"
         :key="index"
         :name="index"
-        :img-src="mediaEntry.url + '?imageSize=CAROUSEL'"
+        :img-src="mediaEntry.url + '?imageSize=DETAIL'"
       >
         <q-btn
           round

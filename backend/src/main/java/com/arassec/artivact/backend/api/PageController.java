@@ -2,12 +2,13 @@ package com.arassec.artivact.backend.api;
 
 import com.arassec.artivact.backend.service.PageService;
 import com.arassec.artivact.backend.service.exception.ArtivactException;
-import com.arassec.artivact.backend.service.model.page.PageContent;
 import com.arassec.artivact.backend.service.model.item.ImageSize;
+import com.arassec.artivact.backend.service.model.page.PageContent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.*;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -89,6 +90,10 @@ public class PageController {
     public HttpEntity<byte[]> loadFile(@PathVariable String widgetId,
                                        @PathVariable String filename,
                                        @RequestParam(required = false) ImageSize imageSize) {
+
+        if (!StringUtils.hasText(filename)) {
+            return new HttpEntity<>(new byte[0]);
+        }
 
         var contentDisposition = ContentDisposition.builder("inline")
                 .filename(filename)

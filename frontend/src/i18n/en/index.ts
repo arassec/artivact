@@ -721,7 +721,8 @@ export default {
   ImageTextWidget: {
     label: {
       image: 'Image',
-      text: 'Text'
+      text: 'Text',
+      fullscreenAllowed: 'Configures whether the image can be opened in the fullscreen detail view.',
     }
   },
 
@@ -730,12 +731,6 @@ export default {
       heading: 'Heading',
       content: 'Content',
       outlined: 'Outlined'
-    }
-  },
-
-  ItemCarouselWidget: {
-    messages: {
-      searchFailed: 'Search failed!'
     }
   },
 
@@ -827,8 +822,6 @@ export default {
   IMAGE_TEXT_DESCRIPTION: 'An image next to a text block. Supports Markdown for text formatting.',
   ITEM_SEARCH: 'Item Search',
   ITEM_SEARCH_DESCRIPTION: 'Either presents the results of a predefined item search, or lets the user input search parameters and displays the results.',
-  ITEM_CAROUSEL: 'Item Carousel',
-  ITEM_CAROUSEL_DESCRIPTION: 'Shows three item cards at once with support for scrolling through all items of a predefined search.',
   INFO_BOX: 'Info Box',
   INFO_BOX_DESCRIPTION: 'A text box with optional heading that can be colored according to their three states: INFO, WARN and ALERT.',
   AVATAR: 'Avatar',

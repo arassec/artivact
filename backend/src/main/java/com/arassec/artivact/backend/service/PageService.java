@@ -23,10 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -172,6 +169,7 @@ public class PageService extends BaseFileService {
 
         PageContent existingPageContent = fromJson(pageEntity.getContentJson(), PageContent.class);
         List<String> widgetIdsToDelete = existingPageContent.getWidgets().stream()
+                .filter(Objects::nonNull)
                 .map(BaseRestrictedObject::getId)
                 .collect(Collectors.toList());
 
@@ -268,7 +266,9 @@ public class PageService extends BaseFileService {
         PageContent result = new PageContent();
         result.setId(pageContent.getId());
         result.setIndexPage(pageContent.getIndexPage());
-        result.setWidgets(pageContent.getWidgets());
+        result.setWidgets(pageContent.getWidgets().stream()
+                .filter(Objects::nonNull)
+                .toList());
 
         return result;
     }

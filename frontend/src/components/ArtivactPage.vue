@@ -135,21 +135,7 @@
       <artivact-item-search-widget
         :class="inEditMode ? 'widget' : ''"
         v-if="widgetData.type === 'ITEM_SEARCH'"
-        :widget-data="widgetData as SearchBasedWidgetData"
-        :in-edit-mode="inEditMode"
-        :move-up-enabled="index > 0"
-        :move-down-enabled="index < pageContentRef.widgets.length - 1"
-        @move-widget-up="moveWidgetUp(pageContentRef.widgets, index)"
-        @move-widget-down="moveWidgetDown(pageContentRef.widgets, index)"
-        @add-widget-above="addWidgetAboveRef = widgetData.id; showAddWidgetDialogRef = true;"
-        @add-widget-below="addWidgetBelowRef = widgetData.id; showAddWidgetDialogRef = true;"
-        @delete-widget="deleteWidget(index)"
-      />
-
-      <artivact-item-carousel-widget
-        :class="inEditMode ? 'widget' : ''"
-        v-if="widgetData.type === 'ITEM_CAROUSEL'"
-        :widget-data="widgetData as SearchBasedWidgetData"
+        :widget-data="widgetData as ItemSearchWidget"
         :in-edit-mode="inEditMode"
         :move-up-enabled="index > 0"
         :move-down-enabled="index < pageContentRef.widgets.length - 1"
@@ -264,8 +250,8 @@ import {
   AvatarWidgetData,
   ImageTextWidgetData,
   InfoBoxWidgetData,
+  ItemSearchWidget,
   PageTitleWidgetData,
-  SearchBasedWidgetData,
   SpaceWidgetData,
   TextWidgetData,
 } from 'components/widgets/artivact-widget-models';
@@ -277,7 +263,6 @@ import ArtivactAvatarWidget from 'components/widgets/ArtivactAvatarWidget.vue';
 import ArtivactImageTextWidget from 'components/widgets/ArtivactImageTextWidget.vue';
 import ArtivactInfoBoxWidget from 'components/widgets/ArtivactInfoBoxWidget.vue';
 import ArtivactSpaceWidget from 'components/widgets/ArtivactSpaceWidget.vue';
-import ArtivactItemCarouselWidget from 'components/widgets/ArtivactItemCarouselWidget.vue';
 import ArtivactTextWidget from 'components/widgets/ArtivactTextWidget.vue';
 import ArtivactPageTitleWidget from 'components/widgets/ArtivactPageTitleWidget.vue';
 import ArtivactItemSearchWidget from 'components/widgets/ArtivactItemSearchWidget.vue';
@@ -319,7 +304,6 @@ const availableWidgetTypes = [
   'TEXT',
   'IMAGE_TEXT',
   'ITEM_SEARCH',
-  'ITEM_CAROUSEL',
   'INFO_BOX',
   'AVATAR',
   'SPACE',
@@ -333,8 +317,6 @@ function addWidget() {
   } else if (addWidgetBelowRef.value !== '') {
     index = pageContentRef.value?.widgets.findIndex((element) => element.id === addWidgetBelowRef.value) + 1;
   }
-
-  console.log('INDEX: ' + index);
 
   addWidgetAboveRef.value = '';
   addWidgetBelowRef.value = '';
@@ -366,6 +348,8 @@ function addWidget() {
       type: 'IMAGE_TEXT',
       id: '',
       restrictions: [] as string[],
+      image: '',
+      fullscreenAllowed: true,
       text: {
         value: i18n.t('ArtivactPage.label.text'),
       } as TranslatableString,
@@ -376,16 +360,9 @@ function addWidget() {
       id: '',
       restrictions: [] as string[],
       searchTerm: '',
+      pageSize: 9,
       maxResults: 100,
-    } as SearchBasedWidgetData);
-  } else if (selectedWidgetTypeRef.value === 'ITEM_CAROUSEL') {
-    pageContentRef.value?.widgets.splice(index, 0, {
-      type: 'ITEM_CAROUSEL',
-      id: '',
-      restrictions: [] as string[],
-      searchTerm: '*',
-      maxResults: 9,
-    } as SearchBasedWidgetData);
+    } as ItemSearchWidget);
   } else if (selectedWidgetTypeRef.value === 'INFO_BOX') {
     pageContentRef.value?.widgets.splice(index, 0, {
       type: 'INFO_BOX',

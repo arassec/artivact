@@ -7,13 +7,16 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 /**
  * Custom {@link ObjectMapper} deserializer for Artivact widgets.
  */
+@Slf4j
 public class WidgetDeserializer extends StdDeserializer<Widget> {
 
     /**
@@ -37,7 +40,13 @@ public class WidgetDeserializer extends StdDeserializer<Widget> {
     @Override
     public Widget deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
         Map<String, Object> map = deserializationContext.readValue(jsonParser, Map.class);
-        return (Widget) objectMapper.readValue(objectMapper.writeValueAsString(map), WidgetType.getClassOfType(getType(map)));
+        try {
+            Class<?> classOfType = WidgetType.getClassOfType(getType(map));
+            return (Widget) objectMapper.readValue(objectMapper.writeValueAsString(map), classOfType);
+        } catch (NoSuchElementException e) {
+            log.warn("No widget found for type {}. Ignoring widget...", getType(map));
+            return null;
+        }
     }
 
     /**

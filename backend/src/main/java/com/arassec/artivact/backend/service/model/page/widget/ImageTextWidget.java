@@ -27,6 +27,11 @@ public class ImageTextWidget extends Widget implements FileProcessingWidget {
     private TranslatableString text;
 
     /**
+     * Enables or disables fullscreen availability.
+     */
+    private boolean fullscreenAllowed;
+
+    /**
      * Creates a new instance.
      */
     public ImageTextWidget() {
