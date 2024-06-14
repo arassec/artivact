@@ -27,7 +27,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
@@ -95,19 +94,15 @@ public class ItemService extends BaseFileService {
                        FileUtil fileUtil,
                        ObjectMapper objectMapper,
                        ProjectDataProvider projectDataProvider) {
+
         this.itemEntityRepository = itemEntityRepository;
         this.configurationService = configurationService;
         this.searchService = searchService;
         this.fileUtil = fileUtil;
         this.objectMapper = objectMapper;
         this.itemsDir = projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.ITEMS_DIR);
-        if (!Files.exists(itemsDir)) {
-            try {
-                Files.createDirectories(itemsDir);
-            } catch (IOException e) {
-                throw new IllegalStateException("Could not create items directory!", e);
-            }
-        }
+
+        fileUtil.createDirIfRequired(itemsDir);
     }
 
     /**
@@ -144,7 +139,7 @@ public class ItemService extends BaseFileService {
     public Item load(String itemId) {
         Optional<ItemEntity> itemEntityOptional = itemEntityRepository.findById(itemId);
         if (itemEntityOptional.isPresent()) {
-            TagsConfiguration tagsConfiguration = configurationService.loadTranslatedRestrictedTags();
+            TagsConfiguration tagsConfiguration = configurationService.loadTagsConfiguration();
             ItemEntity itemEntity = itemEntityOptional.get();
             Item item = fromJson(itemEntity.getContentJson(), Item.class);
             item.setVersion(itemEntity.getVersion());
@@ -161,16 +156,19 @@ public class ItemService extends BaseFileService {
             if (item.getMediaContent() == null) {
                 item.setMediaContent(new MediaContent());
             }
+
             if (item.getMediaCreationContent() == null) {
                 item.setMediaCreationContent(new MediaCreationContent());
             }
+
             // Create an empty TranslatableString value for every property:
-            configurationService.loadTranslatedRestrictedProperties().forEach(propertyCategory ->
+            configurationService.loadPropertiesConfiguration().getCategories().forEach(propertyCategory ->
                     propertyCategory.getProperties().forEach(property -> {
                         if (!item.getProperties().containsKey(property.getId())) {
                             item.getProperties().put(property.getId(), new TranslatableString());
                         }
                     }));
+
             return item;
         }
 
@@ -196,7 +194,6 @@ public class ItemService extends BaseFileService {
      */
     @TranslateResult
     @RestrictResult
-    @SuppressWarnings("java:S6204") // Result list needs to be mutable!
     public Item loadTranslatedRestricted(String itemId) {
         return load(itemId);
     }
@@ -217,14 +214,10 @@ public class ItemService extends BaseFileService {
         itemEntity.setSyncVersion(item.getSyncVersion());
 
         getDanglingImages(item).forEach(imageToDelete -> {
-            try {
-                Files.deleteIfExists(fileUtil.getSubdirFilePath(itemsDir, item.getId(), ProjectDataProvider.IMAGES_DIR).resolve(imageToDelete));
-                for (ImageSize imageSize : ImageSize.values()) {
-                    Files.deleteIfExists(fileUtil.getSubdirFilePath(itemsDir, item.getId(), ProjectDataProvider.IMAGES_DIR)
-                            .resolve(imageSize.name() + "-" + imageToDelete));
-                }
-            } catch (IOException e) {
-                log.error("Could not delete obsolete image from filesystem!", e);
+            fileUtil.delete(fileUtil.getSubdirFilePath(itemsDir, item.getId(), ProjectDataProvider.IMAGES_DIR).resolve(imageToDelete));
+            for (ImageSize imageSize : ImageSize.values()) {
+                fileUtil.delete(fileUtil.getSubdirFilePath(itemsDir, item.getId(), ProjectDataProvider.IMAGES_DIR)
+                        .resolve(imageSize.name() + "-" + imageToDelete));
             }
         });
 
@@ -232,13 +225,9 @@ public class ItemService extends BaseFileService {
 
         List<String> modelsToDelete = getFiles(fileUtil.getDirFromId(itemsDir, item.getId()), ProjectDataProvider.MODELS_DIR);
         modelsToDelete.removeAll(modelsInItem);
-        modelsToDelete.forEach(imageToDelete -> {
-            try {
-                Files.deleteIfExists(fileUtil.getSubdirFilePath(itemsDir, item.getId(), ProjectDataProvider.MODELS_DIR).resolve(imageToDelete));
-            } catch (IOException e) {
-                log.error("Could not delete obsolete model from filesystem!", e);
-            }
-        });
+        modelsToDelete.forEach(imageToDelete ->
+                fileUtil.delete(fileUtil.getSubdirFilePath(itemsDir, item.getId(), ProjectDataProvider.MODELS_DIR).resolve(imageToDelete))
+        );
 
         ItemEntity savedItemEntity = itemEntityRepository.save(itemEntity);
 
@@ -452,11 +441,7 @@ public class ItemService extends BaseFileService {
 
         Path targetPath = targetDir.resolve(assetName);
 
-        try {
-            Files.copy(data, targetPath, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            throw new ArtivactException("Could not save file!", e);
-        }
+        fileUtil.copy(data, targetPath, StandardCopyOption.REPLACE_EXISTING);
 
         return assetName;
     }
@@ -469,14 +454,8 @@ public class ItemService extends BaseFileService {
      */
     private int getNextAssetNumber(Path assetDir) {
         var highestNumber = 0;
-        if (!Files.exists(assetDir)) {
-            try {
-                Files.createDirectories(assetDir);
-            } catch (IOException e) {
-                throw new ArtivactException("Could not create asset directory!", e);
-            }
-        }
-        try (Stream<Path> stream = Files.list(assetDir)) {
+        fileUtil.createDirIfRequired(assetDir);
+        try (Stream<Path> stream = fileUtil.list(assetDir)) {
             List<Path> assets = stream.toList();
             for (Path path : assets) {
                 if (".".equals(path.getFileName().toString()) || "..".equals(path.getFileName().toString())) {
@@ -495,8 +474,6 @@ public class ItemService extends BaseFileService {
                     highestNumber = number;
                 }
             }
-        } catch (IOException e) {
-            throw new ArtivactException("Could not read assets!", e);
         }
         return (highestNumber + 1);
     }

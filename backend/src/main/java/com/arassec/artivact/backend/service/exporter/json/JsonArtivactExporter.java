@@ -156,55 +156,61 @@ public class JsonArtivactExporter implements ArtivactExporter {
             if (params.isApplyRestrictions() && !widget.getRestrictions().isEmpty()) {
                 return;
             }
-
             widget.setRestrictions(null);
-
-            switch (widget) {
-                case AvatarWidget avatarWidget -> {
-                    avatarWidget.getAvatarSubtext().setTranslatedValue(null);
-                    copyWidgetFile(params, avatarWidget, avatarWidget.getAvatarImage());
-                }
-                case ImageTextWidget imageTextWidget -> {
-                    imageTextWidget.getText().setTranslatedValue(null);
-                    copyWidgetFile(params, imageTextWidget, imageTextWidget.getImage());
-                }
-                case InfoBoxWidget infoBoxWidget -> {
-                    infoBoxWidget.getHeading().setTranslatedValue(null);
-                    infoBoxWidget.getContent().setTranslatedValue(null);
-                }
-                case PageTitleWidget pageTitleWidget -> {
-                    pageTitleWidget.getTitle().setTranslatedValue(null);
-                    copyWidgetFile(params, pageTitleWidget, pageTitleWidget.getBackgroundImage());
-                }
-                case SearchBasedWidget searchBasedWidget -> {
-                    String searchTerm = searchBasedWidget.getSearchTerm();
-                    int maxResults = searchBasedWidget.getMaxResults();
-                    List<Item> searchResult = searchService.search(searchTerm, maxResults);
-                    if (searchResult != null && !searchResult.isEmpty()) {
-                        for (Item item : searchResult) {
-                            if (params.isApplyRestrictions() && !item.getRestrictions().isEmpty()) {
-                                continue;
-                            }
-                            exportItem(params, item);
-                        }
-
-                        writeJsonFile(params.getContentExportDir().resolve(widget.getId() + SEARCH_EXPORT_FILE_SUFFIX),
-                                searchResult.stream().map(Item::getId).toArray());
-                    }
-                }
-                case TextWidget textWidget -> {
-                    textWidget.getHeading().setTranslatedValue(null);
-                    textWidget.getContent().setTranslatedValue(null);
-                }
-                default -> {
-                }
-
-            }
+            exportWidget(params, widget);
         });
 
         cleanupPage(params, pageContent);
 
         writeJsonFile(params.getContentExportDir().resolve(pageContent.getId() + PAGE_EXPORT_FILE_SUFFIX), pageContent);
+    }
+
+    /**
+     * Exports the supplied widget.
+     *
+     * @param params Parameters of the content export.
+     * @param widget The widget to export.
+     */
+    private void exportWidget(ExportParams params, Widget widget) {
+        switch (widget) {
+            case AvatarWidget avatarWidget -> {
+                avatarWidget.getAvatarSubtext().setTranslatedValue(null);
+                copyWidgetFile(params, avatarWidget, avatarWidget.getAvatarImage());
+            }
+            case ImageTextWidget imageTextWidget -> {
+                imageTextWidget.getText().setTranslatedValue(null);
+                copyWidgetFile(params, imageTextWidget, imageTextWidget.getImage());
+            }
+            case InfoBoxWidget infoBoxWidget -> {
+                infoBoxWidget.getHeading().setTranslatedValue(null);
+                infoBoxWidget.getContent().setTranslatedValue(null);
+            }
+            case PageTitleWidget pageTitleWidget -> {
+                pageTitleWidget.getTitle().setTranslatedValue(null);
+                copyWidgetFile(params, pageTitleWidget, pageTitleWidget.getBackgroundImage());
+            }
+            case SearchBasedWidget searchBasedWidget -> {
+                String searchTerm = searchBasedWidget.getSearchTerm();
+                int maxResults = searchBasedWidget.getMaxResults();
+                List<Item> searchResult = searchService.search(searchTerm, maxResults);
+                if (searchResult != null && !searchResult.isEmpty()) {
+                    for (Item item : searchResult) {
+                        if (params.isApplyRestrictions() && !item.getRestrictions().isEmpty()) {
+                            continue;
+                        }
+                        exportItem(params, item);
+                    }
+
+                    writeJsonFile(params.getContentExportDir().resolve(widget.getId() + SEARCH_EXPORT_FILE_SUFFIX),
+                            searchResult.stream().map(Item::getId).toArray());
+                }
+            }
+            case TextWidget textWidget -> {
+                textWidget.getHeading().setTranslatedValue(null);
+                textWidget.getContent().setTranslatedValue(null);
+            }
+            default -> log.info("No export available for widget type: {}", widget.getType());
+        }
     }
 
     /**

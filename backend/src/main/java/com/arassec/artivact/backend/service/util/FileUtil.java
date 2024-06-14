@@ -10,6 +10,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.ZoneId;
@@ -207,6 +208,22 @@ public class FileUtil {
     }
 
     /**
+     * Copies a source InputStream to a target path.
+     *
+     * @param source      The source {@link InputStream}.
+     * @param target      The target path.
+     * @param copyOptions The options to use for copying.
+     * @return The path to the target file.
+     */
+    public long copy(InputStream source, Path target, CopyOption... copyOptions) {
+        try {
+            return Files.copy(source, target, copyOptions);
+        } catch (IOException e) {
+            throw new ArtivactException("Could not copy resource!", e);
+        }
+    }
+
+    /**
      * Returns a path to the subdirectory folder for the given ID.
      * <p>
      * E.g. a root of '/root/path' and an ID of 'ABC123' will lead to the path '/root/path/ABC/123/ABC123'.
@@ -279,7 +296,7 @@ public class FileUtil {
         try {
             return Files.getLastModifiedTime(path).toInstant().atZone(ZoneId.systemDefault());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new ArtivactException("Could not determine date of last modification!", e);
         }
     }
 

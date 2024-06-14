@@ -32,7 +32,7 @@ import static org.mockito.Mockito.*;
  * Tests the {@link ImportController}.
  */
 @ExtendWith(MockitoExtension.class)
-public class ExportControllerTest {
+class ExportControllerTest {
 
     /**
      * The controller under test.

@@ -1,7 +1,9 @@
 package com.arassec.artivact.backend.service.model.tag;
 
 import com.arassec.artivact.backend.service.model.BaseTranslatableRestrictedObject;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -9,6 +11,8 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Tag extends BaseTranslatableRestrictedObject {
 
     /**

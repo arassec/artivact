@@ -13,9 +13,9 @@ import java.util.Map;
  */
 @Getter
 @Setter
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class TranslatableString implements TranslatableObject {
 
     /**
