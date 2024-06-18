@@ -5,8 +5,10 @@ import com.arassec.artivact.backend.persistence.model.PageEntity;
 import com.arassec.artivact.backend.service.aop.GenerateIds;
 import com.arassec.artivact.backend.service.aop.RestrictResult;
 import com.arassec.artivact.backend.service.aop.TranslateResult;
+import com.arassec.artivact.backend.service.exception.ArtivactException;
 import com.arassec.artivact.backend.service.misc.ProjectDataProvider;
 import com.arassec.artivact.backend.service.model.BaseRestrictedObject;
+import com.arassec.artivact.backend.service.model.Roles;
 import com.arassec.artivact.backend.service.model.item.ImageSize;
 import com.arassec.artivact.backend.service.model.page.FileProcessingWidget;
 import com.arassec.artivact.backend.service.model.page.Page;
@@ -137,37 +139,44 @@ public class PageService extends BaseFileService {
      */
     @TranslateResult
     @RestrictResult
-    public PageContent loadIndexPageContent() {
+    public PageContent loadIndexPageContent(Set<String> roles) {
         Optional<PageEntity> indexPageOptional = pageEntityRepository.findFirstByIndexPage(true);
-        return indexPageOptional.map(this::convertPageEntity).orElseGet(PageContent::new);
+        return indexPageOptional.map(PageEntity::getId).map(id -> loadPageContent(id, roles)).orElseGet(PageContent::new);
     }
 
     /**
      * Loads the content of the given page.
      *
      * @param pageId The page's ID.
+     * @param roles  The available roles.
      * @return The {@link PageContent} of the page.
      */
     @TranslateResult
     @RestrictResult
-    public PageContent loadPageContent(String pageId) {
-        return convertPageEntity(pageEntityRepository.findById(pageId).orElseThrow());
+    public PageContent loadPageContent(String pageId, Set<String> roles) {
+        return convertPageEntity(pageEntityRepository.findById(pageId).orElseThrow(), roles);
     }
 
     /**
      * Saves a page's content.
      *
      * @param pageId      The page's ID.
+     * @param roles       The available roles.
      * @param pageContent The content to save.
      * @return The updated page content.
      */
     @GenerateIds
     @TranslateResult
     @RestrictResult
-    public PageContent savePageContent(String pageId, PageContent pageContent) {
+    public PageContent savePageContent(String pageId, Set<String> roles, PageContent pageContent) {
         PageEntity pageEntity = pageEntityRepository.findById(pageId).orElseThrow();
 
-        PageContent existingPageContent = fromJson(pageEntity.getContentJson(), PageContent.class);
+        PageContent existingPageContent = convertPageEntity(pageEntity, roles);
+
+        if (!existingPageContent.isEditable()) {
+            throw new ArtivactException("Page can not be edited by the current user!");
+        }
+
         List<String> widgetIdsToDelete = existingPageContent.getWidgets().stream()
                 .filter(Objects::nonNull)
                 .map(BaseRestrictedObject::getId)
@@ -196,6 +205,7 @@ public class PageService extends BaseFileService {
         pageEntity.setIndexPage(Boolean.TRUE.equals(pageContent.getIndexPage()));
         pageEntity.setContentJson(toJson(pageContent));
         pageEntityRepository.save(pageEntity);
+
         return pageContent;
     }
 
@@ -258,10 +268,11 @@ public class PageService extends BaseFileService {
      * Converts a {@link PageEntity} into its {@link PageContent}.
      *
      * @param pageEntity The entity to convert.
+     * @param roles      The available roles.
      * @return The page's content.
      */
     @SuppressWarnings("java:S6204") // Widget list must be modifiable!
-    private PageContent convertPageEntity(PageEntity pageEntity) {
+    private PageContent convertPageEntity(PageEntity pageEntity, Set<String> roles) {
         PageContent pageContent = fromJson(pageEntity.getContentJson(), PageContent.class);
 
         PageContent result = new PageContent();
@@ -271,8 +282,36 @@ public class PageService extends BaseFileService {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList())
         );
+        computeEditable(result, roles);
 
         return result;
+    }
+
+    /**
+     * Computes if the page can be edited with the given roles.
+     *
+     * @param pageContent The page to check.
+     * @param roles       The available roles.
+     */
+    private void computeEditable(PageContent pageContent, Set<String> roles) {
+        var adminRoleRequired = pageContent.getWidgets().stream()
+                .filter(Objects::nonNull)
+                .map(BaseRestrictedObject::getRestrictions)
+                .flatMap(Collection::stream)
+                .filter(Objects::nonNull)
+                .anyMatch(Roles.ROLE_ADMIN::equals);
+
+        var userRoleRequired = pageContent.getWidgets().stream()
+                .filter(Objects::nonNull)
+                .map(BaseRestrictedObject::getRestrictions)
+                .flatMap(Collection::stream)
+                .filter(Objects::nonNull)
+                .anyMatch(Roles.ROLE_USER::equals);
+
+        boolean adminRequirementMet = !adminRoleRequired || roles.contains(Roles.ROLE_ADMIN);
+        boolean userRequirementMet = !userRoleRequired || roles.contains(Roles.ROLE_USER);
+
+        pageContent.setEditable(adminRequirementMet && userRequirementMet);
     }
 
 }

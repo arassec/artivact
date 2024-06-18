@@ -11,6 +11,7 @@ import com.arassec.artivact.backend.service.exporter.model.ExportType;
 import com.arassec.artivact.backend.service.misc.ProgressMonitor;
 import com.arassec.artivact.backend.service.misc.ProjectDataProvider;
 import com.arassec.artivact.backend.service.model.BaseTranslatableRestrictedObject;
+import com.arassec.artivact.backend.service.model.Roles;
 import com.arassec.artivact.backend.service.model.item.Item;
 import com.arassec.artivact.backend.service.model.menu.Menu;
 import com.arassec.artivact.backend.service.model.page.PageContent;
@@ -29,6 +30,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * An exporter that writes JSON files.
@@ -137,7 +139,7 @@ public class JsonArtivactExporter implements ArtivactExporter {
                 .forEach(menuEntry -> exportMenu(params, menuEntry));
 
         if (StringUtils.hasText(menu.getTargetPageId())) {
-            exportPage(params, pageService.loadPageContent(menu.getTargetPageId()));
+            exportPage(params, pageService.loadPageContent(menu.getTargetPageId(), Set.of(Roles.ROLE_ADMIN, Roles.ROLE_USER)));
         }
     }
 

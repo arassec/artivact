@@ -8,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,6 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.net.URLConnection;
 import java.nio.file.Files;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * REST-Controller for (web-)page management.
@@ -36,8 +41,8 @@ public class PageController {
      * @return The content of the index page.
      */
     @GetMapping()
-    public PageContent loadIndexPageContent() {
-        return pageService.loadIndexPageContent();
+    public PageContent loadIndexPageContent(Authentication authentication) {
+        return pageService.loadIndexPageContent(getRoles(authentication));
     }
 
     /**
@@ -47,8 +52,8 @@ public class PageController {
      * @return The page content.
      */
     @GetMapping("/{pageId}")
-    public PageContent loadTranslatedPageContent(@PathVariable String pageId) {
-        return pageService.loadPageContent(pageId);
+    public PageContent loadTranslatedPageContent(@PathVariable String pageId, Authentication authentication) {
+        return pageService.loadPageContent(pageId, getRoles(authentication));
     }
 
     /**
@@ -59,8 +64,8 @@ public class PageController {
      * @return The updated page content.
      */
     @PostMapping("/{pageId}")
-    public PageContent savePageContent(@PathVariable String pageId, @RequestBody PageContent pageContent) {
-        return pageService.savePageContent(pageId, pageContent);
+    public PageContent savePageContent(@PathVariable String pageId, @RequestBody PageContent pageContent, Authentication authentication) {
+        return pageService.savePageContent(pageId, getRoles(authentication), pageContent);
     }
 
     /**
@@ -110,6 +115,21 @@ public class PageController {
         } catch (IOException e) {
             throw new ArtivactException("Could not read artivact model!", e);
         }
+    }
+
+    /**
+     * Extracts the roles of the currently logged in user.
+     *
+     * @param authentication The Spring-Security Authentication object.
+     * @return A set of roles of the user.
+     */
+    private Set<String> getRoles(Authentication authentication) {
+        Set<String> roles = new HashSet<>();
+        if (authentication != null) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            roles.addAll(userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList());
+        }
+        return roles;
     }
 
 }

@@ -24,4 +24,9 @@ public class PageContent extends BaseRestrictedObject {
      */
     private List<Widget> widgets = new LinkedList<>();
 
+    /**
+     * Indicates whether the current user can edit the page or not.
+     */
+    private boolean editable;
+
 }
