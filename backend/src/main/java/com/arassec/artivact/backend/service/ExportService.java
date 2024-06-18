@@ -69,6 +69,11 @@ public class ExportService extends BaseFileService {
     public static final String ITEM_DATA_FILE = "artivact.item";
 
     /**
+     * Label suffix for progress monitoring.
+     */
+    private static final String PROGRESS_SUFFIX_PACKAGING = "packaging";
+
+    /**
      * The service for configuration handling.
      */
     private final ConfigurationService configurationService;
@@ -278,7 +283,7 @@ public class ExportService extends BaseFileService {
             return;
         }
 
-        progressMonitor = new ProgressMonitor(getClass(), "packaging");
+        progressMonitor = new ProgressMonitor(getClass(), PROGRESS_SUFFIX_PACKAGING);
 
         ExchangeConfiguration exchangeConfiguration = configurationService.loadExchangeConfiguration();
         String remoteServer = exchangeConfiguration.getRemoteServer();
@@ -305,7 +310,7 @@ public class ExportService extends BaseFileService {
 
         log.debug("Found {} items to upload to remote instance.", itemIdsForRemoteSync.size());
 
-        progressMonitor = new ProgressMonitor(getClass(), "packaging");
+        progressMonitor = new ProgressMonitor(getClass(), PROGRESS_SUFFIX_PACKAGING);
         progressMonitor.updateProgress(0, itemIdsForRemoteSync.size());
 
         ExchangeConfiguration exchangeConfiguration = configurationService.loadExchangeConfiguration();
@@ -349,7 +354,7 @@ public class ExportService extends BaseFileService {
             return;
         }
 
-        progressMonitor.updateLabelKey("packaging");
+        progressMonitor.updateLabelKey(PROGRESS_SUFFIX_PACKAGING);
 
         File exportFile = projectDataProvider.getProjectRoot()
                 .resolve(ProjectDataProvider.TEMP_DIR)

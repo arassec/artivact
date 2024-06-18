@@ -186,6 +186,7 @@ export interface Widget extends BaseRestrictedObject {
 export interface PageContent extends BaseRestrictedObject {
   indexPage: boolean;
   widgets: Widget[];
+  editable: boolean;
 }
 
 export interface BreadcrumbData {

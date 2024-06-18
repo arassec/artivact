@@ -26,6 +26,7 @@
     <div class="col items-center sticky gt-md" v-if="userdataStore.isUserOrAdmin && pageId !== 'INDEX' && !inEditMode">
       <div class="absolute-top-right q-ma-md">
         <q-btn id="sticky-item"
+               :disable="!pageContentRef.editable"
                data-test="edit-page-button"
                round
                color="primary"

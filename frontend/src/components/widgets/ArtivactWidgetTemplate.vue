@@ -126,20 +126,21 @@
 
         <slot name="widget-content"></slot>
 
-        <artivact-widget-editor-modal
-          :dialog-model="showDetailsRef">
-          <artivact-restrictions-editor
-            :in-details-view="false"
-            :restrictions="restrictions"
-            @delete-restriction="deleteRestriction"
-            @add-restriction="addRestriction"
-          />
+        <artivact-widget-editor-modal :dialog-model="showDetailsRef">
 
           <template v-slot:editor-preview>
             <slot name="widget-editor-preview"></slot>
           </template>
 
           <template v-slot:editor-content>
+            <artivact-content>
+              <artivact-restrictions-editor
+                :in-details-view="false"
+                :restrictions="restrictions"
+                @delete-restriction="deleteRestriction"
+                @add-restriction="addRestriction"
+              />
+            </artivact-content>
             <slot name="widget-editor-content"></slot>
           </template>
 
@@ -162,6 +163,7 @@
 import {PropType, ref, toRef} from 'vue';
 import ArtivactRestrictionsEditor from 'components/ArtivactRestrictionsEditor.vue';
 import ArtivactWidgetEditorModal from 'components/widgets/ArtivactWidgetEditorModal.vue';
+import ArtivactContent from 'components/ArtivactContent.vue';
 
 const props = defineProps({
   inEditMode: {

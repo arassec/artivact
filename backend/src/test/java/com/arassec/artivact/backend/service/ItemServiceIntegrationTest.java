@@ -45,7 +45,7 @@ import static org.mockito.Mockito.*;
         TranslateResultAspect.class,
         ObjectMapper.class
 })
-public class ItemServiceIntegrationTest {
+class ItemServiceIntegrationTest {
 
     /**
      * The service being integration tested.

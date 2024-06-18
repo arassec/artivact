@@ -8,7 +8,7 @@
         <div class="row justify-center">
           <q-input
             data-test="username-input"
-            autofocus
+            :autofocus="true"
             v-model="usernameRef"
             class="col-5"
             type="text"
