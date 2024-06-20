@@ -1,6 +1,5 @@
 package com.arassec.artivact.backend.service.creator;
 
-import com.arassec.artivact.backend.service.model.item.Asset;
 import com.arassec.artivact.backend.service.ConfigurationService;
 import com.arassec.artivact.backend.service.creator.adapter.Adapter;
 import com.arassec.artivact.backend.service.creator.adapter.AdapterImplementation;
@@ -10,13 +9,14 @@ import com.arassec.artivact.backend.service.creator.adapter.image.camera.CameraA
 import com.arassec.artivact.backend.service.creator.adapter.image.camera.CameraInitParams;
 import com.arassec.artivact.backend.service.creator.adapter.image.turntable.TurntableAdapter;
 import com.arassec.artivact.backend.service.creator.adapter.image.turntable.TurntableInitParams;
-import com.arassec.artivact.backend.service.exception.ArtivactException;
-import com.arassec.artivact.backend.service.model.configuration.AdapterConfiguration;
-import com.arassec.artivact.backend.service.model.item.CreationImageSet;
 import com.arassec.artivact.backend.service.creator.util.DirectoryWatcher;
-import com.arassec.artivact.backend.service.util.FileUtil;
+import com.arassec.artivact.backend.service.exception.ArtivactException;
 import com.arassec.artivact.backend.service.misc.ProgressMonitor;
 import com.arassec.artivact.backend.service.misc.ProjectDataProvider;
+import com.arassec.artivact.backend.service.model.configuration.AdapterConfiguration;
+import com.arassec.artivact.backend.service.model.item.Asset;
+import com.arassec.artivact.backend.service.model.item.CreationImageSet;
+import com.arassec.artivact.backend.service.util.FileUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -100,10 +100,12 @@ public class ImageCreator extends BaseCreator {
 
         // Initialize adapters:
         TurntableAdapter turntableAdapter = getTurntableAdapter(adapterConfiguration);
-        log.debug("Initializing turntable adapter for photo capturing: {}", turntableAdapter.getSupportedImplementation());
-        turntableAdapter.initialize(progressMonitor, TurntableInitParams.builder()
-                .turntableDelay(turnTableDelay)
-                .build());
+        if (useTurnTable) {
+            log.debug("Initializing turntable adapter for photo capturing: {}", turntableAdapter.getSupportedImplementation());
+            turntableAdapter.initialize(progressMonitor, TurntableInitParams.builder()
+                    .turntableDelay(turnTableDelay)
+                    .build());
+        }
 
         CameraAdapter cameraAdapter = getCameraAdapter(adapterConfiguration);
         log.debug("Initializing camera adapter for photo capturing: {}", cameraAdapter.getSupportedImplementation());
@@ -148,7 +150,9 @@ public class ImageCreator extends BaseCreator {
         result.add(captureResult);
 
         // Teardown adapters:
-        turntableAdapter.teardown();
+        if (useTurnTable) {
+            turntableAdapter.teardown();
+        }
         cameraAdapter.teardown();
         Optional<List<Path>> imagesWithoutBackground = backgroundRemovalAdapter.teardown();
         if (removeBackgrounds && imagesWithoutBackground.isPresent()) {

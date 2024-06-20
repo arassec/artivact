@@ -491,7 +491,7 @@ export default {
     background: {
       heading: 'Background Removal',
       description: 'Automatic background removal of captured images is implemented using the open source tool \'rembg\' by Daniel Gatis (https://github.com/danielgatis/rembg). You can e.g. provide it with docker by running',
-      dockerCmd: 'docker run -d -p 5000:5000 --name=rembg --restart=always danielgatis/rembg s',
+      dockerCmd: 'docker run -d -p 7000:7000 --name=rembg --restart=always danielgatis/rembg s',
       label: 'Background-Removal Software to use',
       rembg: 'rembg Webserver URL'
     },

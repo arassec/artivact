@@ -54,7 +54,7 @@ public class ArtivactTurntableAdapter extends BaseTurntableAdapter {
 
         log.trace("Initialization Artivact-Turntable");
 
-        this.liveSerialPort = null;
+        reset();
 
         SerialPort[] serialPorts = SerialPort.getCommPorts();
 
@@ -85,7 +85,7 @@ public class ArtivactTurntableAdapter extends BaseTurntableAdapter {
 
                         int size = event.getSerialPort().bytesAvailable();
 
-                        log.trace("About to read {} bytes from tunrtable.", size);
+                        log.trace("About to read {} bytes from turntable.", size);
 
                         var buffer = new byte[size];
                         event.getSerialPort().readBytes(buffer, size);
@@ -150,16 +150,21 @@ public class ArtivactTurntableAdapter extends BaseTurntableAdapter {
     @Override
     public Optional<Void> teardown() {
         super.teardown();
+        reset();
+        return Optional.empty();
+    }
 
+    /**
+     * Resets the serial port and turntable properties.
+     */
+    private void reset() {
+        log.trace("Resetting Artivact-Turntable!");
         if (liveSerialPort != null && !liveSerialPort.closePort()) {
             throw new IllegalStateException("Could not close serial port to turntable!");
         }
-
         liveSerialPort = null;
         turntableFound.set(false);
         finished.set(false);
-
-        return Optional.empty();
     }
 
 }

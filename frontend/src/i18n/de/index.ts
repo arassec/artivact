@@ -491,7 +491,7 @@ export default {
     background: {
       heading: 'Automatisches Freistellen',
       description: 'Automatisches Freistellen der erzeugten Bilder wird mit dem Open-Source-Tool \'rembg\' von Daniel Gatis (https://github.com/danielgatis/rembg) realisiert. Dies kann z.B. über Docker bereitgestellt werden:',
-      dockerCmd: 'docker run -d -p 5000:5000 --name=rembg --restart=always danielgatis/rembg s',
+      dockerCmd: 'docker run -d -p 7000:7000 --name=rembg --restart=always danielgatis/rembg s',
       label: 'Software zum automatischen Freistellen',
       rembg: 'rembg Webserver URL'
     },
