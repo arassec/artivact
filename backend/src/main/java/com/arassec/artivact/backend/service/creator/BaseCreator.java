@@ -2,6 +2,7 @@ package com.arassec.artivact.backend.service.creator;
 
 import com.arassec.artivact.backend.service.exception.ArtivactException;
 import com.arassec.artivact.backend.service.misc.ProjectDataProvider;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,6 +13,7 @@ import java.util.stream.Stream;
 /**
  * Base for creator components.
  */
+@Slf4j
 public abstract class BaseCreator {
 
     /**
@@ -112,6 +114,10 @@ public abstract class BaseCreator {
                     continue;
                 }
                 var number = Integer.parseInt(existingAssetNumber);
+                if (number > 1000) {
+                    log.warn("Invalid asset number in filename: {} / {}", existingAssetNumber, path.getFileName());
+                    throw new ArtivactException("Error during asset number determination!");
+                }
                 if (number > highestNumber) {
                     highestNumber = number;
                 }

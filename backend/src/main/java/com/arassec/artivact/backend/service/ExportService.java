@@ -386,7 +386,7 @@ public class ExportService extends BaseFileService {
                 if (response.getCode() != 200) {
                     progressMonitor.updateProgress("uploadFailed",
                             new ArtivactException("HTTP result code: " + response.getCode()));
-                    log.error("Could not upload item file to remote server: HTTP result code {}", response.getCode());
+                    log.error("Could not upload item file to remote server: HTTP result code {}, File '{}'", response.getCode(), exportFile);
                 } else {
                     Item item = itemService.load(itemId);
                     item.setSyncVersion(item.getVersion() + 1); // Saving the item will increase its version by one!
