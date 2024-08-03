@@ -1,7 +1,6 @@
 package com.arassec.artivact.server;
 
-
-import com.arassec.artivact.backend.service.ConfigurationService;
+import com.arassec.artivact.domain.service.ConfigurationService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;

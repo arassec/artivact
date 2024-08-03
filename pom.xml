@@ -63,9 +63,12 @@
     </properties>
 
     <modules>
+        <module>core</module>
+        <module>domain</module>
+        <module>persistence</module>
         <module>documentation</module>
         <module>frontend</module>
-        <module>backend</module>
+        <module>web</module>
         <module>artivact-spring-boot-starter</module>
         <module>artivact-server</module>
         <module>artivact-desktop</module>

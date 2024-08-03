@@ -1,6 +1,6 @@
 package com.arassec.artivact.starter;
 
-import com.arassec.artivact.backend.service.ItemService;
+import com.arassec.artivact.domain.service.ItemService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
