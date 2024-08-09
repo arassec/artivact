@@ -249,8 +249,13 @@ public class PageService extends BaseFileService {
      * @param targetSize The desired target size (if an image is loaded).
      * @return The file as {@link FileSystemResource}.
      */
-    public FileSystemResource loadFile(String widgetId, String filename, ImageSize targetSize) {
-        return loadFile(widgetFilesDir, widgetId, filename, targetSize);
+    public byte[] loadFile(String widgetId, String filename, ImageSize targetSize) {
+        FileSystemResource file = loadFile(widgetFilesDir, widgetId, filename, targetSize);
+        try {
+            return Files.readAllBytes(file.getFile().toPath());
+        } catch (IOException e) {
+            throw new ArtivactException("Could not load file!", e);
+        }
     }
 
     /**

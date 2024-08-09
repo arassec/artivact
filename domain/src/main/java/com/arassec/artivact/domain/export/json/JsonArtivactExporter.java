@@ -119,7 +119,7 @@ public class JsonArtivactExporter implements ArtivactExporter {
         contentExportFile.setTags(configurationService.loadTagsConfiguration().getTags());
         cleanupTags(params, contentExportFile.getTags());
 
-        writeJsonFile(params.getContentExportDir().resolve(CONTENT_EXPORT_FILE_SUFFIX), contentExportFile);
+        writeJsonFile(params.getContentExportDir().resolve(CONTENT_EXPORT_FILE_SUFFIX_JSON), contentExportFile);
 
         exportMenu(params, menu);
     }

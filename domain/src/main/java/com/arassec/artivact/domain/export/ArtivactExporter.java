@@ -13,7 +13,7 @@ public interface ArtivactExporter {
     /**
      * File suffix for the main export file.
      */
-    String CONTENT_EXPORT_FILE_SUFFIX = "artivact.content.json";
+    String CONTENT_EXPORT_FILE_SUFFIX_JSON = "artivact.content.json";
 
     /**
      * Returns the supported export type.

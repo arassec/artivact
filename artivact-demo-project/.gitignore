@@ -6,3 +6,4 @@ items/**/*-*.jpg
 items/**/*-*.png
 !sedata/readme.md
 sedata/*
+exports/*

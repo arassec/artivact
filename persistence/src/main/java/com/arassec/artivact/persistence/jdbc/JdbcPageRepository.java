@@ -71,6 +71,7 @@ public class JdbcPageRepository extends BaseJdbcRepository implements PageReposi
      * {@inheritDoc}
      */
     @Override
+    @SuppressWarnings("java:S6204") // Widget collection needs to be modifiable...
     public Page findById(String pageId) {
         PageEntity pageEntity = pageEntityRepository.findById(pageId).orElseThrow();
 

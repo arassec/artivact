@@ -26,6 +26,16 @@ public class ContentExport {
     private TranslatableString title;
 
     /**
+     * The type of export.
+     */
+    private String exportType;
+
+    /**
+     * Indicates whether the export is zipped or not.
+     */
+    private boolean zipped;
+
+    /**
      * The export's description.
      */
     private TranslatableString description;
@@ -33,6 +43,6 @@ public class ContentExport {
     /**
      * Timestamp of the last modification of the export.
      */
-    private String lastModified;
+    private long lastModified;
 
 }

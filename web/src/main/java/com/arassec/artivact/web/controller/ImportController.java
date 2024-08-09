@@ -4,9 +4,7 @@ import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.model.configuration.PropertiesConfiguration;
 import com.arassec.artivact.core.model.configuration.TagsConfiguration;
 import com.arassec.artivact.domain.service.ConfigurationService;
-import com.arassec.artivact.domain.service.ExportService;
 import com.arassec.artivact.domain.service.ImportService;
-import com.arassec.artivact.web.model.OperationProgress;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,11 +27,6 @@ public class ImportController extends BaseController {
      * The application's {@link ConfigurationService}.
      */
     private final ConfigurationService configurationService;
-
-    /**
-     * The application's {@link ExportService}.
-     */
-    private final ExportService exportService;
 
     /**
      * The application's {@link ImportService}.
@@ -114,16 +107,6 @@ public class ImportController extends BaseController {
                                            @PathVariable final String apiToken) {
         importService.importItem(file, apiToken);
         return ResponseEntity.ok("Item synchronized.");
-    }
-
-    /**
-     * Returns the progress of a long-running operation of the {@link ExportService}.
-     *
-     * @return The current operation progress.
-     */
-    @GetMapping("/progress")
-    public ResponseEntity<OperationProgress> getProgress() {
-        return convert(exportService.getProgressMonitor());
     }
 
 }

@@ -22,7 +22,7 @@ import static org.mockito.Mockito.*;
  * Tests the {@link ItemMediaCreationController}.
  */
 @ExtendWith(MockitoExtension.class)
-public class ItemMediaCreationControllerTest {
+class ItemMediaCreationControllerTest {
 
     /**
      * The controller under test.

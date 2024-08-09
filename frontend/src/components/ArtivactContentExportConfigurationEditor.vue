@@ -31,7 +31,9 @@
 
         <q-card>
           <q-card-section>
-            {{ $t('ArtivactContentExportConfigurationEditor.label.lastModified') + contentExport.lastModified }}
+            {{
+              $t('ArtivactContentExportConfigurationEditor.label.lastModified') + new Date(contentExport.lastModified)
+            }}
           </q-card-section>
         </q-card>
         <q-card>

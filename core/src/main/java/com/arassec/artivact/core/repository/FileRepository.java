@@ -3,9 +3,10 @@ package com.arassec.artivact.core.repository;
 import com.arassec.artivact.core.misc.FileModification;
 
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.CopyOption;
 import java.nio.file.Path;
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -89,6 +90,14 @@ public interface FileRepository {
     void copy(InputStream source, Path target, CopyOption... copyOptions);
 
     /**
+     * Copies a source file into a target output stream.
+     *
+     * @param source The source {@link Path}.
+     * @param target The target streams.
+     */
+    void copy(Path source, OutputStream target);
+
+    /**
      * Returns a path to the subdirectory folder for the given ID.
      * <p>
      * E.g. a root of '/root/path' and an ID of 'ABC123' will lead to the path '/root/path/ABC/123/ABC123'.
@@ -135,8 +144,8 @@ public interface FileRepository {
      * Returns the last modification time of a file or directory.
      *
      * @param path The path to get the time from.
-     * @return The last modification time within the system's timezone.
+     * @return The last modification time.
      */
-    ZonedDateTime lastModified(Path path);
+    Instant lastModified(Path path);
 
 }

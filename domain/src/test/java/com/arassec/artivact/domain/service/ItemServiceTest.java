@@ -55,7 +55,7 @@ class ItemServiceTest {
      * The application's {@link FileRepository}.
      */
     @Mock
-    private FileRepository FileRepository;
+    private FileRepository fileRepository;
 
     /**
      * The object mapper.
@@ -77,9 +77,9 @@ class ItemServiceTest {
         ProjectDataProvider projectDataProvider = mock(ProjectDataProvider.class, Mockito.RETURNS_DEEP_STUBS);
         when(projectDataProvider.getProjectRoot().resolve(anyString())).thenReturn(itemsDir);
 
-        itemService = new ItemService(itemRepository, configurationService, searchService, FileRepository, objectMapper, projectDataProvider);
+        itemService = new ItemService(itemRepository, configurationService, searchService, fileRepository, objectMapper, projectDataProvider);
 
-        verify(FileRepository, times(1)).createDirIfRequired(itemsDir);
+        verify(fileRepository, times(1)).createDirIfRequired(itemsDir);
     }
 
     /**

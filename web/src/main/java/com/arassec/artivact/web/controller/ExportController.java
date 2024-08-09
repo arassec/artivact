@@ -5,6 +5,7 @@ import com.arassec.artivact.core.model.configuration.PropertiesConfiguration;
 import com.arassec.artivact.core.model.configuration.TagsConfiguration;
 import com.arassec.artivact.core.model.export.ContentExport;
 import com.arassec.artivact.domain.export.model.ExportParams;
+import com.arassec.artivact.domain.export.model.ExportType;
 import com.arassec.artivact.domain.service.ConfigurationService;
 import com.arassec.artivact.domain.service.ExportService;
 import com.arassec.artivact.web.model.OperationProgress;
@@ -67,6 +68,26 @@ public class ExportController extends BaseController {
     @GetMapping("/content")
     public List<ContentExport> loadContentExports() {
         return exportService.loadContentExports();
+    }
+
+    /**
+     * Returns the selected content export file.
+     *
+     * @return The content export.
+     */
+    @GetMapping("/content/{menuId}/{exportType}")
+    public ResponseEntity<StreamingResponseBody> downloadContentExport(HttpServletResponse response,
+                                                                       @PathVariable String menuId,
+                                                                       @PathVariable ExportType exportType) {
+
+        String exportFilename = exportService.getContentExportFile(menuId, exportType).getFileName().toString();
+
+        StreamingResponseBody streamResponseBody = out -> exportService.loadContentExport(menuId, exportType, out);
+
+        response.setContentType(TYPE_ZIP);
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, ATTACHMENT_PREFIX + exportFilename);
+
+        return ResponseEntity.ok(streamResponseBody);
     }
 
     /**

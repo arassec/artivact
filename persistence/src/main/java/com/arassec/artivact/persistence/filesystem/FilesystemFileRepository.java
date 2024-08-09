@@ -11,10 +11,10 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -184,6 +184,18 @@ public class FilesystemFileRepository implements FileRepository {
      * {@inheritDoc}
      */
     @Override
+    public void copy(Path source, OutputStream target) {
+        try {
+            Files.copy(source, target);
+        } catch (IOException e) {
+            throw new ArtivactException("Could not copy resource!", e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Path getDirFromId(Path root, String id) {
         return root.resolve(getSubDir(id, 0)).resolve(getSubDir(id, 1)).resolve(id);
     }
@@ -228,9 +240,9 @@ public class FilesystemFileRepository implements FileRepository {
      * {@inheritDoc}
      */
     @Override
-    public ZonedDateTime lastModified(Path path) {
+    public Instant lastModified(Path path) {
         try {
-            return Files.getLastModifiedTime(path).toInstant().atZone(ZoneId.systemDefault());
+            return Files.getLastModifiedTime(path).toInstant();
         } catch (IOException e) {
             throw new ArtivactException("Could not determine date of last modification!", e);
         }

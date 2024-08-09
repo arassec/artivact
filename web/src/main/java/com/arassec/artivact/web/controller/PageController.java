@@ -1,12 +1,10 @@
 package com.arassec.artivact.web.controller;
 
-import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.model.item.ImageSize;
 import com.arassec.artivact.core.model.page.PageContent;
 import com.arassec.artivact.domain.service.PageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,9 +13,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.net.URLConnection;
-import java.nio.file.Files;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -108,17 +104,13 @@ public class PageController {
         headers.setContentDisposition(contentDisposition);
         headers.setContentType(MediaType.valueOf(URLConnection.guessContentTypeFromName(filename)));
 
-        FileSystemResource model = pageService.loadFile(widgetId, filename, imageSize);
+        byte[] model = pageService.loadFile(widgetId, filename, imageSize);
 
-        try {
-            return new HttpEntity<>(Files.readAllBytes(model.getFile().toPath()), headers);
-        } catch (IOException e) {
-            throw new ArtivactException("Could not read artivact model!", e);
-        }
+        return new HttpEntity<>(model, headers);
     }
 
     /**
-     * Extracts the roles of the currently logged in user.
+     * Extracts the roles of the currently logged-in user.
      *
      * @param authentication The Spring-Security Authentication object.
      * @return A set of roles of the user.

@@ -40,10 +40,10 @@ public class ArtivactUserDetailsService implements UserDetailsService {
             Account account = optionalAccount.get();
 
             Set<String> roles = new HashSet<>();
-            if (account.getAdmin()) {
+            if (Boolean.TRUE.equals(account.getAdmin())) {
                 roles.add(Roles.ADMIN);
             }
-            if (account.getUser()) {
+            if (Boolean.TRUE.equals(account.getUser())) {
                 roles.add(Roles.USER);
             }
 
