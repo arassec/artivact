@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
@@ -255,8 +256,13 @@ public class ItemService extends BaseFileService {
      * @param targetSize The desired image target size.
      * @return The (scaled) image as {@link FileSystemResource}.
      */
-    public FileSystemResource loadImage(String itemId, String filename, ImageSize targetSize) {
-        return loadImage(itemsDir, itemId, filename, targetSize, ProjectDataProvider.IMAGES_DIR);
+    public byte[] loadImage(String itemId, String filename, ImageSize targetSize) {
+        FileSystemResource fileSystemResource = loadImage(itemsDir, itemId, filename, targetSize, ProjectDataProvider.IMAGES_DIR);
+        try {
+            return Files.readAllBytes(fileSystemResource.getFile().toPath());
+        } catch (IOException e) {
+            throw new ArtivactException("Could not load image!", e);
+        }
     }
 
     /**
@@ -266,13 +272,18 @@ public class ItemService extends BaseFileService {
      * @param filename The model's filename.
      * @return The model as {@link FileSystemResource}.
      */
-    public FileSystemResource loadModel(String itemId, String filename) {
-        return new FileSystemResource(itemsDir
+    public byte[] loadModel(String itemId, String filename) {
+        FileSystemResource fileSystemResource = new FileSystemResource(itemsDir
                 .resolve(itemId.substring(0, 3))
                 .resolve(itemId.substring(3, 6))
                 .resolve(itemId)
                 .resolve(ProjectDataProvider.MODELS_DIR)
                 .resolve(filename));
+        try {
+            return Files.readAllBytes(fileSystemResource.getFile().toPath());
+        } catch (IOException e) {
+            throw new ArtivactException("Could not load model!", e);
+        }
     }
 
     /**

@@ -10,7 +10,6 @@ import com.arassec.artivact.web.model.ModelSet;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,7 +17,6 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 
 import java.io.IOException;
 import java.net.URLConnection;
-import java.nio.file.Files;
 import java.util.HashSet;
 import java.util.List;
 import java.util.zip.ZipOutputStream;
@@ -148,16 +146,12 @@ public class ItemController extends BaseController {
             imageSize = ImageSize.ORIGINAL;
         }
 
-        FileSystemResource image = itemService.loadImage(itemId, filename, imageSize);
-
         var headers = new HttpHeaders();
         headers.setContentType(MediaType.valueOf(URLConnection.guessContentTypeFromName(filename)));
 
-        try {
-            return new HttpEntity<>(Files.readAllBytes(image.getFile().toPath()), headers);
-        } catch (IOException e) {
-            throw new ArtivactException("Could not read artivact model!", e);
-        }
+        byte[] image = itemService.loadImage(itemId, filename, imageSize);
+
+        return new HttpEntity<>(image, headers);
     }
 
     /**
@@ -177,13 +171,9 @@ public class ItemController extends BaseController {
         headers.setContentDisposition(contentDisposition);
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 
-        FileSystemResource model = itemService.loadModel(itemId, filename);
+        byte[] model = itemService.loadModel(itemId, filename);
 
-        try {
-            return new HttpEntity<>(Files.readAllBytes(model.getFile().toPath()), headers);
-        } catch (IOException e) {
-            throw new ArtivactException("Could not read artivact model!", e);
-        }
+        return new HttpEntity<>(model, headers);
     }
 
     /**

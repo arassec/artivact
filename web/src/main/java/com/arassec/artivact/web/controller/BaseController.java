@@ -22,22 +22,22 @@ public abstract class BaseController {
     /**
      * Cache header value.
      */
-    protected static final String NO_CACHE = "no-cache";
+    public static final String NO_CACHE = "no-cache";
 
     /**
      * Attachment header prefix.
      */
-    protected static final String ATTACHMENT_PREFIX = "attachment; filename=";
+    public static final String ATTACHMENT_PREFIX = "attachment; filename=";
 
     /**
      * Expires header value.
      */
-    protected static final String EXPIRES_IMMEDIATELY = "0";
+    public static final String EXPIRES_IMMEDIATELY = "0";
 
     /**
      * Mime type for ZIP files.
      */
-    protected static final String TYPE_ZIP = "application/zip";
+    public static final String TYPE_ZIP = "application/zip";
 
     /**
      * Creates the URL to an item's main image.

@@ -51,11 +51,11 @@ public class Item extends BaseRestrictedObject {
     /**
      * Media content of the item.
      */
-    private MediaContent mediaContent;
+    private MediaContent mediaContent = new MediaContent();
 
     /**
      * Media-creation content of the item.
      */
-    private MediaCreationContent mediaCreationContent;
+    private MediaCreationContent mediaCreationContent = new MediaCreationContent();
 
 }

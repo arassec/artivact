@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.arassec.artivact</groupId>
         <artifactId>artivact</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
 
     <artifactId>persistence</artifactId>

@@ -21,6 +21,11 @@ import java.util.List;
 public class ContentExportFile {
 
     /**
+     * Schema version for versioning export formats.
+     */
+    private int schemaVersion = 1;
+
+    /**
      * The title of the content.
      */
     private TranslatableString title;
