@@ -49,7 +49,7 @@ public class ItemMediaCreationController extends BaseController {
      * @return The progress.
      */
     @PostMapping("/remove-backgrounds")
-    public ResponseEntity<OperationProgress> capturePhotos(@PathVariable String itemId,
+    public ResponseEntity<OperationProgress> removeBackgrounds(@PathVariable String itemId,
                                                            @RequestParam int imageSetIndex) {
         mediaCreationService.removeBackgrounds(itemId, imageSetIndex);
         return getProgress(itemId);
@@ -63,7 +63,7 @@ public class ItemMediaCreationController extends BaseController {
      * @return the progress.
      */
     @PostMapping("/create-image-set")
-    public ResponseEntity<OperationProgress> createImageSet(@PathVariable String itemId) {
+    public ResponseEntity<OperationProgress> createImageSetFromDanglingImages(@PathVariable String itemId) {
         mediaCreationService.createImageSetFromDanglingImages(itemId);
         return getProgress(itemId);
     }
