@@ -29,11 +29,12 @@ public interface FileRepository {
      * Initializes or updates the project directory by copying project files from the classpath and updating necessary
      * file contents.
      *
-     * @param projectRoot       The project's root directory.
-     * @param fileModifications List of file modifications to perform during project setup.
-     * @param tempDir           The project's directory for temporary files.
+     * @param projectRoot             The project's root directory.
+     * @param projectSetupDir         The project-setup directory containing files to copy.
+     * @param projectSetupDirFallback Fallback project-setup directory to use if projectSetupDir does not exist.
+     * @param fileModifications       List of file modifications to perform during project setup.
      */
-    void updateProjectDirectory(Path projectRoot, List<FileModification> fileModifications, String tempDir);
+    void updateProjectDirectory(Path projectRoot, Path projectSetupDir, Path projectSetupDirFallback, List<FileModification> fileModifications);
 
     /**
      * Empties the given directory.
@@ -50,7 +51,7 @@ public interface FileRepository {
     void createDirIfRequired(Path directory);
 
     /**
-     * Deletes a file or a complete path recursively.
+     * Deletes a file or a complete directory recursively.
      *
      * @param path The path to delete.
      */

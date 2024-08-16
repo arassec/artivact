@@ -53,6 +53,16 @@ public class ProjectDataProvider {
     public static final String MODELS_DIR = "models";
 
     /**
+     * Directory containing files to copy during project setup.
+     */
+    private static final Path PROJECT_SETUP_DIR = Path.of("resources/project-setup");
+
+    /**
+     * Directory containing files to copy during project setup if the regular directory does not exist.
+     */
+    private static final Path PROJECT_SETUP_DIR_FALLBACK = Path.of("domain/src/main/resources/project-setup");
+
+    /**
      * Path to the project's root directory.
      */
     private final Path projectRoot;
@@ -84,14 +94,14 @@ public class ProjectDataProvider {
         fileRepository.createDirIfRequired(projectRoot.resolve(WIDGETS_FILE_DIR));
         fileRepository.createDirIfRequired(projectRoot.resolve(SEARCH_INDEX_DIR));
 
-        fileRepository.updateProjectDirectory(projectRoot,
+        fileRepository.updateProjectDirectory(projectRoot, PROJECT_SETUP_DIR, PROJECT_SETUP_DIR_FALLBACK,
                 List.of(
                         new FileModification("utils/Metashape/artivact-metashape-2.1.1-workflow.xml", "##EXPORT_PATH##",
                                 projectRoot.resolve("temp/export/metashape-export.obj").toAbsolutePath().toString()),
                         new FileModification("utils/Meshroom/artivact-meshroom-workflow.mg", "##EXPORT_PATH##",
                                 projectRoot.resolve("temp/export/").toAbsolutePath().toString().replace("\\", "/"))
-                ),
-                TEMP_DIR);
+                )
+        );
     }
 
 }

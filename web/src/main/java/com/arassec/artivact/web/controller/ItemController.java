@@ -17,6 +17,7 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 
 import java.io.IOException;
 import java.net.URLConnection;
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
 import java.util.zip.ZipOutputStream;
@@ -293,6 +294,41 @@ public class ItemController extends BaseController {
                 .properties(item.getProperties())
                 .tags(item.getTags())
                 .build();
+    }
+
+
+    /**
+     * Creates the image for a given model-set, based on the files available in the set.
+     *
+     * @param modelSetDir The directory of the model-set.
+     * @return The (relative) URL as string.
+     */
+    private String createModelSetImageUrl(Path modelSetDir) {
+        List<String> availableExtensions = itemService.getFiles(modelSetDir, null).stream()
+                .filter(f -> f.contains("."))
+                .map(fileName -> fileName.substring(fileName.lastIndexOf(".") + 1))
+                .toList();
+
+        if (availableExtensions.contains("glb") || availableExtensions.contains("gltf")) {
+            return "gltf-logo.png";
+        } else if (availableExtensions.contains("blend")) {
+            return "blender-logo.png";
+        } else if (availableExtensions.contains("obj")) {
+            return "obj-logo.png";
+        }
+
+        return "unknown-file-logo.png";
+    }
+
+    /**
+     * Creates the URL to an item's model.
+     *
+     * @param itemId   The item's ID.
+     * @param filename The model's filename
+     * @return The (relative) URL as string.
+     */
+    private String createModelUrl(String itemId, String filename) {
+        return createUrl(itemId, filename, "model");
     }
 
 }

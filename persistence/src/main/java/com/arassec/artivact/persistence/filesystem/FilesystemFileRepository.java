@@ -34,19 +34,18 @@ public class FilesystemFileRepository implements FileRepository {
      * {@inheritDoc}
      */
     @Override
-    public void updateProjectDirectory(Path projectRoot, List<FileModification> fileModifications, String tempDir) {
+    public void updateProjectDirectory(Path projectRoot, Path projectSetupDir, Path projectSetupDirFallback, List<FileModification> fileModifications) {
 
         if (!environment.matchesProfiles("desktop")) {
             return;
         }
 
-        Path projectSetupDir = Path.of("resources/project-setup");
-        if (!Files.exists(projectSetupDir)) {
-            projectSetupDir = Path.of("domain/src/main/resources/project-setup");
+        Path setupDir = projectSetupDir;
+        if (!Files.exists(setupDir)) {
+            setupDir = projectSetupDirFallback;
         }
-        createDirIfRequired(projectRoot.resolve(tempDir));
 
-        try (Stream<Path> files = Files.list(projectSetupDir)) {
+        try (Stream<Path> files = Files.list(setupDir)) {
             files.forEach(file -> {
                 if (Files.isDirectory(file)) {
                     try {

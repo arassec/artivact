@@ -109,4 +109,17 @@ public class SearchController extends BaseController {
                 .build();
     }
 
+    /**
+     * Creates the URL to an item's main image.
+     *
+     * @param item The item to create the main image URL for.
+     * @return The (relative) URL as string.
+     */
+    private String createMainImageUrl(Item item) {
+        if (!item.getMediaContent().getImages().isEmpty()) {
+            return createImageUrl(item.getId(), item.getMediaContent().getImages().getFirst());
+        }
+        return null;
+    }
+
 }

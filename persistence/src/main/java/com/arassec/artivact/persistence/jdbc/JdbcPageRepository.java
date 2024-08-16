@@ -74,7 +74,28 @@ public class JdbcPageRepository extends BaseJdbcRepository implements PageReposi
     @SuppressWarnings("java:S6204") // Widget collection needs to be modifiable...
     public Page findById(String pageId) {
         PageEntity pageEntity = pageEntityRepository.findById(pageId).orElseThrow();
+        return convert(pageEntity);
+    }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Page findIndexPage() {
+        Optional<PageEntity> pageEntityOptional = pageEntityRepository.findFirstByIndexPage(true);
+        Page page = new Page();
+        if (pageEntityOptional.isPresent()) {
+            return convert(pageEntityOptional.get());
+        } else {
+            page.setPageContent(new PageContent());
+        }
+        return page;
+    }
+
+    /**
+     * Converts a page entity into a page.
+     */
+    private Page convert(PageEntity pageEntity) {
         Page page = new Page();
         page.setId(pageEntity.getId());
         page.setVersion(pageEntity.getVersion());
@@ -86,23 +107,6 @@ public class JdbcPageRepository extends BaseJdbcRepository implements PageReposi
                 .collect(Collectors.toList())
         );
 
-        return page;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Page findIndexPage() {
-        Optional<PageEntity> pageEntityOptional = pageEntityRepository.findFirstByIndexPage(true);
-        Page page = new Page();
-        if (pageEntityOptional.isPresent()) {
-            page.setId(pageEntityOptional.get().getId());
-            page.setVersion(pageEntityOptional.get().getVersion());
-            page.setPageContent(fromJson(pageEntityOptional.get().getContentJson(), PageContent.class));
-        } else {
-            page.setPageContent(new PageContent());
-        }
         return page;
     }
 

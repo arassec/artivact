@@ -37,10 +37,11 @@ public abstract class BaseFileService {
     protected abstract FileRepository getFileRepository();
 
     /**
-     * Lists all files from the given path in the given subdirectory.
+     * Lists all files from the given path in the given subdirectory. Image files automatically created by Artivact for
+     * different image sizes are filtered.
      *
      * @param path   The path to the files.
-     * @param subDir The directory containing the files.
+     * @param subDir The (optional) directory containing the files.
      * @return List of filenames.
      */
     @SuppressWarnings("java:S6204") // Result list needs to be mutable!
