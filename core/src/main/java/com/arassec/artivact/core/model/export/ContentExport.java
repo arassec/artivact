@@ -45,4 +45,9 @@ public class ContentExport {
      */
     private long lastModified;
 
+    /**
+     * The size of the export.
+     */
+    private long size;
+
 }

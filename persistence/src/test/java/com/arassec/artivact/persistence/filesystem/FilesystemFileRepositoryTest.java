@@ -227,7 +227,7 @@ public class FilesystemFileRepositoryTest {
         Path file = testDir.resolve("file.txt");
         Files.copy(testFile, file);
 
-        List<Path> files = filesystemFileRepository.list(testDir).toList();
+        List<Path> files = filesystemFileRepository.list(testDir);
 
         assertEquals(1, files.size());
         assertEquals(file, files.getFirst());
@@ -247,6 +247,27 @@ public class FilesystemFileRepositoryTest {
         Instant lastModifiedFromFilesystem = Files.getLastModifiedTime(createdFile).toInstant();
 
         assertEquals(lastModifiedFromRepo, lastModifiedFromFilesystem);
+    }
+
+    /**
+     * Tests testing a path if it's a directory or not.
+     */
+    @Test
+    void testIsDir() {
+        assertTrue(filesystemFileRepository.isDir(testDir));
+        assertFalse(filesystemFileRepository.isDir(testDir.resolve("file.txt")));
+        assertFalse(filesystemFileRepository.isDir(null));
+    }
+
+    /**
+     * Tests writing file contents into a byte array.
+     */
+    @Test
+    @SneakyThrows
+    void testWrite() {
+        Path file = testDir.resolve("file.txt");
+        filesystemFileRepository.write(file, "testWrite()".getBytes());
+        assertEquals("testWrite()", Files.readString(file));
     }
 
 }

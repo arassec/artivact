@@ -6,9 +6,13 @@ import com.arassec.artivact.core.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.imgscalr.Scalr;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -227,9 +231,11 @@ public class FilesystemFileRepository implements FileRepository {
      * {@inheritDoc}
      */
     @Override
-    public Stream<Path> list(Path dir) {
+    public List<Path> list(Path dir) {
         try {
-            return Files.list(dir);
+            try (Stream<Path> files = Files.list(dir)) {
+                return files.toList();
+            }
         } catch (IOException e) {
             throw new ArtivactException("Could not list files!", e);
         }
@@ -248,6 +254,69 @@ public class FilesystemFileRepository implements FileRepository {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isDir(Path path) {
+        if (path == null) {
+            return false;
+        }
+        return Files.isDirectory(path);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void write(Path file, byte[] target) {
+        try {
+            Files.write(file, target);
+        } catch (IOException e) {
+            throw new ArtivactException("Could not write file to array!", e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void scaleImage(Path originalImage, Path targetImage, int targetWidth) {
+        try {
+            BufferedImage bufferedImage = ImageIO.read(originalImage.toFile());
+            String[] fileNameParts = originalImage.getFileName().toString().split("\\.");
+            String fileEnding = fileNameParts[fileNameParts.length - 1];
+            scaleImage(bufferedImage, targetImage, fileEnding, targetWidth);
+        } catch (IOException e) {
+            throw new ArtivactException("Could not scale image!", e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void scaleImage(InputStream originalImage, Path targetImage, String fileEnding, int targetWidth) {
+        try {
+            BufferedImage bufferedImage = ImageIO.read(originalImage);
+            scaleImage(bufferedImage, targetImage, fileEnding, targetWidth);
+        } catch (IOException e) {
+            throw new ArtivactException("Could not scale image!", e);
+        }
+    }
+
+    @Override
+    public long size(Path path) {
+        if (path == null || !Files.exists(path)) {
+            return 0;
+        }
+        try {
+            return Files.size(path);
+        } catch (IOException e) {
+            throw new ArtivactException("Could not read file size!", e);
+        }
+    }
+
+    /**
      * Copies a classpath resource into the filesystem.
      *
      * @param resource  The resource to copy.
@@ -255,11 +324,28 @@ public class FilesystemFileRepository implements FileRepository {
      */
     private void copyProjectResource(Path resource, Path targetDir) {
         createDirIfRequired(targetDir);
-
         try {
             Files.copy(resource, targetDir, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             throw new ArtivactException("Could not copy project resource!", e);
+        }
+    }
+
+    /**
+     * Scales an image to the desired size and writes it as new image file to disk.
+     *
+     * @param bufferedImage The original image.
+     * @param targetImage   Path to the scaled image to write.
+     * @param fileEnding    The file ending of the original image.
+     * @param targetWidth   The desired target width of the scaled image.
+     */
+    private void scaleImage(BufferedImage bufferedImage, Path targetImage, String fileEnding, int targetWidth) {
+        bufferedImage = Scalr.resize(bufferedImage, targetWidth);
+        try (var byteArrayOutputStream = new ByteArrayOutputStream()) {
+            ImageIO.write(bufferedImage, fileEnding, byteArrayOutputStream);
+            write(targetImage, byteArrayOutputStream.toByteArray());
+        } catch (IOException e) {
+            throw new ArtivactException("Could not scale image!", e);
         }
     }
 

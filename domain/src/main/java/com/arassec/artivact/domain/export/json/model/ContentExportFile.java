@@ -23,6 +23,7 @@ public class ContentExportFile {
     /**
      * Schema version for versioning export formats.
      */
+    @Builder.Default
     private int schemaVersion = 1;
 
     /**

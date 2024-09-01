@@ -3,24 +3,18 @@ package com.arassec.artivact.domain.service;
 import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.model.item.ImageSize;
 import com.arassec.artivact.core.repository.FileRepository;
-import org.imgscalr.Scalr;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -51,19 +45,17 @@ public abstract class BaseFileService {
             targetPath = targetPath.resolve(subDir);
         }
         if (getFileRepository().exists(targetPath)) {
-            try (Stream<Path> files = Files.list(targetPath)) {
-                return files.filter(filePath -> !Files.isDirectory(filePath)).map(filePath -> filePath.getFileName().toString()).filter(file -> {
-                    for (ImageSize imageSize : ImageSize.values()) {
-                        if (file.startsWith(imageSize.name())) {
-                            return false;
+            return getFileRepository().list(targetPath).stream()
+                    .filter(filePath -> !getFileRepository().isDir(filePath))
+                    .map(filePath -> filePath.getFileName().toString())
+                    .filter(file -> {
+                        for (ImageSize imageSize : ImageSize.values()) {
+                            if (file.startsWith(imageSize.name())) {
+                                return false;
+                            }
                         }
-                    }
-                    return true;
-                }).collect(Collectors.toList());
-
-            } catch (IOException e) {
-                throw new ArtivactException("Could not read files from path: " + path, e);
-            }
+                        return true;
+                    }).collect(Collectors.toList());
         }
         return new LinkedList<>();
     }
@@ -116,8 +108,8 @@ public abstract class BaseFileService {
         Path filePath = getSimpleFilePath(root, id, filename);
 
         try {
-            Files.createDirectories(filePath.getParent());
-            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            getFileRepository().createDirIfRequired(filePath.getParent());
+            getFileRepository().copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             throw new ArtivactException("Could not save file!", e);
         }
@@ -152,34 +144,18 @@ public abstract class BaseFileService {
      * @return A {@link FileSystemResource} to the image.
      */
     protected FileSystemResource loadImage(Path root, String id, String filename, ImageSize targetSize, String imagesSubdir) {
-        try {
-            Path originalImagePath = root.resolve(id.substring(0, 3)).resolve(id.substring(3, 6)).resolve(id).resolve(imagesSubdir).resolve(filename);
+        Path originalImagePath = root.resolve(id.substring(0, 3)).resolve(id.substring(3, 6)).resolve(id).resolve(imagesSubdir).resolve(filename);
 
-            Path scaledImagePath = root.resolve(id.substring(0, 3)).resolve(id.substring(3, 6)).resolve(id).resolve(imagesSubdir).resolve(targetSize.name() + "-" + filename);
+        Path scaledImagePath = root.resolve(id.substring(0, 3)).resolve(id.substring(3, 6)).resolve(id).resolve(imagesSubdir).resolve(targetSize.name() + "-" + filename);
 
-            String[] fileNameParts = filename.split("\\.");
-            String fileEnding = fileNameParts[fileNameParts.length - 1];
+        if (!ImageSize.ORIGINAL.equals(targetSize) && !getFileRepository().exists(scaledImagePath)) {
+            getFileRepository().scaleImage(originalImagePath, scaledImagePath, targetSize.getWidth());
+        }
 
-            BufferedImage bufferedImage;
-
-            if (!ImageSize.ORIGINAL.equals(targetSize) && !Files.exists(scaledImagePath)) {
-                bufferedImage = ImageIO.read(originalImagePath.toFile());
-                bufferedImage = Scalr.resize(bufferedImage, targetSize.getWidth());
-
-                try (var byteArrayOutputStream = new ByteArrayOutputStream()) {
-                    ImageIO.write(bufferedImage, fileEnding, byteArrayOutputStream);
-                    Files.write(scaledImagePath, byteArrayOutputStream.toByteArray());
-                }
-            }
-
-            if (ImageSize.ORIGINAL.equals(targetSize)) {
-                return new FileSystemResource(originalImagePath);
-            } else {
-                return new FileSystemResource(scaledImagePath);
-            }
-
-        } catch (IOException e) {
-            throw new ArtivactException("Could not read artivact image file!", e);
+        if (ImageSize.ORIGINAL.equals(targetSize)) {
+            return new FileSystemResource(originalImagePath);
+        } else {
+            return new FileSystemResource(scaledImagePath);
         }
     }
 
@@ -190,22 +166,29 @@ public abstract class BaseFileService {
      * @param directory Path to the directory to delete.
      */
     protected void deleteDirAndEmptyParents(Path directory) {
-        try {
-            getFileRepository().delete(directory);
+        getFileRepository().delete(directory);
 
-            Path firstParent = directory.getParent();
-            if (Files.exists(firstParent) && Objects.requireNonNull(firstParent.toFile().listFiles()).length == 0) {
-                Files.delete(firstParent);
-            }
-
-            Path secondParent = firstParent.getParent();
-            if (Files.exists(secondParent) && Objects.requireNonNull(secondParent.toFile().listFiles()).length == 0) {
-                Files.delete(secondParent);
-            }
-
-        } catch (IOException e) {
-            throw new ArtivactException("Could not delete directory!", e);
+        Path firstParent = directory.getParent();
+        if (getFileRepository().list(firstParent).isEmpty()) {
+            getFileRepository().delete(firstParent);
         }
+
+        Path secondParent = firstParent.getParent();
+        if (getFileRepository().list(secondParent).isEmpty()) {
+            getFileRepository().delete(secondParent);
+        }
+    }
+
+    /**
+     * Returns the file extension of the given filename.
+     *
+     * @param filename The name of the file.
+     * @return The file extension.
+     */
+    protected Optional<String> getExtension(String filename) {
+        return Optional.ofNullable(filename)
+                .filter(f -> f.contains("."))
+                .map(f -> f.substring(filename.lastIndexOf(".") + 1));
     }
 
     /**

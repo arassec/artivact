@@ -31,7 +31,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Service for item handling.
@@ -142,6 +141,7 @@ public class ItemService extends BaseFileService {
         if (itemOptional.isPresent()) {
             Item item = itemOptional.get();
 
+            // Update existing tags and remove those, that don't exist anymore.
             TagsConfiguration tagsConfiguration = configurationService.loadTagsConfiguration();
             item.setTags(item.getTags().stream()
                     .map(tag -> tagsConfiguration.getTags().stream()
@@ -200,10 +200,12 @@ public class ItemService extends BaseFileService {
         String itemId = item.getId();
 
         getDanglingImages(item).forEach(imageToDelete -> {
-            fileRepository.delete(fileRepository.getSubdirFilePath(itemsDir, itemId, ProjectDataProvider.IMAGES_DIR).resolve(imageToDelete));
+            Path originalImage = fileRepository.getSubdirFilePath(itemsDir, itemId, ProjectDataProvider.IMAGES_DIR).resolve(imageToDelete);
+            fileRepository.delete(originalImage);
             for (ImageSize imageSize : ImageSize.values()) {
-                fileRepository.delete(fileRepository.getSubdirFilePath(itemsDir, itemId, ProjectDataProvider.IMAGES_DIR)
-                        .resolve(imageSize.name() + "-" + imageToDelete));
+                Path scaledImage = fileRepository.getSubdirFilePath(itemsDir, itemId, ProjectDataProvider.IMAGES_DIR)
+                        .resolve(imageSize.name() + "-" + imageToDelete);
+                fileRepository.delete(scaledImage);
             }
         });
 
@@ -211,8 +213,8 @@ public class ItemService extends BaseFileService {
 
         List<String> modelsToDelete = getFiles(fileRepository.getDirFromId(itemsDir, itemId), ProjectDataProvider.MODELS_DIR);
         modelsToDelete.removeAll(modelsInItem);
-        modelsToDelete.forEach(imageToDelete ->
-                fileRepository.delete(fileRepository.getSubdirFilePath(itemsDir, itemId, ProjectDataProvider.MODELS_DIR).resolve(imageToDelete))
+        modelsToDelete.forEach(modelToDelete ->
+                fileRepository.delete(fileRepository.getSubdirFilePath(itemsDir, itemId, ProjectDataProvider.MODELS_DIR).resolve(modelToDelete))
         );
 
         item = itemRepository.save(item);
@@ -449,39 +451,27 @@ public class ItemService extends BaseFileService {
     private int getNextAssetNumber(Path assetDir) {
         var highestNumber = 0;
         fileRepository.createDirIfRequired(assetDir);
-        try (Stream<Path> stream = fileRepository.list(assetDir)) {
-            List<Path> assets = stream.toList();
-            for (Path path : assets) {
-                if (".".equals(path.getFileName().toString()) || "..".equals(path.getFileName().toString())) {
-                    continue;
-                }
-                String fileName = path.getFileName().toString();
 
-                for (ImageSize imageSize : ImageSize.values()) {
-                    if (fileName.startsWith(imageSize.name())) {
-                        fileName = fileName.replace(imageSize.name() + "-", "");
-                    }
-                }
+        List<Path> assets = fileRepository.list(assetDir);
+        for (Path path : assets) {
+            if (".".equals(path.getFileName().toString()) || "..".equals(path.getFileName().toString())) {
+                continue;
+            }
+            String fileName = path.getFileName().toString();
 
-                var number = Integer.parseInt(fileName.split("\\.")[0]);
-                if (number > highestNumber) {
-                    highestNumber = number;
+            for (ImageSize imageSize : ImageSize.values()) {
+                if (fileName.startsWith(imageSize.name())) {
+                    fileName = fileName.replace(imageSize.name() + "-", "");
                 }
             }
-        }
-        return (highestNumber + 1);
-    }
 
-    /**
-     * Returns the file extension of the given filename.
-     *
-     * @param filename The name of the file.
-     * @return The file extension.
-     */
-    private Optional<String> getExtension(String filename) {
-        return Optional.ofNullable(filename)
-                .filter(f -> f.contains("."))
-                .map(f -> f.substring(filename.lastIndexOf(".") + 1));
+            var number = Integer.parseInt(fileName.split("\\.")[0]);
+            if (number > highestNumber) {
+                highestNumber = number;
+            }
+        }
+
+        return (highestNumber + 1);
     }
 
     /**

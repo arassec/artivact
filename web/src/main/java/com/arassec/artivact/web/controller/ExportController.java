@@ -18,8 +18,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -71,6 +73,21 @@ public class ExportController extends BaseController {
     }
 
     /**
+     * Returns details about available content exports.
+     *
+     * @return ZIP file containing the information about available content exports.
+     */
+    @GetMapping("/content/overview")
+    public ResponseEntity<StreamingResponseBody> loadContentExportOverviews(HttpServletResponse response) {
+        StreamingResponseBody streamResponseBody = exportService::loadContentExportOverviews;
+
+        response.setContentType(TYPE_ZIP);
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, ATTACHMENT_PREFIX + ExportService.CONTENT_EXPORT_OVERVIEWS_FILE);
+
+        return ResponseEntity.ok(streamResponseBody);
+    }
+
+    /**
      * Returns the selected content export file.
      *
      * @return The content export.
@@ -100,6 +117,24 @@ public class ExportController extends BaseController {
     public ResponseEntity<OperationProgress> deleteContentExport(@PathVariable String menuId) {
         exportService.deleteContentExport(menuId);
         return getProgress();
+    }
+
+    /**
+     * Saves the cover image of a content export.
+     *
+     * @param menuId The menu's ID.
+     * @param file   The uploaded cover-image.
+     */
+    @PostMapping("/content/{menuId}/cover-picture")
+    public void saveContentExportCoverImage(@PathVariable String menuId,
+                                            @RequestPart(value = "file") final MultipartFile file) {
+        synchronized (this) {
+            try {
+                exportService.saveCoverPicture(menuId, file.getOriginalFilename(), file.getInputStream());
+            } catch (IOException e) {
+                throw new ArtivactException("Could not save uploaded cover image!", e);
+            }
+        }
     }
 
 

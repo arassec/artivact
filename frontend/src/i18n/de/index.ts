@@ -412,6 +412,7 @@ export default {
       addEntry: 'Menüeintrag hinzufügen',
       exportTitle: 'Export Titel',
       exportDescription: 'Export Beschreibung',
+      exportImage: 'Export Titelbild',
       exportParams: {
         optimizeSize: 'Exportgröße optimieren',
         zipResults: 'Exportverzeichnis packen (ZIP)',

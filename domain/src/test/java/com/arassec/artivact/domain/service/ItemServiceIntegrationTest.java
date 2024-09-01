@@ -102,7 +102,7 @@ class ItemServiceIntegrationTest {
      * Initializes the test environment.
      */
     @BeforeEach
-    void initialize() {
+    void setUp() {
         when(projectDataProvider.getProjectRoot().resolve(anyString())).thenReturn(itemsDir);
 
         LocaleContextHolder.setLocale(Locale.GERMAN);
@@ -128,10 +128,10 @@ class ItemServiceIntegrationTest {
      * Tests loading an item with translations being applied.
      */
     @Test
-    void testTranslationsOnLoad() {
+    void testLoadTranslated() {
         when(itemRepository.findById("123")).thenReturn(Optional.of(getTestItem(Set.of())));
 
-        Item item = itemService.loadTranslatedRestricted("123");
+        Item item = itemService.loadTranslated("123");
 
         assertNotNull(item);
         assertEquals("Titel", item.getTitle().getTranslatedValue());

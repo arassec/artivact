@@ -8,7 +8,6 @@ import java.nio.file.CopyOption;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * Repository for files and directories.
@@ -51,7 +50,7 @@ public interface FileRepository {
     void createDirIfRequired(Path directory);
 
     /**
-     * Deletes a file or a complete directory recursively.
+     * Deletes a file or a complete directory recursively if it exists.
      *
      * @param path The path to delete.
      */
@@ -139,7 +138,7 @@ public interface FileRepository {
      * @param dir The directory to list files of.
      * @return Stream of paths found in the given directory.
      */
-    Stream<Path> list(Path dir);
+    List<Path> list(Path dir);
 
     /**
      * Returns the last modification time of a file or directory.
@@ -148,5 +147,48 @@ public interface FileRepository {
      * @return The last modification time.
      */
     Instant lastModified(Path path);
+
+    /**
+     * Returns whether the provided path is a directory or not.
+     *
+     * @param path Path to the directory.
+     * @return {@code true} if the provided path points to a directory, {@code false} otherwise.
+     */
+    boolean isDir(Path path);
+
+    /**
+     * Writes bytes to a file.
+     *
+     * @param file   Path to the file to write.
+     * @param target The array to write to the file.
+     */
+    void write(Path file, byte[] target);
+
+    /**
+     * Scales the original image to the desired width and stores it in a new image file.
+     *
+     * @param originalImage The original image to scale.
+     * @param targetImage   The target image to write.
+     * @param targetWidth   The desired width of the target image.
+     */
+    void scaleImage(Path originalImage, Path targetImage, int targetWidth);
+
+    /**
+     * Scales the image provided by the input stream to the desired width and writes it as a new image file.
+     *
+     * @param originalImage The original image to scale.
+     * @param targetImage   The target image to write.
+     * @param fileEnding    The file ending of the original file, e.g. "jpeg" or "png".
+     * @param targetWidth   The desired width of the target image.
+     */
+    void scaleImage(InputStream originalImage, Path targetImage, String fileEnding, int targetWidth);
+
+    /**
+     * Returns the size of the given file.
+     *
+     * @param path Path to the file to get the size of.
+     * @return The size in bytes.
+     */
+    long size(Path path);
 
 }

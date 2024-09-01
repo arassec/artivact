@@ -412,6 +412,7 @@ export default {
       addEntry: 'Add Entry',
       exportTitle: 'Export Title',
       exportDescription: 'Export Description',
+      exportImage: 'Export Cover Picture',
       exportParams: {
         optimizeSize: 'Optimize export size',
         zipResults: 'ZIP export folder',

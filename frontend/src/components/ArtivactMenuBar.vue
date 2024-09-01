@@ -441,6 +441,7 @@
       <q-icon name="add" color="white"></q-icon>
     </q-btn>
 
+    <!-- ADD/EDIT MENU MODAL -->
     <artivact-dialog :data-test="'add-menu-modal'" :dialog-model="showMenuModal">
       <template v-slot:header>
         <div class="text-h6" v-if="!menuRef.id && !menuRef.parentId">
@@ -487,6 +488,16 @@
             :label="$t('ArtivactMenuBar.label.exportDescription')"
             :textarea="true"
             :show-separator="false"/>
+          <div class="row">
+            <q-uploader :label="$t('ArtivactMenuBar.label.exportImage')"
+                        auto-upload
+                        field-name="file"
+                        :no-thumbnails="true"
+                        class="col"
+                        :url="'/api/export/content/' + menuRef.id + '/cover-picture'"
+            />
+            <q-img class="col"/>
+          </div>
         </q-card-section>
       </template>
 
@@ -508,6 +519,7 @@
       </template>
     </artivact-dialog>
 
+    <!-- DELETE MENU MODAL -->
     <artivact-dialog :dialog-model="confirmDeleteRef" :warn="true">
       <template v-slot:header>
         <h3 class="av-text-h3" v-if="!menuRef.parentId">{{ $t('ArtivactMenuBar.dialog.delete') }}</h3>
@@ -640,7 +652,7 @@
 <script setup lang="ts">
 import {useMenuStore} from 'stores/menu';
 import {api} from 'boot/axios';
-import {useQuasar} from 'quasar';
+import {QUploader, useQuasar} from 'quasar';
 import {useRouter} from 'vue-router';
 import {useUserdataStore} from 'stores/userdata';
 import {ref} from 'vue';
