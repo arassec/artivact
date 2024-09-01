@@ -25,7 +25,8 @@ Pages from the CMS can then be exported as virtual exhibitions, which can be exp
 
 ### In the Metaverse
 
-The ArtivactVR app is currently in development, created using the open source [Godot Engine](https://godotengine.org).
+The "Artivact XR" app is currently in development, created using the open
+source [Godot Engine](https://godotengine.org).
 
 It will support virtual exhibitions created with the Artivact desktop or web server variants.
 
