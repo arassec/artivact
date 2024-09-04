@@ -108,9 +108,10 @@ public class JdbcPageRepositoryTest {
 
         when(objectMapper.readValue("{contentJson}", PageContent.class)).thenReturn(pageContent);
 
-        Page page = jdbcPageRepository.deleteById("id");
+        Optional<Page> pageOptional = jdbcPageRepository.deleteById("id");
 
-        assertEquals("id", page.getId());
+        assertTrue(pageOptional.isPresent());
+        assertEquals("id", pageOptional.get().getId());
 
         verify(pageEntityRepository, times(1)).deleteById("id");
     }
@@ -134,8 +135,11 @@ public class JdbcPageRepositoryTest {
 
         when(objectMapper.readValue("{contentJson}", PageContent.class)).thenReturn(pageContent);
 
-        Page page = jdbcPageRepository.deleteById("id");
+        Optional<Page> pageOptional = jdbcPageRepository.deleteById("id");
 
+        assertTrue(pageOptional.isPresent());
+
+        Page page = pageOptional.get();
         assertEquals("id", page.getId());
         assertEquals(2, page.getPageContent().getWidgets().size());
     }

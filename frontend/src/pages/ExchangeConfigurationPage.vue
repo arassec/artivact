@@ -1,7 +1,7 @@
 <template>
   <artivact-content>
     <div class="full-width">
-      <h1 class="av-text-h1">{{$t('ExchangeConfigurationPage.heading')}}</h1>
+      <h1 class="av-text-h1">{{ $t('ExchangeConfigurationPage.heading') }}</h1>
 
       <h2 class="av-text-h2">{{ $t('ExchangeConfigurationPage.exchange.heading') }}</h2>
       <div class="q-mb-lg">
@@ -104,7 +104,7 @@ function loadExchangeConfiguration() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.configuration.exchange')}),
+        message: i18n.t('Common.messages.loading.failed', {item: i18n.t('Common.items.configuration.exchange')}),
         icon: 'report_problem',
       });
     });
@@ -179,7 +179,7 @@ function saveExchangeConfiguration() {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: i18n.t('Common.messages.saving.success', { item: i18n.t('Common.items.configuration.exchange')}),
+        message: i18n.t('Common.messages.saving.success', {item: i18n.t('Common.items.configuration.exchange')}),
         icon: 'check',
       });
     })
@@ -187,7 +187,7 @@ function saveExchangeConfiguration() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.saving.failed', { item: i18n.t('Common.items.configuration.exchange')}),
+        message: i18n.t('Common.messages.saving.failed', {item: i18n.t('Common.items.configuration.exchange')}),
         icon: 'report_problem',
       });
     });

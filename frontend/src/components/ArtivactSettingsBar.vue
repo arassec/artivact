@@ -211,7 +211,7 @@
             clickable
             v-close-popup
             @click="gotoExchangeConfigurationPage"
-            v-if="userdataStore.isAdmin && profilesStore.isDesktopModeEnabled"
+            v-if="userdataStore.isAdmin"
             class="menu-entry"
           >
             <q-item-section

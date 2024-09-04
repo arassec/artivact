@@ -400,6 +400,16 @@ public class ConfigurationService {
             return loadTranslatedMenus();
         }
 
+        if (!StringUtils.hasText(menu.getValue())) {
+            throw new ArtivactException("Menu title required!");
+        }
+
+        menu.getMenuEntries().forEach(menuEntry -> {
+            if (!StringUtils.hasText(menuEntry.getValue())) {
+                throw new ArtivactException("Sub-Menu title required!");
+            }
+        });
+
         Optional<MenuConfiguration> configurationOptional = configurationRepository.findByType(ConfigurationType.MENU, MenuConfiguration.class);
         MenuConfiguration menuConfiguration = configurationOptional.orElseGet(MenuConfiguration::new);
 

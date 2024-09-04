@@ -232,6 +232,9 @@ public class FilesystemFileRepository implements FileRepository {
      */
     @Override
     public List<Path> list(Path dir) {
+        if (!Files.exists(dir)) {
+            return List.of();
+        }
         try {
             try (Stream<Path> files = Files.list(dir)) {
                 return files.toList();

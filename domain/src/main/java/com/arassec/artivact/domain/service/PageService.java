@@ -101,9 +101,13 @@ public class PageService extends BaseFileService {
      * @param pageId The page's ID.
      */
     public void deletePage(String pageId) {
-        Page page = pageRepository.deleteById(pageId);
-        page.getPageContent().getWidgets().forEach(widget -> deleteDirAndEmptyParents(fileRepository.getDirFromId(widgetFilesDir, widget.getId())));
-        pageRepository.deleteById(pageId);
+        Optional<Page> pageOptional = pageRepository.deleteById(pageId);
+        if (pageOptional.isPresent()) {
+            pageOptional.get().getPageContent().getWidgets().forEach(
+                    widget -> deleteDirAndEmptyParents(fileRepository.getDirFromId(widgetFilesDir, widget.getId()))
+            );
+            pageRepository.deleteById(pageId);
+        }
     }
 
     /**
@@ -113,7 +117,7 @@ public class PageService extends BaseFileService {
      * @param restrictions The new restrictions to apply.
      */
     public void updatePageRestrictions(String pageId, Set<String> restrictions) {
-        Page page = pageRepository.findById(pageId);
+        Page page = pageRepository.findById(pageId).orElseThrow();
         page.getPageContent().setRestrictions(restrictions);
         pageRepository.save(page);
     }
@@ -141,7 +145,7 @@ public class PageService extends BaseFileService {
     @TranslateResult
     @RestrictResult
     public PageContent loadPageContent(String pageId, Set<String> roles) {
-        Page page = pageRepository.findById(pageId);
+        Page page = pageRepository.findById(pageId).orElseThrow();
         computeEditable(page.getPageContent(), roles);
         return page.getPageContent();
     }
@@ -158,7 +162,7 @@ public class PageService extends BaseFileService {
     @TranslateResult
     @RestrictResult
     public PageContent savePageContent(String pageId, Set<String> roles, PageContent pageContent) {
-        Page page = pageRepository.findById(pageId);
+        Page page = pageRepository.findById(pageId).orElseThrow();
 
         PageContent existingPageContent = page.getPageContent();
         computeEditable(existingPageContent, roles);
@@ -229,7 +233,7 @@ public class PageService extends BaseFileService {
 
         String filename = saveFile(widgetFilesDir, widgetId, file);
 
-        Page page = pageRepository.findById(pageId);
+        Page page = pageRepository.findById(pageId).orElseThrow();
         page.getPageContent().getWidgets().forEach(widget -> {
             if (widget.getId().equals(widgetId) && widget instanceof FileProcessingWidget fileProcessingWidget) {
                 fileProcessingWidget.processFile(filename);

@@ -61,10 +61,12 @@ public class JdbcPageRepository extends BaseJdbcRepository implements PageReposi
      * {@inheritDoc}
      */
     @Override
-    public Page deleteById(String pageId) {
-        Page page = findById(pageId);
-        pageEntityRepository.deleteById(pageId);
-        return page;
+    public Optional<Page> deleteById(String pageId) {
+        Optional<Page> pageOptional = findById(pageId);
+        if (pageOptional.isPresent()) {
+            pageEntityRepository.deleteById(pageId);
+        }
+        return pageOptional;
     }
 
     /**
@@ -72,9 +74,9 @@ public class JdbcPageRepository extends BaseJdbcRepository implements PageReposi
      */
     @Override
     @SuppressWarnings("java:S6204") // Widget collection needs to be modifiable...
-    public Page findById(String pageId) {
-        PageEntity pageEntity = pageEntityRepository.findById(pageId).orElseThrow();
-        return convert(pageEntity);
+    public Optional<Page> findById(String pageId) {
+        Optional<PageEntity> pageEntityOptional = pageEntityRepository.findById(pageId);
+        return pageEntityOptional.map(this::convert);
     }
 
     /**

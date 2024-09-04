@@ -2,6 +2,8 @@ package com.arassec.artivact.core.repository;
 
 import com.arassec.artivact.core.model.page.Page;
 
+import java.util.Optional;
+
 /**
  * Repository for pages.
  */
@@ -20,7 +22,7 @@ public interface PageRepository {
      * @param pageId The page's ID.
      * @return The deleted page.
      */
-    Page deleteById(String pageId);
+    Optional<Page> deleteById(String pageId);
 
     /**
      * Loads the page with the given ID.
@@ -28,7 +30,7 @@ public interface PageRepository {
      * @param pageId The page's ID.
      * @return The page with the given ID.
      */
-    Page findById(String pageId);
+    Optional<Page> findById(String pageId);
 
     /**
      * Returns the first page which is configured to be the index page.
