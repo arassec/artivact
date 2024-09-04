@@ -35,6 +35,7 @@ import java.nio.file.Path;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.zip.ZipEntry;
@@ -183,6 +184,17 @@ public class ExportService extends BaseFileService {
                 exporters.stream()
                         .filter(exporter -> exporter.supports().equals(params.getExportType()))
                         .forEach(exporter -> exporter.export(params, menu, progressMonitor));
+
+                // Copy a cover picture if one exists:
+                Optional<Path> coverPictureOptional = fileRepository.list(params.getExportDir()).stream()
+                        .filter(file -> !fileRepository.isDir(file))
+                        .filter(file -> file.getFileName().toString().startsWith(menu.getId()))
+                        .findFirst();
+
+                if (coverPictureOptional.isPresent()) {
+                    Path coverPicture = coverPictureOptional.get();
+                    fileRepository.copy(coverPicture, params.getContentExportDir().resolve(coverPicture.getFileName()));
+                }
 
                 if (params.isZipResults()) {
                     ZipUtil.pack(params.getContentExportDir().toAbsolutePath().toFile(),
