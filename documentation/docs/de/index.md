@@ -7,7 +7,7 @@ hero:
   text: "Erstelle, präsentiere und erlebe virtuelle Sammlungen."
   tagline: "Ein Open-Source-Tool zur Sammlungsverwaltung und -präsentation."
   image:
-    src: /logo-large.png
+    src: /artivact-logo-white.png
   actions:
     - theme: brand
       text: Schnelleinstieg
@@ -22,14 +22,14 @@ hero:
 features:
   - title: Erstelle
     icon:
-      src: /create-icon.png
+      src: /artivact-create.png
     details: Auf deinem Computer installiert kann dir Artivact dabei helfen, deine Sammlung zu virtualisieren und zu verwalten.
   - title: Präsentiere
     icon:
-      src: /present-icon.png
+      src: /artivact-present.png
     details: Artivact kann als Webserver betrieben werden um deine virtuelle Sammlung einfach im Netz zu präsentieren.
   - title: Erlebe
     icon:
-      src: /experience-icon.png
+      src: /artivact-experience.png
     details: Mit Artivact kannst du virtuelle Ausstellungen im Metaversum erstellen und erleben.
 ---

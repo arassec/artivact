@@ -7,7 +7,7 @@ hero:
   text: "Create, present and experience virtual collections."
   tagline: "An open source tool for collection management and presentation."
   image:
-    src: /logo-large.png
+    src: /artivact-logo-white.png
   actions:
     - theme: brand
       text: Quick Start
@@ -22,15 +22,15 @@ hero:
 features:
   - title: Create
     icon: 
-      src: /create-icon.png
+      src: /artivact-create.png
     details: Run Artivact on your local computer to virtualize and manage your collection items.
   - title: Present
     icon:
-      src: /present-icon.png
+      src: /artivact-present.png
     details: Run Artivact as web server to manage and present your virtual collection online.
   - title: Experience
     icon:
-      src: /experience-icon.png
+      src: /artivact-experience.png
     details: Use Artivact to create and experience your virtual exhibitions in the metaverse.
 
 ---

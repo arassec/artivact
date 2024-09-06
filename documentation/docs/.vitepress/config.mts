@@ -10,7 +10,6 @@ export default defineConfig({
     ],
     themeConfig: {
         // https://vitepress.dev/reference/default-theme-config
-        logo: '/logo.png',
         siteTitle: 'Artivact v##VERSION##',
 
         nav: [

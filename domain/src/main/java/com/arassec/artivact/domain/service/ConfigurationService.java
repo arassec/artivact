@@ -161,14 +161,14 @@ public class ConfigurationService {
             colorTheme.setWarning("#e6c229");
             result.setColorTheme(colorTheme);
 
-            ClassPathResource classPathResource = new ClassPathResource("icons/artivact-logo-16.ico", this.getClass().getClassLoader());
+            ClassPathResource classPathResource = new ClassPathResource("icons/favicon-16x16.ico", this.getClass().getClassLoader());
             try (InputStream is = classPathResource.getInputStream()) {
                 result.setEncodedFaviconSmall(Base64.getEncoder().encodeToString(is.readAllBytes()));
             } catch (IOException e) {
                 throw new ArtivactException("Could not read 16x16 pixel favicon!", e);
             }
 
-            classPathResource = new ClassPathResource("icons/artivact-logo-32.ico", this.getClass().getClassLoader());
+            classPathResource = new ClassPathResource("icons/favicon-32x32.ico", this.getClass().getClassLoader());
             try (InputStream is = classPathResource.getInputStream()) {
                 result.setEncodedFaviconLarge(Base64.getEncoder().encodeToString(is.readAllBytes()));
             } catch (IOException e) {

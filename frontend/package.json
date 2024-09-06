@@ -13,7 +13,7 @@
     "build": "quasar build",
     "dev:electron": "quasar dev -m electron",
     "build:electron": "quasar build -m electron",
-    "build:all": "quasar build -m spa && quasar build -m electron"
+    "build:all": "quasar build -m spa && quasar build -m electron --icon=./src-electron/icons/icon.png"
   },
   "dependencies": {
     "@electron/remote": "^2.1.0",
