@@ -139,7 +139,7 @@ public class JsonArtivactExporter implements ArtivactExporter {
                 .forEach(menuEntry -> exportMenu(params, menuEntry));
 
         if (StringUtils.hasText(menu.getTargetPageId())) {
-            exportPage(params, pageService.loadPageContent(menu.getTargetPageId(), Set.of(Roles.ROLE_ADMIN, Roles.ROLE_USER)));
+            exportPage(params, menu.getTargetPageId(), pageService.loadPageContent(menu.getTargetPageId(), Set.of(Roles.ROLE_ADMIN, Roles.ROLE_USER)));
         }
     }
 
@@ -149,7 +149,7 @@ public class JsonArtivactExporter implements ArtivactExporter {
      * @param params      Parameters of the content export.
      * @param pageContent The page to export.
      */
-    private void exportPage(ExportParams params, PageContent pageContent) {
+    private void exportPage(ExportParams params, String targetPageId, PageContent pageContent) {
         if (params.isApplyRestrictions() && !pageContent.getRestrictions().isEmpty()) {
             return;
         }
@@ -164,7 +164,7 @@ public class JsonArtivactExporter implements ArtivactExporter {
 
         cleanupPage(params, pageContent);
 
-        writeJsonFile(params.getContentExportDir().resolve(pageContent.getId() + PAGE_EXPORT_FILE_SUFFIX), pageContent);
+        writeJsonFile(params.getContentExportDir().resolve(targetPageId + PAGE_EXPORT_FILE_SUFFIX), pageContent);
     }
 
     /**
