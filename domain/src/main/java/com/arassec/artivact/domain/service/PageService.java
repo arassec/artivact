@@ -81,12 +81,14 @@ public class PageService extends BaseFileService {
      * @return The newly created page.
      */
     public Page createPage(Set<String> restrictions) {
+        String pageId = UUID.randomUUID().toString();
+
         PageContent pageContent = new PageContent();
-        pageContent.setId(UUID.randomUUID().toString());
+        pageContent.setId(pageId);
         pageContent.setRestrictions(restrictions);
 
         Page page = new Page();
-        page.setId(UUID.randomUUID().toString());
+        page.setId(pageId);
         page.setVersion(0);
         page.setPageContent(pageContent);
 
@@ -196,6 +198,7 @@ public class PageService extends BaseFileService {
                 })
         );
 
+        pageContent.setId(page.getId());
         page.setPageContent(pageContent);
         pageRepository.save(page);
 
