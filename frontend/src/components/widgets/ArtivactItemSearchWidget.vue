@@ -237,6 +237,7 @@ function format(text: string) {
 
 function searchPreview() {
   if (widgetDataRef.value !== undefined) {
+    widgetDataRef.value.maxResults = widgetDataPreviewRef.value.maxResults
     widgetDataRef.value.searchTerm = widgetDataPreviewRef.value.searchTerm
     search(0)
   }
@@ -293,7 +294,11 @@ function search(page: number) {
 }
 
 onMounted(() => {
+  if (widgetDataRef.value?.maxResults) {
+    widgetDataPreviewRef.value.maxResults = widgetDataRef.value?.maxResults;
+  }
   if (widgetDataRef.value?.searchTerm) {
+    widgetDataPreviewRef.value.searchTerm = widgetDataRef.value.searchTerm;
     search(widgetDataStore.getPage(widgetDataRef.value?.id));
   }
 });
