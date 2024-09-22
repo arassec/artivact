@@ -5,6 +5,7 @@
     :in-edit-mode="inEditMode"
     v-if="widgetDataRef"
     :restrictions="widgetDataRef.restrictions"
+    :navigation-title="widgetDataRef.navigationTitle"
   >
     <template v-slot:widget-content>
       <div class="gt-sm">

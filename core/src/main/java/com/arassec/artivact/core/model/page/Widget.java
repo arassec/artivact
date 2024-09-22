@@ -1,7 +1,9 @@
 package com.arassec.artivact.core.model.page;
 
 import com.arassec.artivact.core.model.BaseRestrictedObject;
+import com.arassec.artivact.core.model.TranslatableString;
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  * A building block of a web-page.
@@ -13,6 +15,12 @@ public abstract class Widget extends BaseRestrictedObject {
      * The widget's type.
      */
     private final WidgetType type;
+
+    /**
+     * The title used in the navigation.
+     */
+    @Setter
+    private TranslatableString navigationTitle;
 
     /**
      * Creates a new instance.

@@ -66,7 +66,6 @@
         dense
         icon="refresh"
         class="float-right"
-        :disable="widgetDataRef.searchTerm.length === 0"
         @click="$emit('refresh-search-results')"
       />
     </div>

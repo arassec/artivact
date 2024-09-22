@@ -49,7 +49,7 @@ public class PageController {
      */
     @GetMapping("/{pageId}")
     public PageContent loadTranslatedPageContent(@PathVariable String pageId, Authentication authentication) {
-        return pageService.loadPageContent(pageId, getRoles(authentication));
+        return pageService.loadTranslatedRestrictedPageContent(pageId, getRoles(authentication));
     }
 
     /**

@@ -1,8 +1,6 @@
 import {TranslatableString, Widget} from 'components/artivact-models';
 
 export interface SearchBasedWidgetData extends Widget {
-  searchTerm: string | null | undefined;
-  maxResults: number;
 }
 
 export interface PageTitleWidgetData extends Widget {
@@ -21,7 +19,11 @@ export interface InfoBoxWidgetData extends Widget {
   boxType: string;
 }
 
-export interface ItemSearchWidget extends SearchBasedWidgetData {
+export interface ItemSearchWidget extends Widget {
+  heading: TranslatableString;
+  content: TranslatableString;
+  searchTerm: string | null | undefined;
+  maxResults: number;
   pageSize: number;
 }
 

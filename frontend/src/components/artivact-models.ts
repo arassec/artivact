@@ -181,6 +181,7 @@ export interface TagsConfiguration {
 
 export interface Widget extends BaseRestrictedObject {
   type: string;
+  navigationTitle: TranslatableString;
 }
 
 export interface PageContent extends BaseRestrictedObject {

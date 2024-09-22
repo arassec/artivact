@@ -712,6 +712,12 @@ export default {
     }
   },
 
+  Widget: {
+    label: {
+      navigationTitle: 'Navigation'
+    }
+  },
+
   AvatarWidget: {
     label: {
       image: 'Avatar Image',
@@ -745,6 +751,8 @@ export default {
   ItemSearchWidget: {
     label: {
       noSearchResults: 'No search results available!',
+      heading: 'Heading',
+      content: 'Content',
       pageSize: 'Page size',
     },
     messages: {

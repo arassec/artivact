@@ -144,9 +144,22 @@ public class PageService extends BaseFileService {
      * @param roles  The available roles.
      * @return The {@link PageContent} of the page.
      */
+    public PageContent loadPageContent(String pageId, Set<String> roles) {
+        Page page = pageRepository.findById(pageId).orElseThrow();
+        computeEditable(page.getPageContent(), roles);
+        return page.getPageContent();
+    }
+
+    /**
+     * Loads the content of the given page and applies translations and restrictions.
+     *
+     * @param pageId The page's ID.
+     * @param roles  The available roles.
+     * @return The {@link PageContent} of the page.
+     */
     @TranslateResult
     @RestrictResult
-    public PageContent loadPageContent(String pageId, Set<String> roles) {
+    public PageContent loadTranslatedRestrictedPageContent(String pageId, Set<String> roles) {
         Page page = pageRepository.findById(pageId).orElseThrow();
         computeEditable(page.getPageContent(), roles);
         return page.getPageContent();

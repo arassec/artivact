@@ -5,6 +5,7 @@
     :in-edit-mode="inEditMode"
     v-if="widgetDataRef"
     :restrictions="widgetDataRef.restrictions"
+    :navigation-title="widgetDataRef.navigationTitle"
   >
     <template v-slot:widget-content>
       <artivact-content>
@@ -96,13 +97,13 @@
 </template>
 
 <script setup lang="ts">
-import { PropType, toRef } from 'vue';
-import { TextWidgetData } from 'components/widgets/artivact-widget-models';
+import {PropType, toRef} from 'vue';
+import {TextWidgetData} from 'components/widgets/artivact-widget-models';
 import ArtivactContent from 'components/ArtivactContent.vue';
 import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
-import { useLocaleStore } from 'stores/locale';
+import {useLocaleStore} from 'stores/locale';
 import MarkdownIt from 'markdown-it';
-import { translate } from '../artivact-utils';
+import {translate} from '../artivact-utils';
 import ArtivactWidgetTemplate from 'components/widgets/ArtivactWidgetTemplate.vue';
 
 const props = defineProps({

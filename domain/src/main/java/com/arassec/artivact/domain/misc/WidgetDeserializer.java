@@ -1,7 +1,9 @@
 package com.arassec.artivact.domain.misc;
 
+import com.arassec.artivact.core.model.TranslatableString;
 import com.arassec.artivact.core.model.page.Widget;
 import com.arassec.artivact.core.model.page.WidgetType;
+import com.arassec.artivact.core.model.page.widget.ItemSearchWidget;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -42,7 +44,19 @@ public class WidgetDeserializer extends StdDeserializer<Widget> {
         Map<String, Object> map = deserializationContext.readValue(jsonParser, Map.class);
         try {
             Class<?> classOfType = WidgetType.getClassOfType(getType(map));
-            return (Widget) objectMapper.readValue(objectMapper.writeValueAsString(map), classOfType);
+            Widget widget = (Widget) objectMapper.readValue(objectMapper.writeValueAsString(map), classOfType);
+            if (widget.getNavigationTitle() == null) {
+                widget.setNavigationTitle(TranslatableString.builder().value("").build());
+            }
+            if (widget instanceof ItemSearchWidget itemSearchWidget) {
+                if (itemSearchWidget.getHeading() == null) {
+                    itemSearchWidget.setHeading(TranslatableString.builder().value("").build());
+                }
+                if (itemSearchWidget.getContent() == null) {
+                    itemSearchWidget.setContent(TranslatableString.builder().value("").build());
+                }
+            }
+            return widget;
         } catch (NoSuchElementException e) {
             log.warn("No widget found for type {}. Ignoring widget...", getType(map));
             return null;

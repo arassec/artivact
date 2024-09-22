@@ -139,7 +139,8 @@ public class JsonArtivactExporter implements ArtivactExporter {
                 .forEach(menuEntry -> exportMenu(params, menuEntry));
 
         if (StringUtils.hasText(menu.getTargetPageId())) {
-            exportPage(params, menu.getTargetPageId(), pageService.loadPageContent(menu.getTargetPageId(), Set.of(Roles.ROLE_ADMIN, Roles.ROLE_USER)));
+            var pageContent = pageService.loadPageContent(menu.getTargetPageId(), Set.of(Roles.ROLE_ADMIN, Roles.ROLE_USER));
+            exportPage(params, menu.getTargetPageId(), pageContent);
         }
     }
 
@@ -174,6 +175,7 @@ public class JsonArtivactExporter implements ArtivactExporter {
      * @param widget The widget to export.
      */
     private void exportWidget(ExportParams params, Widget widget) {
+        widget.getNavigationTitle().setTranslatedValue(null);
         switch (widget) {
             case AvatarWidget avatarWidget -> {
                 avatarWidget.getAvatarSubtext().setTranslatedValue(null);
@@ -191,9 +193,11 @@ public class JsonArtivactExporter implements ArtivactExporter {
                 pageTitleWidget.getTitle().setTranslatedValue(null);
                 copyWidgetFile(params, pageTitleWidget, pageTitleWidget.getBackgroundImage());
             }
-            case SearchBasedWidget searchBasedWidget -> {
-                String searchTerm = searchBasedWidget.getSearchTerm();
-                int maxResults = searchBasedWidget.getMaxResults();
+            case ItemSearchWidget itemSearchWidget -> {
+                itemSearchWidget.getHeading().setTranslatedValue(null);
+                itemSearchWidget.getContent().setTranslatedValue(null);
+                String searchTerm = itemSearchWidget.getSearchTerm();
+                int maxResults = itemSearchWidget.getMaxResults();
                 List<Item> searchResult = searchService.search(searchTerm, maxResults);
                 if (searchResult != null && !searchResult.isEmpty()) {
                     for (Item item : searchResult) {
@@ -202,7 +206,6 @@ public class JsonArtivactExporter implements ArtivactExporter {
                         }
                         exportItem(params, item);
                     }
-
                     writeJsonFile(params.getContentExportDir().resolve(widget.getId() + SEARCH_EXPORT_FILE_SUFFIX),
                             searchResult.stream().map(Item::getId).toArray());
                 }

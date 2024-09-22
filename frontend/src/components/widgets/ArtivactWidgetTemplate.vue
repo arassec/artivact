@@ -140,6 +140,13 @@
                 @delete-restriction="deleteRestriction"
                 @add-restriction="addRestriction"
               />
+              <div class="full-width q-mt-md">
+                <artivact-restricted-translatable-item-editor
+                  :locales="localStore.locales"
+                  :label="$t('Widget.label.navigationTitle')"
+                  :translatable-string="navigationTitle"
+                  :show-separator="false"/>
+              </div>
             </artivact-content>
             <slot name="widget-editor-content"></slot>
           </template>
@@ -164,6 +171,9 @@ import {PropType, ref, toRef} from 'vue';
 import ArtivactRestrictionsEditor from 'components/ArtivactRestrictionsEditor.vue';
 import ArtivactWidgetEditorModal from 'components/widgets/ArtivactWidgetEditorModal.vue';
 import ArtivactContent from 'components/ArtivactContent.vue';
+import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
+import {TranslatableString} from 'components/artivact-models';
+import {useLocaleStore} from 'stores/locale';
 
 const props = defineProps({
   inEditMode: {
@@ -182,6 +192,10 @@ const props = defineProps({
     required: true,
     type: Array as PropType<string[]>,
   },
+  navigationTitle: {
+    required: true,
+    type: Object as PropType<TranslatableString>
+  },
 });
 
 defineEmits<{
@@ -191,6 +205,8 @@ defineEmits<{
   (e: 'add-widget-below'): void;
   (e: 'delete-widget'): void;
 }>();
+
+const localStore = useLocaleStore();
 
 const restrictionsRef = toRef(props, 'restrictions');
 

@@ -6,10 +6,17 @@
     v-if="widgetDataRef"
     :restrictions="widgetDataRef.restrictions"
     @editor-dialog-closed="search(0)"
+    :navigation-title="widgetDataRef.navigationTitle"
   >
     <template v-slot:widget-content>
       <artivact-content>
         <div class="col">
+          <div v-if="widgetDataRef && widgetDataRef.heading">
+            <h1 class="av-label-h1" v-if="widgetDataRef.heading.translatedValue">
+              {{ translate(widgetDataRef.heading) }}
+            </h1>
+            <div v-if="widgetDataRef.content" v-html="format(translate(widgetDataRef.content))"/>
+          </div>
           <div v-if="widgetDataRef && !widgetDataRef.searchTerm">
             <q-input
               v-model="searchTermRef"
@@ -23,7 +30,7 @@
                   v-else
                   name="clear"
                   class="cursor-pointer"
-                  @click="searchTermRef = ''"
+                  @click="searchTermRef = ''; searchResultRef.data.length = 0"
                 />
               </template>
             </q-input>
@@ -71,19 +78,26 @@
 
     <template v-slot:widget-editor-preview>
       <artivact-content>
-        <label
-          class="text-red"
-          v-if="
+        <div class="col">
+          <div v-if="widgetDataRef && widgetDataRef.heading">
+            <h1 class="av-label-h1" v-if="widgetDataRef.heading.translatedValue">
+              {{ translate(widgetDataRef.heading) }}
+            </h1>
+            <div v-if="widgetDataRef.content" v-html="format(translate(widgetDataRef.content))"/>
+          </div>
+
+          <label
+            class="text-red"
+            v-if="
             widgetDataRef &&
             widgetDataRef.searchTerm &&
             (!searchResultRef ||
               !searchResultRef.data ||
               searchResultRef.data.length === 0)
           ">
-          {{ $t('ItemSearchWidget.label.noSearchResults') }}
-        </label>
+            {{ $t('ItemSearchWidget.label.noSearchResults') }}
+          </label>
 
-        <div class="col">
           <div v-if="widgetDataRef && !widgetDataRef.searchTerm">
             <q-input
               v-model="searchTermRef"
@@ -107,7 +121,8 @@
             v-if="
               searchResultRef &&
               searchResultRef.data &&
-              searchResultRef.data.length > 0
+              searchResultRef.data.length > 0 &&
+              widgetDataRef.searchTerm
             "
           >
             <div class="row">
@@ -137,11 +152,24 @@
 
     <template v-slot:widget-editor-content>
       <artivact-content>
+        <artivact-restricted-translatable-item-editor
+          :locales="localeStore.locales"
+          :label="$t('ItemSearchWidget.label.heading')"
+          :translatable-string="widgetDataRef.heading"
+          :show-separator="false"
+          class="full-width"/>
+        <artivact-restricted-translatable-item-editor
+          :locales="localeStore.locales"
+          :label="$t('ItemSearchWidget.label.content')"
+          :translatable-string="widgetDataRef.content"
+          :show-separator="false"
+          :textarea="true"
+          class="full-width"/>
         <q-input type="number" outlined v-model="widgetDataRef.pageSize" class="q-mb-md full-width"
                  :label="$t('ItemSearchWidget.label.pageSize')"/>
         <artivact-item-search-input
-          :widget-data="widgetDataRef"
-          @refresh-search-results="search(0)"
+          :widget-data="widgetDataPreviewRef"
+          @refresh-search-results="searchPreview()"
         />
       </artivact-content>
     </template>
@@ -160,6 +188,10 @@ import ArtivactItemSearchInput from 'components/widgets/util/ArtivactItemSearchI
 import {useI18n} from 'vue-i18n';
 import ArtivactItemCard from 'components/ArtivactItemCard.vue';
 import ArtivactWidgetTemplate from 'components/widgets/ArtivactWidgetTemplate.vue';
+import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
+import {useLocaleStore} from 'stores/locale';
+import {translate} from 'components/artivact-utils';
+import MarkdownIt from 'markdown-it';
 
 const props = defineProps({
   inEditMode: {
@@ -183,12 +215,32 @@ const props = defineProps({
 const quasar = useQuasar();
 const i18n = useI18n();
 
+const localeStore = useLocaleStore();
+
 const widgetDataRef = toRef(props, 'widgetData');
+const widgetDataPreviewRef = toRef({
+  searchTerm: ''
+} as ItemSearchWidget)
 
 const widgetDataStore = useWidgetdataStore();
 
 const searchResultRef = ref({} as SearchResult);
 const searchTermRef = ref('');
+
+function format(text: string) {
+  if (!text) {
+    return;
+  }
+  let md = new MarkdownIt();
+  return md.render(text);
+}
+
+function searchPreview() {
+  if (widgetDataRef.value !== undefined) {
+    widgetDataRef.value.searchTerm = widgetDataPreviewRef.value.searchTerm
+    search(0)
+  }
+}
 
 function search(page: number) {
   widgetDataStore.setPage(widgetDataRef.value?.id, page);

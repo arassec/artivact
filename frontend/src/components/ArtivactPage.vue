@@ -360,6 +360,12 @@ function addWidget() {
       type: 'ITEM_SEARCH',
       id: '',
       restrictions: [] as string[],
+      heading: {
+        value: i18n.t('ArtivactPage.label.text'),
+      } as TranslatableString,
+      content: {
+        value: i18n.t('ArtivactPage.label.text'),
+      } as TranslatableString,
       searchTerm: '',
       pageSize: 9,
       maxResults: 100,

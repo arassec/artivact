@@ -87,7 +87,7 @@ public class PageControllerTest {
     @Test
     void testLoadTranslatedPageContent() {
         controller.loadTranslatedPageContent("page-id", authentication);
-        verify(pageService, times(1)).loadPageContent("page-id", Set.of("ROLE_USER"));
+        verify(pageService, times(1)).loadTranslatedRestrictedPageContent("page-id", Set.of("ROLE_USER"));
     }
 
     /**

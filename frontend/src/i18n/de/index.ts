@@ -713,6 +713,12 @@ export default {
     }
   },
 
+  Widget: {
+    label: {
+      navigationTitle: 'Navigationseintrag'
+    }
+  },
+
   AvatarWidget: {
     label: {
       image: 'Avatar Bild',
@@ -746,6 +752,8 @@ export default {
   ItemSearchWidget: {
     label: {
       noSearchResults: 'Keine Suchergebnisse verfügbar!',
+      heading: 'Überschrift',
+      content: 'Inhalt',
       pageSize: 'Seitengröße',
     },
     messages: {
