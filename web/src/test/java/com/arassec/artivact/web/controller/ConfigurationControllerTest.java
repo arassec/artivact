@@ -193,60 +193,34 @@ class ConfigurationControllerTest {
     @Test
     void testGetFavicon() {
         AppearanceConfiguration appearanceConfiguration = new AppearanceConfiguration();
-        appearanceConfiguration.setEncodedFaviconLarge(Base64.getEncoder().encodeToString("large-favicon".getBytes()));
-        appearanceConfiguration.setEncodedFaviconSmall(Base64.getEncoder().encodeToString("small-favicon".getBytes()));
+        appearanceConfiguration.setEncodedFavicon(Base64.getEncoder().encodeToString("large-favicon".getBytes()));
 
         when(configurationService.loadAppearanceConfiguration()).thenReturn(appearanceConfiguration);
 
-        HttpEntity<byte[]> httpEntity = controller.getFavicon(32);
+        HttpEntity<byte[]> httpEntity = controller.getFavicon();
         assertEquals("large-favicon", new String(Objects.requireNonNull(httpEntity.getBody())));
         assertEquals(MediaType.valueOf("image/ico"), httpEntity.getHeaders().getContentType());
-
-        httpEntity = controller.getFavicon(16);
-        assertEquals("small-favicon", new String(Objects.requireNonNull(httpEntity.getBody())));
-        assertEquals(MediaType.valueOf("image/ico"), httpEntity.getHeaders().getContentType());
     }
 
     /**
-     * Tests saving a small favicon.
+     * Tests saving a favicon.
      */
     @Test
     @SneakyThrows
-    void testUploadSmallFavicon() {
+    void testUploadFavicon() {
         AppearanceConfiguration appearanceConfiguration = new AppearanceConfiguration();
         when(configurationService.loadAppearanceConfiguration()).thenReturn(appearanceConfiguration);
 
         MultipartFile multipartFile = mock(MultipartFile.class);
-        when(multipartFile.getBytes()).thenReturn("small-favicon".getBytes());
+        when(multipartFile.getBytes()).thenReturn("favicon".getBytes());
 
-        ResponseEntity<Void> responseEntity = controller.uploadSmallFavicon(multipartFile);
+        ResponseEntity<Void> responseEntity = controller.uploadFavicon(multipartFile);
         assertEquals(HttpStatus.OK.value(), responseEntity.getStatusCode().value());
 
         ArgumentCaptor<AppearanceConfiguration> argCap = ArgumentCaptor.forClass(AppearanceConfiguration.class);
         verify(configurationService, times(1)).saveAppearanceConfiguration(argCap.capture());
 
-        assertEquals(Base64.getEncoder().encodeToString("small-favicon".getBytes()), argCap.getValue().getEncodedFaviconSmall());
-    }
-
-    /**
-     * Tests saving a large favicon.
-     */
-    @Test
-    @SneakyThrows
-    void testUploadLargeFavicon() {
-        AppearanceConfiguration appearanceConfiguration = new AppearanceConfiguration();
-        when(configurationService.loadAppearanceConfiguration()).thenReturn(appearanceConfiguration);
-
-        MultipartFile multipartFile = mock(MultipartFile.class);
-        when(multipartFile.getBytes()).thenReturn("large-favicon".getBytes());
-
-        ResponseEntity<Void> responseEntity = controller.uploadLargeFavicon(multipartFile);
-        assertEquals(HttpStatus.OK.value(), responseEntity.getStatusCode().value());
-
-        ArgumentCaptor<AppearanceConfiguration> argCap = ArgumentCaptor.forClass(AppearanceConfiguration.class);
-        verify(configurationService, times(1)).saveAppearanceConfiguration(argCap.capture());
-
-        assertEquals(Base64.getEncoder().encodeToString("large-favicon".getBytes()), argCap.getValue().getEncodedFaviconLarge());
+        assertEquals(Base64.getEncoder().encodeToString("favicon".getBytes()), argCap.getValue().getEncodedFavicon());
     }
 
     /**

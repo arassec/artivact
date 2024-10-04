@@ -34,13 +34,8 @@ public class AppearanceConfiguration {
     private ColorTheme colorTheme;
 
     /**
-     * The 16x16 pixel favicon, as Base64 encoded string.
+     * The favicon as Base64 encoded string.
      */
-    private String encodedFaviconSmall;
-
-    /**
-     * The 32x32 pixel favicon, as Base64 encoded string.
-     */
-    private String encodedFaviconLarge;
+    private String encodedFavicon;
 
 }

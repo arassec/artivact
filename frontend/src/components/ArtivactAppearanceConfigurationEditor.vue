@@ -208,31 +208,11 @@
             </div>
             <div class="row">
               <q-uploader
-                label="16x16 Pixel Favicon"
+                label="Favicon"
+                :url="'/api/configuration/favicon'"
                 :multiple="false"
-                accept="*.ico"
-                max-file-size="5120"
-                auto-upload
                 field-name="file"
-                :no-thumbnails="true"
                 class="q-mr-lg"
-                :url="'/api/configuration/favicon/small'"
-                ref="imageUploader"
-                @uploaded="
-                  uploadComplete();
-                  $emit('favicon-uploaded');
-                "
-              >
-              </q-uploader>
-              <q-uploader
-                label="32x32 Pixel Favicon"
-                :multiple="false"
-                accept="*.ico"
-                max-file-size="10240"
-                auto-upload
-                field-name="file"
-                :no-thumbnails="true"
-                :url="'/api/configuration/favicon/large'"
                 ref="imageUploader"
                 @uploaded="
                   uploadComplete();
@@ -245,6 +225,8 @@
         </q-card>
       </q-expansion-item>
     </q-list>
+
+
   </div>
 </template>
 

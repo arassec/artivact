@@ -9,7 +9,7 @@
       />
       <q-btn
         data-test="appearance-configuration-page-save"
-        :label="$t('save')"
+        :label="$t('Common.save')"
         color="primary"
         class="q-mb-lg float-right"
         @click="saveAppearanceConfiguration()"
@@ -20,12 +20,12 @@
 
 <script setup lang="ts">
 import ArtivactContent from 'components/ArtivactContent.vue';
-import { api } from 'boot/axios';
-import { setCssVar, useQuasar } from 'quasar';
-import { onMounted, ref, Ref } from 'vue';
-import { AppearanceConfiguration } from 'components/artivact-models';
+import {api} from 'boot/axios';
+import {setCssVar, useQuasar} from 'quasar';
+import {onMounted, ref, Ref} from 'vue';
+import {AppearanceConfiguration} from 'components/artivact-models';
 import ArtivactAppearanceConfigurationEditor from 'components/ArtivactAppearanceConfigurationEditor.vue';
-import { useLocaleStore } from 'stores/locale';
+import {useLocaleStore} from 'stores/locale';
 import {useI18n} from 'vue-i18n';
 
 const quasar = useQuasar();

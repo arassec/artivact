@@ -142,13 +142,16 @@ public class ConfigurationService {
         Optional<AppearanceConfiguration> configurationOptional =
                 configurationRepository.findByType(ConfigurationType.APPEARANCE, AppearanceConfiguration.class);
 
-        if (configurationOptional.isPresent()) {
-            return configurationOptional.get();
-        } else {
-            AppearanceConfiguration result = new AppearanceConfiguration();
+        AppearanceConfiguration appearanceConfiguration = new AppearanceConfiguration();
 
-            result.setApplicationTitle("Artivact");
-            result.setAvailableLocales("");
+        if (configurationOptional.isPresent()) {
+            appearanceConfiguration = configurationOptional.get();
+            if (!StringUtils.hasText(appearanceConfiguration.getEncodedFavicon())) {
+                setDefaultFavicon(appearanceConfiguration);
+            }
+        } else {
+            appearanceConfiguration.setApplicationTitle("Artivact");
+            appearanceConfiguration.setAvailableLocales("");
 
             ColorTheme colorTheme = new ColorTheme();
             colorTheme.setPrimary("#6e7e85");
@@ -159,24 +162,12 @@ public class ConfigurationService {
             colorTheme.setNegative("#a4031f");
             colorTheme.setInfo("#e2e2e2");
             colorTheme.setWarning("#e6c229");
-            result.setColorTheme(colorTheme);
+            appearanceConfiguration.setColorTheme(colorTheme);
 
-            ClassPathResource classPathResource = new ClassPathResource("icons/favicon-16x16.ico", this.getClass().getClassLoader());
-            try (InputStream is = classPathResource.getInputStream()) {
-                result.setEncodedFaviconSmall(Base64.getEncoder().encodeToString(is.readAllBytes()));
-            } catch (IOException e) {
-                throw new ArtivactException("Could not read 16x16 pixel favicon!", e);
-            }
-
-            classPathResource = new ClassPathResource("icons/favicon-32x32.ico", this.getClass().getClassLoader());
-            try (InputStream is = classPathResource.getInputStream()) {
-                result.setEncodedFaviconLarge(Base64.getEncoder().encodeToString(is.readAllBytes()));
-            } catch (IOException e) {
-                throw new ArtivactException("Could not read 32x32 pixel favicon!", e);
-            }
-
-            return result;
+            setDefaultFavicon(appearanceConfiguration);
         }
+
+        return appearanceConfiguration;
     }
 
     /**
@@ -529,6 +520,20 @@ public class ConfigurationService {
         configurationRepository.saveConfiguration(ConfigurationType.MENU, menuConfiguration);
 
         return loadTranslatedMenus();
+    }
+
+    /**
+     * Sets Artivact's default favicon to the appearance configuration.
+     *
+     * @param appearanceConfiguration The configuration to update.
+     */
+    private void setDefaultFavicon(AppearanceConfiguration appearanceConfiguration) {
+        ClassPathResource classPathResource = new ClassPathResource("icons/favicon-32x32.ico", this.getClass().getClassLoader());
+        try (InputStream is = classPathResource.getInputStream()) {
+            appearanceConfiguration.setEncodedFavicon(Base64.getEncoder().encodeToString(is.readAllBytes()));
+        } catch (IOException e) {
+            throw new ArtivactException("Could not read 32x32 pixel favicon!", e);
+        }
     }
 
 }

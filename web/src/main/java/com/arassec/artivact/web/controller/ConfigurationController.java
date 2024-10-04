@@ -173,19 +173,13 @@ public class ConfigurationController {
     /**
      * Returns the application's favicon in the requested size.
      *
-     * @param size The size in pixels.
      * @return The favicon as byte array.
      */
-    @GetMapping(value = "/public/favicon/{size}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    public HttpEntity<byte[]> getFavicon(@PathVariable Integer size) {
+    @GetMapping(value = "/public/favicon", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public HttpEntity<byte[]> getFavicon() {
         AppearanceConfiguration appearanceConfiguration = configurationService.loadAppearanceConfiguration();
 
-        String base64EncodedFavicon;
-        if (size == 32) {
-            base64EncodedFavicon = appearanceConfiguration.getEncodedFaviconLarge();
-        } else {
-            base64EncodedFavicon = appearanceConfiguration.getEncodedFaviconSmall();
-        }
+        String base64EncodedFavicon = appearanceConfiguration.getEncodedFavicon();
 
         var headers = new HttpHeaders();
         headers.setContentType(MediaType.valueOf("image/ico"));
@@ -194,38 +188,20 @@ public class ConfigurationController {
     }
 
     /**
-     * Saves a favicon of 16x16 pixels size.
+     * Saves a favicon.
      *
      * @param file The new favicon to save.
      * @return HTTP-Status.
      */
-    @PostMapping("/favicon/small")
-    public ResponseEntity<Void> uploadSmallFavicon(@RequestPart(value = "file") final MultipartFile file) {
+    @PostMapping("/favicon")
+    public ResponseEntity<Void> uploadFavicon(@RequestPart(value = "file") final MultipartFile file) {
         AppearanceConfiguration appearanceConfiguration = configurationService.loadAppearanceConfiguration();
         try {
-            appearanceConfiguration.setEncodedFaviconSmall(Base64.getEncoder().encodeToString(file.getBytes()));
+            appearanceConfiguration.setEncodedFavicon(Base64.getEncoder().encodeToString(file.getBytes()));
             configurationService.saveAppearanceConfiguration(appearanceConfiguration);
             return ResponseEntity.ok().build();
         } catch (IOException e) {
-            throw new ArtivactException("Could not Base64 encode small favicon!", e);
-        }
-    }
-
-    /**
-     * Saves a favicon of 32x32 pixels size.
-     *
-     * @param file The new favicon to save.
-     * @return HTTP-Status.
-     */
-    @PostMapping("/favicon/large")
-    public ResponseEntity<Void> uploadLargeFavicon(@RequestPart(value = "file") final MultipartFile file) {
-        AppearanceConfiguration appearanceConfiguration = configurationService.loadAppearanceConfiguration();
-        try {
-            appearanceConfiguration.setEncodedFaviconLarge(Base64.getEncoder().encodeToString(file.getBytes()));
-            configurationService.saveAppearanceConfiguration(appearanceConfiguration);
-            return ResponseEntity.ok().build();
-        } catch (IOException e) {
-            throw new ArtivactException("Could not Base64 encode small favicon!", e);
+            throw new ArtivactException("Could not Base64 encode favicon!", e);
         }
     }
 
