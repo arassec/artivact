@@ -56,6 +56,7 @@
               v-if="searchResultRef.data.length > 0"
             >
               <q-pagination
+                v-if="searchResultRef.totalPages > 1"
                 class="lt-sm"
                 size="2em"
                 v-model="searchResultRef.pageNumber"
@@ -64,6 +65,7 @@
                 @update:model-value="search(searchResultRef.pageNumber - 1)"
               />
               <q-pagination
+                v-if="searchResultRef.totalPages > 1"
                 class="gt-xs"
                 v-model="searchResultRef.pageNumber"
                 :max="searchResultRef.totalPages"
@@ -139,6 +141,7 @@
               v-if="searchResultRef.data.length > 0"
             >
               <q-pagination
+                v-if="searchResultRef.totalPages > 1"
                 v-model="searchResultRef.pageNumber"
                 :max="searchResultRef.totalPages"
                 input

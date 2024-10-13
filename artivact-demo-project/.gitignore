@@ -7,3 +7,4 @@ items/**/*-*.png
 !sedata/readme.md
 sedata/*
 exports/*
+dbdata/artivact.lock.db

@@ -127,7 +127,7 @@ public class ConfigurationController {
      */
     @GetMapping(value = "/public/menu")
     public List<Menu> getPublicMenus() {
-        return configurationService.loadTranslatedMenus();
+        return configurationService.loadTranslatedRestrictedMenus();
     }
 
     /**

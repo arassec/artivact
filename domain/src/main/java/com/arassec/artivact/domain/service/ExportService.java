@@ -154,7 +154,7 @@ public class ExportService extends BaseFileService {
         progressMonitor = new ProgressMonitor(getClass(), "exportContent");
 
         // The menu chosen by the user to export:
-        List<Menu> flattenedMenus = configurationService.loadTranslatedMenus();
+        List<Menu> flattenedMenus = configurationService.loadTranslatedRestrictedMenus();
         flattenedMenus.addAll(flattenedMenus.stream()
                 .flatMap(existingMenu -> existingMenu.getMenuEntries().stream())
                 .toList());

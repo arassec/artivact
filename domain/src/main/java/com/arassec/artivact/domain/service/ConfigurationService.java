@@ -333,7 +333,7 @@ public class ConfigurationService {
      */
     @RestrictResult
     @TranslateResult
-    public List<Menu> loadTranslatedMenus() {
+    public List<Menu> loadTranslatedRestrictedMenus() {
         Optional<MenuConfiguration> configurationOptional = configurationRepository.findByType(ConfigurationType.MENU, MenuConfiguration.class);
         MenuConfiguration menuConfiguration = configurationOptional.orElseGet(MenuConfiguration::new);
 
@@ -344,6 +344,14 @@ public class ConfigurationService {
             if (menu.getExportDescription() == null) {
                 menu.setExportDescription(new TranslatableString());
             }
+            menu.getMenuEntries().forEach(menuEntry -> {
+                if (menuEntry.getExportTitle() == null) {
+                    menuEntry.setExportTitle(new TranslatableString());
+                }
+                if (menuEntry.getExportDescription() == null) {
+                    menuEntry.setExportDescription(new TranslatableString());
+                }
+            });
         });
 
         return menuConfiguration.getMenus();
@@ -374,7 +382,7 @@ public class ConfigurationService {
                     pageService.updatePageRestrictions(menuEntry.getTargetPageId(), menuEntry.getRestrictions()));
         });
 
-        return loadTranslatedMenus();
+        return loadTranslatedRestrictedMenus();
     }
 
     /**
@@ -388,7 +396,7 @@ public class ConfigurationService {
     @TranslateResult
     public List<Menu> saveMenu(Menu menu) {
         if (menu == null) {
-            return loadTranslatedMenus();
+            return loadTranslatedRestrictedMenus();
         }
 
         if (!StringUtils.hasText(menu.getValue())) {
@@ -436,7 +444,7 @@ public class ConfigurationService {
 
         configurationRepository.saveConfiguration(ConfigurationType.MENU, menuConfiguration);
 
-        return loadTranslatedMenus();
+        return loadTranslatedRestrictedMenus();
     }
 
     /**
@@ -450,7 +458,7 @@ public class ConfigurationService {
     public List<Menu> deleteMenu(String menuId) {
         if (!StringUtils.hasText(menuId)) {
             log.warn("No menuId given to delete menu!");
-            return loadTranslatedMenus();
+            return loadTranslatedRestrictedMenus();
         }
 
         Optional<MenuConfiguration> configurationOptional = configurationRepository.findByType(ConfigurationType.MENU, MenuConfiguration.class);
@@ -490,7 +498,7 @@ public class ConfigurationService {
 
         configurationRepository.saveConfiguration(ConfigurationType.MENU, menuConfiguration);
 
-        return loadTranslatedMenus();
+        return loadTranslatedRestrictedMenus();
     }
 
     /**
@@ -504,7 +512,7 @@ public class ConfigurationService {
     public List<Menu> addPageToMenu(String menuId) {
         if (!StringUtils.hasText(menuId)) {
             log.warn("No menuId given to add page to!");
-            return loadTranslatedMenus();
+            return loadTranslatedRestrictedMenus();
         }
 
         Optional<MenuConfiguration> configurationOptional = configurationRepository.findByType(ConfigurationType.MENU, MenuConfiguration.class);
@@ -519,7 +527,7 @@ public class ConfigurationService {
 
         configurationRepository.saveConfiguration(ConfigurationType.MENU, menuConfiguration);
 
-        return loadTranslatedMenus();
+        return loadTranslatedRestrictedMenus();
     }
 
     /**

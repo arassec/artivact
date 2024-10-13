@@ -134,7 +134,7 @@ class ConfigurationControllerTest {
     @Test
     void testPublicMenus() {
         List<Menu> menus = new LinkedList<>();
-        when(configurationService.loadTranslatedMenus()).thenReturn(menus);
+        when(configurationService.loadTranslatedRestrictedMenus()).thenReturn(menus);
         assertEquals(menus, controller.getPublicMenus());
     }
 
