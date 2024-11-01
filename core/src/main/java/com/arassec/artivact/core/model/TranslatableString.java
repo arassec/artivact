@@ -1,6 +1,7 @@
 package com.arassec.artivact.core.model;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -13,7 +14,7 @@ import java.util.Map;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@SuperBuilder
 public class TranslatableString implements TranslatableObject {
 
     /**

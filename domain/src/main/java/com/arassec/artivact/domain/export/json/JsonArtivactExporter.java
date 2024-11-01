@@ -4,6 +4,7 @@ import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.misc.ProgressMonitor;
 import com.arassec.artivact.core.model.BaseTranslatableRestrictedObject;
 import com.arassec.artivact.core.model.Roles;
+import com.arassec.artivact.core.model.TranslatableString;
 import com.arassec.artivact.core.model.item.Item;
 import com.arassec.artivact.core.model.menu.Menu;
 import com.arassec.artivact.core.model.page.PageContent;
@@ -106,9 +107,9 @@ public class JsonArtivactExporter implements ArtivactExporter {
 
         ContentExportFile contentExportFile = new ContentExportFile();
 
-        contentExportFile.setTitle(menu.getExportTitle());
+        contentExportFile.setTitle(Optional.ofNullable(menu.getExportTitle()).orElse(new TranslatableString()));
         contentExportFile.getTitle().setTranslatedValue(null);
-        contentExportFile.setDescription(menu.getExportDescription());
+        contentExportFile.setDescription(Optional.ofNullable(menu.getExportDescription()).orElse(new TranslatableString()));
         contentExportFile.getDescription().setTranslatedValue(null);
 
         contentExportFile.setMenuId(menu.getId());

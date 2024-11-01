@@ -25,10 +25,9 @@ Pages from the CMS can then be exported as virtual exhibitions, which can be exp
 
 ### In the Metaverse
 
-The "Artivact XR" app is currently in development, created using the open
-source [Godot Engine](https://godotengine.org).
+The ["Artivact XR"](https://github.com/arassec/artivact-xr) app is currently in development.
 
-It will support virtual collections created with the Artivact desktop or web server variants.
+It will support browsing virtual collections created with the Artivact desktop or web server variants.
 
 ## Reference Documentation
 
@@ -39,4 +38,4 @@ The documentation of the latest, **stable** release is also available online at:
 
 ## License
 
-This project is licensed under the [MIT License](https://github.com/arassec/artivact/blob/main/LICENSE)
+This project is licensed under the [MIT License](https://github.com/arassec/artivact/blob/main/LICENSE).
