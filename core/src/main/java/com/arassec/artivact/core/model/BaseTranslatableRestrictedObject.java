@@ -1,9 +1,6 @@
 package com.arassec.artivact.core.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.util.HashSet;
@@ -27,6 +24,7 @@ public class BaseTranslatableRestrictedObject extends TranslatableString impleme
     /**
      * Restrictions that apply to the object.
      */
+    @Builder.Default
     private Set<String> restrictions = new HashSet<>();
 
 }

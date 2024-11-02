@@ -19,6 +19,7 @@ public class PropertiesConfiguration {
     /**
      * Properties in their respective category.
      */
+    @Builder.Default
     private List<PropertyCategory> categories = new LinkedList<>();
 
 }

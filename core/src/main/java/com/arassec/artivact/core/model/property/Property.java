@@ -1,10 +1,7 @@
 package com.arassec.artivact.core.model.property;
 
 import com.arassec.artivact.core.model.BaseTranslatableRestrictedObject;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.util.LinkedList;
@@ -23,6 +20,7 @@ public class Property extends BaseTranslatableRestrictedObject {
     /**
      * A possible value range of predefined property values.
      */
+    @Builder.Default
     private List<BaseTranslatableRestrictedObject> valueRange = new LinkedList<>();
 
 }
