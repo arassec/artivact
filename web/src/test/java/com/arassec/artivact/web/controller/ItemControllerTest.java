@@ -10,18 +10,15 @@ import com.arassec.artivact.core.model.tag.Tag;
 import com.arassec.artivact.domain.misc.ProjectDataProvider;
 import com.arassec.artivact.domain.service.ItemService;
 import com.arassec.artivact.web.model.ItemDetails;
-import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.nio.charset.Charset;
 import java.nio.file.Path;
@@ -194,26 +191,6 @@ class ItemControllerTest {
         assertNotNull(modelcontent);
         assertEquals("modelcontent", new String(modelcontent, Charset.defaultCharset()));
 
-    }
-
-    /**
-     * Tests downloading all of an item's media files.
-     */
-    @Test
-    void testDownloadMedia() {
-        when(itemService.getMediaFiles("item-id")).thenReturn(List.of("image.jpg", "model.glb"));
-
-        HttpServletResponse servletResponseMock = mock(HttpServletResponse.class);
-
-        ResponseEntity<StreamingResponseBody> response = controller.downloadMedia(servletResponseMock, "item-id");
-
-        verify(servletResponseMock, times(1)).setContentType(BaseController.TYPE_ZIP);
-        verify(servletResponseMock, times(1)).setHeader(HttpHeaders.CONTENT_DISPOSITION, BaseController.ATTACHMENT_PREFIX + "item-id.zip");
-        verify(servletResponseMock, times(1)).addHeader(HttpHeaders.PRAGMA, BaseController.NO_CACHE);
-        verify(servletResponseMock, times(1)).addHeader(HttpHeaders.EXPIRES, BaseController.EXPIRES_IMMEDIATELY);
-
-        StreamingResponseBody responseBody = response.getBody();
-        assertNotNull(responseBody);
     }
 
     /**

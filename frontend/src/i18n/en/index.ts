@@ -157,8 +157,9 @@ export default {
     button: {
       tooltip: {
         delete: 'Delete item',
+        download: 'Download item data as ZIP',
         sync: 'Synchronize item with remote server',
-        edit: 'Edit item'
+        edit: 'Edit item',
       },
     },
     dialog: {
@@ -180,7 +181,6 @@ export default {
     button: {
       tooltip: {
         close: 'Leave edit mode and return to item page',
-        download: 'Download item data as ZIP',
         save: 'Save item',
         addTag: 'Add tag to item',
         removeTag: 'Remove tag from item',
@@ -218,16 +218,12 @@ export default {
   ItemImportPage: {
     heading: 'Item Import',
     description: {
-      scan: 'Scans the data directory for new or updated items.',
       upload: 'Imports a previously exported item.'
     },
     button: {
-      scan: 'Scan',
       upload: 'Import Item'
     },
     messages: {
-      scanSuccessful: 'Scan successful',
-      scanFailed: 'Scan failed',
       itemUploaded: 'Item uploaded'
     }
   },
@@ -413,9 +409,8 @@ export default {
       exportTitle: 'Export Title',
       exportDescription: 'Export Description',
       exportImage: 'Export Cover Picture',
-      exportParams: {
+      exportConfiguration: {
         optimizeSize: 'Optimize export size',
-        zipResults: 'ZIP export folder',
         applyRestrictions: 'Exclude restricted elements',
       }
     },
@@ -432,7 +427,7 @@ export default {
       deleteApprove: 'Delete Menu',
       deleteApproveEntry: 'Delete Menu Entry',
       exportDescription: 'Optional title and description for exports based on this menu.',
-      exportParams: 'Export Configuration',
+      exportConfiguration: 'Export Configuration',
       exportApprove: 'Export Content'
     },
     messages: {
@@ -659,7 +654,6 @@ export default {
     tooltip: {
       image: 'Show images',
       model: 'Show 3D models',
-      download: 'Download media files'
     }
   },
 

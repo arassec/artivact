@@ -27,9 +27,9 @@
     </div>
 
     <div class="full-width">
-      <h2 class="av-text-h2">{{ $t('ExchangeConfigurationPage.contentExport.heading') }}</h2>
+      <h2 class="av-text-h2">{{ $t('ExchangeConfigurationPage.standardExportInfo.heading') }}</h2>
       <div class="q-mb-lg">
-        {{ $t('ExchangeConfigurationPage.contentExport.description') }}
+        {{ $t('ExchangeConfigurationPage.standardExportInfo.description') }}
       </div>
       <artivact-content-export-configuration-editor :content-exports="contentExportsRef"
                                                     v-if="contentExportsRef"
@@ -193,8 +193,8 @@ function saveExchangeConfiguration() {
     });
 }
 
-function confirmDeleteContentExport(contentExport: ContentExport) {
-  selectedContentExportRef.value = contentExport;
+function confirmDeleteContentExport(standardExportInfo: ContentExport) {
+  selectedContentExportRef.value = standardExportInfo;
   showDeleteContentExportModalRef.value = true;
 }
 

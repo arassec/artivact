@@ -17,27 +17,16 @@
       </div>
 
       <div class="absolute-top-right q-ma-md">
-        <q-form :action="'/api/export/item/' + itemDataRef.id" method="get">
-          <q-btn
-            data-test="download-button"
-            round
-            color="primary"
-            icon="download"
-            type="submit"
-            class="q-mr-sm main-nav-button">
-            <q-tooltip>{{ $t('ItemEditPage.button.tooltip.download') }}</q-tooltip>
-          </q-btn>
-          <q-btn
-            data-test="save-button"
-            :disable="tabRef == 'creation'"
-            round
-            color="primary"
-            icon="save"
-            class="main-nav-button"
-            @click="saveItem">
-            <q-tooltip>{{ $t('ItemEditPage.button.tooltip.save') }}</q-tooltip>
-          </q-btn>
-        </q-form>
+        <q-btn
+          data-test="save-button"
+          :disable="tabRef == 'creation'"
+          round
+          color="primary"
+          icon="save"
+          class="main-nav-button"
+          @click="saveItem">
+          <q-tooltip>{{ $t('ItemEditPage.button.tooltip.save') }}</q-tooltip>
+        </q-btn>
       </div>
     </div>
 

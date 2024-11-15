@@ -13,7 +13,6 @@ const { Menu } = require('electron');
 // Disable the application menu, even for new window instances!
 Menu.setApplicationMenu(null);
 
-let kill = require('tree-kill');
 let backendChildProcess;
 let backendPort = 8080;
 
@@ -135,7 +134,7 @@ function createWindow() {
   mainWindow.on('closed', () => {
     // Artivact: +++
     if (!process.env.DEBUGGING && backendChildProcess) {
-      kill(backendChildProcess.pid);
+      backendChildProcess.kill()
     }
     // Artivact: ---
     mainWindow = null;

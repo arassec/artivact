@@ -68,11 +68,6 @@
             <artifactId>lucene-queryparser</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.zeroturnaround</groupId>
-            <artifactId>zt-zip</artifactId>
-        </dependency>
-
         <!-- Misc -->
         <dependency>
             <groupId>org.apache.commons</groupId>

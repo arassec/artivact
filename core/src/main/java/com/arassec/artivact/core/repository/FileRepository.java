@@ -15,16 +15,6 @@ import java.util.List;
 public interface FileRepository {
 
     /**
-     * Suffix for ZIP files.
-     */
-    String ZIP_FILE_SUFFIX = ".zip";
-
-    /**
-     * Suffix for JSON files.
-     */
-    String JSON_FILE_SUFFIX = ".json";
-
-    /**
      * Initializes or updates the project directory by copying project files from the classpath and updating necessary
      * file contents.
      *
@@ -190,5 +180,21 @@ public interface FileRepository {
      * @return The size in bytes.
      */
     long size(Path path);
+
+    /**
+     * Packs the source using ZIP.
+     *
+     * @param source Source to pack.
+     * @param target Target to pack the source into.
+     */
+    void pack(Path source, Path target);
+
+    /**
+     * Unpacks the source using ZIP.
+     *
+     * @param source The source to unpack.
+     * @param target Target to unpack the source to.
+     */
+    void unpack(Path source, Path target);
 
 }

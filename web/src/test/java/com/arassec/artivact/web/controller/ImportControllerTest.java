@@ -96,17 +96,6 @@ class ImportControllerTest {
     }
 
     /**
-     * Tests item import from the local filesystem.
-     */
-    @Test
-    void testImportItems() {
-        ResponseEntity<String> stringResponseEntity = importController.importItems();
-
-        assertEquals("Items scanned.", stringResponseEntity.getBody());
-        verify(importService, times(1)).importItemsFromFilesystem();
-    }
-
-    /**
      * Tests syncing an item.
      */
     @Test

@@ -3,12 +3,14 @@ package com.arassec.artivact.persistence.filesystem;
 import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.misc.FileModification;
 import com.arassec.artivact.core.repository.FileRepository;
+import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.imgscalr.Scalr;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
+import org.zeroturnaround.zip.ZipUtil;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -113,12 +115,14 @@ public class FilesystemFileRepository implements FileRepository {
             if (Files.exists(path) && Files.isDirectory(path)) {
                 Files.walkFileTree(path, new SimpleFileVisitor<>() {
                     @Override
-                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    @Nonnull
+                    public FileVisitResult visitFile(Path file, @Nonnull BasicFileAttributes attrs) throws IOException {
                         Files.delete(file);
                         return FileVisitResult.CONTINUE;
                     }
 
                     @Override
+                    @Nonnull
                     public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
                         Files.delete(dir);
                         return FileVisitResult.CONTINUE;
@@ -307,6 +311,9 @@ public class FilesystemFileRepository implements FileRepository {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public long size(Path path) {
         if (path == null || !Files.exists(path)) {
@@ -317,6 +324,23 @@ public class FilesystemFileRepository implements FileRepository {
         } catch (IOException e) {
             throw new ArtivactException("Could not read file size!", e);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void pack(Path source, Path target) {
+        ZipUtil.pack(source.toFile(), target.toFile());
+        delete(source.toAbsolutePath());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void unpack(Path source, Path target) {
+        ZipUtil.unpack(source.toFile(), target.toFile());
     }
 
     /**

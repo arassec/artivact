@@ -2,15 +2,10 @@ package com.arassec.artivact.web.controller;
 
 
 import com.arassec.artivact.core.misc.ProgressMonitor;
-import com.arassec.artivact.core.model.configuration.PropertiesConfiguration;
-import com.arassec.artivact.core.model.configuration.TagsConfiguration;
-import com.arassec.artivact.core.model.export.ContentExport;
-import com.arassec.artivact.domain.export.model.ExportParams;
-import com.arassec.artivact.domain.export.model.ExportType;
-import com.arassec.artivact.domain.service.ConfigurationService;
+import com.arassec.artivact.core.model.exchange.ExportConfiguration;
+import com.arassec.artivact.core.model.exchange.StandardExportInfo;
 import com.arassec.artivact.domain.service.ExportService;
 import com.arassec.artivact.web.model.OperationProgress;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
@@ -47,22 +42,10 @@ class ExportControllerTest {
     private ExportController exportController;
 
     /**
-     * The application's {@link ConfigurationService}.
-     */
-    @Mock
-    private ConfigurationService configurationService;
-
-    /**
      * The application's {@link ExportService}.
      */
     @Mock
     private ExportService exportService;
-
-    /**
-     * The object mapper for exports.
-     */
-    @Mock
-    private ObjectMapper objectMapper;
 
     /**
      * Tests exporting content.
@@ -72,14 +55,14 @@ class ExportControllerTest {
         ProgressMonitor progressMonitor = mock(ProgressMonitor.class);
         when(exportService.getProgressMonitor()).thenReturn(progressMonitor);
 
-        ExportParams exportParams = ExportParams.builder().build();
+        ExportConfiguration exportConfiguration = ExportConfiguration.builder().build();
 
-        ResponseEntity<OperationProgress> responseEntity = exportController.exportContent("menu-id", exportParams);
+        ResponseEntity<OperationProgress> responseEntity = exportController.exportContent("menu-id", exportConfiguration);
 
         OperationProgress operationProgress = responseEntity.getBody();
         assertNotNull(operationProgress);
 
-        verify(exportService, times(1)).exportContent(exportParams, "menu-id");
+        verify(exportService, times(1)).exportMenu(exportConfiguration, "menu-id");
     }
 
     /**
@@ -87,15 +70,15 @@ class ExportControllerTest {
      */
     @Test
     void testLoadContentExports() {
-        ContentExport contentExport = ContentExport.builder().build();
+        StandardExportInfo standardExportInfo = StandardExportInfo.builder().build();
         when(exportService.loadContentExports()).thenReturn(List.of(
-                contentExport
+                standardExportInfo
         ));
 
-        List<ContentExport> contentExports = exportController.loadContentExports();
+        List<StandardExportInfo> standardExportInfos = exportController.loadContentExports();
 
-        assertEquals(1, contentExports.size());
-        assertEquals(contentExport, contentExports.getFirst());
+        assertEquals(1, standardExportInfos.size());
+        assertEquals(standardExportInfo, standardExportInfos.getFirst());
     }
 
     /**
@@ -103,13 +86,13 @@ class ExportControllerTest {
      */
     @Test
     void testDownloadContentExport() {
-        when(exportService.getContentExportFile("menu-id", ExportType.JSON)).thenReturn(
+        when(exportService.getContentExportFile("menu-id")).thenReturn(
                 Path.of("content-export.zip")
         );
 
         HttpServletResponse response = mock(HttpServletResponse.class);
 
-        ResponseEntity<StreamingResponseBody> responseEntity = exportController.downloadContentExport(response, "menu-id", ExportType.JSON);
+        ResponseEntity<StreamingResponseBody> responseEntity = exportController.downloadContentExport(response, "menu-id");
 
         verify(response, times(1)).setContentType("application/zip");
         verify(response, times(1)).setHeader("Content-Disposition", "attachment; filename=content-export.zip");
@@ -130,7 +113,7 @@ class ExportControllerTest {
         OperationProgress operationProgress = responseEntity.getBody();
         assertNotNull(operationProgress);
 
-        verify(exportService, times(1)).deleteContentExport("menu-id");
+        verify(exportService, times(1)).deleteExport("menu-id");
     }
 
     /**
@@ -139,10 +122,7 @@ class ExportControllerTest {
     @Test
     @SneakyThrows
     void testExportPropertiesConfiguration() {
-        var propertiesConfiguration = new PropertiesConfiguration();
-        when(configurationService.loadPropertiesConfiguration()).thenReturn(propertiesConfiguration);
-
-        when(objectMapper.writeValueAsString(propertiesConfiguration)).thenReturn("properties-configuration-json");
+        when(exportService.exportPropertiesConfiguration()).thenReturn("properties-configuration-json");
 
         HttpServletResponse httpServletResponse = mock(HttpServletResponse.class, Answers.RETURNS_DEEP_STUBS);
 
@@ -163,10 +143,7 @@ class ExportControllerTest {
     @Test
     @SneakyThrows
     void testExportTagsConfiguration() {
-        TagsConfiguration tagsConfiguration = new TagsConfiguration();
-        when(configurationService.loadTranslatedRestrictedTags()).thenReturn(tagsConfiguration);
-
-        when(objectMapper.writeValueAsString(tagsConfiguration)).thenReturn("tags-configuration-json");
+        when(exportService.exportTagsConfiguration()).thenReturn("tags-configuration-json");
 
         HttpServletResponse httpServletResponse = mock(HttpServletResponse.class, Answers.RETURNS_DEEP_STUBS);
 
@@ -187,6 +164,9 @@ class ExportControllerTest {
     @Test
     void testExportItem() {
         HttpServletResponse httpServletResponse = mock(HttpServletResponse.class, Answers.RETURNS_DEEP_STUBS);
+
+        Path pathMock = mock(Path.class);
+        when(exportService.exportItem("123-ABC")).thenReturn(pathMock);
 
         ResponseEntity<StreamingResponseBody> streamingResponseBodyResponseEntity =
                 exportController.exportItem(httpServletResponse, "123-ABC");

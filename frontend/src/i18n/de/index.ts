@@ -157,8 +157,9 @@ export default {
     button: {
       tooltip: {
         delete: 'Objekt löschen',
+        download: 'Objekt-Inhalte als ZIP-Datei herunterladen',
         sync: 'Objekt mit zentralem Server synchronisieren',
-        edit: 'Objekt bearbeiten'
+        edit: 'Objekt bearbeiten',
       },
     },
     dialog: {
@@ -180,7 +181,6 @@ export default {
     button: {
       tooltip: {
         close: 'Bearbeiten-Modus verlassen und zur Objekt-Seite zurückkehren',
-        download: 'Objekt-Inhalte als ZIP-Datei herunterladen',
         save: 'Objekt speichern',
         addTag: 'Tag zu Objekt hinzufügen',
         removeTag: 'Tag von Objekt entfernen',
@@ -413,9 +413,8 @@ export default {
       exportTitle: 'Export Titel',
       exportDescription: 'Export Beschreibung',
       exportImage: 'Export Titelbild',
-      exportParams: {
+      exportConfiguration: {
         optimizeSize: 'Exportgröße optimieren',
-        zipResults: 'Exportverzeichnis packen (ZIP)',
         applyRestrictions: 'Eingeschränkte Elemente ausschließen',
       }
     },
@@ -432,7 +431,7 @@ export default {
       deleteApprove: 'Menü löschen',
       deleteApproveEntry: 'Menüeintrag löschen',
       exportDescription: 'Optionaler Titel und Beschreibung für Exporte, die auf Basis dieses Menüs erstellt werden.',
-      exportParams: 'Export Konfiguration',
+      exportConfiguration: 'Export Konfiguration',
       exportApprove: 'Inhalte exportieren'
     },
     messages: {
@@ -660,7 +659,6 @@ export default {
     tooltip: {
       image: 'Bilder anzeigen',
       model: '3D-Modelle anzeigen',
-      download: 'Mediendateien herunterladen'
     }
   },
 

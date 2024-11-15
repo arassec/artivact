@@ -85,17 +85,6 @@ public class ImportController extends BaseController {
     }
 
     /**
-     * Imports item's by scanning the filesystem.
-     *
-     * @return A status string.
-     */
-    @PostMapping(value = "/item/filesystem")
-    public ResponseEntity<String> importItems() {
-        importService.importItemsFromFilesystem();
-        return ResponseEntity.ok("Items scanned.");
-    }
-
-    /**
      * Called by another server instance for remote import/sync!
      *
      * @param file     The item's export file to import.

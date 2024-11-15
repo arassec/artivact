@@ -1,16 +1,11 @@
 package com.arassec.artivact.web.controller;
 
 import com.arassec.artivact.core.exception.ArtivactException;
-import com.arassec.artivact.core.model.configuration.PropertiesConfiguration;
-import com.arassec.artivact.core.model.configuration.TagsConfiguration;
-import com.arassec.artivact.core.model.export.ContentExport;
-import com.arassec.artivact.domain.export.model.ExportParams;
-import com.arassec.artivact.domain.export.model.ExportType;
-import com.arassec.artivact.domain.service.ConfigurationService;
+import com.arassec.artivact.core.model.exchange.ExportConfiguration;
+import com.arassec.artivact.core.model.exchange.StandardExportInfo;
+import com.arassec.artivact.domain.exchange.ExchangeProcessor;
 import com.arassec.artivact.domain.service.ExportService;
 import com.arassec.artivact.web.model.OperationProgress;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -40,16 +36,6 @@ public class ExportController extends BaseController {
     private final ExportService exportService;
 
     /**
-     * The application's {@link ConfigurationService}.
-     */
-    private final ConfigurationService configurationService;
-
-    /**
-     * The object mapper for exports.
-     */
-    private final ObjectMapper objectMapper;
-
-    /**
      * Exports the pages of a menu and the sub-menu pages (if available).
      *
      * @param menuId The menu's ID.
@@ -57,8 +43,8 @@ public class ExportController extends BaseController {
      */
     @PostMapping("/content/{menuId}")
     public ResponseEntity<OperationProgress> exportContent(@PathVariable String menuId,
-                                                           @RequestBody ExportParams params) {
-        exportService.exportContent(params, menuId);
+                                                           @RequestBody ExportConfiguration configuration) {
+        exportService.exportMenu(configuration, menuId);
         return getProgress();
     }
 
@@ -68,7 +54,7 @@ public class ExportController extends BaseController {
      * @return List with details of existing exports.
      */
     @GetMapping("/content")
-    public List<ContentExport> loadContentExports() {
+    public List<StandardExportInfo> loadContentExports() {
         return exportService.loadContentExports();
     }
 
@@ -92,14 +78,13 @@ public class ExportController extends BaseController {
      *
      * @return The content export.
      */
-    @GetMapping("/content/{menuId}/{exportType}")
+    @GetMapping("/content/{menuId}")
     public ResponseEntity<StreamingResponseBody> downloadContentExport(HttpServletResponse response,
-                                                                       @PathVariable String menuId,
-                                                                       @PathVariable ExportType exportType) {
+                                                                       @PathVariable String menuId) {
 
-        String exportFilename = exportService.getContentExportFile(menuId, exportType).getFileName().toString();
+        String exportFilename = exportService.getContentExportFile(menuId).getFileName().toString();
 
-        StreamingResponseBody streamResponseBody = out -> exportService.loadContentExport(menuId, exportType, out);
+        StreamingResponseBody streamResponseBody = out -> exportService.loadContentExport(menuId, out);
 
         response.setContentType(TYPE_ZIP);
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION, ATTACHMENT_PREFIX + exportFilename);
@@ -115,7 +100,7 @@ public class ExportController extends BaseController {
      */
     @DeleteMapping("/content/{menuId}")
     public ResponseEntity<OperationProgress> deleteContentExport(@PathVariable String menuId) {
-        exportService.deleteContentExport(menuId);
+        exportService.deleteExport(menuId);
         return getProgress();
     }
 
@@ -147,26 +132,20 @@ public class ExportController extends BaseController {
     @GetMapping(value = "/properties")
     public ResponseEntity<StreamingResponseBody> exportPropertiesConfiguration(HttpServletResponse response) {
 
-        PropertiesConfiguration propertiesConfiguration = configurationService.loadPropertiesConfiguration();
+        String exportedPropertiesConfiguration = exportService.exportPropertiesConfiguration();
 
-        try {
-            String propertiesConfigurationJson = objectMapper.writeValueAsString(propertiesConfiguration);
+        StreamingResponseBody streamResponseBody = out -> {
+            response.getOutputStream().write(exportedPropertiesConfiguration.getBytes());
+            response.setContentLength(exportedPropertiesConfiguration.getBytes().length);
+        };
 
-            StreamingResponseBody streamResponseBody = out -> {
-                response.getOutputStream().write(propertiesConfigurationJson.getBytes());
-                response.setContentLength(propertiesConfigurationJson.getBytes().length);
-            };
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, ATTACHMENT_PREFIX
+                + LocalDate.now() + "." + ExchangeProcessor.PROPERTIES_EXPORT_FILENAME_JSON);
+        response.addHeader(HttpHeaders.PRAGMA, NO_CACHE);
+        response.addHeader(HttpHeaders.EXPIRES, EXPIRES_IMMEDIATELY);
 
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            response.setHeader(HttpHeaders.CONTENT_DISPOSITION, ATTACHMENT_PREFIX
-                    + LocalDate.now() + ".artivact.properties-configuration.json");
-            response.addHeader(HttpHeaders.PRAGMA, NO_CACHE);
-            response.addHeader(HttpHeaders.EXPIRES, EXPIRES_IMMEDIATELY);
-
-            return ResponseEntity.ok(streamResponseBody);
-        } catch (JsonProcessingException e) {
-            throw new ArtivactException("Could not serialize properties configuration!", e);
-        }
+        return ResponseEntity.ok(streamResponseBody);
     }
 
     /**
@@ -177,27 +156,20 @@ public class ExportController extends BaseController {
      */
     @GetMapping(value = "/tags")
     public ResponseEntity<StreamingResponseBody> exportTagsConfiguration(HttpServletResponse response) {
+        String tagsConfigurationJson = exportService.exportTagsConfiguration();
 
-        TagsConfiguration tagsConfiguration = configurationService.loadTranslatedRestrictedTags();
+        StreamingResponseBody streamResponseBody = out -> {
+            response.getOutputStream().write(tagsConfigurationJson.getBytes());
+            response.setContentLength(tagsConfigurationJson.getBytes().length);
+        };
 
-        try {
-            String tagsConfigurationJson = objectMapper.writeValueAsString(tagsConfiguration);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, ATTACHMENT_PREFIX
+                + LocalDate.now() + ExchangeProcessor.TAGS_EXPORT_FILENAME_JSON);
+        response.addHeader(HttpHeaders.PRAGMA, NO_CACHE);
+        response.addHeader(HttpHeaders.EXPIRES, EXPIRES_IMMEDIATELY);
 
-            StreamingResponseBody streamResponseBody = out -> {
-                response.getOutputStream().write(tagsConfigurationJson.getBytes());
-                response.setContentLength(tagsConfigurationJson.getBytes().length);
-            };
-
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            response.setHeader(HttpHeaders.CONTENT_DISPOSITION, ATTACHMENT_PREFIX
-                    + LocalDate.now() + ".artivact.tags-configuration.json");
-            response.addHeader(HttpHeaders.PRAGMA, NO_CACHE);
-            response.addHeader(HttpHeaders.EXPIRES, EXPIRES_IMMEDIATELY);
-
-            return ResponseEntity.ok(streamResponseBody);
-        } catch (JsonProcessingException e) {
-            throw new ArtivactException("Could not serialize tags configuration!", e);
-        }
+        return ResponseEntity.ok(streamResponseBody);
     }
 
     /**
@@ -211,12 +183,14 @@ public class ExportController extends BaseController {
     public ResponseEntity<StreamingResponseBody> exportItem(HttpServletResponse response,
                                                             @PathVariable String itemId) {
 
+        Path exportFile = exportService.exportItem(itemId);
+
         response.setContentType(TYPE_ZIP);
-        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, ATTACHMENT_PREFIX + itemId + ".artivact.item.zip");
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, ATTACHMENT_PREFIX + exportFile.getFileName());
         response.addHeader(HttpHeaders.PRAGMA, NO_CACHE);
         response.addHeader(HttpHeaders.EXPIRES, EXPIRES_IMMEDIATELY);
 
-        return ResponseEntity.ok(outputStream -> exportService.createItemExportFile(itemId, outputStream));
+        return ResponseEntity.ok(outputStream -> exportService.copyExportAndDelete(exportFile, outputStream));
     }
 
     /**

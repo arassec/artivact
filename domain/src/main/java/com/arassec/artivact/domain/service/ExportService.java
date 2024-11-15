@@ -3,16 +3,16 @@ package com.arassec.artivact.domain.service;
 import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.misc.ProgressMonitor;
 import com.arassec.artivact.core.model.configuration.ExchangeConfiguration;
-import com.arassec.artivact.core.model.export.ContentExport;
+import com.arassec.artivact.core.model.exchange.ExportConfiguration;
+import com.arassec.artivact.core.model.exchange.StandardExportInfo;
 import com.arassec.artivact.core.model.item.ImageSize;
 import com.arassec.artivact.core.model.item.Item;
 import com.arassec.artivact.core.model.menu.Menu;
 import com.arassec.artivact.core.repository.FileRepository;
 import com.arassec.artivact.domain.aspect.TranslateResult;
-import com.arassec.artivact.domain.export.ArtivactExporter;
-import com.arassec.artivact.domain.export.json.model.ContentExportFile;
-import com.arassec.artivact.domain.export.model.ExportParams;
-import com.arassec.artivact.domain.export.model.ExportType;
+import com.arassec.artivact.domain.exchange.ArtivactExporter;
+import com.arassec.artivact.domain.exchange.ExchangeProcessor;
+import com.arassec.artivact.domain.exchange.model.ExportMainData;
 import com.arassec.artivact.domain.misc.ProjectDataProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
@@ -27,19 +27,15 @@ import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.HttpEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import org.zeroturnaround.zip.ZipUtil;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 /**
@@ -48,32 +44,17 @@ import java.util.zip.ZipOutputStream;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ExportService extends BaseFileService {
+public class ExportService extends BaseFileService implements ExchangeProcessor {
 
     /**
      * Filename of the content-export-overviews file.
      */
-    public static final String CONTENT_EXPORT_OVERVIEWS_FILE = "artivact.content-export-overviews.zip";
+    public static final String CONTENT_EXPORT_OVERVIEWS_FILE = "artivact.content-export-overviews" + ZIP_FILE_SUFFIX;
 
     /**
      * Filename of the content-export-overviews file.
      */
     public static final String CONTENT_EXPORT_OVERVIEWS_JSON_FILE = "artivact.content-export-overviews.json";
-
-    /**
-     * File suffix for exported content.
-     */
-    public static final String CONTENT_EXPORT_SUFFIX = ".artivact.content.";
-
-    /**
-     * File suffix for zipped exported items.
-     */
-    public static final String ITEM_EXPORT_SUFFIX = ".artivact.item.zip";
-
-    /**
-     * File name for exported items JSON data files.
-     */
-    public static final String ITEM_DATA_FILE = "artivact.item";
 
     /**
      * Label suffix for progress monitoring.
@@ -96,9 +77,9 @@ public class ExportService extends BaseFileService {
     private final ProjectDataProvider projectDataProvider;
 
     /**
-     * List of available exporters, injected by Spring.
+     * Artivact exporter, injected by Spring.
      */
-    private final List<ArtivactExporter> exporters;
+    private final ArtivactExporter artivactExporter;
 
     /**
      * The application's {@link FileRepository}.
@@ -124,28 +105,11 @@ public class ExportService extends BaseFileService {
     private final ExecutorService executorService = Executors.newFixedThreadPool(1);
 
     /**
-     * Saves an export's cover picture.
-     *
-     * @param menuId           The menu the export is based on.
-     * @param originalFilename The original filename of the cover picture.
-     * @param inputStream      The input stream containing the picture.
-     */
-    public void saveCoverPicture(String menuId, String originalFilename, InputStream inputStream) {
-        String fileExtension = getExtension(originalFilename).orElseThrow();
-        String coverPictureFilename = menuId + "." + fileExtension;
-
-        Path exportsDir = projectDataProvider.getProjectRoot().resolve("exports");
-
-        getFileRepository().createDirIfRequired(exportsDir);
-        getFileRepository().scaleImage(inputStream, exportsDir.resolve(coverPictureFilename), fileExtension, ImageSize.PAGE_TITLE.getWidth());
-    }
-
-    /**
      * Creates a menu's export ZIP file.
      *
      * @param menuId The menu's ID.
      */
-    public synchronized void exportContent(ExportParams params, String menuId) {
+    public synchronized void exportMenu(ExportConfiguration configuration, String menuId) {
 
         if (progressMonitor != null && progressMonitor.getException() == null) {
             return;
@@ -164,44 +128,10 @@ public class ExportService extends BaseFileService {
                 .findFirst()
                 .orElseThrow();
 
-        String exportName = menu.getId() + CONTENT_EXPORT_SUFFIX + params.getExportType().name().toLowerCase();
-        params.setExportDir(projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.EXPORT_DIR));
-        params.setContentExportDir(params.getExportDir().resolve(exportName));
-        params.setContentExportFile(params.getExportDir().resolve(exportName + ".zip"));
-
         executorService.submit(() -> {
             try {
-                if (fileRepository.exists(params.getContentExportFile())) {
-                    fileRepository.delete(params.getContentExportFile());
-                }
-
-                if (fileRepository.exists(params.getContentExportDir())) {
-                    fileRepository.delete(params.getContentExportDir());
-                }
-
-                fileRepository.createDirIfRequired(params.getContentExportDir());
-
-                exporters.stream()
-                        .filter(exporter -> exporter.supports().equals(params.getExportType()))
-                        .forEach(exporter -> exporter.export(params, menu, progressMonitor));
-
-                // Copy a cover picture if one exists:
-                Optional<Path> coverPictureOptional = fileRepository.list(params.getExportDir()).stream()
-                        .filter(file -> !fileRepository.isDir(file))
-                        .filter(file -> file.getFileName().toString().startsWith(menu.getId()))
-                        .findFirst();
-
-                if (coverPictureOptional.isPresent()) {
-                    Path coverPicture = coverPictureOptional.get();
-                    fileRepository.copy(coverPicture, params.getContentExportDir().resolve(coverPicture.getFileName()));
-                }
-
-                if (params.isZipResults()) {
-                    ZipUtil.pack(params.getContentExportDir().toAbsolutePath().toFile(),
-                            params.getContentExportFile().toAbsolutePath().toFile());
-                    fileRepository.delete(params.getContentExportDir().toAbsolutePath());
-                }
-
+                Path exportedFile = artivactExporter.exportMenu(configuration, menu);
+                log.info("Created export: {}", exportedFile);
                 progressMonitor = null;
             } catch (Exception e) {
                 progressMonitor.updateProgress("exportContentFailed", e);
@@ -211,14 +141,78 @@ public class ExportService extends BaseFileService {
     }
 
     /**
+     * Creates an item's export ZIP file.
+     *
+     * @param itemId The item's ID.
+     */
+    public Path exportItem(String itemId) {
+        Item item = itemService.loadTranslated(itemId);
+        return artivactExporter.exportItem(item);
+    }
+
+    /**
+     * Copies a created export to an output stream and deletes it afterward.
+     *
+     * @param export       The export.
+     * @param outputStream The target stream.
+     */
+    public void copyExportAndDelete(Path export, OutputStream outputStream) {
+        fileRepository.copy(export, outputStream);
+        fileRepository.delete(export);
+    }
+
+    /**
+     * Saves an export's cover picture.
+     *
+     * @param menuId           The menu the export is based on.
+     * @param originalFilename The original filename of the cover picture.
+     * @param inputStream      The input stream containing the picture.
+     */
+    public void saveCoverPicture(String menuId, String originalFilename, InputStream inputStream) {
+        String fileExtension = getExtension(originalFilename).orElseThrow();
+        String coverPictureFilename = menuId + "." + fileExtension;
+
+        Path exportsDir = projectDataProvider.getProjectRoot().resolve("exports");
+
+        getFileRepository().createDirIfRequired(exportsDir);
+        getFileRepository().scaleImage(inputStream, exportsDir.resolve(coverPictureFilename), fileExtension, ImageSize.PAGE_TITLE.getWidth());
+    }
+
+    /**
+     * Exports the current property configuration and returns the export result as String.
+     *
+     * @return The exported property configuration.
+     */
+    public String exportPropertiesConfiguration() {
+        try {
+            return Files.readString(artivactExporter.exportPropertiesConfiguration());
+        } catch (IOException e) {
+            throw new ArtivactException("Failed to read exported property configuration!", e);
+        }
+    }
+
+    /**
+     * Exports the current tags configuration and returns the result as String.
+     *
+     * @return The exported tags configuration.
+     */
+    public String exportTagsConfiguration() {
+        try {
+            return Files.readString(artivactExporter.exportTagsConfiguration());
+        } catch (IOException e) {
+            throw new ArtivactException("Failed to read exported tag configuration!", e);
+        }
+    }
+
+    /**
      * Loads details about available content exports.
      *
-     * @return List of {@link ContentExport}s.
+     * @return List of {@link StandardExportInfo}s.
      */
     @TranslateResult
-    public List<ContentExport> loadContentExports() {
+    public List<StandardExportInfo> loadContentExports() {
         return fileRepository.list(projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.EXPORT_DIR)).stream()
-                .filter(path -> path.getFileName().toString().contains(CONTENT_EXPORT_SUFFIX))
+                .filter(path -> path.getFileName().toString().contains(CONTENT_EXPORT_SUFFIX + ZIP_FILE_SUFFIX))
                 .map(this::createContentExport)
                 .toList();
     }
@@ -226,14 +220,13 @@ public class ExportService extends BaseFileService {
     /**
      * Returns the filename of a content export with the specified values.
      *
-     * @param menuId     The menu ID the export is based on.
-     * @param exportType The type of the export.
+     * @param menuId The menu ID the export is based on.
      * @return The export file.
      */
-    public Path getContentExportFile(String menuId, ExportType exportType) {
+    public Path getContentExportFile(String menuId) {
         return projectDataProvider.getProjectRoot()
                 .resolve(ProjectDataProvider.EXPORT_DIR)
-                .resolve(menuId + CONTENT_EXPORT_SUFFIX + exportType.name().toLowerCase() + FileRepository.ZIP_FILE_SUFFIX);
+                .resolve(menuId + CONTENT_EXPORT_SUFFIX + ZIP_FILE_SUFFIX);
     }
 
     /**
@@ -242,12 +235,12 @@ public class ExportService extends BaseFileService {
      * @param menuId       The ID of the menu providing the export.
      * @param outputStream The output stream to write the export to.
      */
-    public void loadContentExport(String menuId, ExportType exportType, OutputStream outputStream) {
-        Path exportFile = getContentExportFile(menuId, exportType);
+    public void loadContentExport(String menuId, OutputStream outputStream) {
+        Path exportFile = getContentExportFile(menuId);
         if (fileRepository.exists(exportFile)) {
             fileRepository.copy(exportFile, outputStream);
         } else {
-            throw new ArtivactException("No export file available for menu " + menuId + " and type " + exportType + "!");
+            throw new ArtivactException("No export file available for menu " + menuId + "!");
         }
     }
 
@@ -257,7 +250,7 @@ public class ExportService extends BaseFileService {
      * @param outputStream The output stream to write the export to.
      */
     public void loadContentExportOverviews(OutputStream outputStream) {
-        List<ContentExport> contentExports = loadContentExports();
+        List<StandardExportInfo> standardExportInfos = loadContentExports();
 
         try {
             final ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream);
@@ -265,7 +258,7 @@ public class ExportService extends BaseFileService {
             ZipEntry zipEntry = new ZipEntry(CONTENT_EXPORT_OVERVIEWS_JSON_FILE);
 
             zipOutputStream.putNextEntry(zipEntry);
-            zipOutputStream.write(objectMapper.writeValueAsBytes(contentExports));
+            zipOutputStream.write(objectMapper.writeValueAsBytes(standardExportInfos));
 
             Path exportsDir = projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.EXPORT_DIR);
             getFileRepository().list(exportsDir).stream()
@@ -296,93 +289,15 @@ public class ExportService extends BaseFileService {
     /**
      * Deletes a content export with the given menu ID.
      *
-     * @param menuId The menu ID the export is based on.
+     * @param exportSourceId The ID of the object the export is based on.
      */
-    public void deleteContentExport(String menuId) {
+    public void deleteExport(String exportSourceId) {
         Path exportDir = projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.EXPORT_DIR);
         fileRepository.list(exportDir).forEach(export -> {
-            if (export.getFileName().toString().startsWith(menuId)) {
+            if (export.getFileName().toString().startsWith(exportSourceId)) {
                 fileRepository.delete(export);
             }
         });
-    }
-
-    /**
-     * Creates a {@link ContentExport} instance from the given path, provided the path points to a content export
-     * directory or file.
-     *
-     * @param path Path to the content export.
-     * @return A new {@link ContentExport} instance with details about the export.
-     */
-    private ContentExport createContentExport(Path path) {
-        ContentExport contentExport = new ContentExport();
-
-        String exportType = "";
-        if (path.getFileName().toString().contains(ArtivactExporter.CONTENT_EXPORT_FILE_SUFFIX_JSON)) {
-            exportType = "JSON";
-        }
-
-        contentExport.setId(path.getFileName().toString().split("\\.")[0]);
-        contentExport.setLastModified(fileRepository.lastModified(path).toEpochMilli());
-        contentExport.setSize(fileRepository.size(path));
-        contentExport.setZipped(path.getFileName().toString().endsWith(FileRepository.ZIP_FILE_SUFFIX));
-        contentExport.setExportType(exportType);
-
-        try {
-            ContentExportFile contentExportFile = null;
-
-            if (Files.isDirectory(path)) {
-                contentExportFile = objectMapper.readValue(path
-                        .resolve(ArtivactExporter.CONTENT_EXPORT_FILE_SUFFIX_JSON).toFile(), ContentExportFile.class);
-            } else {
-                try (ZipFile zipFile = new ZipFile(path.toFile())) {
-                    Enumeration<? extends ZipEntry> entries = zipFile.entries();
-                    while (entries.hasMoreElements()) {
-                        ZipEntry entry = entries.nextElement();
-                        if (entry.getName().equals(ArtivactExporter.CONTENT_EXPORT_FILE_SUFFIX_JSON)) {
-                            InputStream stream = zipFile.getInputStream(entry);
-                            contentExportFile = objectMapper.readValue(stream.readAllBytes(), ContentExportFile.class);
-                        }
-                    }
-                }
-            }
-
-            if (contentExportFile != null) {
-                contentExport.setTitle(contentExportFile.getTitle());
-                contentExport.setDescription(contentExportFile.getDescription());
-            }
-
-        } catch (IOException e) {
-            throw new ArtivactException("Could not read export content file!", e);
-        }
-
-        return contentExport;
-    }
-
-    /**
-     * Creates an item's export ZIP file.
-     *
-     * @param itemId       The item's ID.
-     * @param outputStream The output stream to write the export to.
-     */
-    public void createItemExportFile(String itemId, OutputStream outputStream) {
-        Item item = itemService.loadTranslated(itemId);
-        item.setMediaCreationContent(null);
-
-        List<String> mediaFiles = itemService.getMediaFiles(itemId);
-
-        try {
-            final ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream);
-
-            ZipEntry zipEntry = new ZipEntry(ITEM_DATA_FILE + FileRepository.JSON_FILE_SUFFIX);
-
-            zipOutputStream.putNextEntry(zipEntry);
-            zipOutputStream.write(objectMapper.writeValueAsBytes(item));
-
-            zipMediaFiles(zipOutputStream, mediaFiles);
-        } catch (IOException e) {
-            throw new ArtivactException("Could not create item export file!", e);
-        }
     }
 
     /**
@@ -412,7 +327,7 @@ public class ExportService extends BaseFileService {
     }
 
     /**
-     * Exports all items and uploads them to a remote application instance configured in the exchange configuration.
+     * Exports all modified items and uploads them to a remote application instance configured in the exchange configuration.
      */
     public synchronized void exportItemsToRemoteInstance() {
 
@@ -470,19 +385,7 @@ public class ExportService extends BaseFileService {
 
         progressMonitor.updateLabelKey(PROGRESS_SUFFIX_PACKAGING);
 
-        File exportFile = projectDataProvider.getProjectRoot()
-                .resolve(ProjectDataProvider.TEMP_DIR)
-                .resolve(itemId + ITEM_EXPORT_SUFFIX)
-                .toAbsolutePath()
-                .toFile();
-
-        try (FileOutputStream fileOutputStream = new FileOutputStream(exportFile)) {
-            createItemExportFile(itemId, fileOutputStream);
-        } catch (IOException e) {
-            progressMonitor.updateProgress("exportFileCreationFailed", e);
-            log.error("Could not create export file to upload item to remote server!", e);
-            return;
-        }
+        Path exportFile = exportItem(itemId);
 
         progressMonitor.updateLabelKey("uploading");
 
@@ -491,7 +394,7 @@ public class ExportService extends BaseFileService {
 
             HttpEntity entity = MultipartEntityBuilder.create()
                     .setMode(HttpMultipartMode.STRICT)
-                    .addPart("file", new FileBody(exportFile))
+                    .addPart("file", new FileBody(exportFile.toFile()))
                     .build();
             httpPost.setEntity(entity);
 
@@ -504,6 +407,8 @@ public class ExportService extends BaseFileService {
                     Item item = itemService.load(itemId).orElseThrow();
                     item.setSyncVersion(item.getVersion() + 1); // Saving the item will increase its version by one!
                     itemService.save(item);
+
+                    fileRepository.delete(exportFile);
                 }
                 return response;
             });
@@ -512,6 +417,30 @@ public class ExportService extends BaseFileService {
             progressMonitor.updateProgress("uploadFailed", e);
             log.error("Could not upload item file to remote server!", e);
         }
+    }
+
+    /**
+     * Creates a {@link StandardExportInfo} instance from the given path, provided the path points to a content export
+     * directory or file.
+     *
+     * @param path Path to the content export.
+     * @return A new {@link StandardExportInfo} instance with details about the export.
+     */
+    private StandardExportInfo createContentExport(Path path) {
+        StandardExportInfo standardExportInfo = new StandardExportInfo();
+
+        standardExportInfo.setId(path.getFileName().toString().split("\\.")[0]);
+        standardExportInfo.setLastModified(fileRepository.lastModified(path).toEpochMilli());
+        standardExportInfo.setSize(fileRepository.size(path));
+
+        ExportMainData exportMainData = artivactExporter.readExportMainData(path);
+
+        if (exportMainData != null) {
+            standardExportInfo.setTitle(exportMainData.getTitle());
+            standardExportInfo.setDescription(exportMainData.getDescription());
+        }
+
+        return standardExportInfo;
     }
 
 }

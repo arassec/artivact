@@ -213,9 +213,7 @@ export interface OperationProgress {
   error: string;
 }
 
-export interface ExportParams {
-  exportType: string;
-  zipResults: boolean;
+export interface ExportConfiguration {
   applyRestrictions: boolean;
   optimizeSize: boolean;
 }

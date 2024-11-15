@@ -1,4 +1,4 @@
-package com.arassec.artivact.core.model.export;
+package com.arassec.artivact.core.model.exchange;
 
 import com.arassec.artivact.core.model.TranslatableString;
 import lombok.AllArgsConstructor;
@@ -7,13 +7,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Contains details about a content export.
+ * Contains details about a standard export.
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ContentExport {
+public class StandardExportInfo {
 
     /**
      * The export's ID.
@@ -24,16 +24,6 @@ public class ContentExport {
      * The export's title.
      */
     private TranslatableString title;
-
-    /**
-     * The type of export.
-     */
-    private String exportType;
-
-    /**
-     * Indicates whether the export is zipped or not.
-     */
-    private boolean zipped;
 
     /**
      * The export's description.

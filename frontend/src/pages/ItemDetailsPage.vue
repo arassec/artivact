@@ -14,25 +14,37 @@
       </div>
 
       <div class="absolute-top-right q-ma-md" v-if="userdataStore.authenticated">
-        <!-- SYNC UP BUTTON -->
-        <q-btn
-          round
-          color="primary"
-          icon="cloud_upload"
-          class="q-mr-sm main-nav-button"
-          @click="synchronizeUp()">
-          <q-tooltip>{{ $t('ItemDetailsPage.button.tooltip.sync') }}</q-tooltip>
-        </q-btn>
-        <!-- EDIT ITEM BUTTON -->
-        <router-link :to="'/administration/configuration/item/' + itemDataDetailsRef.id">
+        <!-- DOWNLOAD BUTTON -->
+        <q-form :action="'/api/export/item/' + itemDataDetailsRef.id" method="get">
+          <q-btn
+            data-test="download-button"
+            round
+            color="primary"
+            icon="download"
+            type="submit"
+            class="q-mr-sm main-nav-button">
+            <q-tooltip>{{ $t('ItemDetailsPage.button.tooltip.download') }}</q-tooltip>
+          </q-btn>
+          <!-- SYNC UP BUTTON -->
           <q-btn
             round
             color="primary"
-            icon="edit"
-            class="main-nav-button">
-            <q-tooltip>{{ $t('ItemDetailsPage.button.tooltip.edit') }}</q-tooltip>
+            icon="cloud_upload"
+            class="q-mr-sm main-nav-button"
+            @click="synchronizeUp()">
+            <q-tooltip>{{ $t('ItemDetailsPage.button.tooltip.sync') }}</q-tooltip>
           </q-btn>
-        </router-link>
+          <!-- EDIT ITEM BUTTON -->
+          <router-link :to="'/administration/configuration/item/' + itemDataDetailsRef.id">
+            <q-btn
+              round
+              color="primary"
+              icon="edit"
+              class="main-nav-button">
+              <q-tooltip>{{ $t('ItemDetailsPage.button.tooltip.edit') }}</q-tooltip>
+            </q-btn>
+          </router-link>
+        </q-form>
       </div>
     </div>
 

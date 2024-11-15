@@ -6,8 +6,6 @@ import com.arassec.artivact.core.repository.FileRepository;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -15,8 +13,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 /**
  * Base for services that need file handling.
@@ -58,37 +54,6 @@ public abstract class BaseFileService {
                     }).collect(Collectors.toList());
         }
         return new LinkedList<>();
-    }
-
-    /**
-     * ZIPs the provided media files into a file written to the given output stream.
-     *
-     * @param zipOutputStream The target stream.
-     * @param mediaFiles      The list of files to pack.
-     */
-    public void zipMediaFiles(ZipOutputStream zipOutputStream, List<String> mediaFiles) {
-        ZipEntry zipEntry;
-        for (String mediaFile : mediaFiles) {
-            File file = new File(mediaFile);
-            zipEntry = new ZipEntry(file.getName());
-
-            try (var inputStream = new FileInputStream(file)) {
-                zipOutputStream.putNextEntry(zipEntry);
-                byte[] bytes = new byte[1024];
-                int length;
-                while ((length = inputStream.read(bytes)) >= 0) {
-                    zipOutputStream.write(bytes, 0, length);
-                }
-            } catch (IOException e) {
-                throw new ArtivactException("Exception while reading and streaming data!", e);
-            }
-        }
-
-        try {
-            zipOutputStream.close();
-        } catch (IOException e) {
-            throw new ArtivactException("Could not create ZIP file!", e);
-        }
     }
 
     /**

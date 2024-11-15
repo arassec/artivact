@@ -289,46 +289,6 @@ public class ItemService extends BaseFileService {
     }
 
     /**
-     * Returns the absolute paths to all media files of an item as Strings.
-     *
-     * @param itemId The item's ID.
-     * @return List of media files of the item.
-     */
-    public List<String> getMediaFiles(String itemId) {
-        List<String> result = new LinkedList<>();
-
-        Item item = loadTranslatedRestricted(itemId);
-
-        if (item == null) {
-            throw new ArtivactException(NO_ITEM_ERROR_PREFIX + itemId);
-        }
-
-        result.addAll(item.getMediaContent().getImages().stream()
-                .map(image -> itemsDir
-                        .resolve(itemId.substring(0, 3))
-                        .resolve(itemId.substring(3, 6))
-                        .resolve(itemId)
-                        .resolve(ProjectDataProvider.IMAGES_DIR)
-                        .resolve(image)
-                        .toAbsolutePath())
-                .map(Path::toString)
-                .toList());
-
-        result.addAll(item.getMediaContent().getModels().stream()
-                .map(model -> itemsDir
-                        .resolve(itemId.substring(0, 3))
-                        .resolve(itemId.substring(3, 6))
-                        .resolve(itemId)
-                        .resolve(ProjectDataProvider.MODELS_DIR)
-                        .resolve(model)
-                        .toAbsolutePath())
-                .map(Path::toString)
-                .toList());
-
-        return result;
-    }
-
-    /**
      * Adds an image to the item.
      *
      * @param itemId ID of the item.

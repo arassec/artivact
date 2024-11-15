@@ -97,17 +97,6 @@
         class="q-mr-sm">
         <q-tooltip>{{ $t('ItemMediaCarousel.tooltip.model') }}</q-tooltip>
       </q-btn>
-      <q-form :action="'/api/item/' + itemDetailsRef.id + '/media'" method="get">
-        <q-btn
-          v-if="itemDetailsRef.images.length > 0 || itemDetailsRef.models.length > 0"
-          icon="download"
-          round
-          dense
-          color="primary"
-          type="submit">
-          <q-tooltip>{{ $t('ItemMediaCarousel.tooltip.download') }}</q-tooltip>
-        </q-btn>
-      </q-form>
     </div>
 
   </div>

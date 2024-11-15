@@ -547,32 +547,28 @@
     </artivact-dialog>
 
     <!-- EXPORT CONFIGURATION MODAL -->
-    <artivact-dialog :dialog-model="showExportParamsModal">
+    <artivact-dialog :dialog-model="showExportConfigurationModal">
       <template v-slot:header>
         <q-card-section>
-          {{ $t('ArtivactMenuBar.dialog.exportParams') }}
+          {{ $t('ArtivactMenuBar.dialog.exportConfiguration') }}
         </q-card-section>
       </template>
 
       <template v-slot:body>
         <q-card-section>
           <div>
-            <q-checkbox v-model="exportParams.optimizeSize"
-                        :label="$t('ArtivactMenuBar.label.exportParams.optimizeSize')"/>
+            <q-checkbox v-model="exportContext.optimizeSize"
+                        :label="$t('ArtivactMenuBar.label.exportConfiguration.optimizeSize')"/>
           </div>
           <div>
-            <q-checkbox v-model="exportParams.zipResults"
-                        :label="$t('ArtivactMenuBar.label.exportParams.zipResults')"/>
-          </div>
-          <div>
-            <q-checkbox v-model="exportParams.applyRestrictions"
-                        :label="$t('ArtivactMenuBar.label.exportParams.applyRestrictions')"/>
+            <q-checkbox v-model="exportContext.applyRestrictions"
+                        :label="$t('ArtivactMenuBar.label.exportConfiguration.applyRestrictions')"/>
           </div>
         </q-card-section>
       </template>
 
       <template v-slot:cancel>
-        <q-btn :label="$t('Common.cancel')" color="primary" @click="showExportParamsModal = false"/>
+        <q-btn :label="$t('Common.cancel')" color="primary" @click="showExportConfigurationModal = false"/>
       </template>
 
       <template v-slot:approve>
@@ -659,7 +655,7 @@ import {ref} from 'vue';
 import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
 import {useLocaleStore} from 'stores/locale';
 import {moveDown, moveUp, translate} from 'components/artivact-utils';
-import {ExportParams, Menu, OperationProgress, TranslatableString} from 'components/artivact-models';
+import {ExportConfiguration, Menu, OperationProgress, TranslatableString} from 'components/artivact-models';
 import {useBreadcrumbsStore} from 'stores/breadcrumbs';
 import ArtivactDialog from 'components/ArtivactDialog.vue';
 import {useI18n} from 'vue-i18n';
@@ -684,14 +680,12 @@ const menuRef = ref(menu);
 
 const confirmDeleteRef = ref(false);
 
-const showExportParamsModal = ref(false);
+const showExportConfigurationModal = ref(false);
 const selectedMenu = ref({} as Menu);
-const exportParams = ref({
+const exportContext = ref({
   optimizeSize: true,
-  zipResults: true,
   applyRestrictions: false,
-  exportType: 'JSON'
-} as ExportParams);
+} as ExportConfiguration);
 
 const showOperationInProgressModalRef = ref(false);
 const progressMonitorRef = ref<OperationProgress>();
@@ -917,14 +911,14 @@ function hideMenus() {
 }
 
 function showExportConfiguration(menu: Menu) {
-  showExportParamsModal.value = true;
+  showExportConfigurationModal.value = true;
   selectedMenu.value = menu;
 }
 
 function exportContent() {
-  showExportParamsModal.value = false;
+  showExportConfigurationModal.value = false;
   api
-    .post('/api/export/content/' + selectedMenu.value.id, exportParams.value)
+    .post('/api/export/content/' + selectedMenu.value.id, exportContext.value)
     .then((response) => {
       if (response) {
         showOperationInProgressModalRef.value = true;

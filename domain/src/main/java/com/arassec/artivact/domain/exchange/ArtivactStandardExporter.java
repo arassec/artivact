@@ -1,10 +1,10 @@
-package com.arassec.artivact.domain.export.json;
+package com.arassec.artivact.domain.exchange;
 
 import com.arassec.artivact.core.exception.ArtivactException;
-import com.arassec.artivact.core.misc.ProgressMonitor;
 import com.arassec.artivact.core.model.BaseTranslatableRestrictedObject;
 import com.arassec.artivact.core.model.Roles;
 import com.arassec.artivact.core.model.TranslatableString;
+import com.arassec.artivact.core.model.exchange.ExportConfiguration;
 import com.arassec.artivact.core.model.item.Item;
 import com.arassec.artivact.core.model.menu.Menu;
 import com.arassec.artivact.core.model.page.PageContent;
@@ -13,10 +13,9 @@ import com.arassec.artivact.core.model.page.widget.*;
 import com.arassec.artivact.core.model.property.PropertyCategory;
 import com.arassec.artivact.core.model.tag.Tag;
 import com.arassec.artivact.core.repository.FileRepository;
-import com.arassec.artivact.domain.export.ArtivactExporter;
-import com.arassec.artivact.domain.export.json.model.ContentExportFile;
-import com.arassec.artivact.domain.export.model.ExportParams;
-import com.arassec.artivact.domain.export.model.ExportType;
+import com.arassec.artivact.domain.exchange.model.ExportContext;
+import com.arassec.artivact.domain.exchange.model.ExportMainData;
+import com.arassec.artivact.domain.exchange.model.ExportSourceType;
 import com.arassec.artivact.domain.misc.ProjectDataProvider;
 import com.arassec.artivact.domain.service.ConfigurationService;
 import com.arassec.artivact.domain.service.PageService;
@@ -28,41 +27,40 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 /**
- * An exporter that writes JSON files.
+ * Standard {@link ArtivactExporter}.
  */
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class JsonArtivactExporter implements ArtivactExporter {
+public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProcessor {
 
     /**
      * File suffix for exported menus.
      */
-    public static final String MENU_EXPORT_FILE_SUFFIX = ".artivact.menu.json";
+    private static final String MENU_EXPORT_FILE_SUFFIX = ".artivact.menu.json";
 
     /**
      * File suffix for exported pages.
      */
-    public static final String PAGE_EXPORT_FILE_SUFFIX = ".artivact.page-content.json";
-
-    /**
-     * File suffix for exported items.
-     */
-    public static final String ITEM_EXPORT_FILE_SUFFIX = ".artivact.item.json";
+    private static final String PAGE_EXPORT_FILE_SUFFIX = ".artivact.page-content.json";
 
     /**
      * File suffix for exported search results.
      */
-    public static final String SEARCH_EXPORT_FILE_SUFFIX = ".artivact.search-result.json";
+    private static final String SEARCH_EXPORT_FILE_SUFFIX = ".artivact.search-result.json";
 
     /**
-     * The service for configuration handling.
+     * The application's configuration service.
      */
     private final ConfigurationService configurationService;
 
@@ -95,34 +93,178 @@ public class JsonArtivactExporter implements ArtivactExporter {
      * {@inheritDoc}
      */
     @Override
-    public ExportType supports() {
-        return ExportType.JSON;
+    public Path exportMenu(ExportConfiguration exportConfiguration, Menu menu) {
+        ExportContext exportContext = createExportContext(menu.getId(), ExportSourceType.MENU, exportConfiguration);
+
+        prepareExport(exportContext);
+
+        exportMainData(exportContext, ExportSourceType.MENU, menu.getId(), menu.getExportTitle(), menu.getExportDescription());
+        exportPropertiesConfiguration(exportContext);
+        exportTagsConfiguration(exportContext);
+
+        exportMenu(exportContext, menu);
+
+        // Copy a cover picture if one exists:
+        Optional<Path> coverPictureOptional = fileRepository.list(exportContext.getProjectExportsDir()).stream()
+                .filter(file -> !fileRepository.isDir(file))
+                .filter(file -> file.getFileName().toString().startsWith(menu.getId()))
+                .findFirst();
+
+        if (coverPictureOptional.isPresent()) {
+            Path coverPicture = coverPictureOptional.get();
+            fileRepository.copy(coverPicture, exportContext.getExportDir().resolve(coverPicture.getFileName()));
+        }
+
+        fileRepository.pack(exportContext.getExportDir().toAbsolutePath(), exportContext.getExportFile().toAbsolutePath());
+
+        return exportContext.getExportFile().toAbsolutePath();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void export(ExportParams params, Menu menu, ProgressMonitor progressMonitor) {
+    public Path exportItem(Item item) {
+        ExportContext exportContext = createExportContext(item.getId(), ExportSourceType.ITEM, null);
 
-        ContentExportFile contentExportFile = new ContentExportFile();
+        prepareExport(exportContext);
 
-        contentExportFile.setTitle(Optional.ofNullable(menu.getExportTitle()).orElse(new TranslatableString()));
-        contentExportFile.getTitle().setTranslatedValue(null);
-        contentExportFile.setDescription(Optional.ofNullable(menu.getExportDescription()).orElse(new TranslatableString()));
-        contentExportFile.getDescription().setTranslatedValue(null);
+        exportMainData(exportContext, ExportSourceType.ITEM, item.getId(), item.getTitle(), item.getDescription());
+        exportPropertiesConfiguration(exportContext);
+        exportTagsConfiguration(exportContext);
 
-        contentExportFile.setMenuId(menu.getId());
+        exportItem(exportContext, item);
 
-        contentExportFile.setPropertyCategories(configurationService.loadPropertiesConfiguration().getCategories());
-        cleanupPropertyCategories(params, contentExportFile.getPropertyCategories());
+        fileRepository.pack(exportContext.getExportDir().toAbsolutePath(), exportContext.getExportFile().toAbsolutePath());
 
-        contentExportFile.setTags(configurationService.loadTagsConfiguration().getTags());
-        cleanupTags(params, contentExportFile.getTags());
+        return exportContext.getExportFile().toAbsolutePath();
+    }
 
-        writeJsonFile(params.getContentExportDir().resolve(CONTENT_EXPORT_FILE_SUFFIX_JSON), contentExportFile);
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Path exportPropertiesConfiguration() {
+        return exportPropertiesConfiguration(ExportContext.builder()
+                .exportDir(projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.EXPORT_DIR))
+                .exportConfiguration(new ExportConfiguration())
+                .build()
+        );
+    }
 
-        exportMenu(params, menu);
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Path exportTagsConfiguration() {
+        return exportTagsConfiguration(ExportContext.builder()
+                .exportDir(projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.EXPORT_DIR))
+                .exportConfiguration(new ExportConfiguration())
+                .build()
+        );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ExportMainData readExportMainData(Path path) {
+        try {
+            try (ZipFile zipFile = new ZipFile(path.toFile())) {
+                Enumeration<? extends ZipEntry> entries = zipFile.entries();
+                while (entries.hasMoreElements()) {
+                    ZipEntry entry = entries.nextElement();
+                    if (entry.getName().equals(CONTENT_EXPORT_FILENAME_JSON)) {
+                        InputStream stream = zipFile.getInputStream(entry);
+                        return objectMapper.readValue(stream.readAllBytes(), ExportMainData.class);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            log.error("Couldn't read export main data from ZIP file.", e);
+        }
+        throw new ArtivactException("Could not read export main data file!");
+    }
+
+    /**
+     * Prepares the export by cleaning up and creating necessary directories and creating the {@link ExportContext}.
+     *
+     * @param exportContext The export context.
+     */
+    private void prepareExport(ExportContext exportContext) {
+        if (fileRepository.exists(exportContext.getExportFile())) {
+            fileRepository.delete(exportContext.getExportFile());
+        }
+
+        if (fileRepository.exists(exportContext.getExportDir())) {
+            fileRepository.delete(exportContext.getExportDir());
+        }
+
+        fileRepository.createDirIfRequired(exportContext.getExportDir());
+    }
+
+    /**
+     * Creates the export context.
+     *
+     * @param id                  The ID of the export.
+     * @param exportSourceType    Type of the source the export is based on.
+     * @param exportConfiguration An optional export configuration.
+     * @return A newly created {@link ExportContext}.
+     */
+    private ExportContext createExportContext(String id, ExportSourceType exportSourceType, ExportConfiguration exportConfiguration) {
+        String exportName = id + "." + exportSourceType.name() + CONTENT_EXPORT_SUFFIX;
+        ExportContext exportContext = new ExportContext();
+        exportContext.setExportConfiguration(Optional.ofNullable(exportConfiguration).orElse(new ExportConfiguration()));
+        exportContext.setProjectExportsDir(projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.EXPORT_DIR));
+        exportContext.setExportDir(exportContext.getProjectExportsDir().resolve(exportName));
+        exportContext.setExportFile(exportContext.getProjectExportsDir().resolve(exportName + ZIP_FILE_SUFFIX));
+        return exportContext;
+    }
+
+    /**
+     * Exports the main data of the export like title and description.
+     *
+     * @param exportContext    The export context.
+     * @param exportSourceType The {@link ExportSourceType} of the export.
+     * @param exportSourceId   The ID of the export's source object.
+     * @param title            The export's title.
+     * @param description      The export's description.
+     */
+    private void exportMainData(ExportContext exportContext, ExportSourceType exportSourceType, String exportSourceId, TranslatableString title, TranslatableString description) {
+        ExportMainData exportMainData = new ExportMainData();
+        exportMainData.setExportSourceType(exportSourceType);
+        exportMainData.setExportSourceId(exportSourceId);
+        exportMainData.setTitle(Optional.ofNullable(title).orElse(new TranslatableString()));
+        exportMainData.getTitle().setTranslatedValue(null);
+        exportMainData.setDescription(Optional.ofNullable(description).orElse(new TranslatableString()));
+        exportMainData.getDescription().setTranslatedValue(null);
+        writeJsonFile(exportContext.getExportDir().resolve(CONTENT_EXPORT_FILENAME_JSON), exportMainData);
+    }
+
+    /**
+     * Exports properties and tags configuration files.
+     *
+     * @param exportContext Export parameters.
+     */
+    private Path exportPropertiesConfiguration(ExportContext exportContext) {
+        Path exportFile = exportContext.getExportDir().resolve(PROPERTIES_EXPORT_FILENAME_JSON);
+        List<PropertyCategory> categories = configurationService.loadPropertiesConfiguration().getCategories();
+        cleanupPropertyCategories(exportContext, categories);
+        writeJsonFile(exportFile, categories);
+        return exportFile;
+    }
+
+    /**
+     * Exports properties and tags configuration files.
+     *
+     * @param exportContext Export parameters.
+     */
+    private Path exportTagsConfiguration(ExportContext exportContext) {
+        Path exportFile = exportContext.getExportDir().resolve(TAGS_EXPORT_FILENAME_JSON);
+        List<Tag> tags = configurationService.loadTagsConfiguration().getTags();
+        cleanupTags(exportContext, tags);
+        writeJsonFile(exportFile, tags);
+        return exportFile;
     }
 
     /**
@@ -131,10 +273,10 @@ public class JsonArtivactExporter implements ArtivactExporter {
      * @param params Parameters of the content export.
      * @param menu   The menu to export.
      */
-    private void exportMenu(ExportParams params, Menu menu) {
+    private void exportMenu(ExportContext params, Menu menu) {
         cleanupMenu(params, menu);
 
-        writeJsonFile(params.getContentExportDir().resolve(menu.getId() + MENU_EXPORT_FILE_SUFFIX), menu);
+        writeJsonFile(params.getExportDir().resolve(menu.getId() + MENU_EXPORT_FILE_SUFFIX), menu);
 
         Optional.ofNullable(menu.getMenuEntries()).orElse(List.of())
                 .forEach(menuEntry -> exportMenu(params, menuEntry));
@@ -151,13 +293,13 @@ public class JsonArtivactExporter implements ArtivactExporter {
      * @param params      Parameters of the content export.
      * @param pageContent The page to export.
      */
-    private void exportPage(ExportParams params, String targetPageId, PageContent pageContent) {
-        if (params.isApplyRestrictions() && !pageContent.getRestrictions().isEmpty()) {
+    private void exportPage(ExportContext params, String targetPageId, PageContent pageContent) {
+        if (params.getExportConfiguration().isApplyRestrictions() && !pageContent.getRestrictions().isEmpty()) {
             return;
         }
 
         pageContent.getWidgets().forEach(widget -> {
-            if (params.isApplyRestrictions() && !widget.getRestrictions().isEmpty()) {
+            if (params.getExportConfiguration().isApplyRestrictions() && !widget.getRestrictions().isEmpty()) {
                 return;
             }
             widget.setRestrictions(null);
@@ -166,7 +308,7 @@ public class JsonArtivactExporter implements ArtivactExporter {
 
         cleanupPage(params, pageContent);
 
-        writeJsonFile(params.getContentExportDir().resolve(targetPageId + PAGE_EXPORT_FILE_SUFFIX), pageContent);
+        writeJsonFile(params.getExportDir().resolve(targetPageId + PAGE_EXPORT_FILE_SUFFIX), pageContent);
     }
 
     /**
@@ -175,7 +317,7 @@ public class JsonArtivactExporter implements ArtivactExporter {
      * @param params Parameters of the content export.
      * @param widget The widget to export.
      */
-    private void exportWidget(ExportParams params, Widget widget) {
+    private void exportWidget(ExportContext params, Widget widget) {
         widget.getNavigationTitle().setTranslatedValue(null);
         switch (widget) {
             case AvatarWidget avatarWidget -> {
@@ -202,12 +344,12 @@ public class JsonArtivactExporter implements ArtivactExporter {
                 List<Item> searchResult = searchService.search(searchTerm, maxResults);
                 if (searchResult != null && !searchResult.isEmpty()) {
                     for (Item item : searchResult) {
-                        if (params.isApplyRestrictions() && !item.getRestrictions().isEmpty()) {
+                        if (params.getExportConfiguration().isApplyRestrictions() && !item.getRestrictions().isEmpty()) {
                             continue;
                         }
                         exportItem(params, item);
                     }
-                    writeJsonFile(params.getContentExportDir().resolve(widget.getId() + SEARCH_EXPORT_FILE_SUFFIX),
+                    writeJsonFile(params.getExportDir().resolve(widget.getId() + SEARCH_EXPORT_FILE_SUFFIX),
                             searchResult.stream().map(Item::getId).toArray());
                 }
             }
@@ -225,8 +367,8 @@ public class JsonArtivactExporter implements ArtivactExporter {
      * @param params The export parameters.
      * @param item   The item to export.
      */
-    private void exportItem(ExportParams params, Item item) {
-        Path itemExportDir = params.getContentExportDir().resolve(item.getId());
+    private void exportItem(ExportContext params, Item item) {
+        Path itemExportDir = params.getExportDir().resolve(item.getId());
 
         // Already exported by another widget / exporter? Skip item...
         if (fileRepository.exists(itemExportDir)) {
@@ -240,7 +382,7 @@ public class JsonArtivactExporter implements ArtivactExporter {
         item.getTitle().setTranslatedValue(null);
         item.getDescription().setTranslatedValue(null);
 
-        writeJsonFile(itemExportDir.resolve(item.getId() + ITEM_EXPORT_FILE_SUFFIX), item);
+        writeJsonFile(itemExportDir.resolve(ITEM_EXPORT_FILENAME_JSON), item);
     }
 
     /**
@@ -250,16 +392,16 @@ public class JsonArtivactExporter implements ArtivactExporter {
      * @param item          The item to export.
      * @param itemExportDir The item's export directory.
      */
-    private void copyItemMediaFiles(ExportParams params, Item item, Path itemExportDir) {
+    private void copyItemMediaFiles(ExportContext params, Item item, Path itemExportDir) {
         List<String> images = item.getMediaContent().getImages();
         List<String> models = item.getMediaContent().getModels();
 
-        item.setMediaCreationContent(null); // Not needed in export at the moment!
+        item.setMediaCreationContent(null); // Not needed in standard exports at the moment.
 
         Path imagesSourceDir = fileRepository.getDirFromId(projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.ITEMS_DIR), item.getId()).resolve(ProjectDataProvider.IMAGES_DIR);
         Path modelsSourceDir = fileRepository.getDirFromId(projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.ITEMS_DIR), item.getId()).resolve(ProjectDataProvider.MODELS_DIR);
 
-        if (params.isOptimizeSize()) {
+        if (params.getExportConfiguration().isOptimizeSize()) {
             if (!models.isEmpty()) {
                 String firstModel = models.getFirst();
                 fileRepository.copy(modelsSourceDir.resolve(firstModel), itemExportDir.resolve(firstModel));
@@ -286,10 +428,10 @@ public class JsonArtivactExporter implements ArtivactExporter {
      * @param widget The widget to copy files from.
      * @param file   The file to copy.
      */
-    private void copyWidgetFile(ExportParams params, Widget widget, String file) {
+    private void copyWidgetFile(ExportContext params, Widget widget, String file) {
         if (StringUtils.hasText(file)) {
             Path sourceDir = fileRepository.getDirFromId(projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.WIDGETS_FILE_DIR), widget.getId());
-            Path targetDir = params.getContentExportDir().resolve(widget.getId());
+            Path targetDir = params.getExportDir().resolve(widget.getId());
             fileRepository.createDirIfRequired(targetDir);
             fileRepository.copy(sourceDir.resolve(file), targetDir.resolve(file));
         }
@@ -301,12 +443,12 @@ public class JsonArtivactExporter implements ArtivactExporter {
      * @param params Export parameters.
      * @param menu   The menu to clean up.
      */
-    private void cleanupMenu(ExportParams params, Menu menu) {
+    private void cleanupMenu(ExportContext params, Menu menu) {
         cleanupRestrictionsAndTranslations(menu);
         if (menu.getMenuEntries() != null) {
             menu.getMenuEntries().stream()
                     .filter(menuEntry -> {
-                        if (params.isApplyRestrictions()) {
+                        if (params.getExportConfiguration().isApplyRestrictions()) {
                             return menuEntry.getRestrictions().isEmpty();
                         }
                         return true;
@@ -325,10 +467,10 @@ public class JsonArtivactExporter implements ArtivactExporter {
      * @param params             Export parameters.
      * @param propertyCategories The property categories to clean up.
      */
-    private void cleanupPropertyCategories(ExportParams params, List<PropertyCategory> propertyCategories) {
+    private void cleanupPropertyCategories(ExportContext params, List<PropertyCategory> propertyCategories) {
         propertyCategories.stream()
                 .filter(propertyCategory -> {
-                    if (params.isApplyRestrictions()) {
+                    if (params.getExportConfiguration().isApplyRestrictions()) {
                         return propertyCategory.getRestrictions().isEmpty();
                     }
                     return true;
@@ -337,7 +479,7 @@ public class JsonArtivactExporter implements ArtivactExporter {
                     cleanupRestrictionsAndTranslations(propertyCategory);
                     propertyCategory.getProperties().stream()
                             .filter(property -> {
-                                if (params.isApplyRestrictions()) {
+                                if (params.getExportConfiguration().isApplyRestrictions()) {
                                     return property.getRestrictions().isEmpty();
                                 }
                                 return true;
@@ -347,7 +489,7 @@ public class JsonArtivactExporter implements ArtivactExporter {
                                 if (property.getValueRange() != null && !property.getValueRange().isEmpty()) {
                                     property.getValueRange().stream()
                                             .filter(propertyValue -> {
-                                                if (params.isApplyRestrictions()) {
+                                                if (params.getExportConfiguration().isApplyRestrictions()) {
                                                     return propertyValue.getRestrictions().isEmpty();
                                                 }
                                                 return true;
@@ -364,10 +506,10 @@ public class JsonArtivactExporter implements ArtivactExporter {
      * @param params Export parameters.
      * @param tags   The tags to clean up.
      */
-    private void cleanupTags(ExportParams params, List<Tag> tags) {
+    private void cleanupTags(ExportContext params, List<Tag> tags) {
         tags.stream()
                 .filter(propertyCategory -> {
-                    if (params.isApplyRestrictions()) {
+                    if (params.getExportConfiguration().isApplyRestrictions()) {
                         return propertyCategory.getRestrictions().isEmpty();
                     }
                     return true;
@@ -381,9 +523,9 @@ public class JsonArtivactExporter implements ArtivactExporter {
      * @param params      Export parameters.
      * @param pageContent The page to clean up.
      */
-    private void cleanupPage(ExportParams params, PageContent pageContent) {
+    private void cleanupPage(ExportContext params, PageContent pageContent) {
         pageContent.setIndexPage(null);
-        if (!params.isApplyRestrictions()) {
+        if (!params.getExportConfiguration().isApplyRestrictions()) {
             pageContent.setRestrictions(null);
         }
     }

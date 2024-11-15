@@ -7,20 +7,17 @@ import com.arassec.artivact.domain.service.ItemService;
 import com.arassec.artivact.web.model.ImageSet;
 import com.arassec.artivact.web.model.ItemDetails;
 import com.arassec.artivact.web.model.ModelSet;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.io.IOException;
 import java.net.URLConnection;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
-import java.util.zip.ZipOutputStream;
 
 /**
  * REST-Controller for item management.
@@ -178,32 +175,6 @@ public class ItemController extends BaseController {
     }
 
     /**
-     * Returns an item's media files as ZIP file.
-     *
-     * @param response The HTTP response.
-     * @param itemId   The item's ID.
-     * @return The item's zipped media files as {@link StreamingResponseBody}.
-     */
-    @GetMapping(value = "/{itemId}/media")
-    public ResponseEntity<StreamingResponseBody> downloadMedia(HttpServletResponse response,
-                                                               @PathVariable String itemId) {
-
-        List<String> mediaFiles = itemService.getMediaFiles(itemId);
-
-        StreamingResponseBody streamResponseBody = out -> {
-            final ZipOutputStream zipOutputStream = new ZipOutputStream(response.getOutputStream());
-            itemService.zipMediaFiles(zipOutputStream, mediaFiles);
-        };
-
-        response.setContentType(TYPE_ZIP);
-        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, ATTACHMENT_PREFIX + itemId + ".zip");
-        response.addHeader(HttpHeaders.PRAGMA, NO_CACHE);
-        response.addHeader(HttpHeaders.EXPIRES, EXPIRES_IMMEDIATELY);
-
-        return ResponseEntity.ok(streamResponseBody);
-    }
-
-    /**
      * Saves an image to an item. Used to maintain an item's media files and image-sets for media creation.
      *
      * @param itemId     The item's ID.
@@ -295,7 +266,6 @@ public class ItemController extends BaseController {
                 .tags(item.getTags())
                 .build();
     }
-
 
     /**
      * Creates the image for a given model-set, based on the files available in the set.

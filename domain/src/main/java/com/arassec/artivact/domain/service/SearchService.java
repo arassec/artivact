@@ -3,6 +3,7 @@ package com.arassec.artivact.domain.service;
 import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.misc.ProgressMonitor;
 import com.arassec.artivact.core.model.item.Item;
+import com.arassec.artivact.core.repository.FileRepository;
 import com.arassec.artivact.core.repository.ItemRepository;
 import com.arassec.artivact.domain.aspect.RestrictResult;
 import com.arassec.artivact.domain.aspect.TranslateResult;
@@ -46,6 +47,11 @@ public class SearchService {
     private final ItemRepository itemRepository;
 
     /**
+     * Repository for file access.
+     */
+    private final FileRepository fileRepository;
+
+    /**
      * The object mapper.
      */
     @Getter
@@ -80,9 +86,11 @@ public class SearchService {
      * @param projectDataProvider Provider for project data.
      */
     public SearchService(ItemRepository itemRepository,
+                         FileRepository fileRepository,
                          ObjectMapper objectMapper,
                          ProjectDataProvider projectDataProvider) {
         this.itemRepository = itemRepository;
+        this.fileRepository  = fileRepository;
         this.objectMapper = objectMapper;
         this.searchIndexDir = projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.SEARCH_INDEX_DIR);
     }
@@ -178,6 +186,11 @@ public class SearchService {
      */
     private void prepareIndexing(boolean append) {
         try {
+            if (!append) {
+                fileRepository.delete(searchIndexDir);
+                fileRepository.createDirIfRequired(searchIndexDir);
+            }
+
             Directory indexDirectory = FSDirectory.open(searchIndexDir);
             IndexWriterConfig config = new IndexWriterConfig(new StandardAnalyzer());
 
