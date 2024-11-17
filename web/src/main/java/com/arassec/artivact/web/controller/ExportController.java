@@ -141,7 +141,7 @@ public class ExportController extends BaseController {
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION, ATTACHMENT_PREFIX
-                + LocalDate.now() + "." + ExchangeProcessor.PROPERTIES_EXPORT_FILENAME_JSON);
+                + LocalDate.now() + "." + ExchangeProcessor.PROPERTIES_EXCHANGE_FILENAME_JSON);
         response.addHeader(HttpHeaders.PRAGMA, NO_CACHE);
         response.addHeader(HttpHeaders.EXPIRES, EXPIRES_IMMEDIATELY);
 
@@ -165,7 +165,7 @@ public class ExportController extends BaseController {
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION, ATTACHMENT_PREFIX
-                + LocalDate.now() + ExchangeProcessor.TAGS_EXPORT_FILENAME_JSON);
+                + LocalDate.now() + ExchangeProcessor.TAGS_EXCHANGE_FILENAME_JSON);
         response.addHeader(HttpHeaders.PRAGMA, NO_CACHE);
         response.addHeader(HttpHeaders.EXPIRES, EXPIRES_IMMEDIATELY);
 

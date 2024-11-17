@@ -3,7 +3,7 @@ package com.arassec.artivact.domain.exchange;
 import com.arassec.artivact.core.model.exchange.ExportConfiguration;
 import com.arassec.artivact.core.model.item.Item;
 import com.arassec.artivact.core.model.menu.Menu;
-import com.arassec.artivact.domain.exchange.model.ExportMainData;
+import com.arassec.artivact.domain.exchange.model.ExchangeMainData;
 
 import java.nio.file.Path;
 
@@ -44,11 +44,11 @@ public interface ArtivactExporter {
     Path exportTagsConfiguration();
 
     /**
-     * Reads the export's main data from the provided path.
+     * Reads the main exchange data from the provided path.
      *
      * @param path Path to an export ZIP file containing the data file.
-     * @return The read {@link ExportMainData}.
+     * @return The read {@link ExchangeMainData}.
      */
-    ExportMainData readExportMainData(Path path);
+    ExchangeMainData readExchangeMainData(Path path);
 
 }

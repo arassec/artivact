@@ -17,6 +17,10 @@
       />
     </div>
 
+    <div class="full-width q-mb-md">
+      <q-separator/>
+    </div>
+
     <div class="full-width">
       <q-btn
         :label="$t('ExchangeConfigurationPage.syncAllUp.button')"
@@ -27,13 +31,31 @@
     </div>
 
     <div class="full-width">
-      <h2 class="av-text-h2">{{ $t('ExchangeConfigurationPage.standardExportInfo.heading') }}</h2>
+      <h2 class="av-text-h2">{{ $t('ExchangeConfigurationPage.contentExport.heading') }}</h2>
       <div class="q-mb-lg">
-        {{ $t('ExchangeConfigurationPage.standardExportInfo.description') }}
+        {{ $t('ExchangeConfigurationPage.contentExport.description') }}
       </div>
       <artivact-content-export-configuration-editor :content-exports="contentExportsRef"
                                                     v-if="contentExportsRef"
                                                     v-on:delete-content-export="confirmDeleteContentExport"/>
+    </div>
+
+
+    <div class="full-width">
+      <h2 class="av-text-h2">{{ $t('ExchangeConfigurationPage.contentImport.heading') }}</h2>
+      <div class="q-mb-lg">
+        {{ $t('ExchangeConfigurationPage.contentImport.description') }}
+      </div>
+      <q-uploader
+        :url="'/api/import/content'"
+        :label="$t('ExchangeConfigurationPage.contentImport.button')"
+        class="q-mt-md q-mb-md"
+        accept="artivact.content.zip"
+        field-name="file"
+        :no-thumbnails="true"
+        @uploaded="contentUploaded"
+        @failed="contentUploadFailed"
+      />
     </div>
 
     <!-- DELETE CONFIRMATION DIALOG -->
@@ -80,9 +102,12 @@ import {useI18n} from 'vue-i18n';
 import ArtivactContentExportConfigurationEditor from 'components/ArtivactContentExportConfigurationEditor.vue';
 import ArtivactDialog from 'components/ArtivactDialog.vue';
 import ArtivactOperationInProgressDialog from 'components/ArtivactOperationInProgressDialog.vue';
+import {useMenuStore} from "stores/menu";
 
 const quasar = useQuasar();
 const i18n = useI18n();
+
+const menuStore = useMenuStore();
 
 const exchangeConfigurationRef: Ref<ExchangeConfiguration | null> = ref(null);
 const contentExportsRef: Ref<Array<ContentExport> | null> = ref(null);
@@ -222,6 +247,68 @@ function deleteContentExport() {
         icon: 'report_problem',
       });
     });
+}
+
+function contentUploaded() {
+  api
+    .get('/api/import/progress')
+    .then((response) => {
+      if (response.data) {
+        showOperationInProgressModalRef.value = true;
+        progressMonitorRef.value = response.data;
+        updateImportOperationProgress()
+      }
+    })
+    .catch(() => {
+        quasar.notify({
+          color: 'negative',
+          position: 'bottom',
+          message: i18n.t('ExchangeConfigurationPage.messages.import.failed'),
+          icon: 'report_problem',
+        });
+      });
+}
+
+function updateImportOperationProgress() {
+  api
+    .get('/api/import/progress')
+    .then((response) => {
+      if (response.data) {
+        progressMonitorRef.value = response.data;
+        setTimeout(() => updateImportOperationProgress(), 1000);
+      } else {
+        progressMonitorRef.value = undefined;
+        showOperationInProgressModalRef.value = false;
+        api
+          .get('/api/configuration/public/menu')
+          .then((response) => {
+            menuStore.setAvailableMenus(response.data);
+          })
+        quasar.notify({
+          color: 'positive',
+          position: 'bottom',
+          message: i18n.t('ExchangeConfigurationPage.messages.import.success'),
+          icon: 'check',
+        });
+      }
+    })
+    .catch(() => {
+      quasar.notify({
+        color: 'negative',
+        position: 'bottom',
+        message: i18n.t('ExchangeConfigurationPage.messages.import.failed'),
+        icon: 'report_problem',
+      });
+    });
+}
+
+function contentUploadFailed() {
+  quasar.notify({
+    color: 'negative',
+    position: 'bottom',
+    message: i18n.t('ExchangeConfigurationPage.messages.import.failed'),
+    icon: 'report_problem',
+  });
 }
 
 onMounted(() => {

@@ -10,7 +10,7 @@
           :url="'/api/import/item'"
           :label="$t('ItemImportPage.button.upload')"
           class="q-mt-md q-mb-md"
-          accept="ITEM.artivact.content.zip"
+          accept="artivact.content.zip"
           field-name="file"
           :no-thumbnails="true"
           @finish="itemUploaded"

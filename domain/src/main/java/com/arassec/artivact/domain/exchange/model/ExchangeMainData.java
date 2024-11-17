@@ -7,16 +7,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * The file containing the main information about the export.
+ * The file containing the main information about the exchanged data.
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ExportMainData {
+public class ExchangeMainData {
 
     /**
-     * Schema version for versioning export formats.
+     * Schema version for versioning exchange formats.
      */
     @Builder.Default
     private int schemaVersion = 1;
@@ -32,13 +32,13 @@ public class ExportMainData {
     private TranslatableString description;
 
     /**
-     * The type of the export source.
+     * The type of the exchanged data.
      */
-    private ExportSourceType exportSourceType;
+    private ExchangeType exchangeType;
 
     /**
-     * The ID of the source of the exported content.
+     * The ID of the source of the exchanged content.
      */
-    private String exportSourceId;
+    private String sourceId;
 
 }

@@ -13,9 +13,9 @@ import com.arassec.artivact.core.model.page.widget.*;
 import com.arassec.artivact.core.model.property.PropertyCategory;
 import com.arassec.artivact.core.model.tag.Tag;
 import com.arassec.artivact.core.repository.FileRepository;
+import com.arassec.artivact.domain.exchange.model.ExchangeMainData;
+import com.arassec.artivact.domain.exchange.model.ExchangeType;
 import com.arassec.artivact.domain.exchange.model.ExportContext;
-import com.arassec.artivact.domain.exchange.model.ExportMainData;
-import com.arassec.artivact.domain.exchange.model.ExportSourceType;
 import com.arassec.artivact.domain.misc.ProjectDataProvider;
 import com.arassec.artivact.domain.service.ConfigurationService;
 import com.arassec.artivact.domain.service.PageService;
@@ -43,21 +43,6 @@ import java.util.zip.ZipFile;
 @Component
 @RequiredArgsConstructor
 public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProcessor {
-
-    /**
-     * File suffix for exported menus.
-     */
-    private static final String MENU_EXPORT_FILE_SUFFIX = ".artivact.menu.json";
-
-    /**
-     * File suffix for exported pages.
-     */
-    private static final String PAGE_EXPORT_FILE_SUFFIX = ".artivact.page-content.json";
-
-    /**
-     * File suffix for exported search results.
-     */
-    private static final String SEARCH_EXPORT_FILE_SUFFIX = ".artivact.search-result.json";
 
     /**
      * The application's configuration service.
@@ -94,11 +79,11 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
      */
     @Override
     public Path exportMenu(ExportConfiguration exportConfiguration, Menu menu) {
-        ExportContext exportContext = createExportContext(menu.getId(), ExportSourceType.MENU, exportConfiguration);
+        ExportContext exportContext = createExportContext(menu.getId(), exportConfiguration);
 
         prepareExport(exportContext);
 
-        exportMainData(exportContext, ExportSourceType.MENU, menu.getId(), menu.getExportTitle(), menu.getExportDescription());
+        exportMainData(exportContext, ExchangeType.MENU, menu.getId(), menu.getExportTitle(), menu.getExportDescription());
         exportPropertiesConfiguration(exportContext);
         exportTagsConfiguration(exportContext);
 
@@ -125,11 +110,11 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
      */
     @Override
     public Path exportItem(Item item) {
-        ExportContext exportContext = createExportContext(item.getId(), ExportSourceType.ITEM, null);
+        ExportContext exportContext = createExportContext(item.getId(), null);
 
         prepareExport(exportContext);
 
-        exportMainData(exportContext, ExportSourceType.ITEM, item.getId(), item.getTitle(), item.getDescription());
+        exportMainData(exportContext, ExchangeType.ITEM, item.getId(), item.getTitle(), item.getDescription());
         exportPropertiesConfiguration(exportContext);
         exportTagsConfiguration(exportContext);
 
@@ -168,15 +153,15 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
      * {@inheritDoc}
      */
     @Override
-    public ExportMainData readExportMainData(Path path) {
+    public ExchangeMainData readExchangeMainData(Path path) {
         try {
             try (ZipFile zipFile = new ZipFile(path.toFile())) {
                 Enumeration<? extends ZipEntry> entries = zipFile.entries();
                 while (entries.hasMoreElements()) {
                     ZipEntry entry = entries.nextElement();
-                    if (entry.getName().equals(CONTENT_EXPORT_FILENAME_JSON)) {
+                    if (entry.getName().equals(CONTENT_EXCHANGE_MAIN_DATA_FILENAME_JSON)) {
                         InputStream stream = zipFile.getInputStream(entry);
-                        return objectMapper.readValue(stream.readAllBytes(), ExportMainData.class);
+                        return objectMapper.readValue(stream.readAllBytes(), ExchangeMainData.class);
                     }
                 }
             }
@@ -207,12 +192,11 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
      * Creates the export context.
      *
      * @param id                  The ID of the export.
-     * @param exportSourceType    Type of the source the export is based on.
      * @param exportConfiguration An optional export configuration.
      * @return A newly created {@link ExportContext}.
      */
-    private ExportContext createExportContext(String id, ExportSourceType exportSourceType, ExportConfiguration exportConfiguration) {
-        String exportName = id + "." + exportSourceType.name() + CONTENT_EXPORT_SUFFIX;
+    private ExportContext createExportContext(String id, ExportConfiguration exportConfiguration) {
+        String exportName = id + CONTENT_EXCHANGE_SUFFIX;
         ExportContext exportContext = new ExportContext();
         exportContext.setExportConfiguration(Optional.ofNullable(exportConfiguration).orElse(new ExportConfiguration()));
         exportContext.setProjectExportsDir(projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.EXPORT_DIR));
@@ -224,21 +208,21 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
     /**
      * Exports the main data of the export like title and description.
      *
-     * @param exportContext    The export context.
-     * @param exportSourceType The {@link ExportSourceType} of the export.
-     * @param exportSourceId   The ID of the export's source object.
-     * @param title            The export's title.
-     * @param description      The export's description.
+     * @param exportContext  The export context.
+     * @param exchangeType   The {@link ExchangeType} of the export.
+     * @param exportSourceId The ID of the export's source object.
+     * @param title          The export's title.
+     * @param description    The export's description.
      */
-    private void exportMainData(ExportContext exportContext, ExportSourceType exportSourceType, String exportSourceId, TranslatableString title, TranslatableString description) {
-        ExportMainData exportMainData = new ExportMainData();
-        exportMainData.setExportSourceType(exportSourceType);
-        exportMainData.setExportSourceId(exportSourceId);
-        exportMainData.setTitle(Optional.ofNullable(title).orElse(new TranslatableString()));
-        exportMainData.getTitle().setTranslatedValue(null);
-        exportMainData.setDescription(Optional.ofNullable(description).orElse(new TranslatableString()));
-        exportMainData.getDescription().setTranslatedValue(null);
-        writeJsonFile(exportContext.getExportDir().resolve(CONTENT_EXPORT_FILENAME_JSON), exportMainData);
+    private void exportMainData(ExportContext exportContext, ExchangeType exchangeType, String exportSourceId, TranslatableString title, TranslatableString description) {
+        ExchangeMainData exchangeMainData = new ExchangeMainData();
+        exchangeMainData.setExchangeType(exchangeType);
+        exchangeMainData.setSourceId(exportSourceId);
+        exchangeMainData.setTitle(Optional.ofNullable(title).orElse(new TranslatableString()));
+        exchangeMainData.getTitle().setTranslatedValue(null);
+        exchangeMainData.setDescription(Optional.ofNullable(description).orElse(new TranslatableString()));
+        exchangeMainData.getDescription().setTranslatedValue(null);
+        writeJsonFile(exportContext.getExportDir().resolve(CONTENT_EXCHANGE_MAIN_DATA_FILENAME_JSON), exchangeMainData);
     }
 
     /**
@@ -247,7 +231,7 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
      * @param exportContext Export parameters.
      */
     private Path exportPropertiesConfiguration(ExportContext exportContext) {
-        Path exportFile = exportContext.getExportDir().resolve(PROPERTIES_EXPORT_FILENAME_JSON);
+        Path exportFile = exportContext.getExportDir().resolve(PROPERTIES_EXCHANGE_FILENAME_JSON);
         List<PropertyCategory> categories = configurationService.loadPropertiesConfiguration().getCategories();
         cleanupPropertyCategories(exportContext, categories);
         writeJsonFile(exportFile, categories);
@@ -260,7 +244,7 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
      * @param exportContext Export parameters.
      */
     private Path exportTagsConfiguration(ExportContext exportContext) {
-        Path exportFile = exportContext.getExportDir().resolve(TAGS_EXPORT_FILENAME_JSON);
+        Path exportFile = exportContext.getExportDir().resolve(TAGS_EXCHANGE_FILENAME_JSON);
         List<Tag> tags = configurationService.loadTagsConfiguration().getTags();
         cleanupTags(exportContext, tags);
         writeJsonFile(exportFile, tags);
@@ -276,7 +260,7 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
     private void exportMenu(ExportContext params, Menu menu) {
         cleanupMenu(params, menu);
 
-        writeJsonFile(params.getExportDir().resolve(menu.getId() + MENU_EXPORT_FILE_SUFFIX), menu);
+        writeJsonFile(params.getExportDir().resolve(menu.getId() + MENU_EXCHANGE_FILE_SUFFIX), menu);
 
         Optional.ofNullable(menu.getMenuEntries()).orElse(List.of())
                 .forEach(menuEntry -> exportMenu(params, menuEntry));
@@ -302,13 +286,12 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
             if (params.getExportConfiguration().isApplyRestrictions() && !widget.getRestrictions().isEmpty()) {
                 return;
             }
-            widget.setRestrictions(null);
             exportWidget(params, widget);
         });
 
-        cleanupPage(params, pageContent);
+        cleanupPage(pageContent);
 
-        writeJsonFile(params.getExportDir().resolve(targetPageId + PAGE_EXPORT_FILE_SUFFIX), pageContent);
+        writeJsonFile(params.getExportDir().resolve(targetPageId + PAGE_EXCHANGE_FILE_SUFFIX), pageContent);
     }
 
     /**
@@ -349,7 +332,7 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
                         }
                         exportItem(params, item);
                     }
-                    writeJsonFile(params.getExportDir().resolve(widget.getId() + SEARCH_EXPORT_FILE_SUFFIX),
+                    writeJsonFile(params.getExportDir().resolve(widget.getId() + SEARCH_RESULT_FILE_SUFFIX),
                             searchResult.stream().map(Item::getId).toArray());
                 }
             }
@@ -382,7 +365,7 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
         item.getTitle().setTranslatedValue(null);
         item.getDescription().setTranslatedValue(null);
 
-        writeJsonFile(itemExportDir.resolve(ITEM_EXPORT_FILENAME_JSON), item);
+        writeJsonFile(itemExportDir.resolve(ITEM_EXCHANGE_FILENAME_JSON), item);
     }
 
     /**
@@ -444,7 +427,7 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
      * @param menu   The menu to clean up.
      */
     private void cleanupMenu(ExportContext params, Menu menu) {
-        cleanupRestrictionsAndTranslations(menu);
+        cleanupTranslations(menu);
         if (menu.getMenuEntries() != null) {
             menu.getMenuEntries().stream()
                     .filter(menuEntry -> {
@@ -454,7 +437,7 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
                         return true;
                     })
                     .forEach(menuEntry -> {
-                        cleanupRestrictionsAndTranslations(menuEntry);
+                        cleanupTranslations(menuEntry);
                         menuEntry.setParentId(null);
                         menuEntry.setMenuEntries(menuEntry.getMenuEntries().isEmpty() ? null : menuEntry.getMenuEntries());
                     });
@@ -476,7 +459,7 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
                     return true;
                 })
                 .forEach(propertyCategory -> {
-                    cleanupRestrictionsAndTranslations(propertyCategory);
+                    cleanupTranslations(propertyCategory);
                     propertyCategory.getProperties().stream()
                             .filter(property -> {
                                 if (params.getExportConfiguration().isApplyRestrictions()) {
@@ -485,7 +468,7 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
                                 return true;
                             })
                             .forEach(property -> {
-                                cleanupRestrictionsAndTranslations(property);
+                                cleanupTranslations(property);
                                 if (property.getValueRange() != null && !property.getValueRange().isEmpty()) {
                                     property.getValueRange().stream()
                                             .filter(propertyValue -> {
@@ -494,7 +477,7 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
                                                 }
                                                 return true;
                                             })
-                                            .forEach(this::cleanupRestrictionsAndTranslations);
+                                            .forEach(this::cleanupTranslations);
                                 }
                             });
                 });
@@ -514,20 +497,16 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
                     }
                     return true;
                 })
-                .forEach(this::cleanupRestrictionsAndTranslations);
+                .forEach(this::cleanupTranslations);
     }
 
     /**
      * Cleans up a page for export.
      *
-     * @param params      Export parameters.
      * @param pageContent The page to clean up.
      */
-    private void cleanupPage(ExportContext params, PageContent pageContent) {
-        pageContent.setIndexPage(null);
-        if (!params.getExportConfiguration().isApplyRestrictions()) {
-            pageContent.setRestrictions(null);
-        }
+    private void cleanupPage(PageContent pageContent) {
+        pageContent.setIndexPage(false);
     }
 
     /**
@@ -535,8 +514,7 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
      *
      * @param translatableRestrictedObject The object to clean up.
      */
-    private void cleanupRestrictionsAndTranslations(BaseTranslatableRestrictedObject translatableRestrictedObject) {
-        translatableRestrictedObject.setRestrictions(null);
+    private void cleanupTranslations(BaseTranslatableRestrictedObject translatableRestrictedObject) {
         translatableRestrictedObject.setTranslatedValue(null);
     }
 

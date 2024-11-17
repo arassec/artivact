@@ -21,8 +21,6 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -177,7 +175,18 @@ public class PageService extends BaseFileService {
     @TranslateResult
     @RestrictResult
     public PageContent savePageContent(String pageId, Set<String> roles, PageContent pageContent) {
-        Page page = pageRepository.findById(pageId).orElseThrow();
+        Optional<Page> pageOptional = pageRepository.findById(pageId);
+
+        Page page;
+        if (pageOptional.isPresent()) {
+            page = pageOptional.get();
+        } else {
+            // Importing content from a previous export:
+            page = new Page();
+            page.setId(pageId);
+            page.setVersion(0);
+            page.setPageContent(pageContent);
+        }
 
         PageContent existingPageContent = page.getPageContent();
         computeEditable(existingPageContent, roles);
@@ -199,14 +208,10 @@ public class PageService extends BaseFileService {
 
         pageContent.getWidgets().forEach(widget ->
                 getDanglingImages(widget).forEach(imageToDelete -> {
-                    try {
-                        Files.deleteIfExists(fileRepository.getSubdirFilePath(widgetFilesDir, widget.getId(), null).resolve(imageToDelete));
-                        for (ImageSize imageSize : ImageSize.values()) {
-                            Files.deleteIfExists(fileRepository.getSubdirFilePath(widgetFilesDir, widget.getId(), null)
-                                    .resolve(imageSize.name() + "-" + imageToDelete));
-                        }
-                    } catch (IOException e) {
-                        log.error("Could not delete obsolete widget image from filesystem!", e);
+                    fileRepository.delete(fileRepository.getSubdirFilePath(widgetFilesDir, widget.getId(), null).resolve(imageToDelete));
+                    for (ImageSize imageSize : ImageSize.values()) {
+                        fileRepository.delete(fileRepository.getSubdirFilePath(widgetFilesDir, widget.getId(), null)
+                                .resolve(imageSize.name() + "-" + imageToDelete));
                     }
                 })
         );
@@ -271,11 +276,7 @@ public class PageService extends BaseFileService {
      */
     public byte[] loadFile(String widgetId, String filename, ImageSize targetSize) {
         FileSystemResource file = loadFile(widgetFilesDir, widgetId, filename, targetSize);
-        try {
-            return Files.readAllBytes(file.getFile().toPath());
-        } catch (IOException e) {
-            throw new ArtivactException("Could not load file!", e);
-        }
+        return fileRepository.readBytes(file.getFile().toPath());
     }
 
     /**

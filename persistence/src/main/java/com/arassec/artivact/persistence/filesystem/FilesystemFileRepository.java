@@ -203,6 +203,20 @@ public class FilesystemFileRepository implements FileRepository {
      * {@inheritDoc}
      */
     @Override
+    public void copyDir(Path source, Path target) {
+        try {
+            if (Files.exists(source) && Files.isDirectory(source)) {
+                FileUtils.copyDirectory(source.toFile(), target.toFile());
+            }
+        } catch (IOException e) {
+            throw new ArtivactException("Could not copy directory!", e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Path getDirFromId(Path root, String id) {
         return root.resolve(getSubDir(id, 0)).resolve(getSubDir(id, 1)).resolve(id);
     }
@@ -341,6 +355,42 @@ public class FilesystemFileRepository implements FileRepository {
     @Override
     public void unpack(Path source, Path target) {
         ZipUtil.unpack(source.toFile(), target.toFile());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String read(Path source) {
+        try {
+            return Files.readString(source);
+        } catch (IOException e) {
+            throw new ArtivactException("Could not read source!", e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public InputStream readStream(Path source) {
+        try {
+            return Files.newInputStream(source);
+        } catch (IOException e) {
+            throw new ArtivactException("Could not read source as stream!", e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public byte[] readBytes(Path source) {
+        try {
+            return Files.readAllBytes(source);
+        } catch (IOException e) {
+            throw new ArtivactException("Could not read source into byte array!", e);
+        }
     }
 
     /**

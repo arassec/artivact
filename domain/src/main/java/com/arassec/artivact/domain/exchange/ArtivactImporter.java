@@ -8,10 +8,10 @@ import java.nio.file.Path;
 public interface ArtivactImporter {
 
     /**
-     * Imports a previously exported artivact item.
+     * Imports previously exported artivact content.
      *
-     * @param itemExport Path to the export.
+     * @param contentExport Path to the export.
      */
-    void importItem(Path itemExport);
+    void importContent(Path contentExport);
 
 }

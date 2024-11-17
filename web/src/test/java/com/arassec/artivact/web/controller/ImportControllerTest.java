@@ -84,15 +84,15 @@ class ImportControllerTest {
     }
 
     /**
-     * Tests item import.
+     * Tests content import.
      */
     @Test
-    void testImportItem() {
+    void testImportContent() {
         MultipartFile file = mock(MultipartFile.class);
-        ResponseEntity<String> stringResponseEntity = importController.importItem(file);
+        ResponseEntity<String> stringResponseEntity = importController.importContent(file);
 
         assertEquals("Item imported.", stringResponseEntity.getBody());
-        verify(importService, times(1)).importItem(file, null);
+        verify(importService, times(1)).importContent(file, null);
     }
 
     /**
@@ -104,7 +104,7 @@ class ImportControllerTest {
         ResponseEntity<String> stringResponseEntity = importController.syncItem(file, "api-token");
 
         assertEquals("Item synchronized.", stringResponseEntity.getBody());
-        verify(importService, times(1)).importItem(file, "api-token");
+        verify(importService, times(1)).importContent(file, "api-token");
     }
 
 }

@@ -1,10 +1,9 @@
 package com.arassec.artivact.domain.exchange.model;
 
 /**
- * Defines the type of a content export's source.
+ * Defines the type of exchanged data.
  */
-public enum ExportSourceType {
-
+public enum ExchangeType {
 
     MENU,
 

@@ -138,6 +138,11 @@ export default {
       heading: 'Content Exports',
       description: 'Here you can manage content exports. Exports can be created by right-clicking on a menu and selecting \'Export Content\'.'
     },
+    contentImport: {
+      heading: 'Content Imports',
+      description: 'Here you can import previously exported content. WARNING: content imports will overwrite existing properties and tags configurations!',
+      button: 'Upload',
+    },
     dialog: {
       delete: {
         heading: 'Delete Export?',
@@ -150,6 +155,10 @@ export default {
         success: 'Items synchronized',
         failed: 'Synchronization failed'
       }
+    },
+    import: {
+      success: 'Import finished',
+      failed: 'Import failed'
     }
   },
 
@@ -812,6 +821,10 @@ export default {
       configMissing: 'Exchange configuration is missing a remote server to synchronize with!',
       uploading: 'Uploading file to remote Artivact server.',
       uploadFailed: 'Could not upload item file to remote server!',
+    },
+    ImportService: {
+      importContent: 'Importing content...',
+      importContentFailed: 'Import failed!'
     }
   },
 

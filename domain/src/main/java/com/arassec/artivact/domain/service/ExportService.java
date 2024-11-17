@@ -12,7 +12,7 @@ import com.arassec.artivact.core.repository.FileRepository;
 import com.arassec.artivact.domain.aspect.TranslateResult;
 import com.arassec.artivact.domain.exchange.ArtivactExporter;
 import com.arassec.artivact.domain.exchange.ExchangeProcessor;
-import com.arassec.artivact.domain.exchange.model.ExportMainData;
+import com.arassec.artivact.domain.exchange.model.ExchangeMainData;
 import com.arassec.artivact.domain.misc.ProjectDataProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
@@ -29,7 +29,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
@@ -184,11 +183,7 @@ public class ExportService extends BaseFileService implements ExchangeProcessor 
      * @return The exported property configuration.
      */
     public String exportPropertiesConfiguration() {
-        try {
-            return Files.readString(artivactExporter.exportPropertiesConfiguration());
-        } catch (IOException e) {
-            throw new ArtivactException("Failed to read exported property configuration!", e);
-        }
+        return fileRepository.read(artivactExporter.exportPropertiesConfiguration());
     }
 
     /**
@@ -197,11 +192,7 @@ public class ExportService extends BaseFileService implements ExchangeProcessor 
      * @return The exported tags configuration.
      */
     public String exportTagsConfiguration() {
-        try {
-            return Files.readString(artivactExporter.exportTagsConfiguration());
-        } catch (IOException e) {
-            throw new ArtivactException("Failed to read exported tag configuration!", e);
-        }
+        return fileRepository.read(artivactExporter.exportTagsConfiguration());
     }
 
     /**
@@ -212,7 +203,7 @@ public class ExportService extends BaseFileService implements ExchangeProcessor 
     @TranslateResult
     public List<StandardExportInfo> loadContentExports() {
         return fileRepository.list(projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.EXPORT_DIR)).stream()
-                .filter(path -> path.getFileName().toString().contains(CONTENT_EXPORT_SUFFIX + ZIP_FILE_SUFFIX))
+                .filter(path -> path.getFileName().toString().contains(CONTENT_EXCHANGE_SUFFIX + ZIP_FILE_SUFFIX))
                 .map(this::createContentExport)
                 .toList();
     }
@@ -226,7 +217,7 @@ public class ExportService extends BaseFileService implements ExchangeProcessor 
     public Path getContentExportFile(String menuId) {
         return projectDataProvider.getProjectRoot()
                 .resolve(ProjectDataProvider.EXPORT_DIR)
-                .resolve(menuId + CONTENT_EXPORT_SUFFIX + ZIP_FILE_SUFFIX);
+                .resolve(menuId + CONTENT_EXCHANGE_SUFFIX + ZIP_FILE_SUFFIX);
     }
 
     /**
@@ -433,11 +424,11 @@ public class ExportService extends BaseFileService implements ExchangeProcessor 
         standardExportInfo.setLastModified(fileRepository.lastModified(path).toEpochMilli());
         standardExportInfo.setSize(fileRepository.size(path));
 
-        ExportMainData exportMainData = artivactExporter.readExportMainData(path);
+        ExchangeMainData exchangeMainData = artivactExporter.readExchangeMainData(path);
 
-        if (exportMainData != null) {
-            standardExportInfo.setTitle(exportMainData.getTitle());
-            standardExportInfo.setDescription(exportMainData.getDescription());
+        if (exchangeMainData != null) {
+            standardExportInfo.setTitle(exchangeMainData.getTitle());
+            standardExportInfo.setDescription(exchangeMainData.getDescription());
         }
 
         return standardExportInfo;

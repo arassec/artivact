@@ -138,6 +138,11 @@ export default {
       heading: 'Exporte',
       description: 'Hier können Exporte verwaltet werden. Exporte können per Rechtsklick auf ein Menu mit der Auswahl \'Inhalte Exportieren\' erstellt werden.'
     },
+    contentImport: {
+      heading: 'Importe',
+      description: 'Hier können zuvor erstellte Exporte importiert werden. ACHTUNG: Importe überschreiben bisher existierende Tag- oder Eigenschaftskonfigurationen.',
+      button: 'Upload',
+    },
     dialog: {
       delete: {
         heading: 'Export löschen?',
@@ -147,8 +152,12 @@ export default {
     },
     messages: {
       sync: {
-        success: 'Items synchronized',
-        failed: 'Synchronization failed'
+        success: 'Synchronisation abgeschlossen',
+        failed: 'Synchronisation fehlgeschlagen'
+      },
+      import: {
+        success: 'Import abgeschlossen',
+        failed: 'Import fehlgeschlagen'
       }
     }
   },
@@ -817,6 +826,10 @@ export default {
       configMissing: 'Austausch-Konfiguration für Upload zu entferntem Artivact- Server fehlt!',
       uploading: 'Lade Exportdatei zu entferntem Artivact-Server hoch.',
       uploadFailed: 'Konnte Exportdatei nicht zu entferntem Artivact-Server hochladen!',
+    },
+    ImportService: {
+      importContent: 'Importiere Daten...',
+      importContentFailed: 'Import fehlgeschlagen!'
     }
   },
 

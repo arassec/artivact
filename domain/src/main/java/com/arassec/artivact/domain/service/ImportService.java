@@ -1,6 +1,7 @@
 package com.arassec.artivact.domain.service;
 
 import com.arassec.artivact.core.exception.ArtivactException;
+import com.arassec.artivact.core.misc.ProgressMonitor;
 import com.arassec.artivact.core.model.account.Account;
 import com.arassec.artivact.core.repository.FileRepository;
 import com.arassec.artivact.domain.exchange.ArtivactImporter;
@@ -17,6 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Service for handling item imports.
@@ -54,12 +57,30 @@ public class ImportService extends BaseFileService implements ExchangeProcessor 
     private final ObjectMapper objectMapper;
 
     /**
-     * Imports a previously exported item to the application by reading the export ZIP file.
+     * The service's progress monitor for long-running tasks.
+     */
+    @Getter
+    private ProgressMonitor progressMonitor;
+
+    /**
+     * Executor service for background tasks.
+     */
+    private final ExecutorService executorService = Executors.newFixedThreadPool(1);
+
+    /**
+     * Imports previously exported content data to the application by reading from the exported ZIP file.
      *
-     * @param file     The export ZIP file.
+     * @param file     The exported ZIP file.
      * @param apiToken The API token of the user to use for item import.
      */
-    public void importItem(MultipartFile file, String apiToken) {
+    public void importContent(MultipartFile file, String apiToken) {
+
+        if (progressMonitor != null && progressMonitor.getException() == null) {
+            return;
+        }
+
+        progressMonitor = new ProgressMonitor(getClass(), "importContent");
+
         if (StringUtils.hasText(apiToken)) {
             Optional<Account> accountOptional = accountService.loadByApiToken(apiToken);
             if (accountOptional.isEmpty()) {
@@ -83,9 +104,16 @@ public class ImportService extends BaseFileService implements ExchangeProcessor 
             throw new ArtivactException("Could not save uploaded ZIP file!", e);
         }
 
-        artivactImporter.importItem(importFileZip);
-
-        fileRepository.delete(importFileZip);
+        executorService.submit(() -> {
+            try {
+                artivactImporter.importContent(importFileZip);
+                fileRepository.delete(importFileZip);
+                progressMonitor = null;
+            } catch (Exception e) {
+                log.error("Error during content import!", e);
+                progressMonitor.updateProgress("importContentFailed", e);
+            }
+        });
     }
 
 }
