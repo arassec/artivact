@@ -77,25 +77,6 @@
               {{ $t('ArtivactSettingsBar.createItem') }}</label>
             </q-item-section>
           </q-item>
-          <q-item
-            data-test="import-items-button"
-            clickable
-            v-close-popup
-            @click="gotoItemImportPage"
-            class="menu-entry"
-            v-if="userdataStore.isAdmin"
-          >
-            <q-item-section
-            ><label class="menu-label">
-              <q-icon
-                name="import_export"
-                size="xs"
-                color="primary"
-                class="q-mr-sm"
-              ></q-icon>
-              {{ $t('ArtivactSettingsBar.importItems') }}</label>
-            </q-item-section>
-          </q-item>
         </q-list>
       </q-menu>
     </q-btn>
@@ -385,25 +366,6 @@
                   >
                 </q-item-section>
               </q-item>
-              <q-item
-                clickable
-                v-close-popup
-                @click="gotoItemImportPage"
-                class="menu-entry"
-                v-if="userdataStore.isAdmin"
-              >
-                <q-item-section
-                ><label class="menu-label">
-                  <q-icon
-                    name="import_export"
-                    size="xs"
-                    color="primary"
-                    class="q-mr-sm"
-                  ></q-icon>
-                  {{ $t('ArtivactSettingsBar.importItems') }}</label
-                >
-                </q-item-section>
-              </q-item>
             </q-list>
           </q-menu>
         </q-item>
@@ -645,10 +607,6 @@ function gotoAccountPage() {
 
 function gotoAccountsPage() {
   route.push('/administration/accounts');
-}
-
-function gotoItemImportPage() {
-  route.push('/administration/item/import');
 }
 
 function createItem() {

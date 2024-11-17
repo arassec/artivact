@@ -224,19 +224,6 @@ export default {
     }
   },
 
-  ItemImportPage: {
-    heading: 'Item Import',
-    description: {
-      upload: 'Imports a previously exported item.'
-    },
-    button: {
-      upload: 'Import Item'
-    },
-    messages: {
-      itemUploaded: 'Item uploaded'
-    }
-  },
-
   LicenseConfigurationPage: {
     heading: 'License Configuration',
   },
@@ -568,7 +555,6 @@ export default {
     default: 'Default',
     itemSettings: 'Item Settings',
     createItem: 'Create Item',
-    importItems: 'Import Items',
     license: 'License',
     appearance: 'Appearance',
     peripherals: 'Peripherals',

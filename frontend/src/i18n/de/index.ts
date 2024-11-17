@@ -224,23 +224,6 @@ export default {
     }
   },
 
-  ItemImportPage: {
-    heading: 'Objekt-Import',
-    description: {
-      scan: 'Scant das Datenverzeichnis um neue Objekte hinzuzufügen oder vorhandene zu aktualisieren.',
-      upload: 'Importiert ein zuvor exportiertes Objekt.'
-    },
-    button: {
-      scan: 'Scan',
-      upload: 'Objekt Importieren'
-    },
-    messages: {
-      scanSuccessful: 'Scan erfolgreich',
-      scanFailed: 'Scan fehlgeschlagen',
-      itemUploaded: 'Objekt hochgeladen'
-    }
-  },
-
   LicenseConfigurationPage: {
     heading: 'Lizenz-Konfiguration',
   },
@@ -572,7 +555,6 @@ export default {
     default: 'Standard',
     itemSettings: 'Objekt-Einstellungen',
     createItem: 'Objekt erzeugen',
-    importItems: 'Objekte importieren',
     license: 'Lizenz',
     appearance: 'Darstellung',
     peripherals: 'Peripherie',

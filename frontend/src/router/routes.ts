@@ -73,7 +73,6 @@ const routes: RouteRecordRaw[] = [
       {path: '/item/:itemId?', component: () => import('pages/ItemDetailsPage.vue')},
       {path: '/account', component: () => import('pages/AccountSettingsPage.vue')},
       {path: '/administration/accounts', component: () => import('pages/AccountsConfigurationPage.vue')},
-      {path: '/administration/item/import', component: () => import('pages/ItemImportPage.vue')},
       {path: '/administration/configuration/item/:itemId?', component: () => import('pages/ItemEditPage.vue')},
       {path: '/administration/configuration/properties', component: () => import('pages/PropertiesConfigurationPage.vue')},
       {path: '/administration/configuration/tags', component: () => import('pages/TagsConfigurationPage.vue')},
