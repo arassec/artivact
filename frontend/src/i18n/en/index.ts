@@ -58,11 +58,7 @@ export default {
     login: 'Login',
     logout: 'Logout',
     messages: {
-      colorThemeFailed: 'Loading color theme failed!',
-      rolesFailed: 'Loading user roles failed!',
-      titleFailed: 'Loading application title failed!',
       userDataFailed: 'Loading user data failed!',
-      licenseFailed: 'Loading license information failed!',
       logoutFailed: 'Logout failed!'
     },
   },
@@ -126,12 +122,19 @@ export default {
   },
 
   ExchangeConfigurationPage: {
-    heading: 'Exchange Configuration',
-    exchange: {
+    heading: 'Data Exchange',
+    tabs: {
+      configuration: 'Configuration',
+      export: 'Export',
+      import: 'Import',
+    },
+    configuration: {
       heading: 'Synchronization',
-      description: 'Here you can configure exchange parameters for syncing items with remote Artivact instances.'
+      description: 'Here you can configure exchange parameters for syncing items with remote Artivact instances.',
     },
     syncAllUp: {
+      heading: 'Upload',
+      description: 'With the following button, all locally modified items will be uploaded to the remote Artivact instance.',
       button: 'Upload all modified items'
     },
     contentExport: {
@@ -224,10 +227,6 @@ export default {
     }
   },
 
-  LicenseConfigurationPage: {
-    heading: 'License Configuration',
-  },
-
   LoginPage: {
     login: 'Login',
     messages: {
@@ -243,17 +242,26 @@ export default {
   },
 
   PropertiesConfigurationPage: {
-    heading: 'Properties Configuration',
-    description: 'Here the properties of items can be configured. They are organized in categories, which can be ordered by drag & drop. The categories, with their respective properties, are shown at the bottom of the item details page.',
-    noPropertiesDefined: 'There are currently no properties defined.',
-    importexport: {
-      heading: 'Properties Import/Export',
-      export: 'You can export the current properties configuration with the button below. A JSON file containing the current configuration will be created.',
-      import: 'You can upload a previously created properties export here and OVERWRITE the current properties with it.',
-      button: {
-        export: 'Export Properties',
-        import: 'Import Properties'
-      },
+    heading: 'Properties',
+    tabs: {
+      configuration: 'Configuration',
+      export: 'Export',
+      import: 'Import',
+    },
+    configuration: {
+      heading: 'Configuration',
+      description: 'Here the properties of items can be configured. They are organized in categories, which can be ordered by drag & drop. The categories, with their respective properties, are shown at the bottom of the item details page.',
+      noPropertiesDefined: 'There are currently no properties defined.',
+    },
+    export: {
+      heading: 'Properties Export',
+      description: 'You can export the current properties configuration with the button below. A JSON file containing the current configuration will be created.',
+      button: 'Export Properties'
+    },
+    import: {
+      heading: 'Properties Import',
+      description: 'You can upload a previously created properties export here and OVERWRITE the current properties with it.',
+      button: 'Import Properties',
     },
     messages: {
       uploadSuccess: 'Properties configuration uploaded'
@@ -271,17 +279,21 @@ export default {
   },
 
   TagsConfigurationPage: {
-    heading: 'Tags Configuration',
-    description: 'Tags can be used to categorize items beyond their properties. They should be considered meta-data and not be used to replace properties.',
-    noTagsDefined: 'There are currently no tags defined.',
-    importexport: {
-      heading: 'Tags Import/Export',
-      export: 'You can export the current tags configuration with the button below. A JSON file containing the current configuration will be created.',
-      import: 'You can upload a previously created tags export here and OVERWRITE the current tags with it.',
-      button: {
-        export: 'Export Tags',
-        import: 'Import Tags'
-      },
+    heading: 'Tags',
+    configuration: {
+      heading: 'Configuration',
+      description: 'Tags can be used to categorize items beyond their properties. They should be considered meta-data and not be used to replace properties.',
+      noTagsDefined: 'There are currently no tags defined.',
+    },
+    export: {
+      heading: 'Export',
+      description: 'You can export the current tags configuration with the button below. A JSON file containing the current configuration will be created.',
+      button: 'Export Tags',
+    },
+    import: {
+      heading: 'Import',
+      description: 'You can upload a previously created tags export here and OVERWRITE the current tags with it.',
+      button: 'Import Tags',
     },
     messages: {
       uploadSuccess: 'Tags configuration uploaded'
@@ -319,7 +331,23 @@ export default {
         description: 'The uploaded file is directly installed as favicon!',
         descriptionSuffix: 'Due to browser caching the newly uploaded favicon might not directly be visible in your browser tab.',
         saved: 'Favicon saved'
-      }
+      },
+      license: {
+        heading: 'Media Files License',
+        description: 'Configures the license string displayed on the artivacts details-page. The license is composed of a prefix, the actual license and a suffix. If an URL is configured, the license will be rendered as link to the provided URL.',
+        descriptionSuffix: 'The final license text might look like: "Media files are provided under \'CC BY-SA\' license."',
+        card: {
+          heading: 'License',
+          prefixDescription: 'The first part of the license text, e.g. \'Media files are provided under\'.',
+          prefixLabel: 'Prefix',
+          licenseDescription: 'The name of the license, e.g. \'MIT\' or \'CC BY-SA\'.',
+          licenseLabel: 'License',
+          suffixDescription: 'The last part of the license text, e.g. \'license\'.',
+          suffixLabel: 'Suffix',
+          urlDescription: 'If provided, this URL will be used to make the license text into a link.',
+          urlLabel: 'License-URL'
+        }
+      },
     }
   },
 
@@ -366,22 +394,6 @@ export default {
       messages: {
         openFailed: 'Could not open model directory!'
       }
-    }
-  },
-
-  ArtivactLicenseConfigurationEditor: {
-    description: 'Configures the license string displayed on the artivacts details-page. The license is composed of a prefix, the actual license and a suffix. If an URL is configured, the license will be rendered as link to the provided URL.',
-    descriptionSuffix: 'The final license text might look like: "Media files are provided under \'CC BY-SA\' license."',
-    card: {
-      heading: 'License',
-      prefixDescription: 'The first part of the license text, e.g. \'Media files are provided under\'.',
-      prefixLabel: 'Prefix',
-      licenseDescription: 'The name of the license, e.g. \'MIT\' or \'CC BY-SA\'.',
-      licenseLabel: 'License',
-      suffixDescription: 'The last part of the license text, e.g. \'license\'.',
-      suffixLabel: 'Suffix',
-      urlDescription: 'If provided, this URL will be used to make the license text into a link.',
-      urlLabel: 'License-URL'
     }
   },
 

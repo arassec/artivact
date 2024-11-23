@@ -107,13 +107,6 @@ export interface Account {
   admin: boolean | undefined;
 }
 
-export interface LicenseConfiguration {
-  prefix: TranslatableString;
-  licenseLabel: TranslatableString;
-  suffix: TranslatableString;
-  licenseUrl: string;
-}
-
 export interface ExchangeConfiguration {
   remoteServer: string;
   apiToken: string;
@@ -130,13 +123,30 @@ export interface ColorTheme {
   warning: string,
 }
 
+export interface License {
+  prefix: TranslatableString;
+  licenseLabel: TranslatableString;
+  suffix: TranslatableString;
+  licenseUrl: string;
+}
+
 export interface AppearanceConfiguration {
   applicationTitle: string,
   availableLocales: string,
   applicationLocale: string,
   colorTheme: ColorTheme,
-  encodedFaviconSmall: string,
-  encodedFaviconLarge: string
+  encodedFavicon: string,
+  license: License
+}
+
+export interface ApplicationSettings {
+  applicationTitle: string,
+  availableLocales: string[],
+  applicationLocale: string,
+  colorTheme: ColorTheme,
+  license: License,
+  profiles: Profiles,
+  availableRoles: string[]
 }
 
 export enum AdapterImplementation {

@@ -55,103 +55,31 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref} from 'vue';
-import {setCssVar, useQuasar} from 'quasar';
+import {onMounted} from 'vue';
+import {useQuasar} from 'quasar';
 import {api} from 'boot/axios';
 import {useUserdataStore} from 'stores/userdata';
 import {useLocaleStore} from 'stores/locale';
-import {useLicenseStore} from 'stores/license';
 import {useMenuStore} from 'stores/menu';
-import {useRoleStore} from 'stores/role';
 import ArtivactMenuBar from 'components/ArtivactMenuBar.vue';
 import ArtivactSettingsBar from 'components/ArtivactSettingsBar.vue';
 import {useI18n} from 'vue-i18n';
 import {useProfilesStore} from 'stores/profiles';
+import {useApplicationSettingsStore} from "stores/application-settings";
 
 const quasar = useQuasar();
 const i18n = useI18n();
 
-const data = ref('');
-
 const userdataStore = useUserdataStore();
+const applicationSettingsStore = useApplicationSettingsStore();
 const localeStore = useLocaleStore();
 const menuStore = useMenuStore();
-const licenseStore = useLicenseStore();
-const roleStore = useRoleStore();
 const profilesStore = useProfilesStore();
 
-function loadColorTheme() {
-  api
-    .get('/api/configuration/public/colortheme')
-    .then((response) => {
-      let colorTheme = response.data;
-      setCssVar('primary', colorTheme.primary);
-      setCssVar('secondary', colorTheme.secondary);
-      setCssVar('accent', colorTheme.accent);
-      setCssVar('dark', colorTheme.dark);
-      setCssVar('positive', colorTheme.positive);
-      setCssVar('negative', colorTheme.negative);
-      setCssVar('info', colorTheme.info);
-      setCssVar('warning', colorTheme.warning);
-    })
-    .catch(() => {
-      quasar.notify({
-        color: 'negative',
-        position: 'bottom',
-        message: i18n.t('MainLayout.messages.colorThemeFailed'),
-        icon: 'report_problem',
-      });
-    });
-}
-
-function loadLocales() {
-  api
-    .get('/api/configuration/public/locale')
-    .then((response) => {
-      localeStore.setAvailableLocales(response.data);
-    })
-    .catch(() => {
-      quasar.notify({
-        color: 'negative',
-        position: 'bottom',
-        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.locales') }),
-        icon: 'report_problem',
-      });
-    });
-}
-
 function loadApplicationLocale() {
-  api
-    .get('/api/configuration/public/application-locale')
-    .then((response) => {
-      if (response.data) {
-        i18n.locale.value = response.data;
-      }
-    })
-    .catch(() => {
-      quasar.notify({
-        color: 'negative',
-        position: 'bottom',
-        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.applicationLocale') }),
-        icon: 'report_problem',
-      });
-    });
-}
-
-function loadRoles() {
-  api
-    .get('/api/configuration/public/role')
-    .then((response) => {
-      roleStore.setAvailableRoles(response.data);
-    })
-    .catch(() => {
-      quasar.notify({
-        color: 'negative',
-        position: 'bottom',
-        message: i18n.t('MainLayout.messages.rolesFailed'),
-        icon: 'report_problem',
-      });
-    });
+  if (applicationSettingsStore.applicationLocale) {
+    i18n.locale.value = applicationSettingsStore.applicationLocale;
+  }
 }
 
 function loadMenus() {
@@ -170,23 +98,6 @@ function loadMenus() {
     });
 }
 
-function loadTitle() {
-  api
-    .get('/api/configuration/public/title')
-    .then((response) => {
-      data.value = response.data;
-      document.title = data.value;
-    })
-    .catch(() => {
-      quasar.notify({
-        color: 'negative',
-        position: 'bottom',
-        message: i18n.t('MainLayout.messages.titleFailed'),
-        icon: 'report_problem',
-      });
-    });
-}
-
 function loadUserData() {
   api
     .get('/api/configuration/public/user')
@@ -198,22 +109,6 @@ function loadUserData() {
         color: 'negative',
         position: 'bottom',
         message: i18n.t('MainLayout.messages.userDataFailed'),
-        icon: 'report_problem',
-      });
-    });
-}
-
-function loadLicense() {
-  api
-    .get('/api/configuration/public/license')
-    .then((response) => {
-      licenseStore.setLicense(response.data);
-    })
-    .catch(() => {
-      quasar.notify({
-        color: 'negative',
-        position: 'bottom',
-        message: i18n.t('MainLayout.messages.licenseFailed'),
         icon: 'report_problem',
       });
     });
@@ -238,13 +133,7 @@ function logout() {
 }
 
 onMounted(() => {
-  loadColorTheme();
-  loadLocales();
   loadApplicationLocale();
-  loadRoles();
-  loadTitle();
-  loadUserData();
-  loadLicense();
   loadMenus();
 });
 </script>

@@ -4,14 +4,14 @@ import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.model.BaseTranslatableRestrictedObject;
 import com.arassec.artivact.core.model.Roles;
 import com.arassec.artivact.core.model.TranslatableString;
+import com.arassec.artivact.core.model.configuration.PropertiesConfiguration;
+import com.arassec.artivact.core.model.configuration.TagsConfiguration;
 import com.arassec.artivact.core.model.exchange.ExportConfiguration;
 import com.arassec.artivact.core.model.item.Item;
 import com.arassec.artivact.core.model.menu.Menu;
 import com.arassec.artivact.core.model.page.PageContent;
 import com.arassec.artivact.core.model.page.Widget;
 import com.arassec.artivact.core.model.page.widget.*;
-import com.arassec.artivact.core.model.property.PropertyCategory;
-import com.arassec.artivact.core.model.tag.Tag;
 import com.arassec.artivact.core.repository.FileRepository;
 import com.arassec.artivact.domain.exchange.model.ExchangeMainData;
 import com.arassec.artivact.domain.exchange.model.ExchangeType;
@@ -232,9 +232,9 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
      */
     private Path exportPropertiesConfiguration(ExportContext exportContext) {
         Path exportFile = exportContext.getExportDir().resolve(PROPERTIES_EXCHANGE_FILENAME_JSON);
-        List<PropertyCategory> categories = configurationService.loadPropertiesConfiguration().getCategories();
-        cleanupPropertyCategories(exportContext, categories);
-        writeJsonFile(exportFile, categories);
+        PropertiesConfiguration propertiesConfiguration = configurationService.loadPropertiesConfiguration();
+        cleanupPropertyConfiguration(exportContext, propertiesConfiguration);
+        writeJsonFile(exportFile, propertiesConfiguration);
         return exportFile;
     }
 
@@ -245,9 +245,9 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
      */
     private Path exportTagsConfiguration(ExportContext exportContext) {
         Path exportFile = exportContext.getExportDir().resolve(TAGS_EXCHANGE_FILENAME_JSON);
-        List<Tag> tags = configurationService.loadTagsConfiguration().getTags();
-        cleanupTags(exportContext, tags);
-        writeJsonFile(exportFile, tags);
+        TagsConfiguration tagsConfiguration = configurationService.loadTagsConfiguration();
+        cleanupTagsConfiguration(exportContext, tagsConfiguration);
+        writeJsonFile(exportFile, tagsConfiguration);
         return exportFile;
     }
 
@@ -447,11 +447,11 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
     /**
      * Cleans up property categories for export.
      *
-     * @param params             Export parameters.
-     * @param propertyCategories The property categories to clean up.
+     * @param params                  Export parameters.
+     * @param propertiesConfiguration The property configuration to clean up.
      */
-    private void cleanupPropertyCategories(ExportContext params, List<PropertyCategory> propertyCategories) {
-        propertyCategories.stream()
+    private void cleanupPropertyConfiguration(ExportContext params, PropertiesConfiguration propertiesConfiguration) {
+        propertiesConfiguration.getCategories().stream()
                 .filter(propertyCategory -> {
                     if (params.getExportConfiguration().isApplyRestrictions()) {
                         return propertyCategory.getRestrictions().isEmpty();
@@ -484,13 +484,13 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
     }
 
     /**
-     * Cleans up tags for export.
+     * Cleans up tags configuration for export.
      *
-     * @param params Export parameters.
-     * @param tags   The tags to clean up.
+     * @param params            Export parameters.
+     * @param tagsConfiguration The tags configuration to clean up.
      */
-    private void cleanupTags(ExportContext params, List<Tag> tags) {
-        tags.stream()
+    private void cleanupTagsConfiguration(ExportContext params, TagsConfiguration tagsConfiguration) {
+        tagsConfiguration.getTags().stream()
                 .filter(propertyCategory -> {
                     if (params.getExportConfiguration().isApplyRestrictions()) {
                         return propertyCategory.getRestrictions().isEmpty();

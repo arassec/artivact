@@ -1,54 +1,73 @@
 <template>
   <ArtivactContent>
-    <div>
+    <div class="full-width">
       <h1 class="av-text-h1">{{ $t('TagsConfigurationPage.heading') }}</h1>
-      <div class="q-mb-lg">
-        {{ $t('TagsConfigurationPage.description') }}
+
+      <q-tabs v-model="tab">
+        <q-tab name="configuration" icon="build" :label="$t('PropertiesConfigurationPage.tabs.configuration')">
+        </q-tab>
+        <q-tab name="export" icon="backup" :label="$t('PropertiesConfigurationPage.tabs.export')">
+        </q-tab>
+        <q-tab name="import" icon="download" :label="$t('PropertiesConfigurationPage.tabs.import')">
+        </q-tab>
+      </q-tabs>
+
+
+      <div v-if="tab == 'configuration'">
+        <h2 class="av-text-h2">{{ $t('PropertiesConfigurationPage.configuration.heading') }}</h2>
+
+        <div class="q-mb-lg">
+          {{ $t('TagsConfigurationPage.configuration.description') }}
+        </div>
+
+        <div
+          v-if="!tagsConfigurationRef || tagsConfigurationRef.tags.length == 0"
+          class="q-mb-md"
+        >
+          {{ $t('TagsConfigurationPage.configuration.noTagsDefined') }}
+        </div>
+
+        <artivact-tags-configuration-editor
+          :tags-configuration="tagsConfigurationRef"
+          :locales="applicationSettings.availableLocales"
+        />
+
+        <q-separator class="q-mt-md q-mb-md"/>
+
+        <q-btn
+          :label="$t('Common.save')"
+          color="primary"
+          class="float-right q-mb-lg"
+          @click="saveTagsConfiguration()"
+        />
       </div>
-
-      <div
-        v-if="!tagsConfigurationRef || tagsConfigurationRef.tags.length == 0"
-        class="q-mb-md"
-      >
-        {{ $t('TagsConfigurationPage.noTagsDefined') }}
-      </div>
-
-      <artivact-tags-configuration-editor
-        :tags-configuration="tagsConfigurationRef"
-        :locales="localesRef"
-      />
-
-      <q-separator class="q-mt-md q-mb-md" />
-
-      <q-btn
-        :label="$t('Common.save')"
-        color="primary"
-        class="float-right q-mb-lg"
-        @click="saveTagsConfiguration()"
-      />
     </div>
 
-    <div>
-      <h1 class="av-text-h1">{{ $t('TagsConfigurationPage.importexport.heading') }}</h1>
+    <div v-if="tab == 'export'">
+      <h2 class="av-text-h2">{{ $t('TagsConfigurationPage.export.heading') }}</h2>
 
       <div class="q-mb-md">
-        {{ $t('TagsConfigurationPage.importexport.export') }}
+        {{ $t('TagsConfigurationPage.export.description') }}
         <q-form :action="'/api/export/tags'" method="get">
           <q-btn
             icon="download"
-            :label="$t('TagsConfigurationPage.importexport.button.export')"
+            :label="$t('TagsConfigurationPage.export.button')"
             color="primary"
             type="submit"
             class="q-mt-md"
           />
         </q-form>
       </div>
+    </div>
+
+    <div v-if="tab == 'import'">
+      <h2 class="av-text-h2">{{ $t('TagsConfigurationPage.import.heading') }}</h2>
 
       <div>
-        {{ $t('TagsConfigurationPage.importexport.import') }}
+        {{ $t('TagsConfigurationPage.import.description') }}
         <q-uploader
           :url="'/api/import/tags'"
-          :label="$t('TagsConfigurationPage.importexport.button.import')"
+          :label="$t('TagsConfigurationPage.import.button')"
           class="q-mt-md q-mb-md"
           accept=".artivact.tags-configuration.json"
           field-name="file"
@@ -69,30 +88,19 @@ import {TagsConfiguration} from 'components/artivact-models';
 import ArtivactTagsConfigurationEditor from 'components/ArtivactTagsConfigurationEditor.vue';
 import ArtivactContent from 'components/ArtivactContent.vue';
 import {useI18n} from 'vue-i18n';
+import {useApplicationSettingsStore} from "stores/application-settings";
 
 const quasar = useQuasar();
 const i18n = useI18n();
 
-const localesRef = ref([]);
+const applicationSettings = useApplicationSettingsStore();
+
 const tagsConfigurationRef: Ref<TagsConfiguration | null> = ref(null);
+
+const tab = ref('configuration');
 
 let json = {} as TagsConfiguration;
 
-function loadLocales() {
-  api
-    .get('/api/configuration/public/locale')
-    .then((response) => {
-      localesRef.value = response.data;
-    })
-    .catch(() => {
-      quasar.notify({
-        color: 'negative',
-        position: 'bottom',
-        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.locales')}),
-        icon: 'report_problem',
-      });
-    });
-}
 
 function loadTagsConfiguration() {
   api
@@ -105,7 +113,7 @@ function loadTagsConfiguration() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.configuration.tags')}),
+        message: i18n.t('Common.messages.loading.failed', {item: i18n.t('Common.items.configuration.tags')}),
         icon: 'report_problem',
       });
     });
@@ -118,7 +126,7 @@ function saveTagsConfiguration() {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: i18n.t('Common.messages.saving.success', { item: i18n.t('Common.items.configuration.tags')}),
+        message: i18n.t('Common.messages.saving.success', {item: i18n.t('Common.items.configuration.tags')}),
         icon: 'check',
       });
     })
@@ -126,7 +134,7 @@ function saveTagsConfiguration() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.saving.failed', { item: i18n.t('Common.items.configuration.tags')}),
+        message: i18n.t('Common.messages.saving.failed', {item: i18n.t('Common.items.configuration.tags')}),
         icon: 'report_problem',
       });
     });
@@ -143,7 +151,6 @@ function tagsUploaded() {
 }
 
 onMounted(() => {
-  loadLocales();
   loadTagsConfiguration();
 });
 </script>

@@ -1,60 +1,76 @@
 <template>
   <ArtivactContent>
-    <div>
+    <div class="full-width">
       <h1 class="av-text-h1">{{ $t('PropertiesConfigurationPage.heading') }}</h1>
-      <div class="q-mb-lg">
-        {{ $t('PropertiesConfigurationPage.description') }}
-      </div>
 
-      <div
-        class="q-mb-md"
-        v-if="
+      <q-tabs v-model="tab">
+        <q-tab name="configuration" icon="build" :label="$t('PropertiesConfigurationPage.tabs.configuration')">
+        </q-tab>
+        <q-tab name="export" icon="backup" :label="$t('PropertiesConfigurationPage.tabs.export')">
+        </q-tab>
+        <q-tab name="import" icon="download" :label="$t('PropertiesConfigurationPage.tabs.import')">
+        </q-tab>
+      </q-tabs>
+
+      <div v-if="tab == 'configuration'">
+        <h2 class="av-text-h2">{{ $t('PropertiesConfigurationPage.configuration.heading') }}</h2>
+
+        <div class="q-mb-lg">
+          {{ $t('PropertiesConfigurationPage.configuration.description') }}
+        </div>
+
+        <div
+          class="q-mb-md"
+          v-if="
           !propertiesConfigurationRef ||
           !propertiesConfigurationRef.categories ||
           propertiesConfigurationRef.categories.length == 0
         "
-      >
-        {{ $t('PropertiesConfigurationPage.noPropertiesDefined') }}
+        >
+          {{ $t('PropertiesConfigurationPage.configuration.noPropertiesDefined') }}
+        </div>
+
+        <artivact-properties-configuration-editor
+          v-if="propertiesConfigurationRef"
+          :properties-configuration="propertiesConfigurationRef"
+          :locales="localeStore.locales"
+        />
+
+        <q-separator class="q-mt-md q-mb-md"/>
+
+        <q-btn
+          data-test="save-properties-button"
+          :label="$t('Common.save')"
+          color="primary"
+          class="float-right q-mb-lg"
+          @click="saveProperties()"
+        />
       </div>
 
-      <artivact-properties-configuration-editor
-        v-if="propertiesConfigurationRef"
-        :properties-configuration="propertiesConfigurationRef"
-        :locales="localeStore.locales"
-      />
+      <div v-if="tab == 'export'">
+        <h2 class="av-text-h2">{{ $t('PropertiesConfigurationPage.export.heading') }}</h2>
 
-      <q-separator class="q-mt-md q-mb-md" />
-
-      <q-btn
-        data-test="save-properties-button"
-        :label="$t('Common.save')"
-        color="primary"
-        class="float-right q-mb-lg"
-        @click="saveProperties()"
-      />
-    </div>
-
-    <div>
-      <h1 class="av-text-h1">{{ $t('PropertiesConfigurationPage.importexport.heading') }}</h1>
-
-      <div class="q-mb-md">
-        {{ $t('PropertiesConfigurationPage.importexport.export') }}
-        <q-form :action="'/api/export/properties'" method="get">
-          <q-btn
-            icon="download"
-            :label="$t('PropertiesConfigurationPage.importexport.button.export')"
-            color="primary"
-            type="submit"
-            class="q-mt-md"
-          />
-        </q-form>
+        <div class="q-mb-md">
+          {{ $t('PropertiesConfigurationPage.export.description') }}
+          <q-form :action="'/api/export/properties'" method="get">
+            <q-btn
+              icon="download"
+              :label="$t('PropertiesConfigurationPage.export.button')"
+              color="primary"
+              type="submit"
+              class="q-mt-md"
+            />
+          </q-form>
+        </div>
       </div>
 
-      <div>
-        {{ $t('PropertiesConfigurationPage.importexport.import') }}
+      <div v-if="tab == 'import'">
+        <h2 class="av-text-h2">{{ $t('PropertiesConfigurationPage.import.heading') }}</h2>
+
+        {{ $t('PropertiesConfigurationPage.import.description') }}
         <q-uploader
           :url="'/api/import/properties'"
-          :label="$t('PropertiesConfigurationPage.importexport.button.import')"
+          :label="$t('PropertiesConfigurationPage.import.button')"
           class="q-mt-md q-mb-md"
           accept=".artivact.properties-configuration.json"
           field-name="file"
@@ -62,6 +78,7 @@
           @finish="propertiesUploaded"
         />
       </div>
+
     </div>
   </ArtivactContent>
 </template>
@@ -82,6 +99,9 @@ const localeStore = useLocaleStore();
 
 const propertiesConfigurationRef = ref();
 
+const tab = ref('configuration');
+
+
 function loadPropertyConfiguration() {
   api
     .get('/api/configuration/property')
@@ -92,7 +112,7 @@ function loadPropertyConfiguration() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.configuration.properties')}),
+        message: i18n.t('Common.messages.loading.failed', {item: i18n.t('Common.items.configuration.properties')}),
         icon: 'report_problem',
       });
     });
@@ -105,7 +125,7 @@ function saveProperties() {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: i18n.t('Common.messages.saving.success', { item: i18n.t('Common.items.configuration.properties')}),
+        message: i18n.t('Common.messages.saving.success', {item: i18n.t('Common.items.configuration.properties')}),
         icon: 'check',
       });
     })
@@ -113,7 +133,7 @@ function saveProperties() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.saving.failed', { item: i18n.t('Common.items.configuration.properties')}),
+        message: i18n.t('Common.messages.saving.failed', {item: i18n.t('Common.items.configuration.properties')}),
         icon: 'report_problem',
       });
     });

@@ -2,11 +2,11 @@ package com.arassec.artivact.web.controller;
 
 import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.model.Roles;
-import com.arassec.artivact.core.model.appearance.ColorTheme;
 import com.arassec.artivact.core.model.configuration.*;
 import com.arassec.artivact.core.model.menu.Menu;
 import com.arassec.artivact.core.model.property.PropertyCategory;
 import com.arassec.artivact.domain.service.ConfigurationService;
+import com.arassec.artivact.web.model.ApplicationSettings;
 import com.arassec.artivact.web.model.Profiles;
 import com.arassec.artivact.web.model.UserData;
 import lombok.RequiredArgsConstructor;
@@ -42,51 +42,32 @@ public class ConfigurationController {
     private final ConfigurationService configurationService;
 
     /**
-     * Returns the configured locales supported by the application. These are the locales maintained by the users for
-     * every text in pages and items.
+     * Returns the current appearance configuration.
      *
-     * @return The available locales as Strings.
+     * @return The {@link AppearanceConfiguration} of the app.
      */
-    @GetMapping(value = "/public/locale")
-    public List<String> getAvailableLocales() {
-        String availableLocales = configurationService.loadAppearanceConfiguration()
-                .getAvailableLocales();
+    @GetMapping(value = "/public/settings")
+    public ApplicationSettings getAppearance() {
+        AppearanceConfiguration appearanceConfiguration = configurationService.loadTranslatedAppearanceConfiguration();
+
+        ApplicationSettings applicationSettings = new ApplicationSettings();
+        applicationSettings.setApplicationTitle(appearanceConfiguration.getApplicationTitle());
+
+        String availableLocales = appearanceConfiguration.getAvailableLocales();
         if (StringUtils.hasText(availableLocales)) {
-            return Arrays.stream(availableLocales.split(",")).map(String::trim).toList();
+            applicationSettings.setAvailableLocales(Arrays.stream(availableLocales.split(",")).map(String::trim).toList());
         } else {
-            return List.of();
+            applicationSettings.setAvailableLocales(List.of());
         }
-    }
 
-    /**
-     * Returns the locale used by the application, which is maintained by the application. This determines the language
-     * used in the application in desktop mode.
-     *
-     * @return The locale of the application.
-     */
-    @GetMapping(value = "/public/application-locale")
-    public String getApplicationLocale() {
-        return configurationService.loadAppearanceConfiguration().getApplicationLocale();
-    }
+        applicationSettings.setApplicationLocale(appearanceConfiguration.getApplicationLocale());
+        applicationSettings.setColorTheme(appearanceConfiguration.getColorTheme());
+        applicationSettings.setLicense(appearanceConfiguration.getLicense());
+        applicationSettings.setProfiles(
+                new Profiles(configurationService.isDesktopProfileEnabled(), configurationService.isE2eProfileEnabled()));
+        applicationSettings.setAvailableRoles(List.of(Roles.ROLE_ADMIN, Roles.ROLE_USER));
 
-    /**
-     * Returns the available roles.
-     *
-     * @return The roles.
-     */
-    @GetMapping(value = "/public/role")
-    public List<String> getAvailableRoles() {
-        return List.of(Roles.ROLE_ADMIN, Roles.ROLE_USER);
-    }
-
-    /**
-     * Returns the application's configured title.
-     *
-     * @return The title.
-     */
-    @GetMapping(value = "/public/title")
-    public String getTitle() {
-        return configurationService.loadAppearanceConfiguration().getApplicationTitle();
+        return applicationSettings;
     }
 
     /**
@@ -141,43 +122,13 @@ public class ConfigurationController {
     }
 
     /**
-     * Returns the current license configuration.
-     *
-     * @return The license configuration.
-     */
-    @GetMapping(value = "/public/license")
-    public LicenseConfiguration getPublicLicenseConfiguration() {
-        return configurationService.loadLicenseConfiguration();
-    }
-
-    /**
-     * Returns the current color theme configuration.
-     *
-     * @return The color theme configuration.
-     */
-    @GetMapping(value = "/public/colortheme")
-    public ColorTheme getColorTheme() {
-        return configurationService.loadAppearanceConfiguration().getColorTheme();
-    }
-
-    /**
-     * Returns whether the application runs in desktop-mode ({@code true}) or not ({@code false}).
-     *
-     * @return {@code true} if the application runs in desktop-mode, {@code false} otherwise.
-     */
-    @GetMapping(value = "/public/profiles")
-    public Profiles getProfiles() {
-        return new Profiles(configurationService.isDesktopProfileEnabled(), configurationService.isE2eProfileEnabled());
-    }
-
-    /**
      * Returns the application's favicon in the requested size.
      *
      * @return The favicon as byte array.
      */
     @GetMapping(value = "/public/favicon", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public HttpEntity<byte[]> getFavicon() {
-        AppearanceConfiguration appearanceConfiguration = configurationService.loadAppearanceConfiguration();
+        AppearanceConfiguration appearanceConfiguration = configurationService.loadTranslatedAppearanceConfiguration();
 
         String base64EncodedFavicon = appearanceConfiguration.getEncodedFavicon();
 
@@ -195,7 +146,7 @@ public class ConfigurationController {
      */
     @PostMapping("/favicon")
     public ResponseEntity<Void> uploadFavicon(@RequestPart(value = "file") final MultipartFile file) {
-        AppearanceConfiguration appearanceConfiguration = configurationService.loadAppearanceConfiguration();
+        AppearanceConfiguration appearanceConfiguration = configurationService.loadTranslatedAppearanceConfiguration();
         try {
             appearanceConfiguration.setEncodedFavicon(Base64.getEncoder().encodeToString(file.getBytes()));
             configurationService.saveAppearanceConfiguration(appearanceConfiguration);
@@ -226,33 +177,13 @@ public class ConfigurationController {
     }
 
     /**
-     * Returns the license configuration.
-     *
-     * @return The current license configuration.
-     */
-    @GetMapping(value = "/license")
-    public LicenseConfiguration getLicenseConfiguration() {
-        return configurationService.loadLicenseConfiguration();
-    }
-
-    /**
-     * Saves the given license configuration.
-     *
-     * @param licenseConfiguration The license configuration to save.
-     */
-    @PostMapping(value = "/license")
-    public void saveLicenseConfiguration(@RequestBody LicenseConfiguration licenseConfiguration) {
-        configurationService.saveLicenseConfiguration(licenseConfiguration);
-    }
-
-    /**
      * Returns the appearance configuration.
      *
      * @return The current appearance configuration.
      */
     @GetMapping(value = "/appearance")
     public AppearanceConfiguration getAppearanceConfiguration() {
-        return configurationService.loadAppearanceConfiguration();
+        return configurationService.loadTranslatedAppearanceConfiguration();
     }
 
     /**

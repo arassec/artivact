@@ -64,14 +64,14 @@
 
     <div class="row q-mt-sm q-mb-sm col-12 justify-center items-center"
          v-if="itemDetailsRef.images.length > 0 || itemDetailsRef.models.length > 0">
-      <div v-if="licenseStore.licenseConfiguration &&
-              licenseStore.licenseConfiguration.licenseLabel &&
-              licenseStore.licenseConfiguration.licenseLabel.translatedValue">
-        {{ licenseStore.licenseConfiguration.prefix.translatedValue }}
-        <a :href="licenseStore.licenseConfiguration.licenseUrl">{{
-            licenseStore.licenseConfiguration.licenseLabel.translatedValue
+      <div v-if="applicationSettings.license &&
+              applicationSettings.license.licenseLabel &&
+              applicationSettings.license.licenseLabel.translatedValue">
+        {{ applicationSettings.license.prefix.translatedValue }}
+        <a :href="applicationSettings.license.licenseUrl">{{
+            applicationSettings.license.licenseLabel.translatedValue
           }}</a>
-        {{ licenseStore.licenseConfiguration.suffix.translatedValue }}
+        {{ applicationSettings.license.suffix.translatedValue }}
       </div>
     </div>
 
@@ -105,8 +105,8 @@
 <script setup lang="ts">
 import {PropType, ref, toRef} from 'vue';
 import {ItemDetails} from 'components/artivact-models';
-import {useLicenseStore} from 'stores/license';
 import ArtivactItemModelViewer from 'components/ArtivactItemModelViewer.vue';
+import {useApplicationSettingsStore} from "stores/application-settings";
 
 const props = defineProps({
   itemDetails: {
@@ -121,7 +121,7 @@ const props = defineProps({
   },
 });
 
-const licenseStore = useLicenseStore();
+const applicationSettings = useApplicationSettingsStore();
 
 const itemDetailsRef = toRef(props, 'itemDetails');
 

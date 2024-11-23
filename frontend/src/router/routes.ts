@@ -1,9 +1,11 @@
 import {RouteRecordRaw} from 'vue-router';
 import {api} from 'boot/axios';
-import {useQuasar} from 'quasar';
+import {setCssVar, useQuasar} from 'quasar';
 import {useUserdataStore} from 'stores/userdata';
 import {Profiles} from 'components/artivact-models';
 import {useProfilesStore} from 'stores/profiles';
+import {useApplicationSettingsStore} from 'stores/application-settings';
+import {useLocaleStore} from 'stores/locale';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -12,16 +14,37 @@ const routes: RouteRecordRaw[] = [
     beforeEnter: (to, from, next) => {
 
       const quasar = useQuasar();
+
+      const applicationSettingsStore = useApplicationSettingsStore();
+      const localeStore = useLocaleStore();
       const profilesStore = useProfilesStore();
       const userdataStore = useUserdataStore();
 
       api
-        .get('/api/configuration/public/profiles')
+        .get('/api/configuration/public/settings')
         .then((response) => {
+
+          applicationSettingsStore.setSettings(response.data);
+
+          localeStore.setAvailableLocales(response.data.availableLocales);
+
+          document.title = response.data.applicationTitle;
+
+          const colorTheme = response.data.colorTheme;
+          setCssVar('primary', colorTheme.primary);
+          setCssVar('secondary', colorTheme.secondary);
+          setCssVar('accent', colorTheme.accent);
+          setCssVar('dark', colorTheme.dark);
+          setCssVar('positive', colorTheme.positive);
+          setCssVar('negative', colorTheme.negative);
+          setCssVar('info', colorTheme.info);
+          setCssVar('warning', colorTheme.warning);
+
           const profiles: Profiles = response.data;
           profilesStore.setE2eModeEnabled(profiles.e2e)
           profilesStore.setDesktopModeEnabled(profiles.desktop || profiles.e2e);
           profilesStore.setServerModeEnabled(!profiles.desktop || profiles.e2e);
+
           if (profiles.desktop || profiles.e2e) {
             const postdata = new URLSearchParams();
             postdata.append('username', 'desktop');
@@ -76,7 +99,6 @@ const routes: RouteRecordRaw[] = [
       {path: '/administration/configuration/item/:itemId?', component: () => import('pages/ItemEditPage.vue')},
       {path: '/administration/configuration/properties', component: () => import('pages/PropertiesConfigurationPage.vue')},
       {path: '/administration/configuration/tags', component: () => import('pages/TagsConfigurationPage.vue')},
-      {path: '/administration/configuration/license', component: () => import('pages/LicenseConfigurationPage.vue')},
       {path: '/administration/configuration/appearance', component: () => import('pages/AppearanceConfigurationPage.vue')},
       {path: '/administration/configuration/peripherals', component: () => import('pages/PeripheralsConfigurationPage.vue')},
       {path: '/administration/configuration/exchange', component: () => import('pages/ExchangeConfigurationPage.vue')},

@@ -3,59 +3,79 @@
     <div class="full-width">
       <h1 class="av-text-h1">{{ $t('ExchangeConfigurationPage.heading') }}</h1>
 
-      <h2 class="av-text-h2">{{ $t('ExchangeConfigurationPage.exchange.heading') }}</h2>
-      <div class="q-mb-lg">
-        {{ $t('ExchangeConfigurationPage.exchange.description') }}
+      <q-tabs v-model="tab">
+        <q-tab name="configuration" icon="build" :label="$t('ExchangeConfigurationPage.tabs.configuration')">
+        </q-tab>
+        <q-tab name="export" icon="backup" :label="$t('ExchangeConfigurationPage.tabs.export')">
+        </q-tab>
+        <q-tab name="import" icon="download" :label="$t('ExchangeConfigurationPage.tabs.import')">
+        </q-tab>
+      </q-tabs>
+
+      <div v-if="tab == 'configuration'">
+        <h2 class="av-text-h2">{{ $t('ExchangeConfigurationPage.configuration.heading') }}</h2>
+        <div>
+          <div class="q-mb-lg">
+            {{ $t('ExchangeConfigurationPage.configuration.description') }}
+          </div>
+          <artivact-exchange-configuration-editor :exchange-configuration="exchangeConfigurationRef"
+                                                  v-if="exchangeConfigurationRef"/>
+          <div class="row">
+            <q-btn
+              :label="$t('Common.save')"
+              color="primary"
+              class="q-mb-lg"
+              @click="saveExchangeConfiguration()"
+            />
+          </div>
+        </div>
       </div>
-      <artivact-exchange-configuration-editor :exchange-configuration="exchangeConfigurationRef"
-                                              v-if="exchangeConfigurationRef"/>
-      <q-btn
-        :label="$t('Common.save')"
-        color="primary"
-        class="q-mb-lg float-right"
-        @click="saveExchangeConfiguration()"
-      />
-    </div>
 
-    <div class="full-width q-mb-md">
-      <q-separator/>
-    </div>
+      <div v-if="tab == 'export'">
+        <div class="full-width">
 
-    <div class="full-width">
-      <q-btn
-        :label="$t('ExchangeConfigurationPage.syncAllUp.button')"
-        color="primary"
-        class="q-mb-lg float-right"
-        @click="synchronizeAllUp()"
-      />
-    </div>
+          <h2 class="av-text-h2">{{ $t('ExchangeConfigurationPage.syncAllUp.heading') }}</h2>
 
-    <div class="full-width">
-      <h2 class="av-text-h2">{{ $t('ExchangeConfigurationPage.contentExport.heading') }}</h2>
-      <div class="q-mb-lg">
-        {{ $t('ExchangeConfigurationPage.contentExport.description') }}
+          <div class="full-width">
+            <div class="q-mb-lg">
+              {{ $t('ExchangeConfigurationPage.syncAllUp.description') }}
+            </div>
+            <q-btn
+              :label="$t('ExchangeConfigurationPage.syncAllUp.button')"
+              color="primary"
+              class="q-mb-lg"
+              @click="synchronizeAllUp()"
+            />
+          </div>
+
+          <q-separator class="full-width q-mb-md"/>
+
+          <h2 class="av-text-h2">{{ $t('ExchangeConfigurationPage.contentExport.heading') }}</h2>
+          <div class="q-mb-lg">
+            {{ $t('ExchangeConfigurationPage.contentExport.description') }}
+          </div>
+          <artivact-content-export-configuration-editor :content-exports="contentExportsRef"
+                                                        v-if="contentExportsRef"
+                                                        v-on:delete-content-export="confirmDeleteContentExport"/>
+        </div>
       </div>
-      <artivact-content-export-configuration-editor :content-exports="contentExportsRef"
-                                                    v-if="contentExportsRef"
-                                                    v-on:delete-content-export="confirmDeleteContentExport"/>
-    </div>
 
-
-    <div class="full-width">
-      <h2 class="av-text-h2">{{ $t('ExchangeConfigurationPage.contentImport.heading') }}</h2>
-      <div class="q-mb-lg">
-        {{ $t('ExchangeConfigurationPage.contentImport.description') }}
+      <div v-if="tab == 'import'" class="full-width">
+        <h2 class="av-text-h2">{{ $t('ExchangeConfigurationPage.contentImport.heading') }}</h2>
+        <div class="q-mb-lg">
+          {{ $t('ExchangeConfigurationPage.contentImport.description') }}
+        </div>
+        <q-uploader
+          :url="'/api/import/content'"
+          :label="$t('ExchangeConfigurationPage.contentImport.button')"
+          class="q-mt-md q-mb-md"
+          accept="artivact.content.zip"
+          field-name="file"
+          :no-thumbnails="true"
+          @uploaded="contentUploaded"
+          @failed="contentUploadFailed"
+        />
       </div>
-      <q-uploader
-        :url="'/api/import/content'"
-        :label="$t('ExchangeConfigurationPage.contentImport.button')"
-        class="q-mt-md q-mb-md"
-        accept="artivact.content.zip"
-        field-name="file"
-        :no-thumbnails="true"
-        @uploaded="contentUploaded"
-        @failed="contentUploadFailed"
-      />
     </div>
 
     <!-- DELETE CONFIRMATION DIALOG -->
@@ -88,6 +108,7 @@
                                            :dialog-model="showOperationInProgressModalRef"
                                            @close-dialog="showOperationInProgressModalRef = false"/>
 
+
   </artivact-content>
 </template>
 
@@ -118,6 +139,8 @@ const showDeleteContentExportModalRef = ref(false);
 
 const progressMonitorRef = ref<OperationProgress>();
 const showOperationInProgressModalRef = ref(false);
+
+const tab = ref('configuration');
 
 function loadExchangeConfiguration() {
   api
@@ -260,13 +283,13 @@ function contentUploaded() {
       }
     })
     .catch(() => {
-        quasar.notify({
-          color: 'negative',
-          position: 'bottom',
-          message: i18n.t('ExchangeConfigurationPage.messages.import.failed'),
-          icon: 'report_problem',
-        });
+      quasar.notify({
+        color: 'negative',
+        position: 'bottom',
+        message: i18n.t('ExchangeConfigurationPage.messages.import.failed'),
+        icon: 'report_problem',
       });
+    });
 }
 
 function updateImportOperationProgress() {

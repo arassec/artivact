@@ -5,7 +5,7 @@
 
       <label>{{ $t('SearchConfigurationPage.label') }}</label>
 
-      <br/>
+      <div class="q-mb-lg"/>
 
       <q-btn
         :label="$t('SearchConfigurationPage.btnLabel')"

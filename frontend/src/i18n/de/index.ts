@@ -58,11 +58,7 @@ export default {
     login: 'Login',
     logout: 'Logout',
     messages: {
-      colorThemeFailed: 'Laden des Farbschemas fehlgeschlagen!',
-      rolesFailed: 'Laden von Benutzerrollen fehlgeschlagen!',
-      titleFailed: 'Laden des Anwendungstitels fehlgeschlagen!',
       userDataFailed: 'Laden der Benutzerdaten fehlgeschlagen!',
-      licenseFailed: 'Laden von Lizenzinformationen fehlgeschlagen!',
       logoutFailed: 'Logout fehlgeschlagen!'
     }
   },
@@ -126,12 +122,19 @@ export default {
   },
 
   ExchangeConfigurationPage: {
-    heading: 'Austausch-Konfiguration',
-    exchange: {
+    heading: 'Datenaustausch',
+    tabs: {
+      configuration: 'Konfiguration',
+      export: 'Export',
+      import: 'Import',
+    },
+    configuration: {
       heading: 'Synchronisation',
       description: 'Hier können Parameter für den Austausch von Objekten zwischen verschiedenen Artivact-Instanzen konfiguriert werden.'
     },
     syncAllUp: {
+      heading: 'Upload',
+      description: 'Mit dem unten stehenden Button können alle lokal geänderten Objekte mit der entfernten Artivact-Instanz synchronisiert werden.',
       button: 'Alle geänderten Objekte Hochladen'
     },
     contentExport: {
@@ -224,10 +227,6 @@ export default {
     }
   },
 
-  LicenseConfigurationPage: {
-    heading: 'Lizenz-Konfiguration',
-  },
-
   LoginPage: {
     login: 'Login',
     messages: {
@@ -243,17 +242,26 @@ export default {
   },
 
   PropertiesConfigurationPage: {
-    heading: 'Eigenschaften-Konfiguration',
-    description: 'Hier können die Eigenschaften von Objekten definiert werden. Sie werden in Kategorien unterteilt, die per Drag&Drop sortiert werden können. Die Kategorien, mit ihren enthaltenen Eigenschaften, werden auf der Objektdetailseite angezeigt.',
-    noPropertiesDefined: 'Aktuell sind keine Eigenschaften definiert.',
-    importexport: {
-      heading: 'Eigenschaften Import/Export',
-      export: 'Sie können die aktuelle Eigenschaften-Konfiguration mit dem unten stehenden Button exportieren. Eine JSON-Datei mit der aktuellen Konfiguration wird erstellt und heruntergeladen.',
-      import: 'Sie können eine vorher exportierte Eigenschaften-Konfiguration hochladen und damit die aktuelle Konfiguration ÜBERSCHREIBEN.',
-      button: {
-        export: 'Eigenschaften exportieren',
-        import: 'Eigenschaften importieren'
-      },
+    heading: 'Eigenschaften',
+    tabs: {
+      configuration: 'Konfiguration',
+      export: 'Export',
+      import: 'Import',
+    },
+    configuration: {
+      heading: 'Konfiguration',
+      description: 'Hier können die Eigenschaften von Objekten definiert werden. Sie werden in Kategorien unterteilt, die per Drag&Drop sortiert werden können. Die Kategorien, mit ihren enthaltenen Eigenschaften, werden auf der Objektdetailseite angezeigt.',
+      noPropertiesDefined: 'Aktuell sind keine Eigenschaften definiert.',
+    },
+    export: {
+      heading: 'Export',
+      description: 'Sie können die aktuelle Eigenschaften-Konfiguration mit dem unten stehenden Button exportieren. Eine JSON-Datei mit der aktuellen Konfiguration wird erstellt und heruntergeladen.',
+      button: 'Eigenschaften exportieren'
+    },
+    import: {
+      heading: 'Import',
+      description: 'Sie können eine vorher exportierte Eigenschaften-Konfiguration hochladen und damit die aktuelle Konfiguration ÜBERSCHREIBEN.',
+      button: 'Eigenschaften importieren',
     },
     messages: {
       uploadSuccess: 'Eigenschaften-Konfiguration hochgeladen'
@@ -271,17 +279,21 @@ export default {
   },
 
   TagsConfigurationPage: {
-    heading: 'Tags-Konfiguration',
-    description: 'Tags können verwendet werden um Objekte zu kategorisieren. Sie sollten als Metadaten behandelt werden, und nicht verwendet werden um Eigenschaften zu ersetzen.',
-    noTagsDefined: 'Aktuell sind keine Tags definiert.',
-    importexport: {
-      heading: 'Tags Import/Export',
-      export: 'Sie können die aktuelle Tags-Konfiguration mit dem unten stehenden Button exportieren. Eine JSON-Datei mit der aktuellen Konfiguration wird erstellt und heruntergeladen.',
-      import: 'Sie können eine zuvor exportierte Tags-Konfiguration hochladen um die aktuelle Konfiguration zu ÜBERSCHREIBEN.',
-      button: {
-        export: 'Tags exportieren',
-        import: 'Tags importieren'
-      },
+    heading: 'Tags',
+    configuration: {
+      heading: 'Konfiguration',
+      description: 'Tags können verwendet werden um Objekte zu kategorisieren. Sie sollten als Metadaten behandelt werden, und nicht verwendet werden um Eigenschaften zu ersetzen.',
+      noTagsDefined: 'Aktuell sind keine Tags definiert.',
+    },
+    export: {
+      heading: 'Export',
+      description: 'Sie können die aktuell konfigurierten Tags mit dem unten stehenden Button exportieren. Eine JSON-Datei mit der aktuellen Konfiguration wird erstellt und heruntergeladen.',
+      button: 'Tags exportieren',
+    },
+    import: {
+      heading: 'Import',
+      description: 'Sie können eine zuvor exportierte Tags-Konfiguration hochladen um die aktuelle Konfiguration zu ÜBERSCHREIBEN.',
+      button: 'Tags importieren',
     },
     messages: {
       uploadSuccess: 'Tags-Konfiguration hochgeladen'
@@ -319,7 +331,23 @@ export default {
         description: 'Die hochgeladene Datei wird sofort als Favicon verwendet!',
         descriptionSuffix: 'Durch Browsercaches kann es jedoch sein, dass ein neu hochgeladenes Favicon erst nach einiger Zeit sichtbar wird.',
         saved: 'Favicon gespeichert'
-      }
+      },
+      license: {
+        heading: 'Lizenz der Mediendateien',
+        description: 'Konfiguriert den Lizenz-Text auf der Objekt-Detailseite. Der Lizenztext setzt sich aus einem Prefix, der eigentlichen Lizenz und einem Suffix zusammen. Falls eine URL konfiguriert wird, wird die Lizenz als Link zu der konfigurierten URL gerendert.',
+        descriptionSuffix: 'Der finale Lizenztext könnte folgendermaßen aussehen: "Mediendateien stehen unter der \'CC BY-SA\'-Lizenz."',
+        card: {
+          heading: 'Lizenz',
+          prefixDescription: 'Der erste Teil des Lizenztextes, z.B. \'Mediendateien stehen unter der\'.',
+          prefixLabel: 'Prefix',
+          licenseDescription: 'Der Name der Lizenz, z.B. \'MIT\' oder \'CC BY-SA\'.',
+          licenseLabel: 'Lizenz',
+          suffixDescription: 'Der hintere Teil des Lizenztextes, z.B. \'-Lizenz\'.',
+          suffixLabel: 'Suffix',
+          urlDescription: 'Falls angegeben wird die Lizenz als Link zu dieser URL gerendert.',
+          urlLabel: 'Lizenz-URL'
+        }
+      },
     }
   },
 
@@ -366,22 +394,6 @@ export default {
       messages: {
         openFailed: 'Konnte Verzeichnis nicht öffnen!'
       }
-    }
-  },
-
-  ArtivactLicenseConfigurationEditor: {
-    description: 'Konfiguriert den Lizenz-Text auf der Objekt-Detailseite. Der Lizenztext setzt sich aus einem Prefix, der eigentlichen Lizenz und einem Suffix zusammen. Falls eine URL konfiguriert wird, wird die Lizenz als Link zu der konfigurierten URL gerendert.',
-    descriptionSuffix: 'Der finale Lizenztext könnte folgendermaßen aussehen: "Mediendateien stehen unter der \'CC BY-SA\'-Lizenz."',
-    card: {
-      heading: 'Lizenz',
-      prefixDescription: 'Der erste Teil des Lizenztextes, z.B. \'Mediendateien stehen unter der\'.',
-      prefixLabel: 'Prefix',
-      licenseDescription: 'Der Name der Lizenz, z.B. \'MIT\' oder \'CC BY-SA\'.',
-      licenseLabel: 'Lizenz',
-      suffixDescription: 'Der hintere Teil des Lizenztextes, z.B. \'-Lizenz\'.',
-      suffixLabel: 'Suffix',
-      urlDescription: 'Falls angegeben wird die Lizenz als Link zu dieser URL gerendert.',
-      urlLabel: 'Lizenz-URL'
     }
   },
 

@@ -56,7 +56,7 @@ class ConfigurationControllerTest {
         AppearanceConfiguration appearanceConfiguration = new AppearanceConfiguration();
         appearanceConfiguration.setAvailableLocales("de,nl");
 
-        when(configurationService.loadAppearanceConfiguration()).thenReturn(appearanceConfiguration);
+        when(configurationService.loadTranslatedAppearanceConfiguration()).thenReturn(appearanceConfiguration);
 
         List<String> result = controller.getAvailableLocales();
         assertEquals("de", result.get(0));
@@ -71,7 +71,7 @@ class ConfigurationControllerTest {
         AppearanceConfiguration appearanceConfiguration = new AppearanceConfiguration();
         appearanceConfiguration.setApplicationLocale("ja");
 
-        when(configurationService.loadAppearanceConfiguration()).thenReturn(appearanceConfiguration);
+        when(configurationService.loadTranslatedAppearanceConfiguration()).thenReturn(appearanceConfiguration);
 
         assertEquals("ja", controller.getApplicationLocale());
     }
@@ -95,7 +95,7 @@ class ConfigurationControllerTest {
         AppearanceConfiguration appearanceConfiguration = new AppearanceConfiguration();
         appearanceConfiguration.setApplicationTitle("Application Title");
 
-        when(configurationService.loadAppearanceConfiguration()).thenReturn(appearanceConfiguration);
+        when(configurationService.loadTranslatedAppearanceConfiguration()).thenReturn(appearanceConfiguration);
 
         assertEquals("Application Title", controller.getTitle());
     }
@@ -167,7 +167,7 @@ class ConfigurationControllerTest {
         AppearanceConfiguration appearanceConfiguration = new AppearanceConfiguration();
         appearanceConfiguration.setColorTheme(colorTheme);
 
-        when(configurationService.loadAppearanceConfiguration()).thenReturn(appearanceConfiguration);
+        when(configurationService.loadTranslatedAppearanceConfiguration()).thenReturn(appearanceConfiguration);
 
         assertEquals(colorTheme, controller.getColorTheme());
     }
@@ -195,7 +195,7 @@ class ConfigurationControllerTest {
         AppearanceConfiguration appearanceConfiguration = new AppearanceConfiguration();
         appearanceConfiguration.setEncodedFavicon(Base64.getEncoder().encodeToString("large-favicon".getBytes()));
 
-        when(configurationService.loadAppearanceConfiguration()).thenReturn(appearanceConfiguration);
+        when(configurationService.loadTranslatedAppearanceConfiguration()).thenReturn(appearanceConfiguration);
 
         HttpEntity<byte[]> httpEntity = controller.getFavicon();
         assertEquals("large-favicon", new String(Objects.requireNonNull(httpEntity.getBody())));
@@ -209,7 +209,7 @@ class ConfigurationControllerTest {
     @SneakyThrows
     void testUploadFavicon() {
         AppearanceConfiguration appearanceConfiguration = new AppearanceConfiguration();
-        when(configurationService.loadAppearanceConfiguration()).thenReturn(appearanceConfiguration);
+        when(configurationService.loadTranslatedAppearanceConfiguration()).thenReturn(appearanceConfiguration);
 
         MultipartFile multipartFile = mock(MultipartFile.class);
         when(multipartFile.getBytes()).thenReturn("favicon".getBytes());
@@ -269,7 +269,7 @@ class ConfigurationControllerTest {
     @Test
     void testGetAppearanceConfiguration() {
         AppearanceConfiguration appearanceConfiguration = new AppearanceConfiguration();
-        when(configurationService.loadAppearanceConfiguration()).thenReturn(appearanceConfiguration);
+        when(configurationService.loadTranslatedAppearanceConfiguration()).thenReturn(appearanceConfiguration);
         assertEquals(appearanceConfiguration, controller.getAppearanceConfiguration());
     }
 

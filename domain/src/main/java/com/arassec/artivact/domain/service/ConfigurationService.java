@@ -3,6 +3,7 @@ package com.arassec.artivact.domain.service;
 import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.model.TranslatableString;
 import com.arassec.artivact.core.model.appearance.ColorTheme;
+import com.arassec.artivact.core.model.appearance.License;
 import com.arassec.artivact.core.model.configuration.*;
 import com.arassec.artivact.core.model.menu.Menu;
 import com.arassec.artivact.core.model.page.Page;
@@ -87,35 +88,6 @@ public class ConfigurationService {
     }
 
     /**
-     * Loads the current license configuration.
-     *
-     * @return The current license configuration.
-     */
-    @TranslateResult
-    public LicenseConfiguration loadLicenseConfiguration() {
-        Optional<LicenseConfiguration> configurationOptional =
-                configurationRepository.findByType(ConfigurationType.LICENSE, LicenseConfiguration.class);
-        if (configurationOptional.isPresent()) {
-            return configurationOptional.get();
-        } else {
-            LicenseConfiguration result = new LicenseConfiguration();
-            result.setPrefix(new TranslatableString());
-            result.setLicenseLabel(new TranslatableString());
-            result.setSuffix(new TranslatableString());
-            return result;
-        }
-    }
-
-    /**
-     * Saves a license configuration.
-     *
-     * @param licenseConfiguration The configuration to save.
-     */
-    public void saveLicenseConfiguration(LicenseConfiguration licenseConfiguration) {
-        configurationRepository.saveConfiguration(ConfigurationType.LICENSE, licenseConfiguration);
-    }
-
-    /**
      * Returns whether the application is run in desktop-mode.
      *
      * @return {@code true} if the application is run in desktop-mode, {@code false} otherwise.
@@ -138,7 +110,8 @@ public class ConfigurationService {
      *
      * @return The current appearance configuration.
      */
-    public AppearanceConfiguration loadAppearanceConfiguration() {
+    @TranslateResult
+    public AppearanceConfiguration loadTranslatedAppearanceConfiguration() {
         Optional<AppearanceConfiguration> configurationOptional =
                 configurationRepository.findByType(ConfigurationType.APPEARANCE, AppearanceConfiguration.class);
 
@@ -149,9 +122,13 @@ public class ConfigurationService {
             if (!StringUtils.hasText(appearanceConfiguration.getEncodedFavicon())) {
                 setDefaultFavicon(appearanceConfiguration);
             }
+            if (appearanceConfiguration.getLicense() == null) {
+                appearanceConfiguration.setLicense(new License());
+            }
         } else {
             appearanceConfiguration.setApplicationTitle("Artivact");
             appearanceConfiguration.setAvailableLocales("");
+            appearanceConfiguration.setLicense(new License());
 
             ColorTheme colorTheme = new ColorTheme();
             colorTheme.setPrimary("#6e7e85");

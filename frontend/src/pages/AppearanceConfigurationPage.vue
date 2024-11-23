@@ -27,6 +27,7 @@ import {AppearanceConfiguration} from 'components/artivact-models';
 import ArtivactAppearanceConfigurationEditor from 'components/ArtivactAppearanceConfigurationEditor.vue';
 import {useLocaleStore} from 'stores/locale';
 import {useI18n} from 'vue-i18n';
+import {useApplicationSettingsStore} from "stores/application-settings";
 
 const quasar = useQuasar();
 const i18n = useI18n();
@@ -34,6 +35,7 @@ const i18n = useI18n();
 const appearanceConfigurationRef: Ref<AppearanceConfiguration | null> =
   ref(null);
 
+const applicationSettings = useApplicationSettingsStore();
 const localeStore = useLocaleStore();
 
 function loadAppearanceConfiguration() {
@@ -64,9 +66,10 @@ function saveAppearanceConfiguration() {
         }
 
         api
-          .get('/api/configuration/public/locale')
+          .get('/api/configuration/public/settings')
           .then((response) => {
-            localeStore.setAvailableLocales(response.data);
+            applicationSettings.setSettings(response.data);
+            localeStore.setAvailableLocales(applicationSettings.availableLocales);
           })
           .catch(() => {
             quasar.notify({

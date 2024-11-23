@@ -224,8 +224,64 @@
           </q-card-section>
         </q-card>
       </q-expansion-item>
-    </q-list>
 
+      <q-expansion-item
+        data-test="appearance-config-license"
+        group="appearanceConfig"
+        v-if="profilesStore.isServerModeEnabled"
+        header-class="bg-primary text-white"
+        class="list-entry"
+        expand-separator
+        expand-icon-class="text-white"
+      >
+        <template v-slot:header>
+          <q-item-section class="list-entry-label">
+            {{ $t('ArtivactAppearanceConfigurationEditor.list.license.heading') }}
+          </q-item-section>
+        </template>
+
+        <q-card class="q-mb-lg">
+          <q-card-section>
+            <div>
+              {{ $t('ArtivactAppearanceConfigurationEditor.list.license.description') }}
+              <br class="q-mb-sm"/>
+              {{ $t('ArtivactAppearanceConfigurationEditor.list.license.descriptionSuffix') }}
+            </div>
+          </q-card-section>
+
+          <q-card-section>
+            <label>{{ $t('ArtivactAppearanceConfigurationEditor.list.license.card.prefixDescription') }}</label>
+            <artivact-restricted-translatable-item-editor
+              :locales="localeStore.locales"
+              :translatable-string="appearanceConfigurationRef.license.prefix"
+              :label="$t('ArtivactAppearanceConfigurationEditor.list.license.card.prefixLabel')"
+              :show-separator="false"
+            />
+            <label>{{ $t('ArtivactAppearanceConfigurationEditor.list.license.card.licenseDescription') }}</label>
+            <artivact-restricted-translatable-item-editor
+              :locales="localeStore.locales"
+              :translatable-string="appearanceConfigurationRef.license.licenseLabel"
+              :label="$t('ArtivactAppearanceConfigurationEditor.list.license.card.licenseLabel')"
+              :show-separator="false"
+            />
+            <label>{{ $t('ArtivactAppearanceConfigurationEditor.list.license.card.suffixDescription') }}</label>
+            <artivact-restricted-translatable-item-editor
+              :locales="localeStore.locales"
+              :translatable-string="appearanceConfigurationRef.license.suffix"
+              :label="$t('ArtivactAppearanceConfigurationEditor.list.license.card.suffixLabel')"
+              :show-separator="false"
+            />
+            <label>{{ $t('ArtivactAppearanceConfigurationEditor.list.license.card.urlDescription') }}</label>
+            <q-input
+              outlined
+              v-model="appearanceConfigurationRef.license.licenseUrl"
+              :label="$t('ArtivactAppearanceConfigurationEditor.list.license.card.urlLabel')"
+            />
+          </q-card-section>
+
+        </q-card>
+      </q-expansion-item>
+    </q-list>
 
   </div>
 </template>
@@ -237,6 +293,8 @@ import ArtivactThemeColorEditor from 'components/ArtivactThemeColorEditor.vue';
 import {QUploader, useQuasar} from 'quasar';
 import {useI18n} from 'vue-i18n';
 import {useProfilesStore} from 'stores/profiles';
+import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
+import {useLocaleStore} from "stores/locale";
 
 const props = defineProps({
   appearanceConfiguration: {
@@ -247,6 +305,8 @@ const props = defineProps({
 
 const quasar = useQuasar();
 const i18n = useI18n();
+
+const localeStore = useLocaleStore();
 
 const profilesStore = useProfilesStore();
 

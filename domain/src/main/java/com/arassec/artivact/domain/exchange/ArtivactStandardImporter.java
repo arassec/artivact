@@ -1,6 +1,8 @@
 package com.arassec.artivact.domain.exchange;
 
 import com.arassec.artivact.core.exception.ArtivactException;
+import com.arassec.artivact.core.model.configuration.PropertiesConfiguration;
+import com.arassec.artivact.core.model.configuration.TagsConfiguration;
 import com.arassec.artivact.core.model.item.Item;
 import com.arassec.artivact.core.model.item.MediaCreationContent;
 import com.arassec.artivact.core.model.menu.Menu;
@@ -89,6 +91,10 @@ public class ArtivactStandardImporter implements ArtivactImporter, ExchangeProce
                 throw new ArtivactException("Unknown exchange type: " + exchangeMainData.getExchangeType());
             }
 
+            importPropertiesConfiguration(importContext);
+
+            importTagsConfiguration(importContext);
+
             importExportCoverImage(importContext, exchangeMainData.getSourceId());
 
             fileRepository.delete(importContext.getImportDir());
@@ -96,6 +102,56 @@ public class ArtivactStandardImporter implements ArtivactImporter, ExchangeProce
         } catch (Exception e) {
             throw new ArtivactException("Could not import item!", e);
         }
+    }
+
+    /**
+     * Imports the properties configuration.
+     *
+     * @param importContext The import context.
+     * @throws JsonProcessingException In case of parsing errors.
+     */
+    private void importPropertiesConfiguration(ImportContext importContext) throws JsonProcessingException {
+        Path propertiesConfigurationJson = importContext.getImportDir().resolve(PROPERTIES_EXCHANGE_FILENAME_JSON);
+        if (fileRepository.exists(propertiesConfigurationJson)) {
+            PropertiesConfiguration propertiesConfiguration = objectMapper.readValue(fileRepository.read(propertiesConfigurationJson), PropertiesConfiguration.class);
+            configurationService.savePropertiesConfiguration(propertiesConfiguration);
+        }
+    }
+
+    /**
+     * Imports the tags configuration.
+     *
+     * @param importContext The import context.
+     * @throws JsonProcessingException In case of parsing errors.
+     */
+    private void importTagsConfiguration(ImportContext importContext) throws JsonProcessingException {
+        Path tagsConfigurationJson = importContext.getImportDir().resolve(TAGS_EXCHANGE_FILENAME_JSON);
+        if (fileRepository.exists(tagsConfigurationJson)) {
+            TagsConfiguration tagsConfiguration = objectMapper.readValue(fileRepository.read(tagsConfigurationJson), TagsConfiguration.class);
+            configurationService.saveTagsConfiguration(tagsConfiguration);
+        }
+    }
+
+    /**
+     * Imports an export's cover image.
+     *
+     * @param importContext    The import context.
+     * @param exchangeSourceId The export's source's ID.
+     */
+    private void importExportCoverImage(ImportContext importContext, String exchangeSourceId) {
+        fileRepository.list(importContext.getImportDir()).stream()
+                .filter(file -> file.getFileName().toString().startsWith(exchangeSourceId))
+                .filter(file -> file.getFileName().toString().endsWith("JPG")
+                        || file.getFileName().toString().endsWith("jpg")
+                        || file.getFileName().toString().endsWith("JPEG")
+                        || file.getFileName().toString().endsWith("jpeg")
+                        || file.getFileName().toString().endsWith("PNG")
+                        || file.getFileName().toString().endsWith("png")
+                ).findFirst()
+                .ifPresent(file -> fileRepository.copy(file, projectDataProvider.getProjectRoot()
+                                .resolve(ProjectDataProvider.EXPORT_DIR)
+                                .resolve(file.getFileName()),
+                        StandardCopyOption.REPLACE_EXISTING));
     }
 
     /**
@@ -121,28 +177,6 @@ public class ArtivactStandardImporter implements ArtivactImporter, ExchangeProce
         } catch (JsonProcessingException e) {
             throw new ArtivactException("Could not import menu!", e);
         }
-    }
-
-    /**
-     * Imports an export's cover image.
-     *
-     * @param importContext    The import context.
-     * @param exchangeSourceId The export's source's ID.
-     */
-    private void importExportCoverImage(ImportContext importContext, String exchangeSourceId) {
-        fileRepository.list(importContext.getImportDir()).stream()
-                .filter(file -> file.getFileName().toString().startsWith(exchangeSourceId))
-                .filter(file -> file.getFileName().toString().endsWith("JPG")
-                        || file.getFileName().toString().endsWith("jpg")
-                        || file.getFileName().toString().endsWith("JPEG")
-                        || file.getFileName().toString().endsWith("jpeg")
-                        || file.getFileName().toString().endsWith("PNG")
-                        || file.getFileName().toString().endsWith("png")
-                ).findFirst()
-                .ifPresent(file -> fileRepository.copy(file, projectDataProvider.getProjectRoot()
-                                .resolve(ProjectDataProvider.EXPORT_DIR)
-                                .resolve(file.getFileName()),
-                        StandardCopyOption.REPLACE_EXISTING));
     }
 
     /**

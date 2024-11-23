@@ -1,18 +1,23 @@
-package com.arassec.artivact.core.model.configuration;
+package com.arassec.artivact.web.model;
 
 import com.arassec.artivact.core.model.appearance.ColorTheme;
 import com.arassec.artivact.core.model.appearance.License;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
- * Configuration for the application's appearance.
+ * The application's appearance settings.
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AppearanceConfiguration {
+@Builder
+public class ApplicationSettings {
 
     /**
      * The application title.
@@ -22,7 +27,8 @@ public class AppearanceConfiguration {
     /**
      * The available locales as configured by an admin and maintained by the users.
      */
-    private String availableLocales;
+    @Builder.Default
+    private List<String> availableLocales = new LinkedList<>();
 
     /**
      * The locale used by the application for the current user.
@@ -35,13 +41,19 @@ public class AppearanceConfiguration {
     private ColorTheme colorTheme;
 
     /**
-     * The favicon as Base64 encoded string.
-     */
-    private String encodedFavicon;
-
-    /**
      * The license configuration.
      */
     private License license;
+
+    /**
+     * The profiles the application is started with.
+     */
+    private Profiles profiles;
+
+    /**
+     * List of available roles of the application.
+     */
+    @Builder.Default
+    private List<String> availableRoles = new LinkedList<>();
 
 }
