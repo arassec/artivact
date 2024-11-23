@@ -77,6 +77,25 @@
               {{ $t('ArtivactSettingsBar.createItem') }}</label>
             </q-item-section>
           </q-item>
+          <q-item
+            data-test="batch-process-button"
+            clickable
+            v-close-popup
+            @click="gotoBatchPage()"
+            class="menu-entry"
+            v-if="userdataStore.isUserOrAdmin"
+          >
+            <q-item-section
+            ><label class="menu-label">
+              <q-icon
+                name="double_arrow"
+                size="xs"
+                color="primary"
+                class="q-mr-sm"
+              ></q-icon>
+              {{ $t('ArtivactSettingsBar.batch') }}</label>
+            </q-item-section>
+          </q-item>
         </q-list>
       </q-menu>
     </q-btn>
@@ -347,6 +366,25 @@
                   >
                 </q-item-section>
               </q-item>
+              <q-item
+                data-test="batch-process-button"
+                clickable
+                v-close-popup
+                @click="gotoBatchPage()"
+                class="menu-entry"
+                v-if="userdataStore.isUserOrAdmin"
+              >
+                <q-item-section
+                ><label class="menu-label">
+                  <q-icon
+                    name="double_arrow"
+                    size="xs"
+                    color="primary"
+                    class="q-mr-sm"
+                  ></q-icon>
+                  {{ $t('ArtivactSettingsBar.batch') }}</label>
+                </q-item-section>
+              </q-item>
             </q-list>
           </q-menu>
         </q-item>
@@ -511,14 +549,14 @@
 </template>
 
 <script setup lang="ts">
-import {ref} from 'vue';
-import {useUserdataStore} from 'stores/userdata';
-import {useLocaleStore} from 'stores/locale';
-import {api} from 'boot/axios';
-import {useRouter} from 'vue-router';
-import {useQuasar} from 'quasar';
-import {useI18n} from 'vue-i18n';
-import {useProfilesStore} from 'stores/profiles';
+import { ref } from 'vue';
+import { useUserdataStore } from 'stores/userdata';
+import { useLocaleStore } from 'stores/locale';
+import { api } from 'boot/axios';
+import { useRouter } from 'vue-router';
+import { useQuasar } from 'quasar';
+import { useI18n } from 'vue-i18n';
+import { useProfilesStore } from 'stores/profiles';
 
 const {locale} = useI18n({useScope: 'global'});
 
@@ -565,6 +603,10 @@ function gotoAccountPage() {
 
 function gotoAccountsPage() {
   route.push('/administration/accounts');
+}
+
+function gotoBatchPage() {
+  route.push('/administration/batch');
 }
 
 function createItem() {

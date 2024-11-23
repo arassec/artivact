@@ -74,6 +74,11 @@ public class ArtivactServerSecurityConfiguration {
     private static final String API_SEARCH_INDEX_PATTERN = "/api/search/index";
 
     /**
+     * API path for batch processing.
+     */
+    private static final String API_BATCH_PROCESS_PATTERN = "/api/batch";
+
+    /**
      * Provides a security filter-chain for Spring-Security when the application is run in server-mode.
      *
      * @param http Spring-Security's {@link HttpSecurity}.
@@ -99,6 +104,7 @@ public class ArtivactServerSecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, API_PAGE_PATTERN).hasAnyRole(Roles.ADMIN, Roles.USER)
                         .requestMatchers(HttpMethod.PUT, API_PAGE_PATTERN).hasAnyRole(Roles.ADMIN, Roles.USER)
                         .requestMatchers(HttpMethod.DELETE, API_PAGE_PATTERN).hasAnyRole(Roles.ADMIN, Roles.USER)
+                        .requestMatchers(HttpMethod.POST, API_BATCH_PROCESS_PATTERN).hasAnyRole(Roles.ADMIN, Roles.USER)
                         .anyRequest().permitAll()
                 )
                 .formLogin(form -> form

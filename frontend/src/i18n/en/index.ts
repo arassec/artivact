@@ -108,6 +108,32 @@ export default {
     heading: 'Appearance Configuration'
   },
 
+  BatchProcessingPage: {
+    heading: 'Batch Processing',
+    startButton: 'Start batch processing',
+    parameters: {
+      task: 'Task',
+      taskDescription: 'Please select the task to perform on all selected items.',
+      searchTerm: 'Item Selection',
+      searchTermDescription: 'Specify a search term which will select all items that should be processed.',
+      targetId: 'Target',
+      targetIdDescription: 'Please select the target of the task to perform.',
+    },
+    dialog: {
+      process: {
+        heading: 'Batch Processing',
+        description: 'Are you sure you want to start batch processing the selected items?',
+        approve: 'Start batch processing'
+      }
+    },
+    messages: {
+      process: {
+        success: 'Batch processing finished',
+        failed: 'Batch processing failed!'
+      }
+    }
+  },
+
   EditablePage: {
     dialog: {
       heading: 'Unsaved Changes!',
@@ -575,7 +601,8 @@ export default {
     exhib: 'Exhib.',
     system: 'System',
     search: 'Searchengine',
-    documentation: 'Docs'
+    documentation: 'Docs',
+    batch: 'Batch Processing',
   },
 
   ArtivactTagsConfigurationEditor: {
@@ -823,6 +850,10 @@ export default {
     ImportService: {
       importContent: 'Importing content...',
       importContentFailed: 'Import failed!'
+    },
+    BatchService: {
+      process: 'Batch processing items...',
+      processingFailed: 'Processing items failed!'
     }
   },
 
@@ -858,5 +889,9 @@ export default {
   REALITY_CAPTURE_MODEL_CREATOR_ADAPTER: 'RealityCapture',
   FALLBACK_MODEL_EDITOR_ADAPTER: 'Fallback',
   BLENDER_MODEL_EDITOR_ADAPTER: 'Blender3D',
+
+  DELETE_ITEM: 'Delete item',
+  ADD_TAG_TO_ITEM: 'Add tag',
+  REMOVE_TAG_FROM_ITEM: 'Remove tag',
 
 };

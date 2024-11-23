@@ -1,11 +1,11 @@
-import {RouteRecordRaw} from 'vue-router';
-import {api} from 'boot/axios';
-import {setCssVar, useQuasar} from 'quasar';
-import {useUserdataStore} from 'stores/userdata';
-import {Profiles} from 'components/artivact-models';
-import {useProfilesStore} from 'stores/profiles';
-import {useApplicationSettingsStore} from 'stores/application-settings';
-import {useLocaleStore} from 'stores/locale';
+import { RouteRecordRaw } from 'vue-router';
+import { api } from 'boot/axios';
+import { setCssVar, useQuasar } from 'quasar';
+import { useUserdataStore } from 'stores/userdata';
+import { Profiles } from 'components/artivact-models';
+import { useProfilesStore } from 'stores/profiles';
+import { useApplicationSettingsStore } from 'stores/application-settings';
+import { useLocaleStore } from 'stores/locale';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -40,7 +40,7 @@ const routes: RouteRecordRaw[] = [
           setCssVar('info', colorTheme.info);
           setCssVar('warning', colorTheme.warning);
 
-          const profiles: Profiles = response.data;
+          const profiles: Profiles = response.data.profiles;
           profilesStore.setE2eModeEnabled(profiles.e2e)
           profilesStore.setDesktopModeEnabled(profiles.desktop || profiles.e2e);
           profilesStore.setServerModeEnabled(!profiles.desktop || profiles.e2e);
@@ -96,6 +96,7 @@ const routes: RouteRecordRaw[] = [
       {path: '/item/:itemId?', component: () => import('pages/ItemDetailsPage.vue')},
       {path: '/account', component: () => import('pages/AccountSettingsPage.vue')},
       {path: '/administration/accounts', component: () => import('pages/AccountsConfigurationPage.vue')},
+      {path: '/administration/batch', component: () => import('pages/BatchProcessingPage.vue')},
       {path: '/administration/configuration/item/:itemId?', component: () => import('pages/ItemEditPage.vue')},
       {path: '/administration/configuration/properties', component: () => import('pages/PropertiesConfigurationPage.vue')},
       {path: '/administration/configuration/tags', component: () => import('pages/TagsConfigurationPage.vue')},

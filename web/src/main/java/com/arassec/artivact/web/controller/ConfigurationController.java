@@ -47,7 +47,7 @@ public class ConfigurationController {
      * @return The {@link AppearanceConfiguration} of the app.
      */
     @GetMapping(value = "/public/settings")
-    public ApplicationSettings getAppearance() {
+    public ApplicationSettings getApplicationSettings() {
         AppearanceConfiguration appearanceConfiguration = configurationService.loadTranslatedAppearanceConfiguration();
 
         ApplicationSettings applicationSettings = new ApplicationSettings();

@@ -3,6 +3,7 @@ package com.arassec.artivact.domain.service;
 import com.arassec.artivact.core.model.account.Account;
 import com.arassec.artivact.core.repository.AccountRepository;
 import jakarta.annotation.PostConstruct;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +21,7 @@ import java.util.UUID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AccountService {
 
     /**

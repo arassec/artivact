@@ -234,3 +234,15 @@ export interface ContentExport {
   description: TranslatableString;
   lastModified: string;
 }
+
+export enum BatchProcessingTask {
+  DELETE_ITEM='DELETE_ITEM',
+  ADD_TAG_TO_ITEM='ADD_TAG_TO_ITEM',
+  REMOVE_TAG_FROM_ITEM='REMOVE_TAG_FROM_ITEM',
+}
+
+export interface BatchProcessingParameters {
+  task: BatchProcessingTask;
+  searchTerm: string;
+  targetId: string;
+}

@@ -9,6 +9,7 @@ import com.arassec.artivact.domain.aspect.RestrictResult;
 import com.arassec.artivact.domain.aspect.TranslateResult;
 import com.arassec.artivact.domain.misc.ProjectDataProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -39,6 +40,7 @@ import java.util.concurrent.Executors;
  */
 @Slf4j
 @Service
+@Transactional
 public class SearchService {
 
     /**

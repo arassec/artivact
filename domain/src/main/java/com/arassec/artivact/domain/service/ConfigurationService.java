@@ -13,6 +13,7 @@ import com.arassec.artivact.domain.aspect.GenerateIds;
 import com.arassec.artivact.domain.aspect.RestrictResult;
 import com.arassec.artivact.domain.aspect.TranslateResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +32,7 @@ import java.util.*;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ConfigurationService {
 
     /**

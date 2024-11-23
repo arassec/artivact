@@ -15,6 +15,7 @@ import com.arassec.artivact.domain.aspect.RestrictResult;
 import com.arassec.artivact.domain.aspect.TranslateResult;
 import com.arassec.artivact.domain.misc.ProjectDataProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.FileSystemResource;
@@ -30,6 +31,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
+@Transactional
 public class PageService extends BaseFileService {
 
     /**

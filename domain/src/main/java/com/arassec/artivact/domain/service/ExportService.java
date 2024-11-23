@@ -15,6 +15,7 @@ import com.arassec.artivact.domain.exchange.ExchangeProcessor;
 import com.arassec.artivact.domain.exchange.model.ExchangeMainData;
 import com.arassec.artivact.domain.misc.ProjectDataProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +44,7 @@ import java.util.zip.ZipOutputStream;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ExportService extends BaseFileService implements ExchangeProcessor {
 
     /**

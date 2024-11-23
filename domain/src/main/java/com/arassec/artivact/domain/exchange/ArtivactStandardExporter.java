@@ -289,8 +289,6 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
             exportWidget(params, widget);
         });
 
-        cleanupPage(pageContent);
-
         writeJsonFile(params.getExportDir().resolve(targetPageId + PAGE_EXCHANGE_FILE_SUFFIX), pageContent);
     }
 
@@ -498,15 +496,6 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
                     return true;
                 })
                 .forEach(this::cleanupTranslations);
-    }
-
-    /**
-     * Cleans up a page for export.
-     *
-     * @param pageContent The page to clean up.
-     */
-    private void cleanupPage(PageContent pageContent) {
-        pageContent.setIndexPage(false);
     }
 
     /**

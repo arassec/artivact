@@ -1,10 +1,12 @@
 package com.arassec.artivact.web.controller;
 
 import com.arassec.artivact.core.model.appearance.ColorTheme;
+import com.arassec.artivact.core.model.appearance.License;
 import com.arassec.artivact.core.model.configuration.*;
 import com.arassec.artivact.core.model.menu.Menu;
 import com.arassec.artivact.core.model.property.PropertyCategory;
 import com.arassec.artivact.domain.service.ConfigurationService;
+import com.arassec.artivact.web.model.ApplicationSettings;
 import com.arassec.artivact.web.model.Profiles;
 import com.arassec.artivact.web.model.UserData;
 import lombok.SneakyThrows;
@@ -49,55 +51,40 @@ class ConfigurationControllerTest {
     private ConfigurationService configurationService;
 
     /**
-     * Tests getting available locales.
+     * Tests getting the application settings.
      */
     @Test
-    void testGetAvailableLocales() {
+    void testGetApplicationSettings() {
+        ColorTheme colorTheme = new ColorTheme();
+        License license = new License();
+
         AppearanceConfiguration appearanceConfiguration = new AppearanceConfiguration();
-        appearanceConfiguration.setAvailableLocales("de,nl");
+        appearanceConfiguration.setApplicationTitle("title");
+        appearanceConfiguration.setApplicationLocale("locale");
+        appearanceConfiguration.setAvailableLocales("de,ja");
+        appearanceConfiguration.setColorTheme(colorTheme);
+        appearanceConfiguration.setLicense(license);
+        appearanceConfiguration.setEncodedFavicon("encodedFavicon");
 
         when(configurationService.loadTranslatedAppearanceConfiguration()).thenReturn(appearanceConfiguration);
 
-        List<String> result = controller.getAvailableLocales();
-        assertEquals("de", result.get(0));
-        assertEquals("nl", result.get(1));
-    }
+        when(configurationService.isDesktopProfileEnabled()).thenReturn(true);
+        when(configurationService.isE2eProfileEnabled()).thenReturn(true);
 
-    /**
-     * Tests getting the application locale.
-     */
-    @Test
-    void testGetApplicationLocale() {
-        AppearanceConfiguration appearanceConfiguration = new AppearanceConfiguration();
-        appearanceConfiguration.setApplicationLocale("ja");
+        ApplicationSettings applicationSettings = controller.getApplicationSettings();
 
-        when(configurationService.loadTranslatedAppearanceConfiguration()).thenReturn(appearanceConfiguration);
+        Profiles profiles = new Profiles();
+        profiles.setDesktop(true);
+        profiles.setE2e(true);
 
-        assertEquals("ja", controller.getApplicationLocale());
-    }
-
-    /**
-     * Tests getting available roles.
-     */
-    @Test
-    void testGetAvailableRoles() {
-        List<String> roles = controller.getAvailableRoles();
-        assertEquals(2, roles.size());
-        assertEquals("ROLE_ADMIN", roles.get(0));
-        assertEquals("ROLE_USER", roles.get(1));
-    }
-
-    /**
-     * Tests getting the application's title.
-     */
-    @Test
-    void testGetTitle() {
-        AppearanceConfiguration appearanceConfiguration = new AppearanceConfiguration();
-        appearanceConfiguration.setApplicationTitle("Application Title");
-
-        when(configurationService.loadTranslatedAppearanceConfiguration()).thenReturn(appearanceConfiguration);
-
-        assertEquals("Application Title", controller.getTitle());
+        assertEquals("title", applicationSettings.getApplicationTitle());
+        assertEquals("locale", applicationSettings.getApplicationLocale());
+        assertEquals(List.of("de", "ja"), applicationSettings.getAvailableLocales());
+        assertEquals(colorTheme, applicationSettings.getColorTheme());
+        assertEquals(license, applicationSettings.getLicense());
+        assertEquals("encodedFavicon", appearanceConfiguration.getEncodedFavicon());
+        assertEquals(profiles, applicationSettings.getProfiles());
+        assertEquals(List.of("ROLE_ADMIN", "ROLE_USER"), applicationSettings.getAvailableRoles());
     }
 
     /**
@@ -146,45 +133,6 @@ class ConfigurationControllerTest {
         TagsConfiguration tagsConfiguration = new TagsConfiguration();
         when(configurationService.loadTranslatedRestrictedTags()).thenReturn(tagsConfiguration);
         assertEquals(tagsConfiguration, controller.getPublicTagsConfiguration());
-    }
-
-    /**
-     * Tests getting the translated license configuration.
-     */
-    @Test
-    void testGetPublicLicenseConfiguration() {
-        LicenseConfiguration licenseConfiguration = new LicenseConfiguration();
-        when(configurationService.loadLicenseConfiguration()).thenReturn(licenseConfiguration);
-        assertEquals(licenseConfiguration, controller.getPublicLicenseConfiguration());
-    }
-
-    /**
-     * Tests getting the application's color theme.
-     */
-    @Test
-    void testGetColorTheme() {
-        ColorTheme colorTheme = new ColorTheme();
-        AppearanceConfiguration appearanceConfiguration = new AppearanceConfiguration();
-        appearanceConfiguration.setColorTheme(colorTheme);
-
-        when(configurationService.loadTranslatedAppearanceConfiguration()).thenReturn(appearanceConfiguration);
-
-        assertEquals(colorTheme, controller.getColorTheme());
-    }
-
-    /**
-     * Tests getting the "desktop-mode" property.
-     */
-    @Test
-    void testGetProfiles() {
-        Profiles profiles = controller.getProfiles();
-        assertFalse(profiles.isDesktop());
-        assertFalse(profiles.isE2e());
-        when(configurationService.isDesktopProfileEnabled()).thenReturn(true);
-        when(configurationService.isE2eProfileEnabled()).thenReturn(true);
-        profiles = controller.getProfiles();
-        assertTrue(profiles.isDesktop());
-        assertTrue(profiles.isE2e());
     }
 
     /**
@@ -241,26 +189,6 @@ class ConfigurationControllerTest {
         PropertiesConfiguration propertiesConfiguration = new PropertiesConfiguration();
         controller.savePropertiesConfiguration(propertiesConfiguration);
         verify(configurationService, times(1)).savePropertiesConfiguration(propertiesConfiguration);
-    }
-
-    /**
-     * Tests getting the license configuration.
-     */
-    @Test
-    void testGetLicenseConfiguration() {
-        LicenseConfiguration licenseConfiguration = new LicenseConfiguration();
-        when(configurationService.loadLicenseConfiguration()).thenReturn(licenseConfiguration);
-        assertEquals(licenseConfiguration, controller.getLicenseConfiguration());
-    }
-
-    /**
-     * Tests saving the license configuration.
-     */
-    @Test
-    void testSaveLicenseConfiguration() {
-        LicenseConfiguration licenseConfiguration = new LicenseConfiguration();
-        controller.saveLicenseConfiguration(licenseConfiguration);
-        verify(configurationService, times(1)).saveLicenseConfiguration(licenseConfiguration);
     }
 
     /**

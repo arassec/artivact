@@ -15,7 +15,7 @@ export default {
       },
       loading: {
         success: '{item} geladen',
-        failed: 'Laden von \'{item}\' fehlgeschlagen',
+        failed: 'Laden von \'{item}\' fehlgeschlagen'
       },
       saving: {
         success: '{item} gespeichert',
@@ -75,7 +75,7 @@ export default {
         tooltip: {
           delete: 'Benutzerkonto löschen',
           edit: 'Benutzerkonto bearbeiten'
-        },
+        }
       }
     },
     dialog: {
@@ -108,6 +108,32 @@ export default {
     heading: 'Darstellungs-Konfiguration'
   },
 
+  BatchProcessingPage: {
+    heading: 'Stapelverarbeitung',
+    startButton: 'Stapelverarbeitung starten',
+    parameters: {
+      task: 'Aufgabe',
+      taskDescription: 'Bitte wählen Sie die Aufgabe, die von der Stapelverarbeitung durchgeführt werden soll.',
+      searchTerm: 'Objektauswahl',
+      searchTermDescription: 'Definieren Sie die Abfrage, mit der die Objekte ausgewählt werden, die verarbeitet werden sollen.',
+      targetId: 'Ziel',
+      targetIdDescription: 'Bitte wählen Sie das Ziel für die ausgewählte Aufgabe.'
+    },
+    dialog: {
+      process: {
+        heading: 'Stapelverarbeitung',
+        description: 'Sind Sie sicher, dass sie die Stapelverarbeitung für die ausgewählten Objekte anwenden möchten?',
+        approve: 'Stapelverarbeitung starten'
+      }
+    },
+    messages: {
+      process: {
+        success: 'Stapelverarbeitung abgesclossen',
+        failed: 'Stapelverarbeitung fehlgeschlagen!'
+      }
+    }
+  },
+
   EditablePage: {
     dialog: {
       heading: 'Änderungen Verwerfen?',
@@ -126,7 +152,7 @@ export default {
     tabs: {
       configuration: 'Konfiguration',
       export: 'Export',
-      import: 'Import',
+      import: 'Import'
     },
     configuration: {
       heading: 'Synchronisation',
@@ -144,7 +170,7 @@ export default {
     contentImport: {
       heading: 'Importe',
       description: 'Hier können zuvor erstellte Exporte importiert werden. ACHTUNG: Importe überschreiben bisher existierende Tag- oder Eigenschaftskonfigurationen.',
-      button: 'Upload',
+      button: 'Upload'
     },
     dialog: {
       delete: {
@@ -171,8 +197,8 @@ export default {
         delete: 'Objekt löschen',
         download: 'Objekt-Inhalte als ZIP-Datei herunterladen',
         sync: 'Objekt mit zentralem Server synchronisieren',
-        edit: 'Objekt bearbeiten',
-      },
+        edit: 'Objekt bearbeiten'
+      }
     },
     dialog: {
       delete: {
@@ -246,12 +272,12 @@ export default {
     tabs: {
       configuration: 'Konfiguration',
       export: 'Export',
-      import: 'Import',
+      import: 'Import'
     },
     configuration: {
       heading: 'Konfiguration',
       description: 'Hier können die Eigenschaften von Objekten definiert werden. Sie werden in Kategorien unterteilt, die per Drag&Drop sortiert werden können. Die Kategorien, mit ihren enthaltenen Eigenschaften, werden auf der Objektdetailseite angezeigt.',
-      noPropertiesDefined: 'Aktuell sind keine Eigenschaften definiert.',
+      noPropertiesDefined: 'Aktuell sind keine Eigenschaften definiert.'
     },
     export: {
       heading: 'Export',
@@ -261,7 +287,7 @@ export default {
     import: {
       heading: 'Import',
       description: 'Sie können eine vorher exportierte Eigenschaften-Konfiguration hochladen und damit die aktuelle Konfiguration ÜBERSCHREIBEN.',
-      button: 'Eigenschaften importieren',
+      button: 'Eigenschaften importieren'
     },
     messages: {
       uploadSuccess: 'Eigenschaften-Konfiguration hochgeladen'
@@ -283,17 +309,17 @@ export default {
     configuration: {
       heading: 'Konfiguration',
       description: 'Tags können verwendet werden um Objekte zu kategorisieren. Sie sollten als Metadaten behandelt werden, und nicht verwendet werden um Eigenschaften zu ersetzen.',
-      noTagsDefined: 'Aktuell sind keine Tags definiert.',
+      noTagsDefined: 'Aktuell sind keine Tags definiert.'
     },
     export: {
       heading: 'Export',
       description: 'Sie können die aktuell konfigurierten Tags mit dem unten stehenden Button exportieren. Eine JSON-Datei mit der aktuellen Konfiguration wird erstellt und heruntergeladen.',
-      button: 'Tags exportieren',
+      button: 'Tags exportieren'
     },
     import: {
       heading: 'Import',
       description: 'Sie können eine zuvor exportierte Tags-Konfiguration hochladen um die aktuelle Konfiguration zu ÜBERSCHREIBEN.',
-      button: 'Tags importieren',
+      button: 'Tags importieren'
     },
     messages: {
       uploadSuccess: 'Tags-Konfiguration hochgeladen'
@@ -323,7 +349,7 @@ export default {
       },
       colors: {
         heading: 'Farbschema',
-        description: 'Das Farbschema der Anwendung kann über die folgenden Einstellungen angepasst werden.',
+        description: 'Das Farbschema der Anwendung kann über die folgenden Einstellungen angepasst werden.'
       },
       favicon: {
         heading: 'Favicon',
@@ -347,7 +373,7 @@ export default {
           urlDescription: 'Falls angegeben wird die Lizenz als Link zu dieser URL gerendert.',
           urlLabel: 'Lizenz-URL'
         }
-      },
+      }
     }
   },
 
@@ -419,7 +445,7 @@ export default {
       exportImage: 'Export Titelbild',
       exportConfiguration: {
         optimizeSize: 'Exportgröße optimieren',
-        applyRestrictions: 'Eingeschränkte Elemente ausschließen',
+        applyRestrictions: 'Eingeschränkte Elemente ausschließen'
       }
     },
     dialog: {
@@ -456,7 +482,7 @@ export default {
       cancel: 'Bearbeitungsmodus verlassen',
       add: 'Widget hinzufügen',
       indexPageYes: 'Dies IST die Hauptseite',
-      indexPageNo: 'Dies ist NICHT die Hauptseite',
+      indexPageNo: 'Dies ist NICHT die Hauptseite'
     },
     label: {
       noIndexPage: 'Es wurde noch keine Index-Seite definiert. Erstellen Sie ein Menu, fügen Sie eine Seite hinzu und konfigurieren Sie diese als Index-Seite.',
@@ -575,12 +601,13 @@ export default {
     exhib: 'Ausstellung',
     system: 'System',
     search: 'Suchmaschine',
-    documentation: 'Doku'
+    documentation: 'Doku',
+    batch: 'Stapelverarbeitung'
   },
 
   ArtivactTagsConfigurationEditor: {
     tooltip: {
-      delete: 'Tag löschen',
+      delete: 'Tag löschen'
     },
     url: 'URL',
     addTag: 'Tag hinzufügen',
@@ -618,7 +645,7 @@ export default {
       upload: 'Bestehende Bilder in neues Bilder-Set hochladen',
       details: 'Bilder-Set Details anzeigen',
       backgrounds: 'Bilder freistellen',
-      delete: 'Bilder-Set löschen',
+      delete: 'Bilder-Set löschen'
     },
     label: {
       numPhotos: 'Anzahl Fotos',
@@ -661,7 +688,7 @@ export default {
   ItemMediaCarousel: {
     tooltip: {
       image: 'Bilder anzeigen',
-      model: '3D-Modelle anzeigen',
+      model: '3D-Modelle anzeigen'
     }
   },
 
@@ -699,7 +726,7 @@ export default {
   },
 
   ItemModelViewer: {
-    downloadModelButtonLabel: '3D-Modell herunterladen',
+    downloadModelButtonLabel: '3D-Modell herunterladen'
   },
 
   ArtivactItemSearchInput: {
@@ -731,7 +758,7 @@ export default {
     label: {
       image: 'Bild',
       text: 'Text',
-      fullscreenAllowed: 'Gibt an, ob das Bild als Vollbild-Detailansicht geöffnet werden kann.',
+      fullscreenAllowed: 'Gibt an, ob das Bild als Vollbild-Detailansicht geöffnet werden kann.'
     }
   },
 
@@ -755,11 +782,11 @@ export default {
       noSearchResults: 'Keine Suchergebnisse verfügbar!',
       heading: 'Überschrift',
       content: 'Inhalt',
-      pageSize: 'Seitengröße',
+      pageSize: 'Seitengröße'
     },
     messages: {
       noSearchResults: 'Keine Suchergebnisse verfügbar!',
-      searchFailed: 'Suche fehlgeschlagen!',
+      searchFailed: 'Suche fehlgeschlagen!'
     }
   },
 
@@ -787,7 +814,7 @@ export default {
       moveDown: 'Widget nach unten bewegen',
       delete: 'Widget löschen',
       addAbove: 'Widget Oberhalb hinzufügen',
-      addBelow: 'Widget Unterhalb hinzufügen',
+      addBelow: 'Widget Unterhalb hinzufügen'
     }
   },
 
@@ -810,7 +837,7 @@ export default {
     },
     SearchService: {
       createIndex: 'Erstelle Suchindex...',
-      createIndexFailed: 'Fehler bei Erstellung/Aktualisierung des Suchindexes!',
+      createIndexFailed: 'Fehler bei Erstellung/Aktualisierung des Suchindexes!'
     },
     ExportService: {
       exportContent: 'Erstelle Export...',
@@ -819,11 +846,15 @@ export default {
       exportFileCreationFailed: 'Konnte Exportdatei für Upload nicht erstellen!',
       configMissing: 'Austausch-Konfiguration für Upload zu entferntem Artivact- Server fehlt!',
       uploading: 'Lade Exportdatei zu entferntem Artivact-Server hoch.',
-      uploadFailed: 'Konnte Exportdatei nicht zu entferntem Artivact-Server hochladen!',
+      uploadFailed: 'Konnte Exportdatei nicht zu entferntem Artivact-Server hochladen!'
     },
     ImportService: {
       importContent: 'Importiere Daten...',
       importContentFailed: 'Import fehlgeschlagen!'
+    },
+    BatchService: {
+      process: 'Stapelverarbeitung von Objekten gestartet...',
+      processingFailed: 'Stapelverarbeitung fehlgeschlagen!'
     }
   },
 
@@ -861,5 +892,9 @@ export default {
   REALITY_CAPTURE_MODEL_CREATOR_ADAPTER: 'RealityCapture',
   FALLBACK_MODEL_EDITOR_ADAPTER: 'Fallback',
   BLENDER_MODEL_EDITOR_ADAPTER: 'Blender3D',
+
+  DELETE_ITEM: 'Objekt löschen',
+  ADD_TAG_TO_ITEM: 'Tag hinzufügen',
+  REMOVE_TAG_FROM_ITEM: 'Tag entfernen'
 
 };
