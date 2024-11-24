@@ -61,6 +61,11 @@ public class SetupService {
     private final ProjectDataProvider projectDataProvider;
 
     /**
+     * The configuration service.
+     */
+    private final ConfigurationService configurationService;
+
+    /**
      * Initial administrator password. Can be set per JVM parameter for integration testing.
      */
     @Value("${artivact.initial.password:}")
@@ -106,7 +111,8 @@ public class SetupService {
      * Imports the welcome page if no other pages exist.
      */
     private void importWelcomePage() {
-        if (pageRepository.findAll().isEmpty()) {
+        if (pageRepository.findAll().isEmpty() &&
+                (configurationService.isDesktopProfileEnabled() || configurationService.isE2eProfileEnabled())) {
             Path welcomePageExportZip = projectDataProvider.getProjectRoot()
                     .resolve(ProjectDataProvider.PROJECT_SETUP_DIR)
                     .resolve(WELCOME_EXPORT_PATH);

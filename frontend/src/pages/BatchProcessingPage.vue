@@ -1,56 +1,56 @@
 <template>
   <ArtivactContent>
-    <div class="full-width">
+    <div class="full-width q-mb-lg">
       <h1 class="av-text-h1">{{ $t('BatchProcessingPage.heading') }}</h1>
 
       <h2 class="av-text-h2">{{ $t('BatchProcessingPage.parameters.task') }}</h2>
-      <artivact-content>
-        <div class="full-width q-mb-md">{{ $t('BatchProcessingPage.parameters.taskDescription') }}</div>
-        <q-select
-          class="param-select"
-          data-test="batch-processing-task-selection"
-          outlined
-          emit-value
-          dense
-          v-model="batchProcessingParamersRef.task"
-          :options="Object.values(BatchProcessingTask)"
-          :option-label="(task: BatchProcessingTask) => $t(task)">
-        </q-select>
-      </artivact-content>
+      <div class="full-width q-mb-md">{{ $t('BatchProcessingPage.parameters.taskDescription') }}</div>
+      <q-select
+        class="param-select"
+        data-test="batch-processing-task-selection"
+        outlined
+        emit-value
+        dense
+        v-model="batchProcessingParamersRef.task"
+        :options="Object.values(BatchProcessingTask)"
+        :option-label="(task: BatchProcessingTask) => $t(task)">
+      </q-select>
 
       <template v-if="batchProcessingParamersRef.task !== BatchProcessingTask.DELETE_ITEM">
-        <h2 class="av-text-h2">{{ $t('BatchProcessingPage.parameters.targetId') }}</h2>
-        <artivact-content>
-          <div class="full-width q-mb-md">{{ $t('BatchProcessingPage.parameters.targetIdDescription') }}</div>
-          <q-select
-            class="param-select"
-            data-test="batch-processing-tag-selection"
-            outlined
-            dense
-            v-model="selectedTagRef"
-            :options="tagsConfigurationRef.tags"
-            :option-label="(tag: Tag ) => tag.translatedValue">
-          </q-select>
-        </artivact-content>
+        <h2 class="av-text-h2 q-mt-lg">{{ $t('BatchProcessingPage.parameters.targetId') }}</h2>
+        <div class="full-width q-mb-md">{{ $t('BatchProcessingPage.parameters.targetIdDescription') }}</div>
+        <q-select
+          class="param-select"
+          data-test="batch-processing-tag-selection"
+          outlined
+          dense
+          v-model="selectedTagRef"
+          :options="tagsConfigurationRef.tags"
+          :option-label="(tag: Tag ) => tag.translatedValue">
+        </q-select>
       </template>
-
-      <h2 class="av-text-h2">{{ $t('BatchProcessingPage.parameters.searchTerm') }}</h2>
-      <artivact-content>
-        <div class="full-width">{{ $t('BatchProcessingPage.parameters.searchTermDescription') }}</div>
-      </artivact-content>
-      <artivact-item-search-widget
-        :widget-data="searchWidgetDataRef"
-        :move-down-enabled="false"
-        :move-up-enabled="false"
-        :in-edit-mode="false"
-        :expert-mode="true" />
-      <q-separator />
-
-      <div class="full-width q-mt-lg">
-        <q-btn :label="$t('BatchProcessingPage.startButton')" color="primary"
-               @click="showConfirmBatchProcessingModalRef = true" class="float-right" />
-      </div>
     </div>
+
+
+    <h2 class="av-text-h2">{{ $t('BatchProcessingPage.parameters.searchTerm') }}</h2>
+    <div class="full-width">{{ $t('BatchProcessingPage.parameters.searchTermDescription') }}</div>
+  </ArtivactContent>
+
+  <artivact-item-search-widget
+    :widget-data="searchWidgetDataRef"
+    :move-down-enabled="false"
+    :move-up-enabled="false"
+    :in-edit-mode="false"
+    :expert-mode="true" />
+
+  <ArtivactContent>
+    <q-separator />
+
+    <div class="full-width q-mt-lg">
+      <q-btn :label="$t('BatchProcessingPage.startButton')" color="primary"
+             @click="showConfirmBatchProcessingModalRef = true" class="float-right" />
+    </div>
+
 
     <!-- BATCH CONFIRMATION DIALOG -->
     <artivact-dialog :dialog-model="showConfirmBatchProcessingModalRef" :warn="true">
@@ -83,6 +83,7 @@
                                            @close-dialog="showOperationInProgressModalRef = false" />
 
   </ArtivactContent>
+
 </template>
 
 <script setup lang="ts">

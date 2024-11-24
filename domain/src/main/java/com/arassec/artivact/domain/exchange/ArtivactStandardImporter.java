@@ -84,7 +84,7 @@ public class ArtivactStandardImporter implements ArtivactImporter, ExchangeProce
             ExchangeMainData exchangeMainData = objectMapper.readValue(importContext.getImportDir().resolve(CONTENT_EXCHANGE_MAIN_DATA_FILENAME_JSON).toFile(), ExchangeMainData.class);
 
             if (ExchangeType.MENU.equals(exchangeMainData.getExchangeType())) {
-                importMenu(importContext, exchangeMainData.getSourceId());
+                importMenu(importContext, exchangeMainData.getSourceId(), true);
             } else if (ExchangeType.ITEM.equals(exchangeMainData.getExchangeType())) {
                 importItem(importContext, exchangeMainData.getSourceId());
             } else {
@@ -160,19 +160,21 @@ public class ArtivactStandardImporter implements ArtivactImporter, ExchangeProce
      * @param importContext The import context.
      * @param menuId        The menu's ID.
      */
-    private void importMenu(ImportContext importContext, String menuId) {
+    private void importMenu(ImportContext importContext, String menuId, boolean saveMenu) {
         Path menuJson = importContext.getImportDir().resolve(menuId + MENU_EXCHANGE_FILE_SUFFIX);
         try {
             Menu menu = objectMapper.readValue(fileRepository.read(menuJson), Menu.class);
             if (!menu.getMenuEntries().isEmpty()) {
-                menu.getMenuEntries().forEach(menuEntry -> importMenu(importContext, menuEntry.getId()));
+                menu.getMenuEntries().forEach(menuEntry -> importMenu(importContext, menuEntry.getId(), false));
             }
 
             if (StringUtils.hasText(menu.getTargetPageId())) {
                 importPage(importContext, menu.getTargetPageId());
             }
 
-            configurationService.saveMenu(menu);
+            if (saveMenu) {
+                configurationService.saveMenu(menu);
+            }
 
         } catch (JsonProcessingException e) {
             throw new ArtivactException("Could not import menu!", e);
