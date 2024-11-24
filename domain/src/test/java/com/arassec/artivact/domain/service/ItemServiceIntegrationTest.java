@@ -36,6 +36,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
+/**
+ * Integration test for the {@link ItemService}.
+ */
+@SuppressWarnings("unused")
 @Import(AnnotationAwareAspectJAutoProxyCreator.class)
 @SpringBootTest(classes = {
         ItemService.class,

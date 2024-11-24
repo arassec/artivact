@@ -19,12 +19,12 @@
             {{ $t('ExchangeConfigurationPage.configuration.description') }}
           </div>
           <artivact-exchange-configuration-editor :exchange-configuration="exchangeConfigurationRef"
-                                                  v-if="exchangeConfigurationRef"/>
-          <div class="row">
+                                                  v-if="exchangeConfigurationRef" />
+          <div class="full-width">
             <q-btn
               :label="$t('Common.save')"
               color="primary"
-              class="q-mb-lg"
+              class="q-mb-lg float-right"
               @click="saveExchangeConfiguration()"
             />
           </div>
@@ -40,15 +40,17 @@
             <div class="q-mb-lg">
               {{ $t('ExchangeConfigurationPage.syncAllUp.description') }}
             </div>
+          </div>
+          <div class="full-width sync-all-up-button">
             <q-btn
               :label="$t('ExchangeConfigurationPage.syncAllUp.button')"
               color="primary"
-              class="q-mb-lg"
+              class="q-mb-lg float-right"
               @click="synchronizeAllUp()"
             />
           </div>
 
-          <q-separator class="full-width q-mb-md"/>
+          <q-separator class="full-width q-mb-md" />
 
           <h2 class="av-text-h2">{{ $t('ExchangeConfigurationPage.contentExport.heading') }}</h2>
           <div class="q-mb-lg">
@@ -56,7 +58,7 @@
           </div>
           <artivact-content-export-configuration-editor :content-exports="contentExportsRef"
                                                         v-if="contentExportsRef"
-                                                        v-on:delete-content-export="confirmDeleteContentExport"/>
+                                                        v-on:delete-content-export="confirmDeleteContentExport" />
         </div>
       </div>
 
@@ -91,7 +93,7 @@
       </template>
 
       <template v-slot:cancel>
-        <q-btn :label="$t('Common.cancel')" color="primary" @click="showDeleteContentExportModalRef = false"/>
+        <q-btn :label="$t('Common.cancel')" color="primary" @click="showDeleteContentExportModalRef = false" />
       </template>
 
       <template v-slot:approve>
@@ -106,7 +108,7 @@
     <!-- LONG-RUNNING OPERATION -->
     <artivact-operation-in-progress-dialog :progress-monitor-ref="progressMonitorRef"
                                            :dialog-model="showOperationInProgressModalRef"
-                                           @close-dialog="showOperationInProgressModalRef = false"/>
+                                           @close-dialog="showOperationInProgressModalRef = false" />
 
 
   </artivact-content>
@@ -115,15 +117,15 @@
 <script setup lang="ts">
 import ArtivactContent from 'components/ArtivactContent.vue';
 import ArtivactExchangeConfigurationEditor from 'components/ArtivactExchangeConfigurationEditor.vue';
-import {useQuasar} from 'quasar';
-import {onMounted, ref, Ref} from 'vue';
-import {ContentExport, ExchangeConfiguration, OperationProgress} from 'components/artivact-models';
-import {api} from 'boot/axios';
-import {useI18n} from 'vue-i18n';
+import { useQuasar } from 'quasar';
+import { onMounted, ref, Ref } from 'vue';
+import { ContentExport, ExchangeConfiguration, OperationProgress } from 'components/artivact-models';
+import { api } from 'boot/axios';
+import { useI18n } from 'vue-i18n';
 import ArtivactContentExportConfigurationEditor from 'components/ArtivactContentExportConfigurationEditor.vue';
 import ArtivactDialog from 'components/ArtivactDialog.vue';
 import ArtivactOperationInProgressDialog from 'components/ArtivactOperationInProgressDialog.vue';
-import {useMenuStore} from "stores/menu";
+import { useMenuStore } from 'stores/menu';
 
 const quasar = useQuasar();
 const i18n = useI18n();
@@ -152,8 +154,8 @@ function loadExchangeConfiguration() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.loading.failed', {item: i18n.t('Common.items.configuration.exchange')}),
-        icon: 'report_problem',
+        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.configuration.exchange') }),
+        icon: 'report_problem'
       });
     });
 }
@@ -171,7 +173,7 @@ function synchronizeAllUp() {
         color: 'negative',
         position: 'bottom',
         message: i18n.t('ExchangeConfigurationPage.messages.sync.failed'),
-        icon: 'report_problem',
+        icon: 'report_problem'
       });
     });
 }
@@ -190,7 +192,7 @@ function updateOperationProgress() {
           color: 'positive',
           position: 'bottom',
           message: i18n.t('ExchangeConfigurationPage.messages.sync.success'),
-          icon: 'check',
+          icon: 'check'
         });
       }
     })
@@ -199,7 +201,7 @@ function updateOperationProgress() {
         color: 'negative',
         position: 'bottom',
         message: i18n.t('ExchangeConfigurationPage.messages.sync.failed'),
-        icon: 'report_problem',
+        icon: 'report_problem'
       });
     });
 }
@@ -214,8 +216,8 @@ function loadContentExports() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.loading.failed', {item: i18n.t('Common.items.configuration.exports')}),
-        icon: 'report_problem',
+        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.configuration.exports') }),
+        icon: 'report_problem'
       });
     });
 }
@@ -227,16 +229,16 @@ function saveExchangeConfiguration() {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: i18n.t('Common.messages.saving.success', {item: i18n.t('Common.items.configuration.exchange')}),
-        icon: 'check',
+        message: i18n.t('Common.messages.saving.success', { item: i18n.t('Common.items.configuration.exchange') }),
+        icon: 'check'
       });
     })
     .catch(() => {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.saving.failed', {item: i18n.t('Common.items.configuration.exchange')}),
-        icon: 'report_problem',
+        message: i18n.t('Common.messages.saving.failed', { item: i18n.t('Common.items.configuration.exchange') }),
+        icon: 'report_problem'
       });
     });
 }
@@ -258,16 +260,16 @@ function deleteContentExport() {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: i18n.t('Common.messages.deleting.success', {item: i18n.t('Common.items.export')}),
-        icon: 'check',
+        message: i18n.t('Common.messages.deleting.success', { item: i18n.t('Common.items.export') }),
+        icon: 'check'
       });
     })
     .catch(() => {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.deleting.failed', {item: i18n.t('Common.items.export')}),
-        icon: 'report_problem',
+        message: i18n.t('Common.messages.deleting.failed', { item: i18n.t('Common.items.export') }),
+        icon: 'report_problem'
       });
     });
 }
@@ -279,7 +281,7 @@ function contentUploaded() {
       if (response.data) {
         showOperationInProgressModalRef.value = true;
         progressMonitorRef.value = response.data;
-        updateImportOperationProgress()
+        updateImportOperationProgress();
       }
     })
     .catch(() => {
@@ -287,7 +289,7 @@ function contentUploaded() {
         color: 'negative',
         position: 'bottom',
         message: i18n.t('ExchangeConfigurationPage.messages.import.failed'),
-        icon: 'report_problem',
+        icon: 'report_problem'
       });
     });
 }
@@ -306,12 +308,12 @@ function updateImportOperationProgress() {
           .get('/api/configuration/public/menu')
           .then((response) => {
             menuStore.setAvailableMenus(response.data);
-          })
+          });
         quasar.notify({
           color: 'positive',
           position: 'bottom',
           message: i18n.t('ExchangeConfigurationPage.messages.import.success'),
-          icon: 'check',
+          icon: 'check'
         });
       }
     })
@@ -320,7 +322,7 @@ function updateImportOperationProgress() {
         color: 'negative',
         position: 'bottom',
         message: i18n.t('ExchangeConfigurationPage.messages.import.failed'),
-        icon: 'report_problem',
+        icon: 'report_problem'
       });
     });
 }
@@ -330,7 +332,7 @@ function contentUploadFailed() {
     color: 'negative',
     position: 'bottom',
     message: i18n.t('ExchangeConfigurationPage.messages.import.failed'),
-    icon: 'report_problem',
+    icon: 'report_problem'
   });
 }
 
@@ -342,5 +344,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-
+.sync-all-up-button {
+  min-height: 4em;
+}
 </style>
