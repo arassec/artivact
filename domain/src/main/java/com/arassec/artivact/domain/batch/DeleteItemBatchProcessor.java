@@ -4,7 +4,7 @@ import com.arassec.artivact.core.model.batch.BatchProcessingParameters;
 import com.arassec.artivact.core.model.batch.BatchProcessingTask;
 import com.arassec.artivact.core.model.batch.BatchProcessor;
 import com.arassec.artivact.core.model.item.Item;
-import com.arassec.artivact.core.repository.ItemRepository;
+import com.arassec.artivact.domain.service.ItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +18,7 @@ public class DeleteItemBatchProcessor implements BatchProcessor {
     /**
      * Repository for items.
      */
-    private final ItemRepository itemRepository;
+    private final ItemService itemService;
 
     /**
      * {@inheritDoc}
@@ -40,7 +40,7 @@ public class DeleteItemBatchProcessor implements BatchProcessor {
             return false;
         }
 
-        itemRepository.deleteById(item.getId());
+        itemService.delete(item.getId());
 
         return false;
     }
