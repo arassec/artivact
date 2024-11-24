@@ -55,12 +55,12 @@ public class ProjectDataProvider {
     /**
      * Directory containing files to copy during project setup.
      */
-    private static final Path PROJECT_SETUP_DIR = Path.of("resources/project-setup");
+    public static final Path PROJECT_SETUP_DIR = Path.of("resources/project-setup");
 
     /**
      * Directory containing files to copy during project setup if the regular directory does not exist.
      */
-    private static final Path PROJECT_SETUP_DIR_FALLBACK = Path.of("domain/src/main/resources/project-setup");
+    public static final Path PROJECT_SETUP_DIR_FALLBACK = Path.of("domain/src/main/resources/project-setup");
 
     /**
      * Path to the project's root directory.

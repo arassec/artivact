@@ -2,6 +2,7 @@ package com.arassec.artivact.core.repository;
 
 import com.arassec.artivact.core.model.page.Page;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -23,6 +24,13 @@ public interface PageRepository {
      * @return The deleted page.
      */
     Optional<Page> deleteById(String pageId);
+
+    /**
+     * Returns all available pages.
+     *
+     * @return All available pages.
+     */
+    List<Page> findAll();
 
     /**
      * Loads the page with the given ID.

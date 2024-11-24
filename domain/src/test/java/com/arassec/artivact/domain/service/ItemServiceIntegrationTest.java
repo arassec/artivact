@@ -23,10 +23,10 @@ import org.mockito.Answers;
 import org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -55,37 +55,37 @@ class ItemServiceIntegrationTest {
     /**
      * Repository for item entities.
      */
-    @MockBean
+    @MockitoBean
     private ItemRepository itemRepository;
 
     /**
      * Service for configuration handling.
      */
-    @MockBean
+    @MockitoBean
     private ConfigurationService configurationService;
 
     /**
      * Service for search management.
      */
-    @MockBean
+    @MockitoBean
     private SearchService searchService;
 
     /**
      * The application's {@link FileRepository}.
      */
-    @MockBean
+    @MockitoBean
     private FileRepository fileRepository;
 
     /**
      * The project data provider.
      */
-    @MockBean(answer = Answers.RETURNS_DEEP_STUBS)
+    @MockitoBean(answers = Answers.RETURNS_DEEP_STUBS)
     private ProjectDataProvider projectDataProvider;
 
     /**
      * Mock for the items-directory.
      */
-    @MockBean
+    @MockitoBean
     private Path itemsDir;
 
     /**

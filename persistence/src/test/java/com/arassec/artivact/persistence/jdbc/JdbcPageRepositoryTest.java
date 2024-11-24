@@ -14,8 +14,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -75,7 +77,6 @@ public class JdbcPageRepositoryTest {
     void testSaveExisting() {
         Page page = new Page();
         page.setId("id");
-        page.setVersion(23);
         page.setPageContent(new PageContent());
         page.getPageContent().setIndexPage(true);
 
@@ -87,7 +88,6 @@ public class JdbcPageRepositoryTest {
 
         jdbcPageRepository.save(page);
 
-        assertEquals(23, pageEntity.getVersion());
         assertEquals("{contentJson}", pageEntity.getContentJson());
         assertTrue(pageEntity.isIndexPage());
     }
@@ -114,6 +114,21 @@ public class JdbcPageRepositoryTest {
         assertEquals("id", pageOptional.get().getId());
 
         verify(pageEntityRepository, times(1)).deleteById("id");
+    }
+
+    /**
+     * Tests finding all available pages.
+     */
+    @Test
+    @SneakyThrows
+    void testFindAll() {
+        when(pageEntityRepository.findAll()).thenReturn(List.of(
+                new PageEntity(), new PageEntity()
+        ));
+
+        List<Page> pages = jdbcPageRepository.findAll();
+
+        assertThat(pages.size()).isEqualTo(2);
     }
 
     /**

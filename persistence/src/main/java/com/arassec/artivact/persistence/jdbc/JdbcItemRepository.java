@@ -47,7 +47,6 @@ public class JdbcItemRepository extends BaseJdbcRepository implements ItemReposi
         ItemEntity itemEntity = itemEntityRepository.findById(item.getId()).orElse(new ItemEntity());
 
         itemEntity.setId(item.getId());
-        itemEntity.setVersion(item.getVersion());
         itemEntity.setContentJson(toJson(item));
         itemEntity.setSyncVersion(item.getSyncVersion());
 

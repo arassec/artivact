@@ -12,9 +12,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * {@link PageRepository} implementation that uses JDBC.
@@ -50,7 +52,6 @@ public class JdbcPageRepository extends BaseJdbcRepository implements PageReposi
             pageEntity.setId(page.getId());
         }
 
-        pageEntity.setVersion(page.getVersion());
         pageEntity.setIndexPage(Boolean.TRUE.equals(page.getPageContent().getIndexPage()));
         pageEntity.setContentJson(toJson(page.getPageContent()));
 
@@ -67,6 +68,13 @@ public class JdbcPageRepository extends BaseJdbcRepository implements PageReposi
             pageEntityRepository.deleteById(pageId);
         }
         return pageOptional;
+    }
+
+    @Override
+    public List<Page> findAll() {
+        return StreamSupport.stream(pageEntityRepository.findAll().spliterator(), false)
+                .map(this::convert)
+                .toList();
     }
 
     /**

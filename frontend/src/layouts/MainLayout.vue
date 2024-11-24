@@ -55,17 +55,17 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted} from 'vue';
-import {useQuasar} from 'quasar';
-import {api} from 'boot/axios';
-import {useUserdataStore} from 'stores/userdata';
-import {useLocaleStore} from 'stores/locale';
-import {useMenuStore} from 'stores/menu';
+import { onMounted } from 'vue';
+import { useQuasar } from 'quasar';
+import { api } from 'boot/axios';
+import { useUserdataStore } from 'stores/userdata';
+import { useLocaleStore } from 'stores/locale';
+import { useMenuStore } from 'stores/menu';
 import ArtivactMenuBar from 'components/ArtivactMenuBar.vue';
 import ArtivactSettingsBar from 'components/ArtivactSettingsBar.vue';
-import {useI18n} from 'vue-i18n';
-import {useProfilesStore} from 'stores/profiles';
-import {useApplicationSettingsStore} from "stores/application-settings";
+import { useI18n } from 'vue-i18n';
+import { useProfilesStore } from 'stores/profiles';
+import { useApplicationSettingsStore } from 'stores/application-settings';
 
 const quasar = useQuasar();
 const i18n = useI18n();

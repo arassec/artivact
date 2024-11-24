@@ -2,18 +2,15 @@ package com.arassec.artivact.domain.service;
 
 import com.arassec.artivact.core.model.account.Account;
 import com.arassec.artivact.core.repository.AccountRepository;
-import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * Service for managing application accounts.
@@ -25,11 +22,6 @@ import java.util.UUID;
 public class AccountService {
 
     /**
-     * The initial user's username.
-     */
-    private static final String INITIAL_USERNAME = "admin";
-
-    /**
      * Repository for accounts.
      */
     private final AccountRepository accountRepository;
@@ -38,40 +30,6 @@ public class AccountService {
      * The system's password encoder.
      */
     private final PasswordEncoder passwordEncoder;
-
-    /**
-     * Initial administrator password. Can be set per JVM parameter for integration testing.
-     */
-    @Value("${artivact.initial.password:}")
-    private String initialPassword;
-
-    /**
-     * Initializes the application by creating an initial user account if none is available. The password is printed
-     * to the application's log.
-     */
-    @SuppressWarnings("LoggingSimilarMessage")
-    @PostConstruct
-    public void initialize() {
-        if (!accountRepository.findAll().iterator().hasNext()) {
-
-            if (!StringUtils.hasText(initialPassword)) {
-                initialPassword = UUID.randomUUID().toString().split("-")[0];
-            }
-
-            create(Account.builder()
-                    .username(INITIAL_USERNAME)
-                    .password(initialPassword)
-                    .user(true)
-                    .admin(true)
-                    .build());
-
-            log.info("");
-            log.info("##############################################################");
-            log.info("Initial user created: {} / {}", INITIAL_USERNAME, initialPassword);
-            log.info("##############################################################");
-            log.info("");
-        }
-    }
 
     /**
      * {@inheritDoc}
