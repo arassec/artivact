@@ -114,7 +114,6 @@ public class SetupService {
         if (pageRepository.findAll().isEmpty() &&
                 (configurationService.isDesktopProfileEnabled() || configurationService.isE2eProfileEnabled())) {
             Path welcomePageExportZip = projectDataProvider.getProjectRoot()
-                    .resolve(ProjectDataProvider.PROJECT_SETUP_DIR)
                     .resolve(WELCOME_EXPORT_PATH);
 
             if (!Files.exists(welcomePageExportZip)) {
