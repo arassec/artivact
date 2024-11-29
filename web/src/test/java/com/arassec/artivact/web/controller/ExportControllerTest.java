@@ -14,15 +14,19 @@ import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.stubbing.Answer;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -79,6 +83,33 @@ class ExportControllerTest {
 
         assertEquals(1, standardExportInfos.size());
         assertEquals(standardExportInfo, standardExportInfos.getFirst());
+    }
+
+    /**
+     * Tests loading the content export overviews.
+     */
+    @Test
+    @SneakyThrows
+    void testLoadContentExportOverviews() {
+        doAnswer((Answer<OutputStream>) invocationOnMock -> {
+            OutputStream outputStream = invocationOnMock.getArgument(0, OutputStream.class);
+            outputStream.write("test".getBytes());
+            return outputStream;
+        }).when(exportService).loadContentExportOverviews(any(OutputStream.class));
+
+        HttpServletResponse response = mock(HttpServletResponse.class);
+
+        ResponseEntity<StreamingResponseBody> streamingResponseBodyResponseEntity = exportController.loadContentExportOverviews(response);
+
+        assertThat(streamingResponseBodyResponseEntity.getBody()).isNotNull();
+
+        verify(response, times(1)).setContentType("application/zip");
+        verify(response, times(1)).setHeader(eq(HttpHeaders.CONTENT_DISPOSITION), anyString());
+
+        OutputStream clientOutputStream = new ByteArrayOutputStream();
+        streamingResponseBodyResponseEntity.getBody().writeTo(clientOutputStream);
+        assertThat(clientOutputStream.toString()).isEqualTo("test");
+
     }
 
     /**

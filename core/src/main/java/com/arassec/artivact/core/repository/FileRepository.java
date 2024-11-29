@@ -112,12 +112,12 @@ public interface FileRepository {
      * E.g. a root of '/root/path' and an ID of 'ABC123' with subdir 'subdir' will lead to the path
      * '/root/path/ABC/123/ABC123/subdir'.
      *
-     * @param root   The root path to start from.
-     * @param id     The ID to use for subdirectory generation.
-     * @param subdir The final subdir at the end of the path.
-     * @return The path to the subdir.
+     * @param root          The root path to start from.
+     * @param id            The ID to use for subdirectory generation.
+     * @param dirOrFilename The final directory of the path or a filename at the end of the path.
+     * @return The path to the directory or file.
      */
-    Path getSubdirFilePath(Path root, String id, String subdir);
+    Path getSubdirFilePath(Path root, String id, String dirOrFilename);
 
     /**
      * Returns a subdirectory from the given ID.

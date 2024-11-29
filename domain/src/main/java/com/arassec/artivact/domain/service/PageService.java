@@ -71,7 +71,7 @@ public class PageService extends BaseFileService {
         this.pageRepository = pageRepository;
         this.fileRepository = fileRepository;
         this.objectMapper = objectMapper;
-        this.widgetFilesDir = projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.WIDGETS_FILE_DIR);
+        this.widgetFilesDir = projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.WIDGETS_DIR);
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.arassec.artivact.web.controller;
 
+import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.model.appearance.ColorTheme;
 import com.arassec.artivact.core.model.appearance.License;
 import com.arassec.artivact.core.model.configuration.*;
@@ -24,6 +25,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.Base64;
 import java.util.LinkedList;
 import java.util.List;
@@ -310,6 +313,34 @@ class ConfigurationControllerTest {
     void testAddPage() {
         controller.addPage("123abc");
         verify(configurationService, times(1)).addPageToMenu("123abc");
+    }
+
+    /**
+     * Tests saving a content export cover image.
+     */
+    @Test
+    @SneakyThrows
+    void testSaveMenuCoverImage() {
+        MultipartFile multipartFile = mock(MultipartFile.class);
+        when(multipartFile.getOriginalFilename()).thenReturn("content-export.zip");
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream("test".getBytes());
+        when(multipartFile.getInputStream()).thenReturn(byteArrayInputStream);
+
+        controller.saveMenuCoverImage("menu-id", multipartFile);
+
+        verify(configurationService).saveMenuCoverPicture(eq("menu-id"), eq("content-export.zip"), eq(byteArrayInputStream));
+    }
+
+    /**
+     * Tests saving a content export cover image.
+     */
+    @Test
+    @SneakyThrows
+    void testSaveMenuCoverImageFailsafe() {
+        MultipartFile multipartFile = mock(MultipartFile.class);
+        when(multipartFile.getInputStream()).thenThrow(new IOException("test-exception"));
+
+        assertThrows(ArtivactException.class, () -> controller.saveMenuCoverImage("menu-id", multipartFile));
     }
 
 }

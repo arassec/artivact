@@ -27,6 +27,7 @@ import org.springframework.util.StringUtils;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -172,6 +173,16 @@ public class ArtivactStandardImporter implements ArtivactImporter, ExchangeProce
                 importPage(importContext, menu.getTargetPageId());
             }
 
+            Optional<Path> coverPictureOptional = fileRepository.list(importContext.getImportDir()).stream()
+                    .filter(file -> file.getFileName().toString().startsWith("cover-picture"))
+                    .findFirst();
+
+            if (coverPictureOptional.isPresent()) {
+                Path coverPictureTargetDir = fileRepository.getSubdirFilePath(projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.MENUS_DIR), menuId, null);
+                fileRepository.createDirIfRequired(coverPictureTargetDir);
+                fileRepository.copy(coverPictureOptional.get(), coverPictureTargetDir, StandardCopyOption.REPLACE_EXISTING);
+            }
+
             if (saveMenu) {
                 configurationService.saveMenu(menu);
             }
@@ -197,7 +208,7 @@ public class ArtivactStandardImporter implements ArtivactImporter, ExchangeProce
                 // Import the widget:
                 Path widgetSource = importContext.getImportDir().resolve(widget.getId());
                 Path widgetTarget = projectDataProvider.getProjectRoot()
-                        .resolve(ProjectDataProvider.WIDGETS_FILE_DIR)
+                        .resolve(ProjectDataProvider.WIDGETS_DIR)
                         .resolve(fileRepository.getSubDir(widget.getId(), 0))
                         .resolve(fileRepository.getSubDir(widget.getId(), 1))
                         .resolve(widget.getId());

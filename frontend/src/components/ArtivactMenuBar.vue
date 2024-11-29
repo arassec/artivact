@@ -494,7 +494,7 @@
                         field-name="file"
                         :no-thumbnails="true"
                         class="col"
-                        :url="'/api/export/content/' + menuRef.id + '/cover-picture'"
+                        :url="'/api/configuration/menu/' + menuRef.id + '/cover-picture'"
             />
             <q-img class="col"/>
           </div>
@@ -646,20 +646,20 @@
 </template>
 
 <script setup lang="ts">
-import {useMenuStore} from 'stores/menu';
-import {api} from 'boot/axios';
-import {QUploader, useQuasar} from 'quasar';
-import {useRouter} from 'vue-router';
-import {useUserdataStore} from 'stores/userdata';
-import {ref} from 'vue';
+import { useMenuStore } from 'stores/menu';
+import { api } from 'boot/axios';
+import { QUploader, useQuasar } from 'quasar';
+import { useRouter } from 'vue-router';
+import { useUserdataStore } from 'stores/userdata';
+import { ref } from 'vue';
 import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
-import {useLocaleStore} from 'stores/locale';
-import {moveDown, moveUp, translate} from 'components/artivact-utils';
-import {ExportConfiguration, Menu, OperationProgress, TranslatableString} from 'components/artivact-models';
-import {useBreadcrumbsStore} from 'stores/breadcrumbs';
+import { useLocaleStore } from 'stores/locale';
+import { moveDown, moveUp, translate } from 'components/artivact-utils';
+import { ExportConfiguration, Menu, OperationProgress, TranslatableString } from 'components/artivact-models';
+import { useBreadcrumbsStore } from 'stores/breadcrumbs';
 import ArtivactDialog from 'components/ArtivactDialog.vue';
-import {useI18n} from 'vue-i18n';
-import {useProfilesStore} from 'stores/profiles';
+import { useI18n } from 'vue-i18n';
+import { useProfilesStore } from 'stores/profiles';
 import ArtivactOperationInProgressDialog from 'components/ArtivactOperationInProgressDialog.vue';
 
 const quasar = useQuasar();

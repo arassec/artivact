@@ -300,4 +300,22 @@ public class ConfigurationController {
         return ResponseEntity.ok(configurationService.addPageToMenu(menuId));
     }
 
+    /**
+     * Saves the cover picture of a menu.
+     *
+     * @param menuId The menu's ID.
+     * @param file   The uploaded cover-image.
+     */
+    @PostMapping("/menu/{menuId}/cover-picture")
+    public void saveMenuCoverImage(@PathVariable String menuId,
+                                   @RequestPart(value = "file") final MultipartFile file) {
+        synchronized (this) {
+            try {
+                configurationService.saveMenuCoverPicture(menuId, file.getOriginalFilename(), file.getInputStream());
+            } catch (IOException e) {
+                throw new ArtivactException("Could not save uploaded cover image!", e);
+            }
+        }
+    }
+
 }

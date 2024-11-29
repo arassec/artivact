@@ -5,7 +5,6 @@ import com.arassec.artivact.core.misc.ProgressMonitor;
 import com.arassec.artivact.core.model.configuration.ExchangeConfiguration;
 import com.arassec.artivact.core.model.exchange.ExportConfiguration;
 import com.arassec.artivact.core.model.exchange.StandardExportInfo;
-import com.arassec.artivact.core.model.item.ImageSize;
 import com.arassec.artivact.core.model.item.Item;
 import com.arassec.artivact.core.model.menu.Menu;
 import com.arassec.artivact.core.repository.FileRepository;
@@ -29,7 +28,10 @@ import org.apache.hc.core5.http.HttpEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
@@ -160,23 +162,6 @@ public class ExportService extends BaseFileService implements ExchangeProcessor 
     public void copyExportAndDelete(Path export, OutputStream outputStream) {
         fileRepository.copy(export, outputStream);
         fileRepository.delete(export);
-    }
-
-    /**
-     * Saves an export's cover picture.
-     *
-     * @param menuId           The menu the export is based on.
-     * @param originalFilename The original filename of the cover picture.
-     * @param inputStream      The input stream containing the picture.
-     */
-    public void saveCoverPicture(String menuId, String originalFilename, InputStream inputStream) {
-        String fileExtension = getExtension(originalFilename).orElseThrow();
-        String coverPictureFilename = menuId + "." + fileExtension;
-
-        Path exportsDir = projectDataProvider.getProjectRoot().resolve("exports");
-
-        getFileRepository().createDirIfRequired(exportsDir);
-        getFileRepository().scaleImage(inputStream, exportsDir.resolve(coverPictureFilename), fileExtension, ImageSize.PAGE_TITLE.getWidth());
     }
 
     /**

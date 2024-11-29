@@ -89,17 +89,6 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
 
         exportMenu(exportContext, menu);
 
-        // Copy a cover picture if one exists:
-        Optional<Path> coverPictureOptional = fileRepository.list(exportContext.getProjectExportsDir()).stream()
-                .filter(file -> !fileRepository.isDir(file))
-                .filter(file -> file.getFileName().toString().startsWith(menu.getId()))
-                .findFirst();
-
-        if (coverPictureOptional.isPresent()) {
-            Path coverPicture = coverPictureOptional.get();
-            fileRepository.copy(coverPicture, exportContext.getExportDir().resolve(coverPicture.getFileName()));
-        }
-
         fileRepository.pack(exportContext.getExportDir().toAbsolutePath(), exportContext.getExportFile().toAbsolutePath());
 
         return exportContext.getExportFile().toAbsolutePath();
@@ -254,60 +243,72 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
     /**
      * Exports a menu.
      *
-     * @param params Parameters of the content export.
-     * @param menu   The menu to export.
+     * @param exportContext Context of the export.
+     * @param menu          The menu to export.
      */
-    private void exportMenu(ExportContext params, Menu menu) {
-        cleanupMenu(params, menu);
+    private void exportMenu(ExportContext exportContext, Menu menu) {
+        cleanupMenu(exportContext, menu);
 
-        writeJsonFile(params.getExportDir().resolve(menu.getId() + MENU_EXCHANGE_FILE_SUFFIX), menu);
+        writeJsonFile(exportContext.getExportDir().resolve(menu.getId() + MENU_EXCHANGE_FILE_SUFFIX), menu);
 
         Optional.ofNullable(menu.getMenuEntries()).orElse(List.of())
-                .forEach(menuEntry -> exportMenu(params, menuEntry));
+                .forEach(menuEntry -> exportMenu(exportContext, menuEntry));
 
         if (StringUtils.hasText(menu.getTargetPageId())) {
             var pageContent = pageService.loadPageContent(menu.getTargetPageId(), Set.of(Roles.ROLE_ADMIN, Roles.ROLE_USER));
-            exportPage(params, menu.getTargetPageId(), pageContent);
+            exportPage(exportContext, menu.getTargetPageId(), pageContent);
         }
+
+        // Copy a cover picture if one exists:
+        Path menuFilesDir = fileRepository.getSubdirFilePath(projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.MENUS_DIR), menu.getId(), null);
+        Optional<Path> coverPictureOptional = fileRepository.list(menuFilesDir).stream()
+                .filter(file -> file.getFileName().toString().startsWith("cover-picture"))
+                .findFirst();
+
+        if (coverPictureOptional.isPresent()) {
+            Path coverPicture = coverPictureOptional.get();
+            fileRepository.copy(coverPicture, exportContext.getExportDir().resolve(coverPicture.getFileName()));
+        }
+
     }
 
     /**
      * Exports a page.
      *
-     * @param params      Parameters of the content export.
-     * @param pageContent The page to export.
+     * @param exportContext Context of the content export.
+     * @param pageContent   The page to export.
      */
-    private void exportPage(ExportContext params, String targetPageId, PageContent pageContent) {
-        if (params.getExportConfiguration().isApplyRestrictions() && !pageContent.getRestrictions().isEmpty()) {
+    private void exportPage(ExportContext exportContext, String targetPageId, PageContent pageContent) {
+        if (exportContext.getExportConfiguration().isApplyRestrictions() && !pageContent.getRestrictions().isEmpty()) {
             return;
         }
 
         pageContent.getWidgets().forEach(widget -> {
-            if (params.getExportConfiguration().isApplyRestrictions() && !widget.getRestrictions().isEmpty()) {
+            if (exportContext.getExportConfiguration().isApplyRestrictions() && !widget.getRestrictions().isEmpty()) {
                 return;
             }
-            exportWidget(params, widget);
+            exportWidget(exportContext, widget);
         });
 
-        writeJsonFile(params.getExportDir().resolve(targetPageId + PAGE_EXCHANGE_FILE_SUFFIX), pageContent);
+        writeJsonFile(exportContext.getExportDir().resolve(targetPageId + PAGE_EXCHANGE_FILE_SUFFIX), pageContent);
     }
 
     /**
      * Exports the supplied widget.
      *
-     * @param params Parameters of the content export.
-     * @param widget The widget to export.
+     * @param exportContext Context of the content export.
+     * @param widget        The widget to export.
      */
-    private void exportWidget(ExportContext params, Widget widget) {
+    private void exportWidget(ExportContext exportContext, Widget widget) {
         widget.getNavigationTitle().setTranslatedValue(null);
         switch (widget) {
             case AvatarWidget avatarWidget -> {
                 avatarWidget.getAvatarSubtext().setTranslatedValue(null);
-                copyWidgetFile(params, avatarWidget, avatarWidget.getAvatarImage());
+                copyWidgetFile(exportContext, avatarWidget, avatarWidget.getAvatarImage());
             }
             case ImageTextWidget imageTextWidget -> {
                 imageTextWidget.getText().setTranslatedValue(null);
-                copyWidgetFile(params, imageTextWidget, imageTextWidget.getImage());
+                copyWidgetFile(exportContext, imageTextWidget, imageTextWidget.getImage());
             }
             case InfoBoxWidget infoBoxWidget -> {
                 infoBoxWidget.getHeading().setTranslatedValue(null);
@@ -315,7 +316,7 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
             }
             case PageTitleWidget pageTitleWidget -> {
                 pageTitleWidget.getTitle().setTranslatedValue(null);
-                copyWidgetFile(params, pageTitleWidget, pageTitleWidget.getBackgroundImage());
+                copyWidgetFile(exportContext, pageTitleWidget, pageTitleWidget.getBackgroundImage());
             }
             case ItemSearchWidget itemSearchWidget -> {
                 itemSearchWidget.getHeading().setTranslatedValue(null);
@@ -325,12 +326,12 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
                 List<Item> searchResult = searchService.search(searchTerm, maxResults);
                 if (searchResult != null && !searchResult.isEmpty()) {
                     for (Item item : searchResult) {
-                        if (params.getExportConfiguration().isApplyRestrictions() && !item.getRestrictions().isEmpty()) {
+                        if (exportContext.getExportConfiguration().isApplyRestrictions() && !item.getRestrictions().isEmpty()) {
                             continue;
                         }
-                        exportItem(params, item);
+                        exportItem(exportContext, item);
                     }
-                    writeJsonFile(params.getExportDir().resolve(widget.getId() + SEARCH_RESULT_FILE_SUFFIX),
+                    writeJsonFile(exportContext.getExportDir().resolve(widget.getId() + SEARCH_RESULT_FILE_SUFFIX),
                             searchResult.stream().map(Item::getId).toArray());
                 }
             }
@@ -345,11 +346,11 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
     /**
      * Exports an item with its media files.
      *
-     * @param params The export parameters.
-     * @param item   The item to export.
+     * @param exportContext The export context.
+     * @param item          The item to export.
      */
-    private void exportItem(ExportContext params, Item item) {
-        Path itemExportDir = params.getExportDir().resolve(item.getId());
+    private void exportItem(ExportContext exportContext, Item item) {
+        Path itemExportDir = exportContext.getExportDir().resolve(item.getId());
 
         // Already exported by another widget / exporter? Skip item...
         if (fileRepository.exists(itemExportDir)) {
@@ -358,7 +359,7 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
             fileRepository.createDirIfRequired(itemExportDir);
         }
 
-        copyItemMediaFiles(params, item, itemExportDir);
+        copyItemMediaFiles(exportContext, item, itemExportDir);
 
         item.getTitle().setTranslatedValue(null);
         item.getDescription().setTranslatedValue(null);
@@ -369,11 +370,11 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
     /**
      * Copies the item's media files to the target directory.
      *
-     * @param params        Export parameters.
+     * @param exportContext Export context.
      * @param item          The item to export.
      * @param itemExportDir The item's export directory.
      */
-    private void copyItemMediaFiles(ExportContext params, Item item, Path itemExportDir) {
+    private void copyItemMediaFiles(ExportContext exportContext, Item item, Path itemExportDir) {
         List<String> images = item.getMediaContent().getImages();
         List<String> models = item.getMediaContent().getModels();
 
@@ -382,7 +383,7 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
         Path imagesSourceDir = fileRepository.getDirFromId(projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.ITEMS_DIR), item.getId()).resolve(ProjectDataProvider.IMAGES_DIR);
         Path modelsSourceDir = fileRepository.getDirFromId(projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.ITEMS_DIR), item.getId()).resolve(ProjectDataProvider.MODELS_DIR);
 
-        if (params.getExportConfiguration().isOptimizeSize()) {
+        if (exportContext.getExportConfiguration().isOptimizeSize()) {
             if (!models.isEmpty()) {
                 String firstModel = models.getFirst();
                 fileRepository.copy(modelsSourceDir.resolve(firstModel), itemExportDir.resolve(firstModel));
@@ -405,14 +406,14 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
     /**
      * Copies a widget file to the widget's export directory.
      *
-     * @param params Export parameters.
-     * @param widget The widget to copy files from.
-     * @param file   The file to copy.
+     * @param exportContext Export context.
+     * @param widget        The widget to copy files from.
+     * @param file          The file to copy.
      */
-    private void copyWidgetFile(ExportContext params, Widget widget, String file) {
+    private void copyWidgetFile(ExportContext exportContext, Widget widget, String file) {
         if (StringUtils.hasText(file)) {
-            Path sourceDir = fileRepository.getDirFromId(projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.WIDGETS_FILE_DIR), widget.getId());
-            Path targetDir = params.getExportDir().resolve(widget.getId());
+            Path sourceDir = fileRepository.getDirFromId(projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.WIDGETS_DIR), widget.getId());
+            Path targetDir = exportContext.getExportDir().resolve(widget.getId());
             fileRepository.createDirIfRequired(targetDir);
             fileRepository.copy(sourceDir.resolve(file), targetDir.resolve(file));
         }
@@ -421,15 +422,15 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
     /**
      * Cleans the menu up for export.
      *
-     * @param params Export parameters.
-     * @param menu   The menu to clean up.
+     * @param exportContext Export context.
+     * @param menu          The menu to clean up.
      */
-    private void cleanupMenu(ExportContext params, Menu menu) {
+    private void cleanupMenu(ExportContext exportContext, Menu menu) {
         cleanupTranslations(menu);
         if (menu.getMenuEntries() != null) {
             menu.getMenuEntries().stream()
                     .filter(menuEntry -> {
-                        if (params.getExportConfiguration().isApplyRestrictions()) {
+                        if (exportContext.getExportConfiguration().isApplyRestrictions()) {
                             return menuEntry.getRestrictions().isEmpty();
                         }
                         return true;
@@ -445,13 +446,13 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
     /**
      * Cleans up property categories for export.
      *
-     * @param params                  Export parameters.
+     * @param exportContext           Export context.
      * @param propertiesConfiguration The property configuration to clean up.
      */
-    private void cleanupPropertyConfiguration(ExportContext params, PropertiesConfiguration propertiesConfiguration) {
+    private void cleanupPropertyConfiguration(ExportContext exportContext, PropertiesConfiguration propertiesConfiguration) {
         propertiesConfiguration.getCategories().stream()
                 .filter(propertyCategory -> {
-                    if (params.getExportConfiguration().isApplyRestrictions()) {
+                    if (exportContext.getExportConfiguration().isApplyRestrictions()) {
                         return propertyCategory.getRestrictions().isEmpty();
                     }
                     return true;
@@ -460,7 +461,7 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
                     cleanupTranslations(propertyCategory);
                     propertyCategory.getProperties().stream()
                             .filter(property -> {
-                                if (params.getExportConfiguration().isApplyRestrictions()) {
+                                if (exportContext.getExportConfiguration().isApplyRestrictions()) {
                                     return property.getRestrictions().isEmpty();
                                 }
                                 return true;
@@ -470,7 +471,7 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
                                 if (property.getValueRange() != null && !property.getValueRange().isEmpty()) {
                                     property.getValueRange().stream()
                                             .filter(propertyValue -> {
-                                                if (params.getExportConfiguration().isApplyRestrictions()) {
+                                                if (exportContext.getExportConfiguration().isApplyRestrictions()) {
                                                     return propertyValue.getRestrictions().isEmpty();
                                                 }
                                                 return true;
@@ -484,13 +485,13 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
     /**
      * Cleans up tags configuration for export.
      *
-     * @param params            Export parameters.
+     * @param exportContext     Export context.
      * @param tagsConfiguration The tags configuration to clean up.
      */
-    private void cleanupTagsConfiguration(ExportContext params, TagsConfiguration tagsConfiguration) {
+    private void cleanupTagsConfiguration(ExportContext exportContext, TagsConfiguration tagsConfiguration) {
         tagsConfiguration.getTags().stream()
                 .filter(propertyCategory -> {
-                    if (params.getExportConfiguration().isApplyRestrictions()) {
+                    if (exportContext.getExportConfiguration().isApplyRestrictions()) {
                         return propertyCategory.getRestrictions().isEmpty();
                     }
                     return true;

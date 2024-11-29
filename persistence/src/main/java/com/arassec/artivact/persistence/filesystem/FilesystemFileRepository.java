@@ -225,9 +225,9 @@ public class FilesystemFileRepository implements FileRepository {
      * {@inheritDoc}
      */
     @Override
-    public Path getSubdirFilePath(Path root, String id, String subdir) {
-        if (subdir != null) {
-            return root.resolve(getSubDir(id, 0)).resolve(getSubDir(id, 1)).resolve(id).resolve(subdir);
+    public Path getSubdirFilePath(Path root, String id, String dirOrFilename) {
+        if (dirOrFilename != null) {
+            return root.resolve(getSubDir(id, 0)).resolve(getSubDir(id, 1)).resolve(id).resolve(dirOrFilename);
         }
         return root.resolve(getSubDir(id, 0)).resolve(getSubDir(id, 1)).resolve(id);
     }
@@ -346,7 +346,6 @@ public class FilesystemFileRepository implements FileRepository {
     @Override
     public void pack(Path source, Path target) {
         ZipUtil.pack(source.toFile(), target.toFile());
-        delete(source.toAbsolutePath());
     }
 
     /**

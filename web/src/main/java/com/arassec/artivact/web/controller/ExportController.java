@@ -1,6 +1,5 @@
 package com.arassec.artivact.web.controller;
 
-import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.model.exchange.ExportConfiguration;
 import com.arassec.artivact.core.model.exchange.StandardExportInfo;
 import com.arassec.artivact.domain.exchange.ExchangeProcessor;
@@ -13,10 +12,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.List;
@@ -103,25 +100,6 @@ public class ExportController extends BaseController {
         exportService.deleteExport(menuId);
         return getProgress();
     }
-
-    /**
-     * Saves the cover image of a content export.
-     *
-     * @param menuId The menu's ID.
-     * @param file   The uploaded cover-image.
-     */
-    @PostMapping("/content/{menuId}/cover-picture")
-    public void saveContentExportCoverImage(@PathVariable String menuId,
-                                            @RequestPart(value = "file") final MultipartFile file) {
-        synchronized (this) {
-            try {
-                exportService.saveCoverPicture(menuId, file.getOriginalFilename(), file.getInputStream());
-            } catch (IOException e) {
-                throw new ArtivactException("Could not save uploaded cover image!", e);
-            }
-        }
-    }
-
 
     /**
      * Exports the current properties configuration as JSON file.

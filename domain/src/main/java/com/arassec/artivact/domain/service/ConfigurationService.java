@@ -5,13 +5,16 @@ import com.arassec.artivact.core.model.TranslatableString;
 import com.arassec.artivact.core.model.appearance.ColorTheme;
 import com.arassec.artivact.core.model.appearance.License;
 import com.arassec.artivact.core.model.configuration.*;
+import com.arassec.artivact.core.model.item.ImageSize;
 import com.arassec.artivact.core.model.menu.Menu;
 import com.arassec.artivact.core.model.page.Page;
 import com.arassec.artivact.core.model.property.PropertyCategory;
 import com.arassec.artivact.core.repository.ConfigurationRepository;
+import com.arassec.artivact.core.repository.FileRepository;
 import com.arassec.artivact.domain.aspect.GenerateIds;
 import com.arassec.artivact.domain.aspect.RestrictResult;
 import com.arassec.artivact.domain.aspect.TranslateResult;
+import com.arassec.artivact.domain.misc.ProjectDataProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.Getter;
@@ -24,6 +27,7 @@ import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.*;
 
 /**
@@ -33,7 +37,7 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class ConfigurationService {
+public class ConfigurationService extends BaseFileService {
 
     /**
      * Repository to configurations.
@@ -49,6 +53,17 @@ public class ConfigurationService {
      * Spring's environment.
      */
     private final Environment environment;
+
+    /**
+     * The application's {@link ProjectDataProvider}.
+     */
+    private final ProjectDataProvider projectDataProvider;
+
+    /**
+     * The application's {@link FileRepository}.
+     */
+    @Getter
+    private final FileRepository fileRepository;
 
     /**
      * The application's object mapper.
@@ -507,6 +522,24 @@ public class ConfigurationService {
         configurationRepository.saveConfiguration(ConfigurationType.MENU, menuConfiguration);
 
         return loadTranslatedRestrictedMenus();
+    }
+
+    /**
+     * Saves a menu's cover picture, e.g. for exports.
+     *
+     * @param menuId           The menu the cover picture is assigned to.
+     * @param originalFilename The original filename of the cover picture.
+     * @param inputStream      The input stream containing the picture.
+     */
+    public void saveMenuCoverPicture(String menuId, String originalFilename, InputStream inputStream) {
+        String fileExtension = getExtension(originalFilename).orElseThrow();
+
+        Path targetDir = fileRepository.getSubdirFilePath(projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.MENUS_DIR), menuId, null);
+        fileRepository.createDirIfRequired(targetDir);
+
+        Path coverPicture = targetDir.resolve("cover-picture." + fileExtension);
+
+        getFileRepository().scaleImage(inputStream, coverPicture, fileExtension, ImageSize.PAGE_TITLE.getWidth());
     }
 
     /**
