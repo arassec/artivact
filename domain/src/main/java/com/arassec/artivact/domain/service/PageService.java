@@ -160,9 +160,7 @@ public class PageService extends BaseFileService {
     @TranslateResult
     @RestrictResult
     public PageContent loadTranslatedRestrictedPageContent(String pageId, Set<String> roles) {
-        Page page = pageRepository.findById(pageId).orElseThrow();
-        computeEditable(page.getPageContent(), roles);
-        return page.getPageContent();
+        return loadPageContent(pageId, roles);
     }
 
     /**

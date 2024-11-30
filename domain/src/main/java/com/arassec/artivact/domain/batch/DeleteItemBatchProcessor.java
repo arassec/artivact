@@ -36,12 +36,9 @@ public class DeleteItemBatchProcessor implements BatchProcessor {
      */
     @Override
     public boolean process(BatchProcessingParameters params, Item item) {
-        if (!BatchProcessingTask.DELETE_ITEM.equals(params.getTask())) {
-            return false;
+        if (BatchProcessingTask.DELETE_ITEM.equals(params.getTask())) {
+            itemService.delete(item.getId());
         }
-
-        itemService.delete(item.getId());
-
         return false;
     }
 

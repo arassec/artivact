@@ -24,6 +24,7 @@ public class ArtivactDesktopSecurityConfiguration {
      * @throws Exception in case of errors.
      */
     @Bean
+    @SuppressWarnings("java:S4502") // Disabling CSRF for localhost communication is OK here...
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(auth -> auth

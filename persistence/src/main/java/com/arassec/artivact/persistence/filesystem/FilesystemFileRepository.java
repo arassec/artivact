@@ -32,6 +32,16 @@ import java.util.stream.Stream;
 public class FilesystemFileRepository implements FileRepository {
 
     /**
+     * Error message if image scaling fails.
+     */
+    private static final String COULD_NOT_SCALE_IMAGE = "Could not scale image!";
+
+    /**
+     * Error message if copying a resource fails.
+     */
+    private static final String COULD_NOT_COPY_RESOURCE = "Could not copy resource!";
+
+    /**
      * Spring's {@link Environment}.
      */
     private final Environment environment;
@@ -171,7 +181,7 @@ public class FilesystemFileRepository implements FileRepository {
         try {
             Files.copy(source, target, copyOptions);
         } catch (IOException e) {
-            throw new ArtivactException("Could not copy resource!", e);
+            throw new ArtivactException(COULD_NOT_COPY_RESOURCE, e);
         }
     }
 
@@ -183,7 +193,7 @@ public class FilesystemFileRepository implements FileRepository {
         try {
             Files.copy(source, target, copyOptions);
         } catch (IOException e) {
-            throw new ArtivactException("Could not copy resource!", e);
+            throw new ArtivactException(COULD_NOT_COPY_RESOURCE, e);
         }
     }
 
@@ -195,7 +205,7 @@ public class FilesystemFileRepository implements FileRepository {
         try {
             Files.copy(source, target);
         } catch (IOException e) {
-            throw new ArtivactException("Could not copy resource!", e);
+            throw new ArtivactException(COULD_NOT_COPY_RESOURCE, e);
         }
     }
 
@@ -308,7 +318,7 @@ public class FilesystemFileRepository implements FileRepository {
             String fileEnding = fileNameParts[fileNameParts.length - 1];
             scaleImage(bufferedImage, targetImage, fileEnding, targetWidth);
         } catch (IOException e) {
-            throw new ArtivactException("Could not scale image!", e);
+            throw new ArtivactException(COULD_NOT_SCALE_IMAGE, e);
         }
     }
 
@@ -321,7 +331,7 @@ public class FilesystemFileRepository implements FileRepository {
             BufferedImage bufferedImage = ImageIO.read(originalImage);
             scaleImage(bufferedImage, targetImage, fileEnding, targetWidth);
         } catch (IOException e) {
-            throw new ArtivactException("Could not scale image!", e);
+            throw new ArtivactException(COULD_NOT_SCALE_IMAGE, e);
         }
     }
 
@@ -421,7 +431,7 @@ public class FilesystemFileRepository implements FileRepository {
             ImageIO.write(bufferedImage, fileEnding, byteArrayOutputStream);
             write(targetImage, byteArrayOutputStream.toByteArray());
         } catch (IOException e) {
-            throw new ArtivactException("Could not scale image!", e);
+            throw new ArtivactException(COULD_NOT_SCALE_IMAGE, e);
         }
     }
 

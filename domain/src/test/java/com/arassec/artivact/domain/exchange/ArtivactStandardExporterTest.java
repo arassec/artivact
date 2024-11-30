@@ -1,6 +1,5 @@
-package com.arassec.artivact.domain.exchange.json;
+package com.arassec.artivact.domain.exchange;
 
-import com.arassec.artivact.domain.exchange.ArtivactStandardExporter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
