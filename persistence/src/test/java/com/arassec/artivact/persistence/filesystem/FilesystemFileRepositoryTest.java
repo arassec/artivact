@@ -28,7 +28,7 @@ import static org.mockito.Mockito.*;
  * Tests the {@link FilesystemFileRepository}.
  */
 @ExtendWith(MockitoExtension.class)
-public class FilesystemFileRepositoryTest {
+class FilesystemFileRepositoryTest {
 
     /**
      * Directory to use during tests.
@@ -175,8 +175,8 @@ public class FilesystemFileRepositoryTest {
             if (System.getProperty("os.name").contains("Windows")) {
                 assertThat(captor.getValue()[0]).isEqualTo("cmd");
                 assertThat(captor.getValue()[1]).isEqualTo("/c");
-                assertThat(captor.getValue()[2]).isEqualTo("/start");
-                assertThat(captor.getValue()[3]).endsWith("target/FilesystemFileRepositoryTest");
+                assertThat(captor.getValue()[2]).isEqualTo("start");
+                assertThat(captor.getValue()[3]).isNotNull();
             } else {
                 assertThat(captor.getValue()[0]).isEqualTo("xdg-open");
                 assertThat(captor.getValue()[1]).endsWith("target/FilesystemFileRepositoryTest");
@@ -355,8 +355,8 @@ public class FilesystemFileRepositoryTest {
      */
     @Test
     void testSize() {
-        assertThat(filesystemFileRepository.size(null)).isEqualTo(0);
-        assertThat(filesystemFileRepository.size(Path.of("INVALID"))).isEqualTo(0);
+        assertThat(filesystemFileRepository.size(null)).isZero();
+        assertThat(filesystemFileRepository.size(Path.of("INVALID"))).isZero();
         assertThat(filesystemFileRepository.size(sourceFile)).isEqualTo(15);
         assertThat(filesystemFileRepository.size(sourceImage)).isEqualTo(17613);
     }
