@@ -3,13 +3,12 @@ package com.arassec.artivact.domain.service;
 
 import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.model.TranslatableString;
-import com.arassec.artivact.core.model.configuration.ConfigurationType;
 import com.arassec.artivact.core.model.configuration.MenuConfiguration;
 import com.arassec.artivact.core.model.item.ImageSize;
 import com.arassec.artivact.core.model.menu.Menu;
 import com.arassec.artivact.core.model.page.Page;
-import com.arassec.artivact.core.repository.ConfigurationRepository;
 import com.arassec.artivact.core.repository.FileRepository;
+import com.arassec.artivact.core.repository.MenuRepository;
 import com.arassec.artivact.domain.aspect.GenerateIds;
 import com.arassec.artivact.domain.aspect.RestrictResult;
 import com.arassec.artivact.domain.aspect.TranslateResult;
@@ -40,7 +39,7 @@ public class MenuService extends BaseFileService {
     /**
      * Repository to configurations.
      */
-    private final ConfigurationRepository configurationRepository;
+    private final MenuRepository menuRepository;
 
     /**
      * Service for page handling.
@@ -66,8 +65,7 @@ public class MenuService extends BaseFileService {
     @RestrictResult
     @TranslateResult
     public List<Menu> loadTranslatedRestrictedMenus() {
-        Optional<MenuConfiguration> configurationOptional = configurationRepository.findByType(ConfigurationType.MENU, MenuConfiguration.class);
-        MenuConfiguration menuConfiguration = configurationOptional.orElseGet(MenuConfiguration::new);
+        MenuConfiguration menuConfiguration = menuRepository.load();
 
         menuConfiguration.getMenus().forEach(menu -> {
             if (menu.getExportTitle() == null) {
@@ -99,12 +97,11 @@ public class MenuService extends BaseFileService {
     @RestrictResult
     @TranslateResult
     public List<Menu> saveMenus(List<Menu> menus) {
-        Optional<MenuConfiguration> configurationOptional = configurationRepository.findByType(ConfigurationType.MENU, MenuConfiguration.class);
-        MenuConfiguration menuConfiguration = configurationOptional.orElseGet(MenuConfiguration::new);
+        MenuConfiguration menuConfiguration = menuRepository.load();
 
         menuConfiguration.setMenus(menus);
 
-        configurationRepository.saveConfiguration(ConfigurationType.MENU, menuConfiguration);
+        menuRepository.save(menuConfiguration);
 
         menuConfiguration.getMenus().forEach(menu -> {
             if (StringUtils.hasText(menu.getTargetPageId())) {
@@ -141,8 +138,7 @@ public class MenuService extends BaseFileService {
             }
         });
 
-        Optional<MenuConfiguration> configurationOptional = configurationRepository.findByType(ConfigurationType.MENU, MenuConfiguration.class);
-        MenuConfiguration menuConfiguration = configurationOptional.orElseGet(MenuConfiguration::new);
+        MenuConfiguration menuConfiguration = menuRepository.load();
 
         Optional<Menu> existingMenuOptional = menuConfiguration.getMenus().stream()
                 .filter(existingMenu -> existingMenu.getId().equals(menu.getId()))
@@ -174,7 +170,7 @@ public class MenuService extends BaseFileService {
                     }
                 }));
 
-        configurationRepository.saveConfiguration(ConfigurationType.MENU, menuConfiguration);
+        menuRepository.save(menuConfiguration);
 
         return loadTranslatedRestrictedMenus();
     }
@@ -193,8 +189,7 @@ public class MenuService extends BaseFileService {
             return loadTranslatedRestrictedMenus();
         }
 
-        Optional<MenuConfiguration> configurationOptional = configurationRepository.findByType(ConfigurationType.MENU, MenuConfiguration.class);
-        MenuConfiguration menuConfiguration = configurationOptional.orElseGet(MenuConfiguration::new);
+        MenuConfiguration menuConfiguration = menuRepository.load();
 
         List<String> pagesToDelete = new LinkedList<>();
 
@@ -228,7 +223,7 @@ public class MenuService extends BaseFileService {
                 .filter(existingMenu -> !existingMenu.getId().equals(menuId))
                 .toList());
 
-        configurationRepository.saveConfiguration(ConfigurationType.MENU, menuConfiguration);
+        menuRepository.save(menuConfiguration);
 
         return loadTranslatedRestrictedMenus();
     }
@@ -247,8 +242,7 @@ public class MenuService extends BaseFileService {
             return loadTranslatedRestrictedMenus();
         }
 
-        Optional<MenuConfiguration> configurationOptional = configurationRepository.findByType(ConfigurationType.MENU, MenuConfiguration.class);
-        MenuConfiguration menuConfiguration = configurationOptional.orElseGet(MenuConfiguration::new);
+        MenuConfiguration menuConfiguration = menuRepository.load();
 
         menuConfiguration.getMenus().forEach(menu -> {
             if (menu.getId().equals(menuId)) {
@@ -257,7 +251,7 @@ public class MenuService extends BaseFileService {
             }
         });
 
-        configurationRepository.saveConfiguration(ConfigurationType.MENU, menuConfiguration);
+        menuRepository.save(menuConfiguration);
 
         return loadTranslatedRestrictedMenus();
     }

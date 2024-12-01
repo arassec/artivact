@@ -292,6 +292,44 @@
         >
           <q-list>
             <q-item
+              :data-test="'menu-edit-button-' + menu.value"
+              clickable
+              v-close-popup
+              @click="editMenu(menu)"
+              class="menu-entry"
+            >
+              <q-item-section>
+                <label class="menu-label">
+                  <q-icon
+                    name="edit"
+                    size="xs"
+                    color="primary"
+                    class="q-mr-sm"
+                  />
+                  {{ $t('ArtivactMenuBar.label.edit') }}</label
+                >
+              </q-item-section>
+            </q-item>
+            <q-item
+              :data-test="'menu-delete-button-' + menu.value"
+              clickable
+              v-close-popup
+              @click="showDeleteMenuConfirmation(menu)"
+              class="menu-entry"
+            >
+              <q-item-section>
+                <label class="menu-label">
+                  <q-icon
+                    name="delete"
+                    size="xs"
+                    color="primary"
+                    class="q-mr-sm"
+                  />
+                  {{ $t('ArtivactMenuBar.label.delete') }}</label
+                >
+              </q-item-section>
+            </q-item>
+            <q-item
               :data-test="'menu-add-page-button-' + menu.value"
               clickable
               v-close-popup
@@ -333,44 +371,6 @@
                 ></q-icon>
                 {{ $t('ArtivactMenuBar.label.addEntry') }}</label
               >
-              </q-item-section>
-            </q-item>
-            <q-item
-              :data-test="'menu-edit-button-' + menu.value"
-              clickable
-              v-close-popup
-              @click="editMenu(menu)"
-              class="menu-entry"
-            >
-              <q-item-section>
-                <label class="menu-label">
-                  <q-icon
-                    name="edit"
-                    size="xs"
-                    color="primary"
-                    class="q-mr-sm"
-                  />
-                  {{ $t('ArtivactMenuBar.label.edit') }}</label
-                >
-              </q-item-section>
-            </q-item>
-            <q-item
-              :data-test="'menu-delete-button-' + menu.value"
-              clickable
-              v-close-popup
-              @click="showDeleteMenuConfirmation(menu)"
-              class="menu-entry"
-            >
-              <q-item-section>
-                <label class="menu-label">
-                  <q-icon
-                    name="delete"
-                    size="xs"
-                    color="primary"
-                    class="q-mr-sm"
-                  />
-                  {{ $t('ArtivactMenuBar.label.delete') }}</label
-                >
               </q-item-section>
             </q-item>
             <q-item
