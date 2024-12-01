@@ -77,7 +77,20 @@ const routes: RouteRecordRaw[] = [
                 });
               });
           } else {
-            next();
+            api
+              .get('/api/configuration/public/user')
+              .then((response) => {
+                userdataStore.setUserdata(response.data);
+                next();
+              })
+              .catch(() => {
+                quasar.notify({
+                  color: 'negative',
+                  position: 'bottom',
+                  message: 'Loading user data failed',
+                  icon: 'report_problem',
+                });
+              });
           }
         })
         .catch(() => {
