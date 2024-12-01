@@ -3,7 +3,6 @@ package com.arassec.artivact.web.controller;
 import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.model.Roles;
 import com.arassec.artivact.core.model.configuration.*;
-import com.arassec.artivact.core.model.menu.Menu;
 import com.arassec.artivact.core.model.property.PropertyCategory;
 import com.arassec.artivact.domain.service.ConfigurationService;
 import com.arassec.artivact.web.model.ApplicationSettings;
@@ -99,16 +98,6 @@ public class ConfigurationController {
     @GetMapping(value = "/public/property")
     public List<PropertyCategory> getPublicPropertyCategories() {
         return configurationService.loadTranslatedRestrictedProperties();
-    }
-
-    /**
-     * Returns the application's menu as configured by the user.
-     *
-     * @return The menu.
-     */
-    @GetMapping(value = "/public/menu")
-    public List<Menu> getPublicMenus() {
-        return configurationService.loadTranslatedRestrictedMenus();
     }
 
     /**
@@ -254,68 +243,6 @@ public class ConfigurationController {
     @PostMapping(value = "/exchange")
     public void saveExchangeConfiguration(@RequestBody ExchangeConfiguration exchangeConfiguration) {
         configurationService.saveExchangeConfiguration(exchangeConfiguration);
-    }
-
-    /**
-     * Saves a menu.
-     *
-     * @param menu The menu to save.
-     * @return The list of all menus of the application.
-     */
-    @PostMapping("/menu")
-    public ResponseEntity<List<Menu>> saveMenu(@RequestBody Menu menu) {
-        return ResponseEntity.ok(configurationService.saveMenu(menu));
-    }
-
-    /**
-     * Saves all menus.
-     *
-     * @param menus The menus to save.
-     * @return The list of all menus of the application.
-     */
-    @PostMapping("/menu/all")
-    public ResponseEntity<List<Menu>> saveAllMenus(@RequestBody List<Menu> menus) {
-        return ResponseEntity.ok(configurationService.saveMenus(menus));
-    }
-
-    /**
-     * Deletes a single menu.
-     *
-     * @param menuId The menu's ID.
-     * @return The list of all menus of the application.
-     */
-    @DeleteMapping("/menu/{menuId}")
-    public ResponseEntity<List<Menu>> deleteMenu(@PathVariable String menuId) {
-        return ResponseEntity.ok(configurationService.deleteMenu(menuId));
-    }
-
-    /**
-     * Adds a page to a menu.
-     *
-     * @param menuId The menu's ID.
-     * @return The list of all menus of the application.
-     */
-    @PostMapping("/menu/{menuId}/page")
-    public ResponseEntity<List<Menu>> addPage(@PathVariable String menuId) {
-        return ResponseEntity.ok(configurationService.addPageToMenu(menuId));
-    }
-
-    /**
-     * Saves the cover picture of a menu.
-     *
-     * @param menuId The menu's ID.
-     * @param file   The uploaded cover-image.
-     */
-    @PostMapping("/menu/{menuId}/cover-picture")
-    public void saveMenuCoverImage(@PathVariable String menuId,
-                                   @RequestPart(value = "file") final MultipartFile file) {
-        synchronized (this) {
-            try {
-                configurationService.saveMenuCoverPicture(menuId, file.getOriginalFilename(), file.getInputStream());
-            } catch (IOException e) {
-                throw new ArtivactException("Could not save uploaded cover image!", e);
-            }
-        }
     }
 
 }

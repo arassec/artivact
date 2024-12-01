@@ -70,6 +70,11 @@ public class ExportService extends BaseFileService implements ExchangeProcessor 
     private final ConfigurationService configurationService;
 
     /**
+     * The service for menu handling.
+     */
+    private final MenuService menuService;
+
+    /**
      * The service for item handling.
      */
     private final ItemService itemService;
@@ -121,7 +126,7 @@ public class ExportService extends BaseFileService implements ExchangeProcessor 
         progressMonitor = new ProgressMonitor(getClass(), "exportContent");
 
         // The menu chosen by the user to export:
-        List<Menu> flattenedMenus = configurationService.loadTranslatedRestrictedMenus();
+        List<Menu> flattenedMenus = menuService.loadTranslatedRestrictedMenus();
         flattenedMenus.addAll(flattenedMenus.stream()
                 .flatMap(existingMenu -> existingMenu.getMenuEntries().stream())
                 .toList());

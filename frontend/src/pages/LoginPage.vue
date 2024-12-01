@@ -37,14 +37,14 @@
 </template>
 
 <script setup lang="ts">
-import {api} from 'boot/axios';
-import {ref} from 'vue';
-import {useQuasar} from 'quasar';
-import {useUserdataStore} from 'stores/userdata';
-import {useRouter} from 'vue-router';
+import { api } from 'boot/axios';
+import { ref } from 'vue';
+import { useQuasar } from 'quasar';
+import { useUserdataStore } from 'stores/userdata';
+import { useRouter } from 'vue-router';
 import ArtivactContent from 'components/ArtivactContent.vue';
-import {useMenuStore} from 'stores/menu';
-import {useI18n} from 'vue-i18n';
+import { useMenuStore } from 'stores/menu';
+import { useI18n } from 'vue-i18n';
 
 const quasar = useQuasar();
 const route = useRouter();
@@ -58,7 +58,7 @@ const menuStore = useMenuStore();
 
 function loadMenus() {
   api
-    .get('/api/configuration/public/menu')
+    .get('/api/menu')
     .then((response) => {
       menuStore.setAvailableMenus(response.data);
     })

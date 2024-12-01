@@ -84,7 +84,7 @@ function loadApplicationLocale() {
 
 function loadMenus() {
   api
-    .get('/api/configuration/public/menu')
+    .get('/api/menu')
     .then((response) => {
       menuStore.setAvailableMenus(response.data);
     })

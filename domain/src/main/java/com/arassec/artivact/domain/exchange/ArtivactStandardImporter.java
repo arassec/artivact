@@ -15,6 +15,7 @@ import com.arassec.artivact.domain.exchange.model.ImportContext;
 import com.arassec.artivact.domain.misc.ProjectDataProvider;
 import com.arassec.artivact.domain.service.ConfigurationService;
 import com.arassec.artivact.domain.service.ItemService;
+import com.arassec.artivact.domain.service.MenuService;
 import com.arassec.artivact.domain.service.PageService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -52,6 +53,11 @@ public class ArtivactStandardImporter implements ArtivactImporter, ExchangeProce
      * The object mapper.
      */
     private final ObjectMapper objectMapper;
+
+    /**
+     * Service for item handling.
+     */
+    private final MenuService menuService;
 
     /**
      * Service for item handling.
@@ -185,7 +191,7 @@ public class ArtivactStandardImporter implements ArtivactImporter, ExchangeProce
                     fileRepository.copy(coverPictureOptional.get(), coverPictureTargetDir.resolve(coverPictureOptional.get().getFileName().toString()), StandardCopyOption.REPLACE_EXISTING);
                 }
 
-                configurationService.saveMenu(menu);
+                menuService.saveMenu(menu);
             }
         } catch (JsonProcessingException e) {
             throw new ArtivactException("Could not import menu!", e);

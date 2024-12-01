@@ -494,7 +494,7 @@
                         field-name="file"
                         :no-thumbnails="true"
                         class="col"
-                        :url="'/api/configuration/menu/' + menuRef.id + '/cover-picture'"
+                        :url="'/api/menu/' + menuRef.id + '/cover-picture'"
             />
             <q-img class="col"/>
           </div>
@@ -743,7 +743,7 @@ function saveMenu(menu: Menu) {
   }
 
   api
-    .post('/api/configuration/menu', menuToSave)
+    .post('/api/menu', menuToSave)
     .then((response) => {
       menuRef.value = createEmptyMenuRef();
       menuStore.setAvailableMenus(response.data);
@@ -788,7 +788,7 @@ function showDeleteMenuConfirmation(menu: Menu) {
 
 function deleteMenu() {
   api
-    .delete('/api/configuration/menu/' + menuRef.value.id)
+    .delete('/api/menu/' + menuRef.value.id)
     .then((response) => {
       menuRef.value = createEmptyMenuRef();
       menuStore.setAvailableMenus(response.data);
@@ -818,7 +818,7 @@ function addMenuEntry(parentMenu: Menu) {
 
 function addPage(menu: Menu) {
   api
-    .post('/api/configuration/menu/' + menu.id + '/page')
+    .post('/api/menu/' + menu.id + '/page')
     .then((response) => {
       menuStore.setAvailableMenus(response.data);
       menuStore.availableMenus.forEach(storedMenu => {
@@ -849,7 +849,7 @@ function moveMenuUp(array: [Menu], index: number) {
   hideMenus();
   moveUp(array, index);
   api
-    .post('/api/configuration/menu/all', menuStore.menus)
+    .post('/api/menu/all', menuStore.menus)
     .then((response) => {
       menuStore.setAvailableMenus(response.data);
     })
@@ -867,7 +867,7 @@ function moveMenuDown(array: [Menu], index: number) {
   hideMenus();
   moveDown(array, index);
   api
-    .post('/api/configuration/menu/all', menuStore.menus)
+    .post('/api/menu/all', menuStore.menus)
     .then((response) => {
       menuStore.setAvailableMenus(response.data);
     })

@@ -79,6 +79,11 @@ public class ArtivactServerSecurityConfiguration {
     private static final String API_BATCH_PROCESS_PATTERN = "/api/batch";
 
     /**
+     * API path for menu handling.
+     */
+    private static final String API_MENU_PATTERN = "/api/menu";
+
+    /**
      * Provides a security filter-chain for Spring-Security when the application is run in server-mode.
      *
      * @param http Spring-Security's {@link HttpSecurity}.
@@ -90,6 +95,10 @@ public class ArtivactServerSecurityConfiguration {
         return http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, API_CONFIGURATION_PUBLIC_PATTERN).permitAll()
+                        .requestMatchers(HttpMethod.GET, API_MENU_PATTERN).permitAll()
+                        .requestMatchers(HttpMethod.POST, API_MENU_PATTERN).hasAnyRole(Roles.ADMIN, Roles.USER)
+                        .requestMatchers(HttpMethod.PUT, API_MENU_PATTERN).hasAnyRole(Roles.ADMIN, Roles.USER)
+                        .requestMatchers(HttpMethod.DELETE, API_MENU_PATTERN).hasAnyRole(Roles.ADMIN, Roles.USER)
                         .requestMatchers(API_ACCOUNT_OWN_PATTERN).authenticated()
                         .requestMatchers(API_IMPORT_REMOTE_PATTERN).permitAll()
                         .requestMatchers(API_IMPORT_PATTERN).hasRole(Roles.ADMIN)

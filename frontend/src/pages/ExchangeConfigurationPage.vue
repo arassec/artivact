@@ -305,7 +305,7 @@ function updateImportOperationProgress() {
         progressMonitorRef.value = undefined;
         showOperationInProgressModalRef.value = false;
         api
-          .get('/api/configuration/public/menu')
+          .get('/api/menu')
           .then((response) => {
             menuStore.setAvailableMenus(response.data);
           });

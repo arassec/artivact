@@ -1,10 +1,8 @@
 package com.arassec.artivact.web.controller;
 
-import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.model.appearance.ColorTheme;
 import com.arassec.artivact.core.model.appearance.License;
 import com.arassec.artivact.core.model.configuration.*;
-import com.arassec.artivact.core.model.menu.Menu;
 import com.arassec.artivact.core.model.property.PropertyCategory;
 import com.arassec.artivact.domain.service.ConfigurationService;
 import com.arassec.artivact.web.model.ApplicationSettings;
@@ -25,8 +23,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.Base64;
 import java.util.LinkedList;
 import java.util.List;
@@ -116,16 +112,6 @@ class ConfigurationControllerTest {
         List<PropertyCategory> properties = new LinkedList<>();
         when(configurationService.loadTranslatedRestrictedProperties()).thenReturn(properties);
         assertEquals(properties, controller.getPublicPropertyCategories());
-    }
-
-    /**
-     * Tests getting application menus.
-     */
-    @Test
-    void testPublicMenus() {
-        List<Menu> menus = new LinkedList<>();
-        when(configurationService.loadTranslatedRestrictedMenus()).thenReturn(menus);
-        assertEquals(menus, controller.getPublicMenus());
     }
 
     /**
@@ -272,75 +258,6 @@ class ConfigurationControllerTest {
         ExchangeConfiguration exchangeConfiguration = new ExchangeConfiguration();
         controller.saveExchangeConfiguration(exchangeConfiguration);
         verify(configurationService, times(1)).saveExchangeConfiguration(exchangeConfiguration);
-    }
-
-    /**
-     * Tests saving a menu.
-     */
-    @Test
-    void testSaveMenu() {
-        Menu menu = new Menu();
-        List<Menu> allMenus = new LinkedList<>();
-        when(configurationService.saveMenu(menu)).thenReturn(allMenus);
-        ResponseEntity<List<Menu>> responseEntity = controller.saveMenu(menu);
-        assertEquals(allMenus, responseEntity.getBody());
-    }
-
-    /**
-     * Tests saving all menus.
-     */
-    @Test
-    void testSaveAllMenus() {
-        List<Menu> allMenus = new LinkedList<>();
-        when(configurationService.saveMenus(allMenus)).thenReturn(allMenus);
-        ResponseEntity<List<Menu>> responseEntity = controller.saveAllMenus(allMenus);
-        assertEquals(allMenus, responseEntity.getBody());
-    }
-
-    /**
-     * Tests deleting a menu.
-     */
-    @Test
-    void testDeleteMenu() {
-        controller.deleteMenu("abc123");
-        verify(configurationService, times(1)).deleteMenu("abc123");
-    }
-
-    /**
-     * Tests adding a new page to a menu.
-     */
-    @Test
-    void testAddPage() {
-        controller.addPage("123abc");
-        verify(configurationService, times(1)).addPageToMenu("123abc");
-    }
-
-    /**
-     * Tests saving a content export cover image.
-     */
-    @Test
-    @SneakyThrows
-    void testSaveMenuCoverImage() {
-        MultipartFile multipartFile = mock(MultipartFile.class);
-        when(multipartFile.getOriginalFilename()).thenReturn("content-export.zip");
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream("test".getBytes());
-        when(multipartFile.getInputStream()).thenReturn(byteArrayInputStream);
-
-        controller.saveMenuCoverImage("menu-id", multipartFile);
-
-        verify(configurationService).saveMenuCoverPicture(eq("menu-id"), eq("content-export.zip"), eq(byteArrayInputStream));
-    }
-
-    /**
-     * Tests saving a content export cover image.
-     */
-    @Test
-    @SneakyThrows
-    void testSaveMenuCoverImageFailsafe() {
-        MultipartFile multipartFile = mock(MultipartFile.class);
-        when(multipartFile.getInputStream()).thenThrow(new IOException("test-exception"));
-
-        assertThrows(ArtivactException.class, () -> controller.saveMenuCoverImage("menu-id", multipartFile));
     }
 
 }
