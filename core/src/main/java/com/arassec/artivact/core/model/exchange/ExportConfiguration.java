@@ -26,4 +26,10 @@ public class ExportConfiguration {
     @Builder.Default
     private boolean optimizeSize = false;
 
+    /**
+     * Set to {@code true} to exclude items from the export.
+     */
+    @Builder.Default
+    private boolean excludeItems = false;
+
 }

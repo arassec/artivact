@@ -226,6 +226,7 @@ export interface OperationProgress {
 export interface ExportConfiguration {
   applyRestrictions: boolean;
   optimizeSize: boolean;
+  excludeItems: boolean;
 }
 
 export interface ContentExport {

@@ -183,12 +183,12 @@ export default {
       sync: {
         success: 'Items synchronized',
         failed: 'Synchronization failed'
+      },
+      import: {
+        success: 'Import finished',
+        failed: 'Import failed'
       }
     },
-    import: {
-      success: 'Import finished',
-      failed: 'Import failed'
-    }
   },
 
   ItemDetailsPage: {
@@ -446,6 +446,7 @@ export default {
       exportConfiguration: {
         optimizeSize: 'Optimize export size',
         applyRestrictions: 'Exclude restricted elements',
+        excludeItems: 'Exclude items from export'
       }
     },
     dialog: {

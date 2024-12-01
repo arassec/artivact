@@ -445,7 +445,8 @@ export default {
       exportImage: 'Export Titelbild',
       exportConfiguration: {
         optimizeSize: 'Exportgröße optimieren',
-        applyRestrictions: 'Eingeschränkte Elemente ausschließen'
+        applyRestrictions: 'Eingeschränkte Elemente ausschließen',
+        excludeItems: 'Objekte vom Export ausschließen'
       }
     },
     dialog: {

@@ -101,7 +101,7 @@ public class ArtivactStandardImporter implements ArtivactImporter, ExchangeProce
             fileRepository.delete(importContext.getImportDir());
 
         } catch (Exception e) {
-            throw new ArtivactException("Could not import item!", e);
+            throw new ArtivactException("Could not import data!", e);
         }
     }
 
@@ -166,27 +166,27 @@ public class ArtivactStandardImporter implements ArtivactImporter, ExchangeProce
         try {
             Menu menu = objectMapper.readValue(fileRepository.read(menuJson), Menu.class);
             if (!menu.getMenuEntries().isEmpty()) {
-                menu.getMenuEntries().forEach(menuEntry -> importMenu(importContext, menuEntry.getId(), false));
-            }
-
-            if (StringUtils.hasText(menu.getTargetPageId())) {
+                menu.getMenuEntries().forEach(menuEntry -> {
+                    menuEntry.setParentId(menuId);
+                    importMenu(importContext, menuEntry.getId(), false);
+                });
+            } else if (StringUtils.hasText(menu.getTargetPageId())) {
                 importPage(importContext, menu.getTargetPageId());
             }
 
-            Optional<Path> coverPictureOptional = fileRepository.list(importContext.getImportDir()).stream()
-                    .filter(file -> file.getFileName().toString().startsWith("cover-picture"))
-                    .findFirst();
-
-            if (coverPictureOptional.isPresent()) {
-                Path coverPictureTargetDir = fileRepository.getSubdirFilePath(projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.MENUS_DIR), menuId, null);
-                fileRepository.createDirIfRequired(coverPictureTargetDir);
-                fileRepository.copy(coverPictureOptional.get(), coverPictureTargetDir, StandardCopyOption.REPLACE_EXISTING);
-            }
-
             if (saveMenu) {
+                Optional<Path> coverPictureOptional = fileRepository.list(importContext.getImportDir()).stream()
+                        .filter(file -> file.getFileName().toString().startsWith("cover-picture"))
+                        .findFirst();
+
+                if (coverPictureOptional.isPresent()) {
+                    Path coverPictureTargetDir = fileRepository.getSubdirFilePath(projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.MENUS_DIR), menuId, null);
+                    fileRepository.createDirIfRequired(coverPictureTargetDir);
+                    fileRepository.copy(coverPictureOptional.get(), coverPictureTargetDir.resolve(coverPictureOptional.get().getFileName().toString()), StandardCopyOption.REPLACE_EXISTING);
+                }
+
                 configurationService.saveMenu(menu);
             }
-
         } catch (JsonProcessingException e) {
             throw new ArtivactException("Could not import menu!", e);
         }
@@ -217,12 +217,14 @@ public class ArtivactStandardImporter implements ArtivactImporter, ExchangeProce
                 // Import Items:
                 if (widget instanceof ItemSearchWidget itemSearchWidget) {
                     Path searchResultJson = importContext.getImportDir().resolve(itemSearchWidget.getId() + SEARCH_RESULT_FILE_SUFFIX);
-                    try {
-                        List<String> itemIds = objectMapper.readValue(fileRepository.read(searchResultJson), new TypeReference<>() {
-                        });
-                        itemIds.forEach(itemId -> importItem(importContext, itemId));
-                    } catch (JsonProcessingException e) {
-                        throw new ArtivactException("Could not read search result!", e);
+                    if (fileRepository.exists(searchResultJson)) {
+                        try {
+                            List<String> itemIds = objectMapper.readValue(fileRepository.read(searchResultJson), new TypeReference<>() {
+                            });
+                            itemIds.forEach(itemId -> importItem(importContext, itemId));
+                        } catch (JsonProcessingException e) {
+                            throw new ArtivactException("Could not read search result!", e);
+                        }
                     }
                 }
             });

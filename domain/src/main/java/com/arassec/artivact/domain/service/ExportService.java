@@ -174,12 +174,30 @@ public class ExportService extends BaseFileService implements ExchangeProcessor 
     }
 
     /**
+     * Removes a previously exported properties configuration file.
+     */
+    public void cleanupPropertiesConfigurationExport() {
+        fileRepository.delete(projectDataProvider.getProjectRoot()
+                .resolve(ProjectDataProvider.EXPORT_DIR)
+                .resolve(PROPERTIES_EXCHANGE_FILENAME_JSON));
+    }
+
+    /**
      * Exports the current tags configuration and returns the result as String.
      *
      * @return The exported tags configuration.
      */
     public String exportTagsConfiguration() {
         return fileRepository.read(artivactExporter.exportTagsConfiguration());
+    }
+
+    /**
+     * Removes a previously exported tags configuration file.
+     */
+    public void cleanupTagsConfigurationExport() {
+        fileRepository.delete(projectDataProvider.getProjectRoot()
+                .resolve(ProjectDataProvider.EXPORT_DIR)
+                .resolve(TAGS_EXCHANGE_FILENAME_JSON));
     }
 
     /**

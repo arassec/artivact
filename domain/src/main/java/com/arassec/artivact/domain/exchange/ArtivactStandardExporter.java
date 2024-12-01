@@ -90,6 +90,7 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
         exportMenu(exportContext, menu);
 
         fileRepository.pack(exportContext.getExportDir().toAbsolutePath(), exportContext.getExportFile().toAbsolutePath());
+        fileRepository.delete(exportContext.getExportDir().toAbsolutePath());
 
         return exportContext.getExportFile().toAbsolutePath();
     }
@@ -321,25 +322,37 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
             case ItemSearchWidget itemSearchWidget -> {
                 itemSearchWidget.getHeading().setTranslatedValue(null);
                 itemSearchWidget.getContent().setTranslatedValue(null);
-                String searchTerm = itemSearchWidget.getSearchTerm();
-                int maxResults = itemSearchWidget.getMaxResults();
-                List<Item> searchResult = searchService.search(searchTerm, maxResults);
-                if (searchResult != null && !searchResult.isEmpty()) {
-                    for (Item item : searchResult) {
-                        if (exportContext.getExportConfiguration().isApplyRestrictions() && !item.getRestrictions().isEmpty()) {
-                            continue;
-                        }
-                        exportItem(exportContext, item);
-                    }
-                    writeJsonFile(exportContext.getExportDir().resolve(widget.getId() + SEARCH_RESULT_FILE_SUFFIX),
-                            searchResult.stream().map(Item::getId).toArray());
-                }
+                exportItemSearchWidgetsItems(exportContext, itemSearchWidget);
             }
             case TextWidget textWidget -> {
                 textWidget.getHeading().setTranslatedValue(null);
                 textWidget.getContent().setTranslatedValue(null);
             }
             default -> log.info("No export available for widget type: {}", widget.getType());
+        }
+    }
+
+    /**
+     * Exports an {@link ItemSearchWidget}'s item list if required.
+     *
+     * @param exportContext    The export context.
+     * @param itemSearchWidget The widget to export the item list for.
+     */
+    private void exportItemSearchWidgetsItems(ExportContext exportContext, ItemSearchWidget itemSearchWidget) {
+        if (!exportContext.getExportConfiguration().isExcludeItems()) {
+            String searchTerm = itemSearchWidget.getSearchTerm();
+            int maxResults = itemSearchWidget.getMaxResults();
+            List<Item> searchResult = searchService.search(searchTerm, maxResults);
+            if (searchResult != null && !searchResult.isEmpty()) {
+                for (Item item : searchResult) {
+                    if (exportContext.getExportConfiguration().isApplyRestrictions() && !item.getRestrictions().isEmpty()) {
+                        continue;
+                    }
+                    exportItem(exportContext, item);
+                }
+                writeJsonFile(exportContext.getExportDir().resolve(itemSearchWidget.getId() + SEARCH_RESULT_FILE_SUFFIX),
+                        searchResult.stream().map(Item::getId).toArray());
+            }
         }
     }
 
@@ -437,7 +450,6 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
                     })
                     .forEach(menuEntry -> {
                         cleanupTranslations(menuEntry);
-                        menuEntry.setParentId(null);
                         menuEntry.setMenuEntries(menuEntry.getMenuEntries().isEmpty() ? null : menuEntry.getMenuEntries());
                     });
         }

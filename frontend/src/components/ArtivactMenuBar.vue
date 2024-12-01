@@ -564,6 +564,10 @@
             <q-checkbox v-model="exportContext.applyRestrictions"
                         :label="$t('ArtivactMenuBar.label.exportConfiguration.applyRestrictions')"/>
           </div>
+          <div>
+            <q-checkbox v-model="exportContext.excludeItems"
+                        :label="$t('ArtivactMenuBar.label.exportConfiguration.excludeItems')"/>
+          </div>
         </q-card-section>
       </template>
 
@@ -685,6 +689,7 @@ const selectedMenu = ref({} as Menu);
 const exportContext = ref({
   optimizeSize: true,
   applyRestrictions: false,
+  excludeItems: false
 } as ExportConfiguration);
 
 const showOperationInProgressModalRef = ref(false);

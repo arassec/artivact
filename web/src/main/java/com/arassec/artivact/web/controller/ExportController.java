@@ -115,6 +115,7 @@ public class ExportController extends BaseController {
         StreamingResponseBody streamResponseBody = out -> {
             response.getOutputStream().write(exportedPropertiesConfiguration.getBytes());
             response.setContentLength(exportedPropertiesConfiguration.getBytes().length);
+            exportService.cleanupPropertiesConfigurationExport();
         };
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
@@ -139,11 +140,12 @@ public class ExportController extends BaseController {
         StreamingResponseBody streamResponseBody = out -> {
             response.getOutputStream().write(tagsConfigurationJson.getBytes());
             response.setContentLength(tagsConfigurationJson.getBytes().length);
+            exportService.cleanupTagsConfigurationExport();
         };
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION, ATTACHMENT_PREFIX
-                + LocalDate.now() + ExchangeProcessor.TAGS_EXCHANGE_FILENAME_JSON);
+                + LocalDate.now() + "." + ExchangeProcessor.TAGS_EXCHANGE_FILENAME_JSON);
         response.addHeader(HttpHeaders.PRAGMA, NO_CACHE);
         response.addHeader(HttpHeaders.EXPIRES, EXPIRES_IMMEDIATELY);
 

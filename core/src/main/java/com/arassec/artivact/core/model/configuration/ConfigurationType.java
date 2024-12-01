@@ -11,11 +11,6 @@ public enum ConfigurationType {
     PROPERTIES,
 
     /**
-     * License configuration.
-     */
-    LICENSE,
-
-    /**
      * Tags configuration.
      */
     TAGS,
