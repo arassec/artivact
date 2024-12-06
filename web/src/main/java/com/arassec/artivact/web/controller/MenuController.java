@@ -157,7 +157,7 @@ public class MenuController extends BaseController {
      */
     @PostMapping(value = "/import")
     public ResponseEntity<String> importMenu(@RequestPart(value = "file") final MultipartFile file) {
-        importService.importMenu(file);
+        importService.importDirectly(file);
         return ResponseEntity.ok("Menu imported.");
     }
 

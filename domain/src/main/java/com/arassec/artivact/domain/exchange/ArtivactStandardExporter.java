@@ -84,8 +84,12 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
         prepareExport(exportContext);
 
         exportMainData(exportContext, ExchangeType.MENU, menu.getId(), menu.getExportTitle(), menu.getExportDescription());
-        exportPropertiesConfiguration(exportContext);
-        exportTagsConfiguration(exportContext);
+
+        // Properties and tags configuration is only exported if items are exported as well.
+        if (!exportConfiguration.isExcludeItems()) {
+            exportPropertiesConfiguration(exportContext);
+            exportTagsConfiguration(exportContext);
+        }
 
         exportMenu(exportContext, menu);
 

@@ -92,7 +92,7 @@ class ImportControllerTest {
         ResponseEntity<String> stringResponseEntity = importController.importContent(file);
 
         assertEquals("Item imported.", stringResponseEntity.getBody());
-        verify(importService, times(1)).importContent(file, null);
+        verify(importService, times(1)).importAsync(file, null);
     }
 
     /**
@@ -104,7 +104,7 @@ class ImportControllerTest {
         ResponseEntity<String> stringResponseEntity = importController.syncItem(file, "api-token");
 
         assertEquals("Item synchronized.", stringResponseEntity.getBody());
-        verify(importService, times(1)).importContent(file, "api-token");
+        verify(importService, times(1)).importAsync(file, "api-token");
     }
 
 }

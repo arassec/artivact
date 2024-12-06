@@ -8,17 +8,19 @@ import com.arassec.artivact.core.model.item.ImageSize;
 import com.arassec.artivact.core.model.item.Item;
 import com.arassec.artivact.core.model.tag.Tag;
 import com.arassec.artivact.domain.misc.ProjectDataProvider;
+import com.arassec.artivact.domain.service.ExportService;
 import com.arassec.artivact.domain.service.ItemService;
 import com.arassec.artivact.web.model.ItemDetails;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.nio.charset.Charset;
 import java.nio.file.Path;
@@ -46,6 +48,12 @@ class ItemControllerTest {
      */
     @Mock
     private ItemService itemService;
+
+    /**
+     * Service mock.
+     */
+    @Mock
+    private ExportService exportService;
 
     /**
      * Mock of the {@link ProjectDataProvider}.
@@ -219,6 +227,29 @@ class ItemControllerTest {
         controller.uploadModel("item-id", multipartFileMock);
 
         verify(itemService, times(1)).addModel("item-id", multipartFileMock);
+    }
+
+    /**
+     * Tests exporting an item.
+     */
+    @Test
+    void testExportItem() {
+        HttpServletResponse httpServletResponse = mock(HttpServletResponse.class, Answers.RETURNS_DEEP_STUBS);
+
+        Path pathMock = mock(Path.class);
+        when(exportService.exportItem("123-ABC")).thenReturn(pathMock);
+
+        ResponseEntity<StreamingResponseBody> streamingResponseBodyResponseEntity =
+                controller.exportItem(httpServletResponse, "123-ABC");
+
+        assertEquals(HttpStatus.OK, streamingResponseBodyResponseEntity.getStatusCode());
+
+        verify(httpServletResponse, times(1)).setContentType("application/zip");
+        verify(httpServletResponse, times(1)).setHeader(eq(HttpHeaders.CONTENT_DISPOSITION), anyString());
+        verify(httpServletResponse, times(1)).addHeader(HttpHeaders.PRAGMA, "no-cache");
+        verify(httpServletResponse, times(1)).addHeader(HttpHeaders.EXPIRES, "0");
+
+        assertNotNull(streamingResponseBodyResponseEntity.getBody());
     }
 
 }

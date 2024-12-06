@@ -2,20 +2,26 @@ package com.arassec.artivact.web.controller;
 
 import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.model.item.*;
+import com.arassec.artivact.domain.exchange.ExchangeProcessor;
 import com.arassec.artivact.domain.misc.ProjectDataProvider;
+import com.arassec.artivact.domain.service.ExportService;
+import com.arassec.artivact.domain.service.ImportService;
 import com.arassec.artivact.domain.service.ItemService;
 import com.arassec.artivact.web.model.ImageSet;
 import com.arassec.artivact.web.model.ItemDetails;
 import com.arassec.artivact.web.model.ModelSet;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.io.IOException;
 import java.net.URLConnection;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 
@@ -32,6 +38,16 @@ public class ItemController extends BaseController {
      * The application's {@link ItemService}.
      */
     private final ItemService itemService;
+
+    /**
+     * The export service.
+     */
+    private final ExportService exportService;
+
+    /**
+     * The import service.
+     */
+    private final ImportService importService;
 
     /**
      * The application's {@link ProjectDataProvider}.
@@ -210,6 +226,40 @@ public class ItemController extends BaseController {
         synchronized (this) {
             itemService.addModel(itemId, file);
         }
+    }
+
+    /**
+     * Exports an item into a ZIP file containing the data as JSON file and all media assets.
+     *
+     * @param response The HTTP stream to write the exported JSON file to.
+     * @param itemId   The item's ID.
+     * @return The file as {@link StreamingResponseBody}.
+     */
+    @GetMapping(value = "/{itemId}/export")
+    public ResponseEntity<StreamingResponseBody> exportItem(HttpServletResponse response,
+                                                            @PathVariable String itemId) {
+
+        Path exportFile = exportService.exportItem(itemId);
+
+        response.setContentType(TYPE_ZIP);
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, ATTACHMENT_PREFIX
+                + LocalDate.now() + "." + itemId + "." + ExchangeProcessor.ITEM_EXCHANGE_FILENAME_ZIP);
+        response.addHeader(HttpHeaders.PRAGMA, NO_CACHE);
+        response.addHeader(HttpHeaders.EXPIRES, EXPIRES_IMMEDIATELY);
+
+        return ResponseEntity.ok(outputStream -> exportService.copyExportAndDelete(exportFile, outputStream));
+    }
+
+    /**
+     * Imports an item's export ZIP file.
+     *
+     * @param file The export file to import.
+     * @return A status string.
+     */
+    @PostMapping(value = "/import")
+    public ResponseEntity<String> importItem(@RequestPart(value = "file") final MultipartFile file) {
+        importService.importDirectly(file);
+        return ResponseEntity.ok("Item imported.");
     }
 
     /**

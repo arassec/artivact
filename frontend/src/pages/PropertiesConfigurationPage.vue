@@ -6,9 +6,9 @@
       <q-tabs v-model="tab">
         <q-tab name="configuration" icon="build" :label="$t('PropertiesConfigurationPage.tabs.configuration')">
         </q-tab>
-        <q-tab name="export" icon="backup" :label="$t('PropertiesConfigurationPage.tabs.export')">
+        <q-tab name="export" icon="download" :label="$t('PropertiesConfigurationPage.tabs.export')">
         </q-tab>
-        <q-tab name="import" icon="download" :label="$t('PropertiesConfigurationPage.tabs.import')">
+        <q-tab name="import" icon="upload" :label="$t('PropertiesConfigurationPage.tabs.import')">
         </q-tab>
       </q-tabs>
 
@@ -84,13 +84,13 @@
 </template>
 
 <script setup lang="ts">
-import {useQuasar} from 'quasar';
-import {onMounted, ref} from 'vue';
-import {api} from 'boot/axios';
+import { useQuasar } from 'quasar';
+import { onMounted, ref } from 'vue';
+import { api } from 'boot/axios';
 import ArtivactContent from 'components/ArtivactContent.vue';
-import {useLocaleStore} from 'stores/locale';
+import { useLocaleStore } from 'stores/locale';
 import ArtivactPropertiesConfigurationEditor from 'components/ArtivactPropertiesConfigurationEditor.vue';
-import {useI18n} from 'vue-i18n';
+import { useI18n } from 'vue-i18n';
 
 const quasar = useQuasar();
 const i18n = useI18n();

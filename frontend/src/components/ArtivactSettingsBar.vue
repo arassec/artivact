@@ -77,13 +77,31 @@
               {{ $t('ArtivactSettingsBar.createItem') }}</label>
             </q-item-section>
           </q-item>
+          <q-item data-test="import-item-button"
+                  @click="showImportItemModal = true"
+                  clickable
+                  v-close-popup
+                  class="menu-entry"
+                  v-if="userdataStore.isUserOrAdmin">
+            <q-item-section>
+              <label class="menu-label">
+                <q-icon
+                  name="upload"
+                  size="xs"
+                  color="primary"
+                  class="q-mr-sm"
+                />
+                {{ $t('ArtivactSettingsBar.importItem') }}</label
+              >
+            </q-item-section>
+          </q-item>
           <q-item
             data-test="batch-process-button"
             clickable
             v-close-popup
             @click="gotoBatchPage()"
             class="menu-entry"
-            v-if="userdataStore.isUserOrAdmin"
+            v-if="userdataStore.isAdmin"
           >
             <q-item-section
             ><label class="menu-label">
@@ -291,8 +309,43 @@
         <q-tooltip>{{ $t('ArtivactSettingsBar.tooltip.documentation') }}</q-tooltip>
       </q-btn>
     </a>
+
+    <!-- IMPORT ITEM MODAL -->
+    <artivact-dialog :data-test="'import-menu-modal'" :dialog-model="showImportItemModal">
+      <template v-slot:header>
+        <div class="text-h6">
+          {{ $t('ArtivactSettingsBar.dialog.import') }}
+        </div>
+      </template>
+      <template v-slot:body>
+        <q-card-section>
+          <div class="q-mb-lg">
+            {{ $t('ArtivactSettingsBar.dialog.importDescription') }}
+          </div>
+          <div class="row">
+            <q-uploader :label="$t('ArtivactSettingsBar.dialog.importFileUpload')"
+                        accept=".artivact.item.zip"
+                        field-name="file"
+                        :no-thumbnails="true"
+                        class="col"
+                        :url="'/api/item/import'"
+                        @uploaded="itemImported()"
+            />
+          </div>
+        </q-card-section>
+      </template>
+      <template v-slot:cancel>
+        <q-btn
+          :label="$t('Common.cancel')"
+          color="primary"
+          @click="showImportItemModal = false"
+        />
+      </template>
+    </artivact-dialog>
+
   </div>
 
+  <!-- MENUS FOR SMALLER / MOBILE RESOLUTIONS -->
   <q-btn flat icon="more_vert" class="lt-md" v-if="userdataStore.authenticated">
     <q-menu anchor="bottom right" self="top middle">
       <q-list>
@@ -546,6 +599,7 @@
       </q-list>
     </q-menu>
   </q-btn>
+
 </template>
 
 <script setup lang="ts">
@@ -554,9 +608,10 @@ import { useUserdataStore } from 'stores/userdata';
 import { useLocaleStore } from 'stores/locale';
 import { api } from 'boot/axios';
 import { useRouter } from 'vue-router';
-import { useQuasar } from 'quasar';
+import { QUploader, useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { useProfilesStore } from 'stores/profiles';
+import ArtivactDialog from 'components/ArtivactDialog.vue';
 
 const {locale} = useI18n({useScope: 'global'});
 
@@ -572,6 +627,8 @@ const accountsMenuOpen = ref(false);
 const itemMenuOpen = ref(false);
 const systemMenuOpen = ref(false);
 const localeMenuOpen = ref(false);
+
+const showImportItemModal = ref(false);
 
 function gotoPropertiesConfigurationPage() {
   route.push('/administration/configuration/properties');
@@ -638,6 +695,16 @@ function changeLocale(selectedLocale: string | null) {
   } else {
     locale.value = navigator.language.split('-')[0];
   }
+}
+
+function itemImported() {
+  showImportItemModal.value = false;
+  quasar.notify({
+    color: 'positive',
+    position: 'bottom',
+    message: i18n.t('Common.messages.creating.success', { item: i18n.t('Common.items.item') }),
+    icon: 'check'
+  });
 }
 </script>
 

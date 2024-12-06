@@ -190,29 +190,6 @@ class ExportControllerTest {
     }
 
     /**
-     * Tests exporting an item.
-     */
-    @Test
-    void testExportItem() {
-        HttpServletResponse httpServletResponse = mock(HttpServletResponse.class, Answers.RETURNS_DEEP_STUBS);
-
-        Path pathMock = mock(Path.class);
-        when(exportService.exportItem("123-ABC")).thenReturn(pathMock);
-
-        ResponseEntity<StreamingResponseBody> streamingResponseBodyResponseEntity =
-                exportController.exportItem(httpServletResponse, "123-ABC");
-
-        assertEquals(HttpStatus.OK, streamingResponseBodyResponseEntity.getStatusCode());
-
-        verify(httpServletResponse, times(1)).setContentType("application/zip");
-        verify(httpServletResponse, times(1)).setHeader(eq(HttpHeaders.CONTENT_DISPOSITION), anyString());
-        verify(httpServletResponse, times(1)).addHeader(HttpHeaders.PRAGMA, "no-cache");
-        verify(httpServletResponse, times(1)).addHeader(HttpHeaders.EXPIRES, "0");
-
-        assertNotNull(streamingResponseBodyResponseEntity.getBody());
-    }
-
-    /**
      * Tests the UI API for syncing items.
      */
     @Test

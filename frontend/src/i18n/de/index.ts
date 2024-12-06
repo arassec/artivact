@@ -599,6 +599,7 @@ export default {
     default: 'Standard',
     itemSettings: 'Objekt-Einstellungen',
     createItem: 'Objekt erzeugen',
+    importItem: 'Objekt importieren',
     license: 'Lizenz',
     appearance: 'Darstellung',
     peripherals: 'Peripherie',
@@ -608,7 +609,12 @@ export default {
     system: 'System',
     search: 'Suchmaschine',
     documentation: 'Doku',
-    batch: 'Stapelverarbeitung'
+    batch: 'Stapelverarbeitung',
+    dialog: {
+      import: 'Objekt Importieren',
+      importDescription: 'Hier können Sie ein zuvor exportiertes Objekt importieren. Bitte laden Sie dazu die ausgewählte Exportdatei hoch.',
+      importFileUpload: 'Exportdatei Upload'
+    }
   },
 
   ArtivactTagsConfigurationEditor: {

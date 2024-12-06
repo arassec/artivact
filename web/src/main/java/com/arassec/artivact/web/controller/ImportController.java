@@ -81,7 +81,7 @@ public class ImportController extends BaseController {
      */
     @PostMapping(value = "/content")
     public ResponseEntity<String> importContent(@RequestPart(value = "file") final MultipartFile file) {
-        importService.importContent(file, null);
+        importService.importAsync(file, null);
         return ResponseEntity.ok("Item imported.");
     }
 
@@ -95,7 +95,7 @@ public class ImportController extends BaseController {
     @PostMapping(value = "/remote/item/{apiToken}")
     public ResponseEntity<String> syncItem(@RequestPart(value = "file") final MultipartFile file,
                                            @PathVariable final String apiToken) {
-        importService.importContent(file, apiToken);
+        importService.importAsync(file, apiToken);
         return ResponseEntity.ok("Item synchronized.");
     }
 

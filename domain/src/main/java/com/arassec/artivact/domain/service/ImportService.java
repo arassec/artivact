@@ -75,7 +75,7 @@ public class ImportService extends BaseFileService implements ExchangeProcessor 
      * @param file     The exported ZIP file.
      * @param apiToken The API token of the user to use for item import.
      */
-    public synchronized void importContent(MultipartFile file, String apiToken) {
+    public synchronized void importAsync(MultipartFile file, String apiToken) {
 
         if (progressMonitor != null && progressMonitor.getException() == null) {
             return;
@@ -113,7 +113,7 @@ public class ImportService extends BaseFileService implements ExchangeProcessor 
      *
      * @param file The menu export file to import.
      */
-    public void importMenu(MultipartFile file) {
+    public void importDirectly(MultipartFile file) {
         Path importFileZip = saveFile(file);
         artivactImporter.importContent(importFileZip);
         fileRepository.delete(importFileZip);

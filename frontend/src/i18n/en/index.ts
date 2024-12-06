@@ -600,6 +600,7 @@ export default {
     default: 'Default',
     itemSettings: 'Item Settings',
     createItem: 'Create Item',
+    importItem: 'Import Item',
     license: 'License',
     appearance: 'Appearance',
     peripherals: 'Peripherals',
@@ -610,6 +611,11 @@ export default {
     search: 'Searchengine',
     documentation: 'Docs',
     batch: 'Batch Processing',
+    dialog: {
+      import: 'Import Item',
+      importDescription: 'Import a previously exported item. Please select the export file and upload it here.',
+      importFileUpload: 'Export File Upload'
+    }
   },
 
   ArtivactTagsConfigurationEditor: {

@@ -471,7 +471,7 @@
             <q-item-section>
               <label class="menu-label">
                 <q-icon
-                  name="cloud_download"
+                  name="upload"
                   size="xs"
                   color="primary"
                   class="q-mr-sm"
@@ -487,13 +487,13 @@
     <!-- IMPORT MENU MODAL -->
     <artivact-dialog :data-test="'import-menu-modal'" :dialog-model="showImportMenuModal">
       <template v-slot:header>
-        <div class="text-h6" v-if="!menuRef.id && !menuRef.parentId">
+        <div class="text-h6">
           {{ $t('ArtivactMenuBar.dialog.import') }}
         </div>
       </template>
       <template v-slot:body>
         <q-card-section>
-          <div class="q-mb-lg" v-if="!menu.parentId">
+          <div class="q-mb-lg">
             {{ $t('ArtivactMenuBar.dialog.importDescription') }}
           </div>
           <div class="row">

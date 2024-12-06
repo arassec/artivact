@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
-import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -150,27 +149,6 @@ public class ExportController extends BaseController {
         response.addHeader(HttpHeaders.EXPIRES, EXPIRES_IMMEDIATELY);
 
         return ResponseEntity.ok(streamResponseBody);
-    }
-
-    /**
-     * Exports an item into a ZIP file containing the data as JSON file and all media assets.
-     *
-     * @param response The HTTP stream to write the exported JSON file to.
-     * @param itemId   The item's ID.
-     * @return The file as {@link StreamingResponseBody}.
-     */
-    @GetMapping(value = "/item/{itemId}")
-    public ResponseEntity<StreamingResponseBody> exportItem(HttpServletResponse response,
-                                                            @PathVariable String itemId) {
-
-        Path exportFile = exportService.exportItem(itemId);
-
-        response.setContentType(TYPE_ZIP);
-        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, ATTACHMENT_PREFIX + exportFile.getFileName());
-        response.addHeader(HttpHeaders.PRAGMA, NO_CACHE);
-        response.addHeader(HttpHeaders.EXPIRES, EXPIRES_IMMEDIATELY);
-
-        return ResponseEntity.ok(outputStream -> exportService.copyExportAndDelete(exportFile, outputStream));
     }
 
     /**

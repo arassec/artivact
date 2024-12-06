@@ -28,6 +28,11 @@ public interface ExchangeProcessor {
     String MENU_EXCHANGE_FILENAME_ZIP = "artivact.menu" + ZIP_FILE_SUFFIX;
 
     /**
+     * Filename of the item export ZIP file.
+     */
+    String ITEM_EXCHANGE_FILENAME_ZIP = "artivact.item" + ZIP_FILE_SUFFIX;
+
+    /**
      * Filename of the main export file.
      */
     String CONTENT_EXCHANGE_MAIN_DATA_FILENAME_JSON = "artivact.content.json";
