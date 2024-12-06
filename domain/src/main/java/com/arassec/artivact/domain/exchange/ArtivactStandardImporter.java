@@ -191,6 +191,9 @@ public class ArtivactStandardImporter implements ArtivactImporter, ExchangeProce
                     fileRepository.copy(coverPictureOptional.get(), coverPictureTargetDir.resolve(coverPictureOptional.get().getFileName().toString()), StandardCopyOption.REPLACE_EXISTING);
                 }
 
+                // When importing exported sub-menus the parent is set to null and the sub-menu is imported as regular menu.
+                menu.setParentId(null);
+
                 menuService.saveMenu(menu);
             }
         } catch (JsonProcessingException e) {

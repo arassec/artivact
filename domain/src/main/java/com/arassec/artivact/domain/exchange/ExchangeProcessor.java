@@ -23,6 +23,11 @@ public interface ExchangeProcessor {
     String TAGS_EXCHANGE_FILENAME_JSON = "artivact.tags-configuration.json";
 
     /**
+     * Filename of the menu export ZIP file.
+     */
+    String MENU_EXCHANGE_FILENAME_ZIP = "artivact.menu" + ZIP_FILE_SUFFIX;
+
+    /**
      * Filename of the main export file.
      */
     String CONTENT_EXCHANGE_MAIN_DATA_FILENAME_JSON = "artivact.content.json";

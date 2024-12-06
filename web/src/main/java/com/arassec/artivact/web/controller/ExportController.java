@@ -41,7 +41,7 @@ public class ExportController extends BaseController {
     @PostMapping("/content/{menuId}")
     public ResponseEntity<OperationProgress> exportContent(@PathVariable String menuId,
                                                            @RequestBody ExportConfiguration configuration) {
-        exportService.exportMenu(configuration, menuId);
+        exportService.exportContent(configuration, menuId);
         return getProgress();
     }
 

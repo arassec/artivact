@@ -84,8 +84,9 @@ public interface FileRepository {
      *
      * @param source The source {@link Path}.
      * @param target The target streams.
+     * @return The number of bytes written to the output stream.
      */
-    void copy(Path source, OutputStream target);
+    long copy(Path source, OutputStream target);
 
     /**
      * Copies a directory from source to target.

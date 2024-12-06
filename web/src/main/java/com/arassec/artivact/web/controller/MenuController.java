@@ -2,14 +2,23 @@ package com.arassec.artivact.web.controller;
 
 import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.model.menu.Menu;
+import com.arassec.artivact.core.repository.FileRepository;
+import com.arassec.artivact.domain.exchange.ExchangeProcessor;
+import com.arassec.artivact.domain.service.ExportService;
 import com.arassec.artivact.domain.service.MenuService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -19,13 +28,18 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/menu")
-public class MenuController {
+public class MenuController extends BaseController {
 
     /**
      * The application's {@link MenuService}.
      */
     private final MenuService menuService;
 
+    /**
+     * The export service.
+     */
+    private final ExportService exportService;
+    private final FileRepository fileRepository;
 
     /**
      * Returns the application's menu as configured by the user.
@@ -97,6 +111,32 @@ public class MenuController {
                 throw new ArtivactException("Could not save uploaded cover image!", e);
             }
         }
+    }
+
+    /**
+     * Exports the menu.
+     *
+     * @param menuId The menu's ID.
+     * @return The list of all menus of the application.
+     */
+    @GetMapping("/{menuId}/export")
+    public ResponseEntity<StreamingResponseBody> exportMenu(@PathVariable String menuId, HttpServletResponse response) {
+        Path menuExport = exportService.exportMenu(menuId);
+
+        StreamingResponseBody streamResponseBody = out -> {
+            long bytesWritten = fileRepository.copy(menuExport, response.getOutputStream());
+            response.setContentLength(Math.toIntExact(bytesWritten));
+            exportService.cleanupPropertiesConfigurationExport();
+            fileRepository.delete(menuExport);
+        };
+
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, ATTACHMENT_PREFIX
+                + LocalDate.now() + "." + menuId + "." + ExchangeProcessor.MENU_EXCHANGE_FILENAME_ZIP);
+        response.addHeader(HttpHeaders.PRAGMA, NO_CACHE);
+        response.addHeader(HttpHeaders.EXPIRES, EXPIRES_IMMEDIATELY);
+
+        return ResponseEntity.ok(streamResponseBody);
     }
 
 }

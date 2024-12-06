@@ -61,10 +61,11 @@
               </q-item-section>
             </q-item>
             <q-item
+              :href="'/api/menu/' + menu.id + '/export'"
+              :active="true"
               :data-test="'menu-export-button-' + menu.value"
               clickable
               v-close-popup
-              @click="showExportConfiguration(menu)"
               class="menu-entry"
             >
               <q-item-section>
@@ -215,10 +216,11 @@
                           </q-item-section>
                         </q-item>
                         <q-item
+                          :href="'/api/menu/' + menuEntry.id + '/export'"
                           :data-test="'menu-export-button-' + menu.value"
                           clickable
                           v-close-popup
-                          @click="showExportConfiguration(menuEntry)"
+                          :active="true"
                           class="menu-entry"
                         >
                           <q-item-section>
@@ -229,7 +231,7 @@
                                 color="primary"
                                 class="q-mr-sm"
                               />
-                              {{ $t('ArtivactMenuBar.label.export') }}</label
+                              {{ $t('ArtivactMenuBar.label.exportEntry') }}</label
                             >
                           </q-item-section>
                         </q-item>
@@ -374,10 +376,11 @@
               </q-item-section>
             </q-item>
             <q-item
+              :href="'/api/menu/' + menu.id + '/export'"
+              :active="true"
               :data-test="'menu-export-button-' + menu.value"
               clickable
               v-close-popup
-              @click="showExportConfiguration(menu)"
               class="menu-entry"
             >
               <q-item-section>
@@ -480,14 +483,14 @@
             :locales="localeStore.locales"
             :translatable-string="menuRef.exportTitle"
             :label="$t('ArtivactMenuBar.label.exportTitle')"
-            :show-separator="false"/>
+            :show-separator="false" />
           <artivact-restricted-translatable-item-editor
             :dataTest="'add-menu-modal-export-description'"
             :locales="localeStore.locales"
             :translatable-string="menuRef.exportDescription"
             :label="$t('ArtivactMenuBar.label.exportDescription')"
             :textarea="true"
-            :show-separator="false"/>
+            :show-separator="false" />
           <div class="row">
             <q-uploader :label="$t('ArtivactMenuBar.label.exportImage')"
                         auto-upload
@@ -496,7 +499,7 @@
                         class="col"
                         :url="'/api/menu/' + menuRef.id + '/cover-picture'"
             />
-            <q-img class="col"/>
+            <q-img class="col" />
           </div>
         </q-card-section>
       </template>
@@ -533,7 +536,7 @@
       </template>
 
       <template v-slot:cancel>
-        <q-btn :label="$t('Common.cancel')" color="primary" @click="confirmDeleteRef = false"/>
+        <q-btn :label="$t('Common.cancel')" color="primary" @click="confirmDeleteRef = false" />
       </template>
 
       <template v-slot:approve>
@@ -558,21 +561,21 @@
         <q-card-section>
           <div>
             <q-checkbox v-model="exportContext.optimizeSize"
-                        :label="$t('ArtivactMenuBar.label.exportConfiguration.optimizeSize')"/>
+                        :label="$t('ArtivactMenuBar.label.exportConfiguration.optimizeSize')" />
           </div>
           <div>
             <q-checkbox v-model="exportContext.applyRestrictions"
-                        :label="$t('ArtivactMenuBar.label.exportConfiguration.applyRestrictions')"/>
+                        :label="$t('ArtivactMenuBar.label.exportConfiguration.applyRestrictions')" />
           </div>
           <div>
             <q-checkbox v-model="exportContext.excludeItems"
-                        :label="$t('ArtivactMenuBar.label.exportConfiguration.excludeItems')"/>
+                        :label="$t('ArtivactMenuBar.label.exportConfiguration.excludeItems')" />
           </div>
         </q-card-section>
       </template>
 
       <template v-slot:cancel>
-        <q-btn :label="$t('Common.cancel')" color="primary" @click="showExportConfigurationModal = false"/>
+        <q-btn :label="$t('Common.cancel')" color="primary" @click="showExportConfigurationModal = false" />
       </template>
 
       <template v-slot:approve>
@@ -645,7 +648,7 @@
   <!-- LONG-RUNNING OPERATION -->
   <artivact-operation-in-progress-dialog :progress-monitor-ref="progressMonitorRef"
                                          :dialog-model="showOperationInProgressModalRef"
-                                         @close-dialog="showOperationInProgressModalRef = false"/>
+                                         @close-dialog="showOperationInProgressModalRef = false" />
 
 </template>
 
@@ -761,8 +764,8 @@ function saveMenu(menu: Menu) {
         quasar.notify({
           color: 'positive',
           position: 'bottom',
-          message: i18n.t('Common.messages.saving.success', {item: i18n.t('Common.items.menu')}),
-          icon: 'check',
+          message: i18n.t('Common.messages.saving.success', { item: i18n.t('Common.items.menu') }),
+          icon: 'check'
         });
       }
     })
@@ -770,8 +773,8 @@ function saveMenu(menu: Menu) {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.saving.failed', {item: i18n.t('Common.items.menu')}),
-        icon: 'report_problem',
+        message: i18n.t('Common.messages.saving.failed', { item: i18n.t('Common.items.menu') }),
+        icon: 'report_problem'
       });
     });
 }
@@ -796,16 +799,16 @@ function deleteMenu() {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: i18n.t('Common.messages.deleting.success', {item: i18n.t('Common.items.menu')}),
-        icon: 'check',
+        message: i18n.t('Common.messages.deleting.success', { item: i18n.t('Common.items.menu') }),
+        icon: 'check'
       });
     })
     .catch(() => {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.deleting.failed', {item: i18n.t('Common.items.menu')}),
-        icon: 'report_problem',
+        message: i18n.t('Common.messages.deleting.failed', { item: i18n.t('Common.items.menu') }),
+        icon: 'report_problem'
       });
     });
 }
@@ -823,14 +826,14 @@ function addPage(menu: Menu) {
       menuStore.setAvailableMenus(response.data);
       menuStore.availableMenus.forEach(storedMenu => {
         if (menu.id === storedMenu.id) {
-          router.push('/page/' + storedMenu.targetPageId)
+          router.push('/page/' + storedMenu.targetPageId);
         }
-      })
+      });
       if (!profilesStore.isE2eModeEnabled) {
         quasar.notify({
           color: 'positive',
           position: 'bottom',
-          message: i18n.t('Common.messages.creating.success', {item: i18n.t('Common.items.page')}),
+          message: i18n.t('Common.messages.creating.success', { item: i18n.t('Common.items.page') }),
           icon: 'check'
         });
       }
@@ -839,8 +842,8 @@ function addPage(menu: Menu) {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.creating.failed', {item: i18n.t('Common.items.page')}),
-        icon: 'report_problem',
+        message: i18n.t('Common.messages.creating.failed', { item: i18n.t('Common.items.page') }),
+        icon: 'report_problem'
       });
     });
 }
@@ -858,7 +861,7 @@ function moveMenuUp(array: [Menu], index: number) {
         color: 'negative',
         position: 'bottom',
         message: i18n.t('ArtivactMenuBar.messages.movingFailed'),
-        icon: 'report_problem',
+        icon: 'report_problem'
       });
     });
 }
@@ -876,7 +879,7 @@ function moveMenuDown(array: [Menu], index: number) {
         color: 'negative',
         position: 'bottom',
         message: i18n.t('ArtivactMenuBar.messages.movingFailed'),
-        icon: 'report_problem',
+        icon: 'report_problem'
       });
     });
 }
@@ -892,18 +895,18 @@ function gotoPage(
   if (parentPageId && parentPageLabel) {
     breadcrumbsStore.addBreadcrumb({
       label: parentPageLabel,
-      target: parentPageId,
+      target: parentPageId
     });
   } else if (parentPageLabel) {
     breadcrumbsStore.addBreadcrumb({
       label: parentPageLabel,
-      target: null,
+      target: null
     });
   }
 
   breadcrumbsStore.addBreadcrumb({
     label: pageLabel,
-    target: pageId,
+    target: pageId
   });
 
   router.push('/page/' + pageId);
@@ -936,7 +939,7 @@ function exportContent() {
         color: 'negative',
         position: 'bottom',
         message: i18n.t('ArtivactMenuBar.messages.movingFailed'),
-        icon: 'report_problem',
+        icon: 'report_problem'
       });
     });
 }
@@ -956,8 +959,8 @@ function updateOperationProgress() {
         quasar.notify({
           color: 'positive',
           position: 'bottom',
-          message: i18n.t('Common.messages.saving.success', {item: i18n.t('Common.items.export')}),
-          icon: 'check',
+          message: i18n.t('Common.messages.saving.success', { item: i18n.t('Common.items.export') }),
+          icon: 'check'
         });
       }
     })
@@ -965,8 +968,8 @@ function updateOperationProgress() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.saving.failed', {item: i18n.t('Common.items.export')}),
-        icon: 'report_problem',
+        message: i18n.t('Common.messages.saving.failed', { item: i18n.t('Common.items.export') }),
+        icon: 'report_problem'
       });
     });
 }

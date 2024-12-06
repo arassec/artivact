@@ -117,7 +117,7 @@ public class ExportService extends BaseFileService implements ExchangeProcessor 
      *
      * @param menuId The menu's ID.
      */
-    public synchronized void exportMenu(ExportConfiguration configuration, String menuId) {
+    public synchronized void exportContent(ExportConfiguration configuration, String menuId) {
 
         if (progressMonitor != null && progressMonitor.getException() == null) {
             return;
@@ -125,16 +125,7 @@ public class ExportService extends BaseFileService implements ExchangeProcessor 
 
         progressMonitor = new ProgressMonitor(getClass(), "exportContent");
 
-        // The menu chosen by the user to export:
-        List<Menu> flattenedMenus = menuService.loadTranslatedRestrictedMenus();
-        flattenedMenus.addAll(flattenedMenus.stream()
-                .flatMap(existingMenu -> existingMenu.getMenuEntries().stream())
-                .toList());
-        Menu menu = flattenedMenus.stream()
-                .filter(Objects::nonNull)
-                .filter(existingMenu -> existingMenu.getId().equals(menuId))
-                .findFirst()
-                .orElseThrow();
+        Menu menu = findMenu(menuId);
 
         executorService.submit(() -> {
             try {
@@ -146,6 +137,21 @@ public class ExportService extends BaseFileService implements ExchangeProcessor 
                 log.error("Error during content export!", e);
             }
         });
+    }
+
+    /**
+     * Exports a menu without items.
+     *
+     * @param menuId The ID of the menu to export.
+     * @return Path to the export file.
+     */
+    public Path exportMenu(String menuId) {
+        Menu menu = findMenu(menuId);
+        return artivactExporter.exportMenu(ExportConfiguration.builder()
+                .applyRestrictions(false)
+                .optimizeSize(false)
+                .excludeItems(true)
+                .build(), menu);
     }
 
     /**
@@ -359,6 +365,24 @@ public class ExportService extends BaseFileService implements ExchangeProcessor 
                 progressMonitor = null;
             }
         });
+    }
+
+    /**
+     * Loads all available menus and returns the one with the given ID.
+     *
+     * @param menuId The menu ID of the menu to find.
+     * @return The menu with the given ID.
+     */
+    private Menu findMenu(String menuId) {
+        List<Menu> flattenedMenus = menuService.loadTranslatedRestrictedMenus();
+        flattenedMenus.addAll(flattenedMenus.stream()
+                .flatMap(existingMenu -> existingMenu.getMenuEntries().stream())
+                .toList());
+        return flattenedMenus.stream()
+                .filter(Objects::nonNull)
+                .filter(existingMenu -> existingMenu.getId().equals(menuId))
+                .findFirst()
+                .orElseThrow();
     }
 
     /**

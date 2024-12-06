@@ -66,7 +66,7 @@ class ExportControllerTest {
         OperationProgress operationProgress = responseEntity.getBody();
         assertNotNull(operationProgress);
 
-        verify(exportService, times(1)).exportMenu(exportConfiguration, "menu-id");
+        verify(exportService, times(1)).exportContent(exportConfiguration, "menu-id");
     }
 
     /**

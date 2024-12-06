@@ -431,7 +431,7 @@ export default {
       menu: 'Menü',
       edit: 'Menü bearbeiten',
       delete: 'Menü löschen',
-      export: 'Inhalte exportieren',
+      export: 'Menu exportieren',
       left: 'Nach links bewegen',
       right: 'Nach rechts bewegen',
       editEntry: 'Menüeintrag bearbeiten',

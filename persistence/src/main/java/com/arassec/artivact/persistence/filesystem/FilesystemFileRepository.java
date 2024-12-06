@@ -201,9 +201,9 @@ public class FilesystemFileRepository implements FileRepository {
      * {@inheritDoc}
      */
     @Override
-    public void copy(Path source, OutputStream target) {
+    public long copy(Path source, OutputStream target) {
         try {
-            Files.copy(source, target);
+            return Files.copy(source, target);
         } catch (IOException e) {
             throw new ArtivactException(COULD_NOT_COPY_RESOURCE, e);
         }
