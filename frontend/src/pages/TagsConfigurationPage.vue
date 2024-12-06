@@ -81,14 +81,14 @@
 </template>
 
 <script setup lang="ts">
-import {api} from 'boot/axios';
-import {useQuasar} from 'quasar';
-import {onMounted, Ref, ref} from 'vue';
-import {TagsConfiguration} from 'components/artivact-models';
+import { api } from 'boot/axios';
+import { useQuasar } from 'quasar';
+import { onMounted, Ref, ref } from 'vue';
+import { TagsConfiguration } from 'components/artivact-models';
 import ArtivactTagsConfigurationEditor from 'components/ArtivactTagsConfigurationEditor.vue';
 import ArtivactContent from 'components/ArtivactContent.vue';
-import {useI18n} from 'vue-i18n';
-import {useApplicationSettingsStore} from "stores/application-settings";
+import { useI18n } from 'vue-i18n';
+import { useApplicationSettingsStore } from 'stores/application-settings';
 
 const quasar = useQuasar();
 const i18n = useI18n();

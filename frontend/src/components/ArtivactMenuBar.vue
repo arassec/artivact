@@ -1,7 +1,7 @@
 <template>
   <div data-test="artivact-menu-bar" class="row gt-sm">
-    <template v-for="(menu, index) in menuStore.menus" :key="menu.id">
 
+    <template v-for="(menu, index) in menuStore.menus" :key="menu.id">
       <!-- SINGLE MENU WITH PAGE -->
       <!-- Only menu with defined target, no entries defined: -->
       <q-btn
@@ -440,9 +440,82 @@
       </q-btn>
     </template>
 
-    <q-btn data-test="add-menu-button" flat v-if="userdataStore.isAdmin" @click="addMenu">
+    <!-- MENU MANAGEMENT -->
+    <!-- Menu with entries to create or import menus -->
+    <q-btn flat v-if="userdataStore.isAdmin">
       <q-icon name="add" color="white"></q-icon>
+      <q-menu>
+        <q-list>
+          <q-item data-test="create-menu-button"
+                  @click="createMenu"
+                  clickable
+                  v-close-popup
+                  class="menu-entry">
+            <q-item-section>
+              <label class="menu-label">
+                <q-icon
+                  name="add"
+                  size="xs"
+                  color="primary"
+                  class="q-mr-sm"
+                />
+                {{ $t('ArtivactMenuBar.label.createMenu') }}</label
+              >
+            </q-item-section>
+          </q-item>
+          <q-item data-test="import-menu-button"
+                  @click="showImportMenuModal = true"
+                  clickable
+                  v-close-popup
+                  class="menu-entry">
+            <q-item-section>
+              <label class="menu-label">
+                <q-icon
+                  name="cloud_download"
+                  size="xs"
+                  color="primary"
+                  class="q-mr-sm"
+                />
+                {{ $t('ArtivactMenuBar.label.importMenu') }}</label
+              >
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-menu>
     </q-btn>
+
+    <!-- IMPORT MENU MODAL -->
+    <artivact-dialog :data-test="'import-menu-modal'" :dialog-model="showImportMenuModal">
+      <template v-slot:header>
+        <div class="text-h6" v-if="!menuRef.id && !menuRef.parentId">
+          {{ $t('ArtivactMenuBar.dialog.import') }}
+        </div>
+      </template>
+      <template v-slot:body>
+        <q-card-section>
+          <div class="q-mb-lg" v-if="!menu.parentId">
+            {{ $t('ArtivactMenuBar.dialog.importDescription') }}
+          </div>
+          <div class="row">
+            <q-uploader :label="$t('ArtivactMenuBar.dialog.importFileUpload')"
+                        accept=".artivact.menu.zip"
+                        field-name="file"
+                        :no-thumbnails="true"
+                        class="col"
+                        :url="'/api/menu/import'"
+                        @uploaded="menuImported()"
+            />
+          </div>
+        </q-card-section>
+      </template>
+      <template v-slot:cancel>
+        <q-btn
+          :label="$t('Common.cancel')"
+          color="primary"
+          @click="showImportMenuModal = false"
+        />
+      </template>
+    </artivact-dialog>
 
     <!-- ADD/EDIT MENU MODAL -->
     <artivact-dialog :data-test="'add-menu-modal'" :dialog-model="showMenuModal">
@@ -549,48 +622,9 @@
       </template>
     </artivact-dialog>
 
-    <!-- EXPORT CONFIGURATION MODAL -->
-    <artivact-dialog :dialog-model="showExportConfigurationModal">
-      <template v-slot:header>
-        <q-card-section>
-          {{ $t('ArtivactMenuBar.dialog.exportConfiguration') }}
-        </q-card-section>
-      </template>
-
-      <template v-slot:body>
-        <q-card-section>
-          <div>
-            <q-checkbox v-model="exportContext.optimizeSize"
-                        :label="$t('ArtivactMenuBar.label.exportConfiguration.optimizeSize')" />
-          </div>
-          <div>
-            <q-checkbox v-model="exportContext.applyRestrictions"
-                        :label="$t('ArtivactMenuBar.label.exportConfiguration.applyRestrictions')" />
-          </div>
-          <div>
-            <q-checkbox v-model="exportContext.excludeItems"
-                        :label="$t('ArtivactMenuBar.label.exportConfiguration.excludeItems')" />
-          </div>
-        </q-card-section>
-      </template>
-
-      <template v-slot:cancel>
-        <q-btn :label="$t('Common.cancel')" color="primary" @click="showExportConfigurationModal = false" />
-      </template>
-
-      <template v-slot:approve>
-        <q-btn
-          data-test="export-approve-button"
-          :label="$t('ArtivactMenuBar.dialog.exportApprove')"
-          color="primary"
-          @click="exportContent()"
-        />
-      </template>
-
-    </artivact-dialog>
-
   </div>
 
+  <!-- MENUS FOR SMALL RESOLUTIONS / MOBILE RESOLUTIONS -->
   <q-btn flat icon="menu" class="lt-md" v-if="menuStore.menus.length > 0">
     <q-menu anchor="bottom middle" self="top middle">
       <q-list>
@@ -645,11 +679,6 @@
     </q-menu>
   </q-btn>
 
-  <!-- LONG-RUNNING OPERATION -->
-  <artivact-operation-in-progress-dialog :progress-monitor-ref="progressMonitorRef"
-                                         :dialog-model="showOperationInProgressModalRef"
-                                         @close-dialog="showOperationInProgressModalRef = false" />
-
 </template>
 
 <script setup lang="ts">
@@ -662,12 +691,11 @@ import { ref } from 'vue';
 import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
 import { useLocaleStore } from 'stores/locale';
 import { moveDown, moveUp, translate } from 'components/artivact-utils';
-import { ExportConfiguration, Menu, OperationProgress, TranslatableString } from 'components/artivact-models';
+import { Menu, TranslatableString } from 'components/artivact-models';
 import { useBreadcrumbsStore } from 'stores/breadcrumbs';
 import ArtivactDialog from 'components/ArtivactDialog.vue';
 import { useI18n } from 'vue-i18n';
 import { useProfilesStore } from 'stores/profiles';
-import ArtivactOperationInProgressDialog from 'components/ArtivactOperationInProgressDialog.vue';
 
 const quasar = useQuasar();
 const router = useRouter();
@@ -687,16 +715,7 @@ const menuRef = ref(menu);
 
 const confirmDeleteRef = ref(false);
 
-const showExportConfigurationModal = ref(false);
-const selectedMenu = ref({} as Menu);
-const exportContext = ref({
-  optimizeSize: true,
-  applyRestrictions: false,
-  excludeItems: false
-} as ExportConfiguration);
-
-const showOperationInProgressModalRef = ref(false);
-const progressMonitorRef = ref<OperationProgress>();
+const showImportMenuModal = ref(false);
 
 function createEmptyMenuRef(): Menu {
   return {
@@ -713,7 +732,7 @@ function createEmptyMenuRef(): Menu {
   };
 }
 
-function addMenu() {
+function createMenu() {
   menuRef.value = createEmptyMenuRef();
   showMenuModal.value = true;
 }
@@ -918,58 +937,25 @@ function hideMenus() {
   }
 }
 
-function showExportConfiguration(menu: Menu) {
-  showExportConfigurationModal.value = true;
-  selectedMenu.value = menu;
-}
-
-function exportContent() {
-  showExportConfigurationModal.value = false;
+function menuImported() {
+  showImportMenuModal.value = false;
   api
-    .post('/api/export/content/' + selectedMenu.value.id, exportContext.value)
+    .get('/api/menu')
     .then((response) => {
-      if (response) {
-        showOperationInProgressModalRef.value = true;
-        progressMonitorRef.value = response.data;
-        updateOperationProgress();
-      }
-    })
-    .catch(() => {
+      menuStore.setAvailableMenus(response.data);
       quasar.notify({
-        color: 'negative',
+        color: 'positive',
         position: 'bottom',
-        message: i18n.t('ArtivactMenuBar.messages.movingFailed'),
-        icon: 'report_problem'
+        message: i18n.t('Common.messages.creating.success', { item: i18n.t('Common.items.menus') }),
+        icon: 'check'
       });
-    });
-}
-
-function updateOperationProgress() {
-  api
-    .get('/api/export/progress')
-    .then((response) => {
-      if (response.data) {
-        progressMonitorRef.value = response.data;
-        if (!progressMonitorRef.value?.error) {
-          setTimeout(() => updateOperationProgress(), 1000);
-        }
-      } else {
-        progressMonitorRef.value = undefined;
-        showOperationInProgressModalRef.value = false;
-        quasar.notify({
-          color: 'positive',
-          position: 'bottom',
-          message: i18n.t('Common.messages.saving.success', { item: i18n.t('Common.items.export') }),
-          icon: 'check'
-        });
-      }
     })
     .catch(() => {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.saving.failed', { item: i18n.t('Common.items.export') }),
-        icon: 'report_problem'
+        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.menus') }),
+        icon: 'report_problem',
       });
     });
 }

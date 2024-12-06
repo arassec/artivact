@@ -75,7 +75,7 @@ public class ImportService extends BaseFileService implements ExchangeProcessor 
      * @param file     The exported ZIP file.
      * @param apiToken The API token of the user to use for item import.
      */
-    public void importContent(MultipartFile file, String apiToken) {
+    public synchronized void importContent(MultipartFile file, String apiToken) {
 
         if (progressMonitor != null && progressMonitor.getException() == null) {
             return;
@@ -94,6 +94,38 @@ public class ImportService extends BaseFileService implements ExchangeProcessor 
             }
         }
 
+        Path importFileZip = saveFile(file);
+
+        executorService.submit(() -> {
+            try {
+                artivactImporter.importContent(importFileZip);
+                fileRepository.delete(importFileZip);
+                progressMonitor = null;
+            } catch (Exception e) {
+                log.error("Error during content import!", e);
+                progressMonitor.updateProgress("importContentFailed", e);
+            }
+        });
+    }
+
+    /**
+     * Imports a previously exported menu.
+     *
+     * @param file The menu export file to import.
+     */
+    public void importMenu(MultipartFile file) {
+        Path importFileZip = saveFile(file);
+        artivactImporter.importContent(importFileZip);
+        fileRepository.delete(importFileZip);
+    }
+
+    /**
+     * Saves the provided import file in the project dir.
+     *
+     * @param file The uploaded import file to save.
+     * @return Path into the project's directory structure to the import file.
+     */
+    private Path saveFile(MultipartFile file) {
         String originalFilename = Optional.ofNullable(file.getOriginalFilename()).orElse("import.zip");
         Path importFileZip = projectDataProvider.getProjectRoot()
                 .resolve(ProjectDataProvider.TEMP_DIR)
@@ -106,16 +138,7 @@ public class ImportService extends BaseFileService implements ExchangeProcessor 
             throw new ArtivactException("Could not save uploaded ZIP file!", e);
         }
 
-        executorService.submit(() -> {
-            try {
-                artivactImporter.importContent(importFileZip);
-                fileRepository.delete(importFileZip);
-                progressMonitor = null;
-            } catch (Exception e) {
-                log.error("Error during content import!", e);
-                progressMonitor.updateProgress("importContentFailed", e);
-            }
-        });
+        return importFileZip;
     }
 
 }

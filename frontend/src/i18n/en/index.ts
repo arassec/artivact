@@ -439,6 +439,8 @@ export default {
       exportEntry: 'Export Menu Entry',
       up: 'Move Up',
       down: 'Move Down',
+      createMenu: 'Create Menu',
+      importMenu: 'Import Menu',
       add: 'Add Page',
       addEntry: 'Add Entry',
       exportTitle: 'Export Title',
@@ -464,7 +466,10 @@ export default {
       deleteApproveEntry: 'Delete Menu Entry',
       exportDescription: 'Optional title and description for exports based on this menu.',
       exportConfiguration: 'Export Configuration',
-      exportApprove: 'Export Content'
+      exportApprove: 'Export Content',
+      import: 'Import Menu',
+      importDescription: 'Please select a previously exported menu and upload the export file here.',
+      importFileUpload: 'Export File Upload'
     },
     messages: {
       movingFailed: 'Moving failed',

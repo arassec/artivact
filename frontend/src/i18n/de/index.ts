@@ -438,6 +438,8 @@ export default {
       deleteEntry: 'Menüeintrag löschen',
       up: 'Nach oben bewegen',
       down: 'Nach unten bewegen',
+      createMenu: 'Menu erstellen',
+      importMenu: 'Menu importieren',
       add: 'Seite hinzufügen',
       addEntry: 'Menüeintrag hinzufügen',
       exportTitle: 'Export Titel',
@@ -463,7 +465,10 @@ export default {
       deleteApproveEntry: 'Menüeintrag löschen',
       exportDescription: 'Optionaler Titel und Beschreibung für Exporte, die auf Basis dieses Menüs erstellt werden.',
       exportConfiguration: 'Export Konfiguration',
-      exportApprove: 'Inhalte exportieren'
+      exportApprove: 'Inhalte exportieren',
+      import: 'Menu importieren',
+      importDescription: 'Bitte wählen Sie ein zuvor exportiertes Menu aus und laden Sie die Exportdatei hoch.',
+      importFileUpload: 'Exportdatei Upload'
     },
     messages: {
       movingFailed: 'Bewegen fehlgeschlagen!',
