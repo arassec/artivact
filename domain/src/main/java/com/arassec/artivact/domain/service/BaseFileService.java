@@ -3,6 +3,7 @@ package com.arassec.artivact.domain.service;
 import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.model.item.ImageSize;
 import com.arassec.artivact.core.repository.FileRepository;
+import com.arassec.artivact.domain.misc.ProjectDataProvider;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -80,6 +81,28 @@ public abstract class BaseFileService {
         }
 
         return filename;
+    }
+
+    /**
+     * Saves the provided import file in the project dir.
+     *
+     * @param file The uploaded import file to save.
+     * @return Path into the project's directory structure to the import file.
+     */
+    protected Path saveFile(Path root, MultipartFile file) {
+        String originalFilename = Optional.ofNullable(file.getOriginalFilename()).orElse("fallback.zip");
+        Path importFileZip = root
+                .resolve(ProjectDataProvider.TEMP_DIR)
+                .resolve(originalFilename)
+                .toAbsolutePath();
+
+        try {
+            file.transferTo(importFileZip);
+        } catch (IOException e) {
+            throw new ArtivactException("Could not save uploaded ZIP file!", e);
+        }
+
+        return importFileZip;
     }
 
     /**

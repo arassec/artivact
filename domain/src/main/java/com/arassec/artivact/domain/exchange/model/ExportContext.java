@@ -18,6 +18,11 @@ import java.nio.file.Path;
 public class ExportContext {
 
     /**
+     * An optional ID of the export.
+     */
+    private String id;
+
+    /**
      * The main export dir containing all exports.
      */
     private Path projectExportsDir;
@@ -36,5 +41,10 @@ public class ExportContext {
      * The export's configuration.
      */
     private ExportConfiguration exportConfiguration;
+
+    /**
+     * Optional file extension of a cover picture (if present). Only used for collection exports.
+     */
+    private String coverPictureExtension;
 
 }

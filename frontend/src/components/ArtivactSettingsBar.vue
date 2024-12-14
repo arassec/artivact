@@ -118,6 +118,18 @@
       </q-menu>
     </q-btn>
 
+    <!-- COLLECTION EXPORTS -->
+    <router-link to="/administration/collection-exports">
+    <q-btn
+      data-test="collection-exports-button"
+      flat
+      color="white"
+      icon="output"
+      v-if="userdataStore.isUserOrAdmin"
+    >
+    </q-btn>
+    </router-link>
+
     <!-- SYSTEM SETTINGS -->
     <q-btn data-test="system-settings-button" flat color="white" icon="settings" v-if="userdataStore.isAdmin">
       <q-tooltip v-if="!systemMenuOpen">{{ $t('ArtivactSettingsBar.tooltip.systemSettings') }}</q-tooltip>
@@ -357,7 +369,7 @@
         >
           <q-item-section>
             <label class="menu-label">
-              <q-icon name="language" size="sm" class="q-mr-sm"/>
+              <q-icon name="language" size="sm" class="q-mr-sm" />
               <label>{{ $t('ArtivactSettingsBar.locale') }}</label>
             </label>
           </q-item-section>
@@ -395,7 +407,7 @@
         <q-item clickable class="menu-entry" v-if="userdataStore.isUserOrAdmin">
           <q-item-section>
             <label class="menu-label">
-              <q-icon name="view_in_ar" size="sm" class="q-mr-sm"/>
+              <q-icon name="view_in_ar" size="sm" class="q-mr-sm" />
               <label>{{ $t('Common.items.items') }}</label>
             </label>
           </q-item-section>
@@ -446,7 +458,7 @@
         <q-item clickable class="menu-entry" v-if="userdataStore.isAdmin">
           <q-item-section>
             <label class="menu-label">
-              <q-icon name="article" size="sm" class="q-mr-sm"/>
+              <q-icon name="article" size="sm" class="q-mr-sm" />
               <label>{{ $t('ArtivactSettingsBar.system') }}</label>
             </label>
           </q-item-section>
@@ -536,7 +548,7 @@
         <q-item clickable class="menu-entry" v-if="userdataStore.authenticated && profilesStore.isServerModeEnabled">
           <q-item-section>
             <label class="menu-label">
-              <q-icon name="manage_accounts" size="sm" class="q-mr-sm"/>
+              <q-icon name="manage_accounts" size="sm" class="q-mr-sm" />
               <label>{{ $t('Common.items.accounts') }}</label>
             </label>
           </q-item-section>
@@ -589,7 +601,7 @@
                   class="menu-entry" v-if="userdataStore.authenticated">
             <q-item-section>
               <label class="menu-label">
-                <q-icon name="help" size="sm" class="q-mr-sm"/>
+                <q-icon name="help" size="sm" class="q-mr-sm" />
                 <label>{{ $t('ArtivactSettingsBar.documentation') }}</label>
               </label>
             </q-item-section>
@@ -613,7 +625,7 @@ import { useI18n } from 'vue-i18n';
 import { useProfilesStore } from 'stores/profiles';
 import ArtivactDialog from 'components/ArtivactDialog.vue';
 
-const {locale} = useI18n({useScope: 'global'});
+const { locale } = useI18n({ useScope: 'global' });
 
 const quasar = useQuasar();
 const route = useRouter();
@@ -674,16 +686,16 @@ function createItem() {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: i18n.t('Common.messages.creating.success', {item: i18n.t('Common.items.item')}),
-        icon: 'check',
+        message: i18n.t('Common.messages.creating.success', { item: i18n.t('Common.items.item') }),
+        icon: 'check'
       });
     })
     .catch(() => {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.creating.failed', {item: i18n.t('Common.items.item')}),
-        icon: 'report_problem',
+        message: i18n.t('Common.messages.creating.failed', { item: i18n.t('Common.items.item') }),
+        icon: 'report_problem'
       });
     });
 }

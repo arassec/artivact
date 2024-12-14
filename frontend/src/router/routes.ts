@@ -108,6 +108,7 @@ const routes: RouteRecordRaw[] = [
       {path: '/user-login', component: () => import('pages/LoginPage.vue')},
       {path: '/item/:itemId?', component: () => import('pages/ItemDetailsPage.vue')},
       {path: '/account', component: () => import('pages/AccountSettingsPage.vue')},
+      {path: '/administration/collection-exports', component: () => import('pages/CollectionExportsPage.vue')},
       {path: '/administration/accounts', component: () => import('pages/AccountsConfigurationPage.vue')},
       {path: '/administration/batch', component: () => import('pages/BatchProcessingPage.vue')},
       {path: '/administration/configuration/item/:itemId?', component: () => import('pages/ItemEditPage.vue')},

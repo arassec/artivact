@@ -4,11 +4,11 @@
     v-if="restrictionsProp"
   >
     <div class="editor-label q-mt-xs">
-      <label
+      <p
         class="q-mr-xs vertical-middle badge-container-label editor-label"
         :class="inDetailsViewProp ? ' text-grey' : ''">
         {{ $t('ArtivactRestrictionsEditor.restrictions') }}
-      </label>
+      </p>
     </div>
 
     <div>
@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import {PropType, ref, toRef} from 'vue';
+import { PropType, ref, toRef } from 'vue';
 
 const props = defineProps({
   restrictions: {

@@ -6,6 +6,8 @@ import com.arassec.artivact.core.model.Roles;
 import com.arassec.artivact.core.model.TranslatableString;
 import com.arassec.artivact.core.model.configuration.PropertiesConfiguration;
 import com.arassec.artivact.core.model.configuration.TagsConfiguration;
+import com.arassec.artivact.core.model.exchange.CollectionExport;
+import com.arassec.artivact.core.model.exchange.ContentSource;
 import com.arassec.artivact.core.model.exchange.ExportConfiguration;
 import com.arassec.artivact.core.model.item.Item;
 import com.arassec.artivact.core.model.menu.Menu;
@@ -14,7 +16,6 @@ import com.arassec.artivact.core.model.page.Widget;
 import com.arassec.artivact.core.model.page.widget.*;
 import com.arassec.artivact.core.repository.FileRepository;
 import com.arassec.artivact.domain.exchange.model.ExchangeMainData;
-import com.arassec.artivact.domain.exchange.model.ExchangeType;
 import com.arassec.artivact.domain.exchange.model.ExportContext;
 import com.arassec.artivact.domain.misc.ProjectDataProvider;
 import com.arassec.artivact.domain.service.ConfigurationService;
@@ -78,12 +79,46 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
      * {@inheritDoc}
      */
     @Override
+    public Path exportCollection(CollectionExport collectionExport, Menu menu) {
+        ExportContext exportContext = createExportContext(collectionExport.getId(), collectionExport.getExportConfiguration());
+        exportContext.setId(collectionExport.getId());
+        exportContext.setCoverPictureExtension(collectionExport.getCoverPictureExtension());
+
+        prepareExport(exportContext);
+
+        exportMainData(exportContext, ContentSource.MENU, menu.getId(), menu.getExportTitle(), menu.getExportDescription());
+
+        exportPropertiesConfiguration(exportContext);
+        exportTagsConfiguration(exportContext);
+
+        exportMenu(exportContext, menu);
+
+        if (StringUtils.hasText(collectionExport.getCoverPictureExtension())) {
+            Path coverPictureFile = projectDataProvider.getProjectRoot()
+                    .resolve(ProjectDataProvider.EXPORT_DIR)
+                    .resolve(collectionExport.getId() + "." + collectionExport.getCoverPictureExtension());
+            if (fileRepository.exists(coverPictureFile)) {
+                fileRepository.copy(coverPictureFile, exportContext.getExportDir()
+                        .resolve("cover-picture." + collectionExport.getCoverPictureExtension()));
+            }
+        }
+
+        fileRepository.pack(exportContext.getExportDir().toAbsolutePath(), exportContext.getExportFile().toAbsolutePath());
+        fileRepository.delete(exportContext.getExportDir().toAbsolutePath());
+
+        return exportContext.getExportFile().toAbsolutePath();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Path exportMenu(ExportConfiguration exportConfiguration, Menu menu) {
         ExportContext exportContext = createExportContext(menu.getId(), exportConfiguration);
 
         prepareExport(exportContext);
 
-        exportMainData(exportContext, ExchangeType.MENU, menu.getId(), menu.getExportTitle(), menu.getExportDescription());
+        exportMainData(exportContext, ContentSource.MENU, menu.getId(), menu.getExportTitle(), menu.getExportDescription());
 
         // Properties and tags configuration is only exported if items are exported as well.
         if (!exportConfiguration.isExcludeItems()) {
@@ -108,7 +143,7 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
 
         prepareExport(exportContext);
 
-        exportMainData(exportContext, ExchangeType.ITEM, item.getId(), item.getTitle(), item.getDescription());
+        exportMainData(exportContext, ContentSource.ITEM, item.getId(), item.getTitle(), item.getDescription());
         exportPropertiesConfiguration(exportContext);
         exportTagsConfiguration(exportContext);
 
@@ -190,7 +225,7 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
      * @return A newly created {@link ExportContext}.
      */
     private ExportContext createExportContext(String id, ExportConfiguration exportConfiguration) {
-        String exportName = id + CONTENT_EXCHANGE_SUFFIX;
+        String exportName = id + COLLECTION_EXCHANGE_SUFFIX;
         ExportContext exportContext = new ExportContext();
         exportContext.setExportConfiguration(Optional.ofNullable(exportConfiguration).orElse(new ExportConfiguration()));
         exportContext.setProjectExportsDir(projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.EXPORT_DIR));
@@ -203,19 +238,22 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
      * Exports the main data of the export like title and description.
      *
      * @param exportContext  The export context.
-     * @param exchangeType   The {@link ExchangeType} of the export.
+     * @param contentSource  The {@link ContentSource} of the export.
      * @param exportSourceId The ID of the export's source object.
      * @param title          The export's title.
      * @param description    The export's description.
      */
-    private void exportMainData(ExportContext exportContext, ExchangeType exchangeType, String exportSourceId, TranslatableString title, TranslatableString description) {
+    private void exportMainData(ExportContext exportContext, ContentSource contentSource, String exportSourceId, TranslatableString title, TranslatableString description) {
         ExchangeMainData exchangeMainData = new ExchangeMainData();
-        exchangeMainData.setExchangeType(exchangeType);
+        exchangeMainData.setContentSource(contentSource);
         exchangeMainData.setSourceId(exportSourceId);
         exchangeMainData.setTitle(Optional.ofNullable(title).orElse(new TranslatableString()));
         exchangeMainData.getTitle().setTranslatedValue(null);
         exchangeMainData.setDescription(Optional.ofNullable(description).orElse(new TranslatableString()));
         exchangeMainData.getDescription().setTranslatedValue(null);
+        exchangeMainData.setId(exportContext.getId());
+        exchangeMainData.setExportConfiguration(exportContext.getExportConfiguration());
+        exchangeMainData.setCoverPictureExtension(exportContext.getCoverPictureExtension());
         writeJsonFile(exportContext.getExportDir().resolve(CONTENT_EXCHANGE_MAIN_DATA_FILENAME_JSON), exchangeMainData);
     }
 
@@ -263,18 +301,6 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
             var pageContent = pageService.loadPageContent(menu.getTargetPageId(), Set.of(Roles.ROLE_ADMIN, Roles.ROLE_USER));
             exportPage(exportContext, menu.getTargetPageId(), pageContent);
         }
-
-        // Copy a cover picture if one exists:
-        Path menuFilesDir = fileRepository.getSubdirFilePath(projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.MENUS_DIR), menu.getId(), null);
-        Optional<Path> coverPictureOptional = fileRepository.list(menuFilesDir).stream()
-                .filter(file -> file.getFileName().toString().startsWith("cover-picture"))
-                .findFirst();
-
-        if (coverPictureOptional.isPresent()) {
-            Path coverPicture = coverPictureOptional.get();
-            fileRepository.copy(coverPicture, exportContext.getExportDir().resolve(coverPicture.getFileName()));
-        }
-
     }
 
     /**

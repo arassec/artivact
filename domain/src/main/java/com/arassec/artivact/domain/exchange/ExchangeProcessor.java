@@ -10,7 +10,7 @@ public interface ExchangeProcessor {
     /**
      * File suffix for exported content.
      */
-    String CONTENT_EXCHANGE_SUFFIX = ".artivact.content";
+    String COLLECTION_EXCHANGE_SUFFIX = ".artivact.collection";
 
     /**
      * Filename of the properties export JSON file.

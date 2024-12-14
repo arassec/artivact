@@ -20,7 +20,7 @@
             data-test="download-button"
             round
             color="primary"
-            icon="cloud_download"
+            icon="download"
             type="submit"
             class="q-mr-sm main-nav-button">
             <q-tooltip>{{ $t('ItemDetailsPage.button.tooltip.download') }}</q-tooltip>
@@ -29,7 +29,7 @@
           <q-btn
             round
             color="primary"
-            icon="publish"
+            icon="cloud_upload"
             class="q-mr-sm main-nav-button"
             @click="synchronizeUp()">
             <q-tooltip>{{ $t('ItemDetailsPage.button.tooltip.sync') }}</q-tooltip>

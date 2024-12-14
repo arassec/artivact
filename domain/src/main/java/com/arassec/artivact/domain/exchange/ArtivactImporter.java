@@ -1,5 +1,7 @@
 package com.arassec.artivact.domain.exchange;
 
+import com.arassec.artivact.core.model.exchange.CollectionExport;
+
 import java.nio.file.Path;
 
 /**
@@ -13,5 +15,7 @@ public interface ArtivactImporter {
      * @param contentExport Path to the export.
      */
     void importContent(Path contentExport);
+
+    CollectionExport importCollection(Path collectionExport, boolean distributionOnly);
 
 }

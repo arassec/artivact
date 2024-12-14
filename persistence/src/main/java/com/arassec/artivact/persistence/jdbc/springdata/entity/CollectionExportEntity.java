@@ -11,11 +11,11 @@ import lombok.Data;
  */
 @Data
 @Entity
-@Table(name = "av_menu")
-public class MenuEntity {
+@Table(name = "av_collection_export")
+public class CollectionExportEntity {
 
     /**
-     * The menu's ID.
+     * The export's ID.
      */
     @Id
     private String id;
@@ -27,12 +27,12 @@ public class MenuEntity {
     private Integer version;
 
     /**
-     * Defines the sort order of the menu.
+     * Defines the sort order of the export.
      */
     private Integer sortOrder;
 
     /**
-     * The menu's data as JSON.
+     * The export's data as JSON.
      */
     private String contentJson;
 

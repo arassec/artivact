@@ -3,6 +3,8 @@ package com.arassec.artivact.domain.exchange;
 import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.model.configuration.PropertiesConfiguration;
 import com.arassec.artivact.core.model.configuration.TagsConfiguration;
+import com.arassec.artivact.core.model.exchange.CollectionExport;
+import com.arassec.artivact.core.model.exchange.ContentSource;
 import com.arassec.artivact.core.model.item.Item;
 import com.arassec.artivact.core.model.item.MediaCreationContent;
 import com.arassec.artivact.core.model.menu.Menu;
@@ -10,7 +12,6 @@ import com.arassec.artivact.core.model.page.PageContent;
 import com.arassec.artivact.core.model.page.widget.ItemSearchWidget;
 import com.arassec.artivact.core.repository.FileRepository;
 import com.arassec.artivact.domain.exchange.model.ExchangeMainData;
-import com.arassec.artivact.domain.exchange.model.ExchangeType;
 import com.arassec.artivact.domain.exchange.model.ImportContext;
 import com.arassec.artivact.domain.misc.ProjectDataProvider;
 import com.arassec.artivact.domain.service.ConfigurationService;
@@ -90,25 +91,83 @@ public class ArtivactStandardImporter implements ArtivactImporter, ExchangeProce
         try {
             ExchangeMainData exchangeMainData = objectMapper.readValue(importContext.getImportDir().resolve(CONTENT_EXCHANGE_MAIN_DATA_FILENAME_JSON).toFile(), ExchangeMainData.class);
 
-            if (ExchangeType.MENU.equals(exchangeMainData.getExchangeType())) {
+            if (ContentSource.MENU.equals(exchangeMainData.getContentSource())) {
                 importMenu(importContext, exchangeMainData.getSourceId(), true);
-            } else if (ExchangeType.ITEM.equals(exchangeMainData.getExchangeType())) {
+            } else if (ContentSource.ITEM.equals(exchangeMainData.getContentSource())) {
                 importItem(importContext, exchangeMainData.getSourceId());
             } else {
-                throw new ArtivactException("Unknown exchange type: " + exchangeMainData.getExchangeType());
+                throw new ArtivactException("Unknown content source: " + exchangeMainData.getContentSource());
             }
 
             importPropertiesConfiguration(importContext);
 
             importTagsConfiguration(importContext);
 
-            importExportCoverImage(importContext, exchangeMainData.getSourceId());
-
             fileRepository.delete(importContext.getImportDir());
 
         } catch (Exception e) {
             throw new ArtivactException("Could not import data!", e);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CollectionExport importCollection(Path collectionExportFile, boolean distributionOnly) {
+        ImportContext importContext = ImportContext.builder()
+                .importDir(projectDataProvider.getProjectRoot()
+                        .resolve(ProjectDataProvider.TEMP_DIR)
+                        .resolve(collectionExportFile.getFileName().toString().replace(ZIP_FILE_SUFFIX, "")))
+                .build();
+
+        fileRepository.unpack(collectionExportFile, importContext.getImportDir());
+
+        try {
+            ExchangeMainData exchangeMainData = objectMapper.readValue(importContext.getImportDir().resolve(CONTENT_EXCHANGE_MAIN_DATA_FILENAME_JSON).toFile(), ExchangeMainData.class);
+
+            if (!ContentSource.MENU.equals(exchangeMainData.getContentSource())) {
+                throw new ArtivactException("Unsupported content source: " + exchangeMainData.getContentSource());
+            }
+
+            if (!distributionOnly) {
+                importPropertiesConfiguration(importContext);
+                importTagsConfiguration(importContext);
+                importMenu(importContext, exchangeMainData.getSourceId(), true);
+            }
+
+            fileRepository.copy(collectionExportFile, projectDataProvider.getProjectRoot()
+                    .resolve(ProjectDataProvider.EXPORT_DIR)
+                    .resolve(collectionExportFile.getFileName()));
+
+            if (StringUtils.hasText(exchangeMainData.getCoverPictureExtension())) {
+                Path coverPictureFile = importContext.getImportDir().resolve("cover-picture." + exchangeMainData.getCoverPictureExtension());
+                if (fileRepository.exists(coverPictureFile)) {
+                    fileRepository.copy(coverPictureFile, projectDataProvider.getProjectRoot()
+                            .resolve(ProjectDataProvider.EXPORT_DIR)
+                            .resolve(exchangeMainData.getId() + "." + exchangeMainData.getCoverPictureExtension()));
+                }
+            }
+
+            fileRepository.delete(importContext.getImportDir());
+
+            return createCollectionExport(exchangeMainData, distributionOnly);
+        } catch (Exception e) {
+            throw new ArtivactException("Could not import data!", e);
+        }
+    }
+
+    private static CollectionExport createCollectionExport(ExchangeMainData exchangeMainData, boolean distributionOnly) {
+        CollectionExport result = new CollectionExport();
+        result.setId(exchangeMainData.getId());
+        result.setTitle(exchangeMainData.getTitle());
+        result.setDescription(exchangeMainData.getDescription());
+        result.setExportConfiguration(exchangeMainData.getExportConfiguration());
+        result.setContentSource(ContentSource.MENU);
+        result.setSourceId(exchangeMainData.getSourceId());
+        result.setCoverPictureExtension(exchangeMainData.getCoverPictureExtension());
+        result.setDistributionOnly(distributionOnly);
+        return result;
     }
 
     /**
@@ -137,28 +196,6 @@ public class ArtivactStandardImporter implements ArtivactImporter, ExchangeProce
             TagsConfiguration tagsConfiguration = objectMapper.readValue(fileRepository.read(tagsConfigurationJson), TagsConfiguration.class);
             configurationService.saveTagsConfiguration(tagsConfiguration);
         }
-    }
-
-    /**
-     * Imports an export's cover image.
-     *
-     * @param importContext    The import context.
-     * @param exchangeSourceId The export's source's ID.
-     */
-    private void importExportCoverImage(ImportContext importContext, String exchangeSourceId) {
-        fileRepository.list(importContext.getImportDir()).stream()
-                .filter(file -> file.getFileName().toString().startsWith(exchangeSourceId))
-                .filter(file -> file.getFileName().toString().endsWith("JPG")
-                        || file.getFileName().toString().endsWith("jpg")
-                        || file.getFileName().toString().endsWith("JPEG")
-                        || file.getFileName().toString().endsWith("jpeg")
-                        || file.getFileName().toString().endsWith("PNG")
-                        || file.getFileName().toString().endsWith("png")
-                ).findFirst()
-                .ifPresent(file -> fileRepository.copy(file, projectDataProvider.getProjectRoot()
-                                .resolve(ProjectDataProvider.EXPORT_DIR)
-                                .resolve(file.getFileName()),
-                        StandardCopyOption.REPLACE_EXISTING));
     }
 
     /**

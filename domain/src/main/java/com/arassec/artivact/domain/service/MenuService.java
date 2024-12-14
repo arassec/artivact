@@ -274,4 +274,24 @@ public class MenuService extends BaseFileService {
         getFileRepository().scaleImage(inputStream, coverPicture, fileExtension, ImageSize.PAGE_TITLE.getWidth());
     }
 
+    /**
+     * Returns the menu with the given ID, be it main- or sub-menu.
+     *
+     * @param menuId The ID of the menu to find.
+     * @return The menu with the given ID.
+     */
+    @TranslateResult
+    @RestrictResult
+    public Menu findMenu(String menuId) {
+        List<Menu> flattenedMenus = loadTranslatedRestrictedMenus();
+        flattenedMenus.addAll(flattenedMenus.stream()
+                .flatMap(existingMenu -> existingMenu.getMenuEntries().stream())
+                .toList());
+        return flattenedMenus.stream()
+                .filter(Objects::nonNull)
+                .filter(existingMenu -> existingMenu.getId().equals(menuId))
+                .findFirst()
+                .orElseThrow();
+    }
+
 }

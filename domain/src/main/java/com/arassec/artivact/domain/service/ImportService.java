@@ -1,6 +1,5 @@
 package com.arassec.artivact.domain.service;
 
-import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.misc.ProgressMonitor;
 import com.arassec.artivact.core.model.account.Account;
 import com.arassec.artivact.core.repository.FileRepository;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
@@ -94,7 +92,7 @@ public class ImportService extends BaseFileService implements ExchangeProcessor 
             }
         }
 
-        Path importFileZip = saveFile(file);
+        Path importFileZip = saveFile(projectDataProvider.getProjectRoot(), file);
 
         executorService.submit(() -> {
             try {
@@ -114,31 +112,9 @@ public class ImportService extends BaseFileService implements ExchangeProcessor 
      * @param file The menu export file to import.
      */
     public void importDirectly(MultipartFile file) {
-        Path importFileZip = saveFile(file);
+        Path importFileZip = saveFile(projectDataProvider.getProjectRoot(), file);
         artivactImporter.importContent(importFileZip);
         fileRepository.delete(importFileZip);
-    }
-
-    /**
-     * Saves the provided import file in the project dir.
-     *
-     * @param file The uploaded import file to save.
-     * @return Path into the project's directory structure to the import file.
-     */
-    private Path saveFile(MultipartFile file) {
-        String originalFilename = Optional.ofNullable(file.getOriginalFilename()).orElse("import.zip");
-        Path importFileZip = projectDataProvider.getProjectRoot()
-                .resolve(ProjectDataProvider.TEMP_DIR)
-                .resolve(originalFilename)
-                .toAbsolutePath();
-
-        try {
-            file.transferTo(importFileZip);
-        } catch (IOException e) {
-            throw new ArtivactException("Could not save uploaded ZIP file!", e);
-        }
-
-        return importFileZip;
     }
 
 }

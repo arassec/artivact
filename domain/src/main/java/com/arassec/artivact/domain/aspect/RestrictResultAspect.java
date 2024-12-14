@@ -2,6 +2,7 @@ package com.arassec.artivact.domain.aspect;
 
 import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.model.RestrictedObject;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 /**
  * Implements the {@link RestrictResult} aspect.
  */
+@Slf4j
 @Aspect
 @Component
 public class RestrictResultAspect {
@@ -72,6 +74,9 @@ public class RestrictResultAspect {
             return null;
         }
         for (Field field : object.getClass().getDeclaredFields()) {
+            if (field.getType().isEnum()) {
+                return null;
+            }
             try {
                 if (field.getType().getName().startsWith(ARTIVACT_PACKAGE_PREFIX)) {
                     field.setAccessible(true);

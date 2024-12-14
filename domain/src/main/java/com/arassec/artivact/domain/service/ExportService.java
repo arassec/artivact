@@ -219,7 +219,7 @@ public class ExportService extends BaseFileService implements ExchangeProcessor 
     @TranslateResult
     public List<StandardExportInfo> loadContentExports() {
         return fileRepository.list(projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.EXPORT_DIR)).stream()
-                .filter(path -> path.getFileName().toString().contains(CONTENT_EXCHANGE_SUFFIX + ZIP_FILE_SUFFIX))
+                .filter(path -> path.getFileName().toString().contains(COLLECTION_EXCHANGE_SUFFIX + ZIP_FILE_SUFFIX))
                 .map(this::createContentExport)
                 .toList();
     }
@@ -233,7 +233,7 @@ public class ExportService extends BaseFileService implements ExchangeProcessor 
     public Path getContentExportFile(String menuId) {
         return projectDataProvider.getProjectRoot()
                 .resolve(ProjectDataProvider.EXPORT_DIR)
-                .resolve(menuId + CONTENT_EXCHANGE_SUFFIX + ZIP_FILE_SUFFIX);
+                .resolve(menuId + COLLECTION_EXCHANGE_SUFFIX + ZIP_FILE_SUFFIX);
     }
 
     /**

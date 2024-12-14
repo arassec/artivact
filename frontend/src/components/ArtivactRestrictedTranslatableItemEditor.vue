@@ -11,6 +11,7 @@
       :type="textarea ? 'textarea' : 'text'"
       :autogrow="textarea"
       class="no-scroll"
+      :disable="disable"
     />
     <div class="row full-width" v-if="translatableStringRef && localeStore.selectedLocale !== null">
       <q-input
@@ -21,6 +22,7 @@
         :type="textarea ? 'textarea' : 'text'"
         :autogrow="textarea"
         class="no-scroll column col-grow"
+        :disable="disable"
       />
       <q-input
         v-if="showStandardTextRef"
@@ -94,10 +96,10 @@
 </template>
 
 <script setup lang="ts">
-import {PropType, ref, toRef} from 'vue';
+import { PropType, ref, toRef } from 'vue';
 import ArtivactRestrictionsEditor from 'components/ArtivactRestrictionsEditor.vue';
-import {BaseRestrictedObject, TranslatableString} from 'components/artivact-models';
-import {useLocaleStore} from 'stores/locale';
+import { BaseRestrictedObject, TranslatableString } from 'components/artivact-models';
+import { useLocaleStore } from 'stores/locale';
 
 const props = defineProps({
   label: {
@@ -126,6 +128,11 @@ const props = defineProps({
   dataTest: {
     required: false,
     type: String
+  },
+  disable: {
+    required: false,
+    type: Boolean,
+    default: false
   }
 });
 

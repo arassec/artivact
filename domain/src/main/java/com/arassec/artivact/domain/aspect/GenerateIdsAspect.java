@@ -67,7 +67,7 @@ public class GenerateIdsAspect {
         }
         for (Field field : object.getClass().getDeclaredFields()) {
             try {
-                if (field.getType().getName().startsWith(ARTIVACT_PACKAGE_PREFIX)) {
+                if (field.getType().getName().startsWith(ARTIVACT_PACKAGE_PREFIX) && !field.getType().isEnum()) {
                     field.setAccessible(true);
                     Object declaredFieldValue = field.get(object);
                     generateIdsIfRequired(declaredFieldValue);

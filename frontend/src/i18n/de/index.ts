@@ -43,6 +43,8 @@ export default {
       menus: 'Menüs',
       menu: 'Menü',
       applicationLocale: 'Anwendungssprache',
+      collectionExport: 'Sammlungsexport',
+      collectionExports: 'Sammlungsexporte',
       configuration: {
         appearance: 'Darstellungskonfiguration',
         exchange: 'Austausch-Konfiguration',
@@ -130,6 +132,41 @@ export default {
       process: {
         success: 'Stapelverarbeitung abgesclossen',
         failed: 'Stapelverarbeitung fehlgeschlagen!'
+      }
+    }
+  },
+
+  CollectionExportsPage: {
+    heading: 'Sammlunsgexporte',
+    tabs: {
+      configuration: 'Konfiguration',
+      import: 'Import'
+    },
+    configuration: {
+      heading: 'Exportkonfigurationen',
+      description: 'Auf dieser Seite können Sammlungsexport erzeugt und verwaltet werden. Exporte können verwendet werden um Menus, Seiten und Objekte auf andere Artivact-Instanzen zu übertragen. Zusätzlich können Sie von Artivact-Instanzen zum Download bereitgestellt werden, um in anderen Anwendungen verwendet zu werden (wie z.B. der Artivact XR App).',
+    },
+    import: {
+      heading: 'Sammlungs-Import',
+      description: 'Hier können zuvor erstellte Sammlungsexporte importiert werden. Dies kann entweder inklusive aller enthaltenen Menus, Seiten und Objekte geschehen, oder als einzelne Exportdatei für die weitere Verbreitung.',
+      completeImport: 'Komplettimport',
+      forDistributionImport: 'Exportdatei-Import für weitere Verbreitung',
+      exportFile: 'Sammlungsexport'
+    },
+    dialog: {
+      delete: {
+        heading: 'Konfiguration des Sammlungsexports löschen?',
+        description: 'Sind Sie sicher, dass Sie diese Exportkonfiguration und alle dazugehörigen Dateien löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden!',
+        approve: 'Exportkonfiguration löschen'
+      },
+      build: {
+        heading: 'Exportdatei für Sammlungsexport erzeugen?',
+        description: 'Sind Sie sicher, dass Sie Exportdatei für diese Sammlungskonfiguration erzeugen möchten? Dies kann, je nach Sammlungsgröße, einige Zeit in Anspruch nehmen.',
+        approve: 'Exportdatei erzeugen'
+      },
+      messages: {
+        buildExportFileFailed: 'Erzeugung der Exportdatei fehlgeschlagen!',
+        importSuccess: 'Import erfolgreich',
       }
     }
   },
@@ -374,6 +411,43 @@ export default {
           urlLabel: 'Lizenz-URL'
         }
       }
+    }
+  },
+
+  ArtivactCollectionExportEditor: {
+    dialog: {
+      create: {
+        heading: 'Konfiguration für Sammlungsexport Erstellen',
+        approve: 'Konfiguration erstellen'
+      },
+      edit: {
+        heading: 'Konfiguration für Sammlungsexport Bearbeiten',
+        approve: 'Konfiguration speichern'
+      }
+    },
+    label: {
+      sourceId: 'Quelle für den Sammlungsexport',
+      title: 'Titel',
+      description: 'Beschreibung',
+      optimizeSize: 'Exportgröße optimieren',
+      applyRestrictions: 'Eingeschränkte Elemente ausschließen',
+      exportFileMissing: 'Zu dieser Konfiguration existiert noch keine Exportdatei. Sie können diese über den entsprechenden Knopf in der oberen Leiste erstellen.',
+      lastModified: 'Letzte Änderung an der Exportdatei: ',
+      coverPicture: 'Titelbild',
+      noCoverPicture: 'Kein Titelbild verfügbar.'
+    },
+    button: {
+      create: 'Exportkonfiguration erstellen'
+    },
+    tooltip: {
+      delete: 'Exportkonfiguration und dazugehörige Exporte löschen',
+      edit: 'Exportkonfiguration bearbeiten',
+      build: 'Exportdatei für diesen Sammlungsexport erneuern',
+      buildNew: 'Exportdatei für diesen Sammlungsexport erzeugen',
+      download: 'Download the export file',
+      deleteCoverPicture: 'Titelbild von Sammlungsexport entfernen',
+      restricted: 'Der Zugriff auf diesen Sammlungsexport ist eingeschränkt',
+      distributionOnly: 'Dieser Sammlungsexport steht nur für die weitere Verbreitung zur Verfügung',
     }
   },
 
@@ -867,6 +941,11 @@ export default {
     BatchService: {
       process: 'Stapelverarbeitung von Objekten gestartet...',
       processingFailed: 'Stapelverarbeitung fehlgeschlagen!'
+    },
+    CollectionExportService: {
+      buildCollectionExport: 'Erzeuge Sammlungsexportdatei...',
+      buildCollectionExportFailed: 'Sammlungsexport fehlgeschlagen!',
+      importCollection: 'Importiere Sammlung...'
     }
   },
 

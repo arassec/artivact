@@ -43,6 +43,8 @@ export default {
       menus: 'Menus',
       menu: 'Menu',
       applicationLocale: 'Application Locale',
+      collectionExport: 'Collection Export',
+      collectionExports: 'Collection Exports',
       configuration: {
         appearance: 'Appearance configuration',
         exchange: 'Exchange configuration',
@@ -131,6 +133,41 @@ export default {
         success: 'Batch processing finished',
         failed: 'Batch processing failed!'
       }
+    }
+  },
+
+  CollectionExportsPage: {
+    heading: 'Collection Exports',
+    tabs: {
+      configuration: 'Configuration',
+      import: 'Import'
+    },
+    configuration: {
+      heading: 'Export Configurations',
+      description: 'This page can be used to create and manage collection exports. Those can be used to transfer menus, their pages and items displayed on the pages to other Artivact instances. Additionally, the collection exports can be served by Artivact instances to be used e.g. in the Artivact XR app.',
+    },
+    import: {
+      heading: 'Collection Import',
+      description: 'Here you can import previously created collection exports. Those can either be imported with all menus, pages and items or as packaged export for distribution only.',
+      completeImport: 'Complete Import',
+      forDistributionImport: 'Import for Distribution',
+      exportFile: 'Collection Export'
+    },
+    dialog: {
+      delete: {
+        heading: 'Delete Export Configuration?',
+        description: 'Do you want to delete this collection export configuration and all associated files? This action cannot be undone!',
+        approve: 'Delete Configuration'
+      },
+      build: {
+        heading: 'Create Export File?',
+        description: 'Do you want to create the export file for this configuration now? This may take some time, depending on the collection size.',
+        approve: 'Create Export File'
+      }
+    },
+    messages: {
+      buildExportFileFailed: 'Export file building failed!',
+      importSuccess: 'Import successful',
     }
   },
 
@@ -374,6 +411,43 @@ export default {
           urlLabel: 'License-URL'
         }
       },
+    }
+  },
+
+  ArtivactCollectionExportEditor: {
+    dialog: {
+      create: {
+        heading: 'Create Export Configuration',
+        approve: 'Create Configuration'
+      },
+      edit: {
+        heading: 'Edit Export Configuration',
+        approve: 'Save Configuration'
+      }
+    },
+    label: {
+      sourceId: 'Source of collection export',
+      title: 'Title',
+      description: 'Description',
+      optimizeSize: 'Optimize export size',
+      applyRestrictions: 'Exclude restricted elements',
+      exportFileMissing: 'No export file exists for this configuration! You can create one by clicking on the respective button above.',
+      lastModified: 'Last modification of export file: ',
+      coverPicture: 'Cover Picture',
+      noCoverPicture: 'No cover picture available.',
+    },
+    button: {
+      create: 'Create Export Configuration'
+    },
+    tooltip: {
+      delete: 'Delete this export configuration and associated files',
+      edit: 'Edit this export configuration',
+      build: 'Re-create the export file for this collection export configuration',
+      buildNew: 'Create a new export file for this collection export configuration',
+      download: 'Download the export file',
+      deleteCoverPicture: 'Delete cover picture from collection export',
+      restricted: 'Access to this collection export is restricted',
+      distributionOnly: 'This collection export is for distribution only',
     }
   },
 
@@ -867,6 +941,11 @@ export default {
     BatchService: {
       process: 'Batch processing items...',
       processingFailed: 'Processing items failed!'
+    },
+    CollectionExportService: {
+      buildCollectionExport: 'Building collection export file...',
+      buildCollectionExportFailed: 'Building export file failed!',
+      importCollection: 'Importing collection...'
     }
   },
 

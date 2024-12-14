@@ -73,7 +73,11 @@ public class JdbcMenuRepository extends BaseJdbcRepository implements MenuReposi
 
             menuEntityRepository.save(menuEntity);
         }
-        menuEntityRepository.deleteWhereIdNotIn(existingMenuIds);
+        if (existingMenuIds.isEmpty()) {
+            menuEntityRepository.deleteAll();
+        } else {
+            menuEntityRepository.deleteWhereIdNotIn(existingMenuIds);
+        }
     }
 
 }

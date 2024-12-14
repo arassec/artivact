@@ -12,7 +12,6 @@
         </q-tab>
       </q-tabs>
 
-
       <div v-if="tab == 'configuration'">
         <h2 class="av-text-h2">{{ $t('PropertiesConfigurationPage.configuration.heading') }}</h2>
 

@@ -223,17 +223,28 @@ export interface OperationProgress {
   error: string;
 }
 
+export enum ContentSource {
+  MENU='MENU',
+  ITEM='ITEM',
+}
+
 export interface ExportConfiguration {
   applyRestrictions: boolean;
   optimizeSize: boolean;
   excludeItems: boolean;
 }
 
-export interface ContentExport {
-  id: string;
+export interface CollectionExport extends BaseRestrictedObject{
   title: TranslatableString;
   description: TranslatableString;
-  lastModified: string;
+  exportConfiguration: ExportConfiguration;
+  contentSource: ContentSource;
+  sourceId: string;
+  fileLastModified: number;
+  fileSize: number;
+  filePresent: boolean;
+  coverPictureExtension: string | null;
+  distributionOnly: boolean;
 }
 
 export enum BatchProcessingTask {

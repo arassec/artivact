@@ -1,6 +1,8 @@
 package com.arassec.artivact.domain.exchange.model;
 
 import com.arassec.artivact.core.model.TranslatableString;
+import com.arassec.artivact.core.model.exchange.ContentSource;
+import com.arassec.artivact.core.model.exchange.ExportConfiguration;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,6 +24,11 @@ public class ExchangeMainData {
     private int schemaVersion = 1;
 
     /**
+     * The export's ID.
+     */
+    private String id;
+
+    /**
      * The title of the content.
      */
     private TranslatableString title;
@@ -34,11 +41,21 @@ public class ExchangeMainData {
     /**
      * The type of the exchanged data.
      */
-    private ExchangeType exchangeType;
+    private ContentSource contentSource;
 
     /**
      * The ID of the source of the exchanged content.
      */
     private String sourceId;
+
+    /**
+     * File extension of the cover picture (if present).
+     */
+    private String coverPictureExtension;
+
+    /**
+     * The configuration used to create this export.
+     */
+    private ExportConfiguration exportConfiguration;
 
 }

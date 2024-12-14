@@ -84,6 +84,16 @@ public class ArtivactServerSecurityConfiguration {
     private static final String API_MENU_PATTERN = "/api/menu";
 
     /**
+     * Public API path for content export handling.
+     */
+    private static final String API_COLLECTION_EXPORT_PUBLIC_PATTERN = "/api/collection/export/public";
+
+    /**
+     * API path for content export handling.
+     */
+    private static final String API_COLLECTION_EXPORT_PATTERN = "/api/collection/export";
+
+    /**
      * Provides a security filter-chain for Spring-Security when the application is run in server-mode.
      *
      * @param http Spring-Security's {@link HttpSecurity}.
@@ -95,6 +105,7 @@ public class ArtivactServerSecurityConfiguration {
         return http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, API_CONFIGURATION_PUBLIC_PATTERN).permitAll()
+                        .requestMatchers(HttpMethod.GET, API_COLLECTION_EXPORT_PUBLIC_PATTERN).permitAll()
                         .requestMatchers(HttpMethod.GET, API_MENU_PATTERN).permitAll()
                         .requestMatchers(HttpMethod.POST, API_MENU_PATTERN).hasAnyRole(Roles.ADMIN, Roles.USER)
                         .requestMatchers(HttpMethod.PUT, API_MENU_PATTERN).hasAnyRole(Roles.ADMIN, Roles.USER)
@@ -107,6 +118,7 @@ public class ArtivactServerSecurityConfiguration {
                         .requestMatchers(API_ACCOUNT_PATTERN).hasRole(Roles.ADMIN)
                         .requestMatchers(API_CONFIGURATION_PATTERN).hasRole(Roles.ADMIN)
                         .requestMatchers(API_ITEM_MEDIA_CREATION_PATTERN).hasAnyRole(Roles.ADMIN, Roles.USER)
+                        .requestMatchers(API_COLLECTION_EXPORT_PATTERN).hasAnyRole(Roles.ADMIN, Roles.USER)
                         .requestMatchers(HttpMethod.POST, API_ITEM_PATTERN).hasAnyRole(Roles.ADMIN, Roles.USER)
                         .requestMatchers(HttpMethod.PUT, API_ITEM_PATTERN).hasAnyRole(Roles.ADMIN, Roles.USER)
                         .requestMatchers(HttpMethod.DELETE, API_ITEM_PATTERN).hasAnyRole(Roles.ADMIN, Roles.USER)

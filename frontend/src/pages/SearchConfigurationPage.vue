@@ -3,7 +3,7 @@
     <div class="full-width">
       <h1 class="av-text-h1">{{ $t('SearchConfigurationPage.heading') }}</h1>
 
-      <label>{{ $t('SearchConfigurationPage.label') }}</label>
+      {{ $t('SearchConfigurationPage.label') }}
 
       <div class="q-mb-lg"/>
 
@@ -27,12 +27,12 @@
 <script setup lang="ts">
 
 import ArtivactContent from 'components/ArtivactContent.vue';
-import {api} from 'boot/axios';
-import {useQuasar} from 'quasar';
-import {useI18n} from 'vue-i18n';
+import { api } from 'boot/axios';
+import { useQuasar } from 'quasar';
+import { useI18n } from 'vue-i18n';
 import ArtivactOperationInProgressDialog from 'components/ArtivactOperationInProgressDialog.vue';
-import {ref} from 'vue';
-import {OperationProgress} from 'components/artivact-models';
+import { ref } from 'vue';
+import { OperationProgress } from 'components/artivact-models';
 
 const quasar = useQuasar();
 const i18n = useI18n();
