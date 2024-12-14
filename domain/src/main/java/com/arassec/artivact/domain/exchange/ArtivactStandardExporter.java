@@ -86,7 +86,7 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
 
         prepareExport(exportContext);
 
-        exportMainData(exportContext, ContentSource.MENU, menu.getId(), menu.getExportTitle(), menu.getExportDescription());
+        exportMainData(exportContext, ContentSource.MENU, menu.getId(), collectionExport.getTitle(), collectionExport.getDescription());
 
         exportPropertiesConfiguration(exportContext);
         exportTagsConfiguration(exportContext);
@@ -118,7 +118,7 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
 
         prepareExport(exportContext);
 
-        exportMainData(exportContext, ContentSource.MENU, menu.getId(), menu.getExportTitle(), menu.getExportDescription());
+        exportMainData(exportContext, ContentSource.MENU, menu.getId(), null, null);
 
         // Properties and tags configuration is only exported if items are exported as well.
         if (!exportConfiguration.isExcludeItems()) {

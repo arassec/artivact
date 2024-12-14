@@ -28,6 +28,7 @@
           <!-- SYNC UP BUTTON -->
           <q-btn
             round
+            :disable="!applicationSettingsStore.syncAvailable"
             color="primary"
             icon="cloud_upload"
             class="q-mr-sm main-nav-button"
@@ -185,6 +186,7 @@ import ArtivactDialog from 'components/ArtivactDialog.vue';
 import { useI18n } from 'vue-i18n';
 import ArtivactItemMediaCarousel from 'components/ArtivactItemMediaCarousel.vue';
 import { useProfilesStore } from 'stores/profiles';
+import { useApplicationSettingsStore } from 'stores/application-settings';
 
 const quasar = useQuasar();
 const route = useRoute();
@@ -194,6 +196,7 @@ const i18n = useI18n();
 const userdataStore = useUserdataStore();
 const breadcrumbsStore = useBreadcrumbsStore();
 const profilesStore = useProfilesStore();
+const applicationSettingsStore = useApplicationSettingsStore();
 
 const itemDataDetailsRef = ref();
 const propertiesDataRef = ref();

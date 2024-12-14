@@ -1,9 +1,6 @@
 package com.arassec.artivact.core.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.util.HashSet;
@@ -27,6 +24,7 @@ public abstract class BaseRestrictedObject implements IdentifiedObject, Restrict
     /**
      * Restrictions that apply to the object, i.e. the roles allowed to work with this item.
      */
+    @Builder.Default
     private Set<String> restrictions = new HashSet<>();
 
 }

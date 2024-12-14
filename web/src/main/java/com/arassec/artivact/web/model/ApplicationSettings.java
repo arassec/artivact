@@ -56,4 +56,9 @@ public class ApplicationSettings {
     @Builder.Default
     private List<String> availableRoles = new LinkedList<>();
 
+    /**
+     * Indicates whether synchronization to a remote Artivact instance is available or not.
+     */
+    private boolean syncAvailable;
+
 }

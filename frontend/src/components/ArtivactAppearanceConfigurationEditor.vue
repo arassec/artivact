@@ -287,14 +287,14 @@
 </template>
 
 <script setup lang="ts">
-import {PropType, toRef} from 'vue';
-import {AppearanceConfiguration, SelectboxModel} from 'components/artivact-models';
+import { PropType, toRef } from 'vue';
+import { AppearanceConfiguration, SelectboxModel } from 'components/artivact-models';
 import ArtivactThemeColorEditor from 'components/ArtivactThemeColorEditor.vue';
-import {QUploader, useQuasar} from 'quasar';
-import {useI18n} from 'vue-i18n';
-import {useProfilesStore} from 'stores/profiles';
+import { QUploader, useQuasar } from 'quasar';
+import { useI18n } from 'vue-i18n';
+import { useProfilesStore } from 'stores/profiles';
 import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
-import {useLocaleStore} from "stores/locale";
+import { useLocaleStore } from 'stores/locale';
 
 const props = defineProps({
   appearanceConfiguration: {

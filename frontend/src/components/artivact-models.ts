@@ -92,8 +92,6 @@ export interface Menu extends BaseTranslatableRestrictedObject {
   parentId: string | null;
   menuEntries: Menu[];
   targetPageId: string;
-  exportTitle: TranslatableString;
-  exportDescription: TranslatableString;
 }
 
 export interface Account {
@@ -146,7 +144,8 @@ export interface ApplicationSettings {
   colorTheme: ColorTheme,
   license: License,
   profiles: Profiles,
-  availableRoles: string[]
+  availableRoles: string[],
+  syncAvailable: boolean
 }
 
 export enum AdapterImplementation {

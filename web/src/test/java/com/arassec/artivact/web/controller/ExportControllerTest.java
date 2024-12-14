@@ -2,8 +2,6 @@ package com.arassec.artivact.web.controller;
 
 
 import com.arassec.artivact.core.misc.ProgressMonitor;
-import com.arassec.artivact.core.model.exchange.ExportConfiguration;
-import com.arassec.artivact.core.model.exchange.StandardExportInfo;
 import com.arassec.artivact.domain.service.ExportService;
 import com.arassec.artivact.web.model.OperationProgress;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,19 +12,12 @@ import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.stubbing.Answer;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
-import java.nio.file.Path;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -50,102 +41,6 @@ class ExportControllerTest {
      */
     @Mock
     private ExportService exportService;
-
-    /**
-     * Tests exporting content.
-     */
-    @Test
-    void testExportContent() {
-        ProgressMonitor progressMonitor = mock(ProgressMonitor.class);
-        when(exportService.getProgressMonitor()).thenReturn(progressMonitor);
-
-        ExportConfiguration exportConfiguration = ExportConfiguration.builder().build();
-
-        ResponseEntity<OperationProgress> responseEntity = exportController.exportContent("menu-id", exportConfiguration);
-
-        OperationProgress operationProgress = responseEntity.getBody();
-        assertNotNull(operationProgress);
-
-        verify(exportService, times(1)).exportContent(exportConfiguration, "menu-id");
-    }
-
-    /**
-     * Tests loading content exports.
-     */
-    @Test
-    void testLoadContentExports() {
-        StandardExportInfo standardExportInfo = StandardExportInfo.builder().build();
-        when(exportService.loadContentExports()).thenReturn(List.of(
-                standardExportInfo
-        ));
-
-        List<StandardExportInfo> standardExportInfos = exportController.loadContentExports();
-
-        assertEquals(1, standardExportInfos.size());
-        assertEquals(standardExportInfo, standardExportInfos.getFirst());
-    }
-
-    /**
-     * Tests loading the content export overviews.
-     */
-    @Test
-    @SneakyThrows
-    void testLoadContentExportOverviews() {
-        doAnswer((Answer<OutputStream>) invocationOnMock -> {
-            OutputStream outputStream = invocationOnMock.getArgument(0, OutputStream.class);
-            outputStream.write("test".getBytes());
-            return outputStream;
-        }).when(exportService).loadContentExportOverviews(any(OutputStream.class));
-
-        HttpServletResponse response = mock(HttpServletResponse.class);
-
-        ResponseEntity<StreamingResponseBody> streamingResponseBodyResponseEntity = exportController.loadContentExportOverviews(response);
-
-        assertThat(streamingResponseBodyResponseEntity.getBody()).isNotNull();
-
-        verify(response, times(1)).setContentType("application/zip");
-        verify(response, times(1)).setHeader(eq(HttpHeaders.CONTENT_DISPOSITION), anyString());
-
-        OutputStream clientOutputStream = new ByteArrayOutputStream();
-        streamingResponseBodyResponseEntity.getBody().writeTo(clientOutputStream);
-        assertThat(clientOutputStream.toString()).isEqualTo("test");
-
-    }
-
-    /**
-     * Tests downloading a content export.
-     */
-    @Test
-    void testDownloadContentExport() {
-        when(exportService.getContentExportFile("menu-id")).thenReturn(
-                Path.of("content-export.zip")
-        );
-
-        HttpServletResponse response = mock(HttpServletResponse.class);
-
-        ResponseEntity<StreamingResponseBody> responseEntity = exportController.downloadContentExport(response, "menu-id");
-
-        verify(response, times(1)).setContentType("application/zip");
-        verify(response, times(1)).setHeader("Content-Disposition", "attachment; filename=content-export.zip");
-
-        assertNotNull(responseEntity.getBody());
-    }
-
-    /**
-     * Tests deleting content exports.
-     */
-    @Test
-    void testDeleteContentExport() {
-        ProgressMonitor progressMonitor = mock(ProgressMonitor.class);
-        when(exportService.getProgressMonitor()).thenReturn(progressMonitor);
-
-        ResponseEntity<OperationProgress> responseEntity = exportController.deleteContentExport("menu-id");
-
-        OperationProgress operationProgress = responseEntity.getBody();
-        assertNotNull(operationProgress);
-
-        verify(exportService, times(1)).deleteExport("menu-id");
-    }
 
     /**
      * Tests exporting the current properties configuration.
@@ -196,22 +91,6 @@ class ExportControllerTest {
     void testExportItemToRemoteInstance() {
         exportController.exportItemToRemoteInstance("123-abc");
         verify(exportService, times(1)).exportItemToRemoteInstance("123-abc");
-    }
-
-    /**
-     * Tests exporting all modified items to a remote application instance.
-     */
-    @Test
-    void testExportItemsToRemoteInstance() {
-        ProgressMonitor progressMonitor = mock(ProgressMonitor.class);
-        when(exportService.getProgressMonitor()).thenReturn(progressMonitor);
-
-        ResponseEntity<OperationProgress> responseEntity = exportController.exportItemsToRemoteInstance();
-
-        OperationProgress operationProgress = responseEntity.getBody();
-        assertNotNull(operationProgress);
-
-        verify(exportService, times(1)).exportItemsToRemoteInstance();
     }
 
     /**

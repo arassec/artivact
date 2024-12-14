@@ -1,5 +1,5 @@
-import {defineStore} from 'pinia';
-import {ApplicationSettings, ColorTheme, License, Profiles} from 'components/artivact-models';
+import { defineStore } from 'pinia';
+import { ApplicationSettings, ColorTheme, License, Profiles } from 'components/artivact-models';
 
 export const useApplicationSettingsStore = defineStore('applicationSettings', {
   state: () => ({
@@ -32,6 +32,9 @@ export const useApplicationSettingsStore = defineStore('applicationSettings', {
     },
     availableRoles(state): string[] {
       return state.data.settings.availableRoles;
+    },
+    syncAvailable(state): boolean {
+      return state.data.settings.syncAvailable;
     }
   },
 

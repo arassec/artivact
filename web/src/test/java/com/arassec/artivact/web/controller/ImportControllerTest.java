@@ -84,18 +84,6 @@ class ImportControllerTest {
     }
 
     /**
-     * Tests content import.
-     */
-    @Test
-    void testImportContent() {
-        MultipartFile file = mock(MultipartFile.class);
-        ResponseEntity<String> stringResponseEntity = importController.importContent(file);
-
-        assertEquals("Item imported.", stringResponseEntity.getBody());
-        verify(importService, times(1)).importAsync(file, null);
-    }
-
-    /**
      * Tests syncing an item.
      */
     @Test

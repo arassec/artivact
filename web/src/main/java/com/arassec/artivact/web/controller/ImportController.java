@@ -73,17 +73,6 @@ public class ImportController extends BaseController {
         return ResponseEntity.ok("Tags imported.");
     }
 
-    /**
-     * Called from the UI for local import of an item.
-     *
-     * @param file The item's export file to import.
-     * @return A status string.
-     */
-    @PostMapping(value = "/content")
-    public ResponseEntity<String> importContent(@RequestPart(value = "file") final MultipartFile file) {
-        importService.importAsync(file, null);
-        return ResponseEntity.ok("Item imported.");
-    }
 
     /**
      * Called by another server instance for remote import/sync!

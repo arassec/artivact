@@ -302,6 +302,12 @@ public class CollectionExportService extends BaseFileService {
 
         executorService.submit(() -> {
             try {
+                Path existingCollectionExportFile = projectDataProvider.getProjectRoot()
+                        .resolve(ProjectDataProvider.EXPORT_DIR)
+                        .resolve(importFileZip.getFileName().toString());
+                if (fileRepository.exists(existingCollectionExportFile)) {
+                    fileRepository.delete(existingCollectionExportFile);
+                }
                 CollectionExport collectionExport = artivactImporter.importCollection(importFileZip, onlyForDistribution);
                 collectionExportRepository.save(collectionExport);
                 progressMonitor = null;

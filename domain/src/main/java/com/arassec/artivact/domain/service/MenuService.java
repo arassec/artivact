@@ -2,7 +2,6 @@ package com.arassec.artivact.domain.service;
 
 
 import com.arassec.artivact.core.exception.ArtivactException;
-import com.arassec.artivact.core.model.TranslatableString;
 import com.arassec.artivact.core.model.configuration.MenuConfiguration;
 import com.arassec.artivact.core.model.item.ImageSize;
 import com.arassec.artivact.core.model.menu.Menu;
@@ -65,26 +64,7 @@ public class MenuService extends BaseFileService {
     @RestrictResult
     @TranslateResult
     public List<Menu> loadTranslatedRestrictedMenus() {
-        MenuConfiguration menuConfiguration = menuRepository.load();
-
-        menuConfiguration.getMenus().forEach(menu -> {
-            if (menu.getExportTitle() == null) {
-                menu.setExportTitle(new TranslatableString());
-            }
-            if (menu.getExportDescription() == null) {
-                menu.setExportDescription(new TranslatableString());
-            }
-            menu.getMenuEntries().forEach(menuEntry -> {
-                if (menuEntry.getExportTitle() == null) {
-                    menuEntry.setExportTitle(new TranslatableString());
-                }
-                if (menuEntry.getExportDescription() == null) {
-                    menuEntry.setExportDescription(new TranslatableString());
-                }
-            });
-        });
-
-        return menuConfiguration.getMenus();
+        return menuRepository.load().getMenus();
     }
 
     /**
@@ -151,8 +131,6 @@ public class MenuService extends BaseFileService {
             existingMenu.setRestrictions(menu.getRestrictions());
             existingMenu.setTargetPageId(menu.getTargetPageId());
             existingMenu.setMenuEntries(menu.getMenuEntries());
-            existingMenu.setExportTitle(menu.getExportTitle());
-            existingMenu.setExportDescription(menu.getExportDescription());
         } else {
             menuConfiguration.getMenus().add(menu);
         }

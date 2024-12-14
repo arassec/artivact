@@ -186,46 +186,9 @@ export default {
 
   ExchangeConfigurationPage: {
     heading: 'Data Exchange',
-    tabs: {
-      configuration: 'Configuration',
-      export: 'Export',
-      import: 'Import',
-    },
     configuration: {
-      heading: 'Synchronization',
       description: 'Here you can configure exchange parameters for syncing items with remote Artivact instances.',
-    },
-    syncAllUp: {
-      heading: 'Upload',
-      description: 'With the following button, all locally modified items will be uploaded to the remote Artivact instance.',
-      button: 'Upload all modified items'
-    },
-    contentExport: {
-      heading: 'Content Exports',
-      description: 'Here you can manage content exports. Exports can be created by right-clicking on a menu and selecting \'Export Content\'.'
-    },
-    contentImport: {
-      heading: 'Content Imports',
-      description: 'Here you can import previously exported content. WARNING: content imports will overwrite existing properties and tags configurations!',
-      button: 'Upload',
-    },
-    dialog: {
-      delete: {
-        heading: 'Delete Export?',
-        description: 'Are you sure you want to delete this export? This action cannot be undone!',
-        approve: 'Delete Export'
-      }
-    },
-    messages: {
-      sync: {
-        success: 'Items synchronized',
-        failed: 'Synchronization failed'
-      },
-      import: {
-        success: 'Import finished',
-        failed: 'Import failed'
-      }
-    },
+    }
   },
 
   ItemDetailsPage: {
@@ -517,9 +480,6 @@ export default {
       importMenu: 'Import Menu',
       add: 'Add Page',
       addEntry: 'Add Entry',
-      exportTitle: 'Export Title',
-      exportDescription: 'Export Description',
-      exportImage: 'Export Cover Picture',
       exportConfiguration: {
         optimizeSize: 'Optimize export size',
         applyRestrictions: 'Exclude restricted elements',
@@ -538,7 +498,6 @@ export default {
       deleteDescription: 'Are you sure you want to delete this menu including its page and menu entries? This action cannot be undone!',
       deleteApprove: 'Delete Menu',
       deleteApproveEntry: 'Delete Menu Entry',
-      exportDescription: 'Optional title and description for exports based on this menu.',
       exportConfiguration: 'Export Configuration',
       exportApprove: 'Export Content',
       import: 'Import Menu',

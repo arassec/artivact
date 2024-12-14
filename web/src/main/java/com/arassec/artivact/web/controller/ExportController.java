@@ -1,7 +1,5 @@
 package com.arassec.artivact.web.controller;
 
-import com.arassec.artivact.core.model.exchange.ExportConfiguration;
-import com.arassec.artivact.core.model.exchange.StandardExportInfo;
 import com.arassec.artivact.domain.exchange.ExchangeProcessor;
 import com.arassec.artivact.domain.service.ExportService;
 import com.arassec.artivact.web.model.OperationProgress;
@@ -15,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.time.LocalDate;
-import java.util.List;
 
 /**
  * REST-Controller for export management.
@@ -32,29 +29,6 @@ public class ExportController extends BaseController {
     private final ExportService exportService;
 
     /**
-     * Exports the pages of a menu and the sub-menu pages (if available).
-     *
-     * @param menuId The menu's ID.
-     * @return The progress of the export.
-     */
-    @PostMapping("/content/{menuId}")
-    public ResponseEntity<OperationProgress> exportContent(@PathVariable String menuId,
-                                                           @RequestBody ExportConfiguration configuration) {
-        exportService.exportContent(configuration, menuId);
-        return getProgress();
-    }
-
-    /**
-     * Returns details about previous exports.
-     *
-     * @return List with details of existing exports.
-     */
-    @GetMapping("/content")
-    public List<StandardExportInfo> loadContentExports() {
-        return exportService.loadContentExports();
-    }
-
-    /**
      * Returns details about available content exports.
      *
      * @return ZIP file containing the information about available content exports.
@@ -67,37 +41,6 @@ public class ExportController extends BaseController {
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION, ATTACHMENT_PREFIX + ExportService.CONTENT_EXPORT_OVERVIEWS_FILE);
 
         return ResponseEntity.ok(streamResponseBody);
-    }
-
-    /**
-     * Returns the selected content export file.
-     *
-     * @return The content export.
-     */
-    @GetMapping("/content/{menuId}")
-    public ResponseEntity<StreamingResponseBody> downloadContentExport(HttpServletResponse response,
-                                                                       @PathVariable String menuId) {
-
-        String exportFilename = exportService.getContentExportFile(menuId).getFileName().toString();
-
-        StreamingResponseBody streamResponseBody = out -> exportService.loadContentExport(menuId, out);
-
-        response.setContentType(TYPE_ZIP);
-        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, ATTACHMENT_PREFIX + exportFilename);
-
-        return ResponseEntity.ok(streamResponseBody);
-    }
-
-    /**
-     * Exports the pages of a menu and the sub-menu pages (if available).
-     *
-     * @param menuId The menu's ID.
-     * @return The progress of the export.
-     */
-    @DeleteMapping("/content/{menuId}")
-    public ResponseEntity<OperationProgress> deleteContentExport(@PathVariable String menuId) {
-        exportService.deleteExport(menuId);
-        return getProgress();
     }
 
     /**
@@ -160,17 +103,6 @@ public class ExportController extends BaseController {
     @PostMapping(value = "/remote/item/{itemId}")
     public ResponseEntity<OperationProgress> exportItemToRemoteInstance(@PathVariable String itemId) {
         exportService.exportItemToRemoteInstance(itemId);
-        return getProgress();
-    }
-
-    /**
-     * Called from the UI to start syncing all items with a remote application instance.
-     *
-     * @return The operation progress.
-     */
-    @PostMapping(value = "/remote/item")
-    public ResponseEntity<OperationProgress> exportItemsToRemoteInstance() {
-        exportService.exportItemsToRemoteInstance();
         return getProgress();
     }
 

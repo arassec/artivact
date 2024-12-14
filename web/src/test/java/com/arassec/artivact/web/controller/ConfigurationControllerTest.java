@@ -70,6 +70,8 @@ class ConfigurationControllerTest {
         when(configurationService.isDesktopProfileEnabled()).thenReturn(true);
         when(configurationService.isE2eProfileEnabled()).thenReturn(true);
 
+        when(configurationService.loadExchangeConfiguration()).thenReturn(new ExchangeConfiguration("remoteServer", "apiToken"));
+
         ApplicationSettings applicationSettings = controller.getApplicationSettings();
 
         Profiles profiles = new Profiles();
@@ -84,6 +86,7 @@ class ConfigurationControllerTest {
         assertEquals("encodedFavicon", appearanceConfiguration.getEncodedFavicon());
         assertEquals(profiles, applicationSettings.getProfiles());
         assertEquals(List.of("ROLE_ADMIN", "ROLE_USER"), applicationSettings.getAvailableRoles());
+        assertTrue(applicationSettings.isSyncAvailable());
     }
 
     /**

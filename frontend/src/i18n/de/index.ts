@@ -186,45 +186,8 @@ export default {
 
   ExchangeConfigurationPage: {
     heading: 'Datenaustausch',
-    tabs: {
-      configuration: 'Konfiguration',
-      export: 'Export',
-      import: 'Import'
-    },
     configuration: {
-      heading: 'Synchronisation',
       description: 'Hier können Parameter für den Austausch von Objekten zwischen verschiedenen Artivact-Instanzen konfiguriert werden.'
-    },
-    syncAllUp: {
-      heading: 'Upload',
-      description: 'Mit dem unten stehenden Button können alle lokal geänderten Objekte mit der entfernten Artivact-Instanz synchronisiert werden.',
-      button: 'Alle geänderten Objekte Hochladen'
-    },
-    contentExport: {
-      heading: 'Exporte',
-      description: 'Hier können Exporte verwaltet werden. Exporte können per Rechtsklick auf ein Menu mit der Auswahl \'Inhalte Exportieren\' erstellt werden.'
-    },
-    contentImport: {
-      heading: 'Importe',
-      description: 'Hier können zuvor erstellte Exporte importiert werden. ACHTUNG: Importe überschreiben bisher existierende Tag- oder Eigenschaftskonfigurationen.',
-      button: 'Upload'
-    },
-    dialog: {
-      delete: {
-        heading: 'Export löschen?',
-        description: 'Sind Sie sicher, dass Sie den gewählten Export löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden!',
-        approve: 'Export löschen'
-      }
-    },
-    messages: {
-      sync: {
-        success: 'Synchronisation abgeschlossen',
-        failed: 'Synchronisation fehlgeschlagen'
-      },
-      import: {
-        success: 'Import abgeschlossen',
-        failed: 'Import fehlgeschlagen'
-      }
     }
   },
 
@@ -516,9 +479,6 @@ export default {
       importMenu: 'Menu importieren',
       add: 'Seite hinzufügen',
       addEntry: 'Menüeintrag hinzufügen',
-      exportTitle: 'Export Titel',
-      exportDescription: 'Export Beschreibung',
-      exportImage: 'Export Titelbild',
       exportConfiguration: {
         optimizeSize: 'Exportgröße optimieren',
         applyRestrictions: 'Eingeschränkte Elemente ausschließen',
@@ -537,7 +497,6 @@ export default {
       deleteDescription: 'Sind Sie sicher, dass Sie das ausgewählte Menü und alle seine Einträge und dazugehörigen Seiten löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden!',
       deleteApprove: 'Menü löschen',
       deleteApproveEntry: 'Menüeintrag löschen',
-      exportDescription: 'Optionaler Titel und Beschreibung für Exporte, die auf Basis dieses Menüs erstellt werden.',
       exportConfiguration: 'Export Konfiguration',
       exportApprove: 'Inhalte exportieren',
       import: 'Menu importieren',

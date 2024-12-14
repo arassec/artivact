@@ -548,32 +548,8 @@
             :translatable-string="menuRef"
             :restricted-item="menuRef"
             :label="$t('ArtivactMenuBar.label.menu')"
-            :show-separator="true"
+            :show-separator="false"
           />
-          {{ $t('ArtivactMenuBar.dialog.exportDescription') }}
-          <artivact-restricted-translatable-item-editor
-            :dataTest="'add-menu-modal-export-title'"
-            :locales="localeStore.locales"
-            :translatable-string="menuRef.exportTitle"
-            :label="$t('ArtivactMenuBar.label.exportTitle')"
-            :show-separator="false" />
-          <artivact-restricted-translatable-item-editor
-            :dataTest="'add-menu-modal-export-description'"
-            :locales="localeStore.locales"
-            :translatable-string="menuRef.exportDescription"
-            :label="$t('ArtivactMenuBar.label.exportDescription')"
-            :textarea="true"
-            :show-separator="false" />
-          <div class="row">
-            <q-uploader :label="$t('ArtivactMenuBar.label.exportImage')"
-                        auto-upload
-                        field-name="file"
-                        :no-thumbnails="true"
-                        class="col"
-                        :url="'/api/menu/' + menuRef.id + '/cover-picture'"
-            />
-            <q-img class="col" />
-          </div>
         </q-card-section>
       </template>
 

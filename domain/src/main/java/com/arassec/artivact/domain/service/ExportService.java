@@ -112,32 +112,6 @@ public class ExportService extends BaseFileService implements ExchangeProcessor 
      */
     private final ExecutorService executorService = Executors.newFixedThreadPool(1);
 
-    /**
-     * Creates a menu's export ZIP file.
-     *
-     * @param menuId The menu's ID.
-     */
-    public synchronized void exportContent(ExportConfiguration configuration, String menuId) {
-
-        if (progressMonitor != null && progressMonitor.getException() == null) {
-            return;
-        }
-
-        progressMonitor = new ProgressMonitor(getClass(), "exportContent");
-
-        Menu menu = findMenu(menuId);
-
-        executorService.submit(() -> {
-            try {
-                Path exportedFile = artivactExporter.exportMenu(configuration, menu);
-                log.info("Created export: {}", exportedFile);
-                progressMonitor = null;
-            } catch (Exception e) {
-                progressMonitor.updateProgress("exportContentFailed", e);
-                log.error("Error during content export!", e);
-            }
-        });
-    }
 
     /**
      * Exports a menu without items.
@@ -225,33 +199,6 @@ public class ExportService extends BaseFileService implements ExchangeProcessor 
     }
 
     /**
-     * Returns the filename of a content export with the specified values.
-     *
-     * @param menuId The menu ID the export is based on.
-     * @return The export file.
-     */
-    public Path getContentExportFile(String menuId) {
-        return projectDataProvider.getProjectRoot()
-                .resolve(ProjectDataProvider.EXPORT_DIR)
-                .resolve(menuId + COLLECTION_EXCHANGE_SUFFIX + ZIP_FILE_SUFFIX);
-    }
-
-    /**
-     * Loads the given content export and writes it to the given output stream.
-     *
-     * @param menuId       The ID of the menu providing the export.
-     * @param outputStream The output stream to write the export to.
-     */
-    public void loadContentExport(String menuId, OutputStream outputStream) {
-        Path exportFile = getContentExportFile(menuId);
-        if (fileRepository.exists(exportFile)) {
-            fileRepository.copy(exportFile, outputStream);
-        } else {
-            throw new ArtivactException("No export file available for menu " + menuId + "!");
-        }
-    }
-
-    /**
      * Loads the overview of all available content exports and writes it to the given output stream.
      *
      * @param outputStream The output stream to write the export to.
@@ -294,20 +241,6 @@ public class ExportService extends BaseFileService implements ExchangeProcessor 
     }
 
     /**
-     * Deletes a content export with the given menu ID.
-     *
-     * @param exportSourceId The ID of the object the export is based on.
-     */
-    public void deleteExport(String exportSourceId) {
-        Path exportDir = projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.EXPORT_DIR);
-        fileRepository.list(exportDir).forEach(export -> {
-            if (export.getFileName().toString().startsWith(exportSourceId)) {
-                fileRepository.delete(export);
-            }
-        });
-    }
-
-    /**
      * Exports the item with the given ID and uploads it to a remote application instance configured in the exchange
      * configuration.
      *
@@ -327,40 +260,6 @@ public class ExportService extends BaseFileService implements ExchangeProcessor 
 
         executorService.submit(() -> {
             exportItemToRemoteInstance(itemId, progressMonitor, remoteServer, apiToken);
-            if (progressMonitor.getException() == null) {
-                progressMonitor = null;
-            }
-        });
-    }
-
-    /**
-     * Exports all modified items and uploads them to a remote application instance configured in the exchange configuration.
-     */
-    public synchronized void exportItemsToRemoteInstance() {
-
-        if (progressMonitor != null && progressMonitor.getException() == null) {
-            return;
-        }
-
-        List<String> itemIdsForRemoteSync = itemService.getItemIdsForRemoteSync();
-
-        log.debug("Found {} items to upload to remote instance.", itemIdsForRemoteSync.size());
-
-        progressMonitor = new ProgressMonitor(getClass(), PROGRESS_SUFFIX_PACKAGING);
-        progressMonitor.updateProgress(0, itemIdsForRemoteSync.size());
-
-        ExchangeConfiguration exchangeConfiguration = configurationService.loadExchangeConfiguration();
-        String remoteServer = exchangeConfiguration.getRemoteServer();
-        String apiToken = exchangeConfiguration.getApiToken();
-
-        executorService.submit(() -> {
-            itemIdsForRemoteSync.forEach(itemId -> {
-                if (progressMonitor.getException() == null) {
-                    log.debug("Processing item {}", itemId);
-                    exportItemToRemoteInstance(itemId, progressMonitor, remoteServer, apiToken);
-                    progressMonitor.updateProgress(progressMonitor.getCurrentAmount() + 1, itemIdsForRemoteSync.size());
-                }
-            });
             if (progressMonitor.getException() == null) {
                 progressMonitor = null;
             }

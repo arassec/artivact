@@ -42,6 +42,7 @@
             <q-uploader :label="$t('CollectionExportsPage.import.exportFile')"
                         field-name="file"
                         :multiple="false"
+                        accept=".artivact.collection.zip"
                         url="/api/collection/export/import"
                         @finish="pollOperationProgress()"
             />
@@ -51,6 +52,7 @@
             <q-uploader :label="$t('CollectionExportsPage.import.exportFile')"
                         field-name="file"
                         :multiple="false"
+                        accept=".artivact.collection.zip"
                         url="/api/collection/export/import/for-distribution"
                         @finish="pollOperationProgress()"
             />
@@ -314,6 +316,7 @@ function updateOperationProgress(reloadMenus: boolean) {
       } else {
         progressMonitorRef.value = undefined;
         showOperationInProgressModalRef.value = false;
+        loadCollectionExports();
         if (reloadMenus) {
           api
             .get('/api/menu')
@@ -326,8 +329,6 @@ function updateOperationProgress(reloadMenus: boolean) {
             message: i18n.t('CollectionExportsPage.messages.importSuccess'),
             icon: 'check'
           });
-        } else {
-          loadCollectionExports();
         }
       }
     })

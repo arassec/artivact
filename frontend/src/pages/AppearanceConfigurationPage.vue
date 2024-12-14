@@ -20,14 +20,14 @@
 
 <script setup lang="ts">
 import ArtivactContent from 'components/ArtivactContent.vue';
-import {api} from 'boot/axios';
-import {setCssVar, useQuasar} from 'quasar';
-import {onMounted, ref, Ref} from 'vue';
-import {AppearanceConfiguration} from 'components/artivact-models';
+import { api } from 'boot/axios';
+import { setCssVar, useQuasar } from 'quasar';
+import { onMounted, ref, Ref } from 'vue';
+import { AppearanceConfiguration } from 'components/artivact-models';
 import ArtivactAppearanceConfigurationEditor from 'components/ArtivactAppearanceConfigurationEditor.vue';
-import {useLocaleStore} from 'stores/locale';
-import {useI18n} from 'vue-i18n';
-import {useApplicationSettingsStore} from "stores/application-settings";
+import { useLocaleStore } from 'stores/locale';
+import { useI18n } from 'vue-i18n';
+import { useApplicationSettingsStore } from 'stores/application-settings';
 
 const quasar = useQuasar();
 const i18n = useI18n();

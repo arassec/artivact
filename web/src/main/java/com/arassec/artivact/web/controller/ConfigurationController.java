@@ -66,6 +66,10 @@ public class ConfigurationController {
                 new Profiles(configurationService.isDesktopProfileEnabled(), configurationService.isE2eProfileEnabled()));
         applicationSettings.setAvailableRoles(List.of(Roles.ROLE_ADMIN, Roles.ROLE_USER));
 
+        ExchangeConfiguration exchangeConfiguration = configurationService.loadExchangeConfiguration();
+        applicationSettings.setSyncAvailable(StringUtils.hasText(exchangeConfiguration.getRemoteServer())
+                && StringUtils.hasText(exchangeConfiguration.getApiToken()));
+
         return applicationSettings;
     }
 
