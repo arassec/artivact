@@ -502,7 +502,7 @@
                         field-name="file"
                         :no-thumbnails="true"
                         class="col"
-                        :url="'/api/menu/import'"
+                        :url="'/api/import/menu'"
                         @uploaded="menuImported()"
             />
           </div>

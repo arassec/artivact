@@ -9,6 +9,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +22,7 @@ import java.io.IOException;
 import java.net.URLConnection;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * REST-Controller for collection export management.
@@ -33,16 +37,6 @@ public class CollectionExportController extends BaseController {
      * Service for collection exports.
      */
     private final CollectionExportService collectionExportService;
-
-    /**
-     * Returns the available collection exports.
-     *
-     * @return List of {@link CollectionExport}s.
-     */
-    @GetMapping("/public")
-    public List<CollectionExport> loadPublicCollectionExports() {
-        return collectionExportService.loadAllRestricted();
-    }
 
     /**
      * Returns the available collection exports.
@@ -106,14 +100,33 @@ public class CollectionExportController extends BaseController {
     /**
      * Returns the export file for the collection export with the given ID.
      *
-     * @param id       The ID of the collection providing the export file.
-     * @param response The HTTP stream to write the exported JSON file to.
+     * @param id             The ID of the collection providing the export file.
+     * @param authentication The user's authentication.
+     * @param response       The HTTP stream to write the exported JSON file to.
      * @return The file as {@link StreamingResponseBody}.
      */
-    @GetMapping(value = "/{id}/export-file")
-    public ResponseEntity<StreamingResponseBody> downloadExportFile(@PathVariable String id, HttpServletResponse response) {
+    @GetMapping(value = "/{id}/file")
+    public ResponseEntity<StreamingResponseBody> downloadExportFile(@PathVariable String id, Authentication authentication, HttpServletResponse response) {
+        List<String> availableRoles;
+        if (authentication != null) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            availableRoles = userDetails.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .toList();
+        } else {
+            availableRoles = List.of();
+        }
 
         CollectionExport collectionExport = collectionExportService.load(id);
+
+        if (!collectionExport.getRestrictions().isEmpty()) {
+            Optional<String> matchingRoleOptional = collectionExport.getRestrictions().stream()
+                    .filter(availableRoles::contains)
+                    .findAny();
+            if (matchingRoleOptional.isEmpty()) {
+                throw new ArtivactException("Operation not allowed!");
+            }
+        }
 
         if (!collectionExport.isFilePresent()) {
             return ResponseEntity.notFound().build();
@@ -219,6 +232,22 @@ public class CollectionExportController extends BaseController {
     @GetMapping("/progress")
     public ResponseEntity<OperationProgress> getProgress() {
         return convert(collectionExportService.getProgressMonitor());
+    }
+
+    /**
+     * Returns infos about available collection exports.
+     *
+     * @return ZIP file containing the information about available content exports.
+     */
+    @GetMapping("/info")
+    public ResponseEntity<StreamingResponseBody> loadCollectionExportInfos(HttpServletResponse response) {
+        StreamingResponseBody streamResponseBody = outputStream -> collectionExportService.createCollectionExportInfos(outputStream,
+                collectionExportService.loadAllRestricted());
+
+        response.setContentType(TYPE_ZIP);
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, ATTACHMENT_PREFIX + CollectionExportService.COLLECTION_EXPORT_OVERVIEWS_FILE);
+
+        return ResponseEntity.ok(streamResponseBody);
     }
 
 }

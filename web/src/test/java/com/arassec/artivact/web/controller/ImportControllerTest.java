@@ -83,16 +83,4 @@ class ImportControllerTest {
         verify(configurationService, times(1)).saveTagsConfiguration(tagsConfiguration);
     }
 
-    /**
-     * Tests syncing an item.
-     */
-    @Test
-    void testSyncItem() {
-        MultipartFile file = mock(MultipartFile.class);
-        ResponseEntity<String> stringResponseEntity = importController.syncItem(file, "api-token");
-
-        assertEquals("Item synchronized.", stringResponseEntity.getBody());
-        verify(importService, times(1)).importAsync(file, "api-token");
-    }
-
 }

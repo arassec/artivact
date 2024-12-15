@@ -10,12 +10,21 @@ import java.nio.file.Path;
 public interface ArtivactImporter {
 
     /**
-     * Imports previously exported artivact content.
+     * Imports previously exported artivact content, e.g. menus or items.
      *
      * @param contentExport Path to the export.
      */
     void importContent(Path contentExport);
 
+    /**
+     * Imports a collection export.
+     *
+     * @param collectionExport The collection export.
+     * @param distributionOnly Set to {@code true}, if the export should only be imported for further distribution. If
+     *                         set to {@code false}, the collection content (i.e. menus, pages, items) will be imported,
+     *                         too.
+     * @return A newly created {@link CollectionExport}.
+     */
     CollectionExport importCollection(Path collectionExport, boolean distributionOnly);
 
 }

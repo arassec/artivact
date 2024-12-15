@@ -9,6 +9,7 @@ import com.arassec.artivact.core.model.property.PropertyCategory;
 import com.arassec.artivact.core.model.tag.Tag;
 import com.arassec.artivact.core.repository.FileRepository;
 import com.arassec.artivact.core.repository.ItemRepository;
+import com.arassec.artivact.domain.exchange.ArtivactExporter;
 import com.arassec.artivact.domain.misc.ProjectDataProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -62,6 +63,12 @@ class ItemServiceTest {
     private FileRepository fileRepository;
 
     /**
+     * Artivact's exporter.
+     */
+    @Mock
+    private ArtivactExporter artivactExporter;
+
+    /**
      * The object mapper.
      */
     @Mock
@@ -81,9 +88,9 @@ class ItemServiceTest {
         ProjectDataProvider projectDataProvider = mock(ProjectDataProvider.class, Mockito.RETURNS_DEEP_STUBS);
         when(projectDataProvider.getProjectRoot().resolve(anyString())).thenReturn(itemsDir);
 
-        itemService = new ItemService(itemRepository, configurationService, searchService, fileRepository, objectMapper, projectDataProvider);
+        itemService = new ItemService(itemRepository, configurationService, searchService, fileRepository, objectMapper, artivactExporter, projectDataProvider);
 
-        verify(fileRepository, times(1)).createDirIfRequired(itemsDir);
+        itemService.init();
     }
 
     /**

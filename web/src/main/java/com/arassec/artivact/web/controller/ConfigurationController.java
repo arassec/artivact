@@ -4,10 +4,12 @@ import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.model.Roles;
 import com.arassec.artivact.core.model.configuration.*;
 import com.arassec.artivact.core.model.property.PropertyCategory;
+import com.arassec.artivact.domain.exchange.ExchangeProcessor;
 import com.arassec.artivact.domain.service.ConfigurationService;
 import com.arassec.artivact.web.model.ApplicationSettings;
 import com.arassec.artivact.web.model.Profiles;
 import com.arassec.artivact.web.model.UserData;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
@@ -20,8 +22,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
@@ -33,7 +37,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/configuration")
-public class ConfigurationController {
+public class ConfigurationController extends BaseController {
 
     /**
      * The application's {@link ConfigurationService}.
@@ -170,6 +174,32 @@ public class ConfigurationController {
     }
 
     /**
+     * Exports the current properties configuration as JSON file.
+     *
+     * @param response The HTTP stream to write the exported JSON file to.
+     * @return The file as {@link StreamingResponseBody}.
+     */
+    @GetMapping(value = "/property/export")
+    public ResponseEntity<StreamingResponseBody> exportPropertiesConfiguration(HttpServletResponse response) {
+
+        String exportedPropertiesConfiguration = configurationService.exportPropertiesConfiguration();
+
+        StreamingResponseBody streamResponseBody = out -> {
+            response.getOutputStream().write(exportedPropertiesConfiguration.getBytes());
+            response.setContentLength(exportedPropertiesConfiguration.getBytes().length);
+            configurationService.cleanupPropertiesConfigurationExport();
+        };
+
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, ATTACHMENT_PREFIX
+                + LocalDate.now() + "." + ExchangeProcessor.PROPERTIES_EXCHANGE_FILENAME_JSON);
+        response.addHeader(HttpHeaders.PRAGMA, NO_CACHE);
+        response.addHeader(HttpHeaders.EXPIRES, EXPIRES_IMMEDIATELY);
+
+        return ResponseEntity.ok(streamResponseBody);
+    }
+
+    /**
      * Returns the appearance configuration.
      *
      * @return The current appearance configuration.
@@ -207,6 +237,31 @@ public class ConfigurationController {
     @PostMapping(value = "/tags")
     public void saveTagsConfiguration(@RequestBody TagsConfiguration tagsConfiguration) {
         configurationService.saveTagsConfiguration(tagsConfiguration);
+    }
+
+    /**
+     * Exports the current tags configuration as JSON file.
+     *
+     * @param response The HTTP stream to write the exported JSON file to.
+     * @return The file as {@link StreamingResponseBody}.
+     */
+    @GetMapping(value = "/tags/export")
+    public ResponseEntity<StreamingResponseBody> exportTagsConfiguration(HttpServletResponse response) {
+        String tagsConfigurationJson = configurationService.exportTagsConfiguration();
+
+        StreamingResponseBody streamResponseBody = out -> {
+            response.getOutputStream().write(tagsConfigurationJson.getBytes());
+            response.setContentLength(tagsConfigurationJson.getBytes().length);
+            configurationService.cleanupTagsConfigurationExport();
+        };
+
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, ATTACHMENT_PREFIX
+                + LocalDate.now() + "." + ExchangeProcessor.TAGS_EXCHANGE_FILENAME_JSON);
+        response.addHeader(HttpHeaders.PRAGMA, NO_CACHE);
+        response.addHeader(HttpHeaders.EXPIRES, EXPIRES_IMMEDIATELY);
+
+        return ResponseEntity.ok(streamResponseBody);
     }
 
     /**

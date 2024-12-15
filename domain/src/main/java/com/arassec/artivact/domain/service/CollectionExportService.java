@@ -3,6 +3,7 @@ package com.arassec.artivact.domain.service;
 import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.misc.ProgressMonitor;
 import com.arassec.artivact.core.model.exchange.CollectionExport;
+import com.arassec.artivact.core.model.exchange.CollectionExportInfo;
 import com.arassec.artivact.core.model.item.ImageSize;
 import com.arassec.artivact.core.repository.CollectionExportRepository;
 import com.arassec.artivact.core.repository.FileRepository;
@@ -12,6 +13,7 @@ import com.arassec.artivact.domain.aspect.TranslateResult;
 import com.arassec.artivact.domain.exchange.ArtivactExporter;
 import com.arassec.artivact.domain.exchange.ArtivactImporter;
 import com.arassec.artivact.domain.misc.ProjectDataProvider;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -20,13 +22,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import static com.arassec.artivact.domain.exchange.ExchangeProcessor.COLLECTION_EXCHANGE_SUFFIX;
 import static com.arassec.artivact.domain.exchange.ExchangeProcessor.ZIP_FILE_SUFFIX;
@@ -41,6 +44,16 @@ import static com.arassec.artivact.domain.exchange.ExchangeProcessor.ZIP_FILE_SU
 public class CollectionExportService extends BaseFileService {
 
     /**
+     * Filename of the content-export-overviews file.
+     */
+    public static final String COLLECTION_EXPORT_OVERVIEWS_FILE = "artivact.collection-export-overviews" + ZIP_FILE_SUFFIX;
+
+    /**
+     * Filename of the content-export-overviews file.
+     */
+    public static final String COLLECTION_EXPORT_OVERVIEWS_JSON_FILE = "artivact.collection-export-overviews.json";
+
+    /**
      * The application's file repository.
      */
     @Getter
@@ -50,6 +63,11 @@ public class CollectionExportService extends BaseFileService {
      * Repository for collection export access.
      */
     private final CollectionExportRepository collectionExportRepository;
+
+    /**
+     * The configuration service.
+     */
+    private final ConfigurationService configurationService;
 
     /**
      * The menu service.
@@ -70,6 +88,11 @@ public class CollectionExportService extends BaseFileService {
      * Provider for basic project data.
      */
     private final ProjectDataProvider projectDataProvider;
+
+    /**
+     * The application's standard {@link ObjectMapper}.
+     */
+    private final ObjectMapper objectMapper;
 
     /**
      * The service's progress monitor for long-running tasks.
@@ -191,7 +214,8 @@ public class CollectionExportService extends BaseFileService {
         executorService.submit(() -> {
             try {
                 CollectionExport collectionExport = collectionExportRepository.findById(id).orElseThrow();
-                Path exportedFile = artivactExporter.exportCollection(collectionExport, menuService.findMenu(collectionExport.getSourceId()));
+                Path exportedFile = artivactExporter.exportCollection(collectionExport, menuService.findMenu(collectionExport.getSourceId()),
+                        configurationService.loadPropertiesConfiguration(), configurationService.loadTagsConfiguration());
                 log.info("Build export: {}", exportedFile);
 
                 collectionExportRepository.save(collectionExport);
@@ -282,6 +306,59 @@ public class CollectionExportService extends BaseFileService {
      */
     public synchronized void importCollectionForDistribution(MultipartFile file) {
         importCollection(file, true);
+    }
+
+    /**
+     * Loads the overview of all available collection exports and writes it to the given output stream.
+     *
+     * @param outputStream      The output stream to write the export to.
+     * @param collectionExports The collection exports to convert and return.
+     */
+    public void createCollectionExportInfos(OutputStream outputStream, List<CollectionExport> collectionExports) {
+        List<CollectionExportInfo> collectionExportInfos = collectionExports.stream()
+                .filter(CollectionExport::isFilePresent)
+                .map(collectionExport -> CollectionExportInfo.builder()
+                        .id(collectionExport.getId())
+                        .title(collectionExport.getTitle())
+                        .description(collectionExport.getDescription())
+                        .size(collectionExport.getFileSize())
+                        .lastModified(collectionExport.getFileLastModified())
+                        .build())
+                .toList();
+
+        try {
+            final ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream);
+
+            ZipEntry zipEntry = new ZipEntry(COLLECTION_EXPORT_OVERVIEWS_JSON_FILE);
+
+            zipOutputStream.putNextEntry(zipEntry);
+            zipOutputStream.write(objectMapper.writeValueAsBytes(collectionExportInfos));
+
+            Path exportsDir = projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.EXPORT_DIR);
+            getFileRepository().list(exportsDir).stream()
+                    .filter(path -> !path.getFileName().toString().endsWith("zip"))
+                    .filter(path -> !fileRepository.isDir(path))
+                    .forEach(path -> {
+                        File file = new File(path.toString());
+                        ZipEntry mediaZipEntry = new ZipEntry(file.getName());
+
+                        try (var inputStream = new FileInputStream(file)) {
+                            zipOutputStream.putNextEntry(mediaZipEntry);
+                            byte[] bytes = new byte[1024];
+                            int length;
+                            while ((length = inputStream.read(bytes)) >= 0) {
+                                zipOutputStream.write(bytes, 0, length);
+                            }
+                        } catch (IOException e) {
+                            throw new ArtivactException("Exception while reading and streaming data!", e);
+                        }
+                    });
+
+            zipOutputStream.close();
+
+        } catch (IOException e) {
+            throw new ArtivactException("Could not create item export file!", e);
+        }
     }
 
     /**

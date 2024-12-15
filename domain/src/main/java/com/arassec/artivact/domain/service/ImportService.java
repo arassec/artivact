@@ -1,6 +1,5 @@
 package com.arassec.artivact.domain.service;
 
-import com.arassec.artivact.core.misc.ProgressMonitor;
 import com.arassec.artivact.core.model.account.Account;
 import com.arassec.artivact.core.repository.FileRepository;
 import com.arassec.artivact.domain.exchange.ArtivactImporter;
@@ -16,9 +15,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
-import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Service for handling item imports.
@@ -57,61 +53,28 @@ public class ImportService extends BaseFileService implements ExchangeProcessor 
     private final ObjectMapper objectMapper;
 
     /**
-     * The service's progress monitor for long-running tasks.
-     */
-    @Getter
-    private ProgressMonitor progressMonitor;
-
-    /**
-     * Executor service for background tasks.
-     */
-    private final ExecutorService executorService = Executors.newFixedThreadPool(1);
-
-    /**
-     * Imports previously exported content data to the application by reading from the exported ZIP file.
+     * Imports a previously exported content export.
      *
-     * @param file     The exported ZIP file.
-     * @param apiToken The API token of the user to use for item import.
+     * @param file     The content export file to import.
+     * @param apiToken An API token for server-to-server communication.
      */
-    public synchronized void importAsync(MultipartFile file, String apiToken) {
-
-        if (progressMonitor != null && progressMonitor.getException() == null) {
-            return;
+    public void importContent(MultipartFile file, String apiToken) {
+        if (!StringUtils.hasText(apiToken)) {
+            throw new IllegalArgumentException("API token cannot be empty!");
         }
-
-        progressMonitor = new ProgressMonitor(getClass(), "importContent");
-
-        if (StringUtils.hasText(apiToken)) {
-            Optional<Account> accountOptional = accountService.loadByApiToken(apiToken);
-            if (accountOptional.isEmpty()) {
-                return;
-            }
-            Account account = accountOptional.get();
-            if (Boolean.TRUE.equals(!account.getUser()) && Boolean.TRUE.equals(!account.getAdmin())) {
-                return;
-            }
+        Account account = accountService.loadByApiToken(apiToken).orElseThrow();
+        if (!(Boolean.TRUE.equals(account.getUser()) || Boolean.TRUE.equals(!account.getAdmin()))) {
+            throw new IllegalArgumentException("Item import not allowed!");
         }
-
-        Path importFileZip = saveFile(projectDataProvider.getProjectRoot(), file);
-
-        executorService.submit(() -> {
-            try {
-                artivactImporter.importContent(importFileZip);
-                fileRepository.delete(importFileZip);
-                progressMonitor = null;
-            } catch (Exception e) {
-                log.error("Error during content import!", e);
-                progressMonitor.updateProgress("importContentFailed", e);
-            }
-        });
+        importContent(file);
     }
 
     /**
-     * Imports a previously exported menu.
+     * Imports a previously exported content export.
      *
-     * @param file The menu export file to import.
+     * @param file The content export file to import.
      */
-    public void importDirectly(MultipartFile file) {
+    public void importContent(MultipartFile file) {
         Path importFileZip = saveFile(projectDataProvider.getProjectRoot(), file);
         artivactImporter.importContent(importFileZip);
         fileRepository.delete(importFileZip);

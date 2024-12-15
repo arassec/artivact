@@ -52,7 +52,7 @@
 
         <div class="q-mb-md">
           {{ $t('PropertiesConfigurationPage.export.description') }}
-          <q-form :action="'/api/export/properties'" method="get">
+          <q-form :action="'/api/configuration/property/export'" method="get">
             <q-btn
               icon="download"
               :label="$t('PropertiesConfigurationPage.export.button')"

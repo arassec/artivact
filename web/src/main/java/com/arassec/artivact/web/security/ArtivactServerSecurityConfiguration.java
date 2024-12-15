@@ -56,7 +56,7 @@ public class ArtivactServerSecurityConfiguration {
     /**
      * API path for import handling in server-to-server communication.
      */
-    private static final String API_IMPORT_REMOTE_PATTERN = "/api/import/remote";
+    private static final String API_IMPORT_WITH_TOKEN_PATTERN = "/api/import/item/**";
 
     /**
      * API path for import administration.
@@ -84,9 +84,14 @@ public class ArtivactServerSecurityConfiguration {
     private static final String API_MENU_PATTERN = "/api/menu";
 
     /**
-     * Public API path for content export handling.
+     * Public API path for collection export file downloads.
      */
-    private static final String API_COLLECTION_EXPORT_PUBLIC_PATTERN = "/api/collection/export/public";
+    private static final String API_COLLECTION_EXPORT_FILE_PATTERN = "/api/collection/export/**/file";
+
+    /**
+     * Public API path for collection export infos.
+     */
+    private static final String API_COLLECTION_EXPORT_INFO_PATTERN = "/api/collection/export/**/file";
 
     /**
      * API path for content export handling.
@@ -105,13 +110,14 @@ public class ArtivactServerSecurityConfiguration {
         return http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, API_CONFIGURATION_PUBLIC_PATTERN).permitAll()
-                        .requestMatchers(HttpMethod.GET, API_COLLECTION_EXPORT_PUBLIC_PATTERN).permitAll()
+                        .requestMatchers(HttpMethod.GET, API_COLLECTION_EXPORT_FILE_PATTERN).permitAll()
+                        .requestMatchers(HttpMethod.GET, API_COLLECTION_EXPORT_INFO_PATTERN).permitAll()
+                        .requestMatchers(HttpMethod.POST, API_IMPORT_WITH_TOKEN_PATTERN).permitAll()
                         .requestMatchers(HttpMethod.GET, API_MENU_PATTERN).permitAll()
                         .requestMatchers(HttpMethod.POST, API_MENU_PATTERN).hasAnyRole(Roles.ADMIN, Roles.USER)
                         .requestMatchers(HttpMethod.PUT, API_MENU_PATTERN).hasAnyRole(Roles.ADMIN, Roles.USER)
                         .requestMatchers(HttpMethod.DELETE, API_MENU_PATTERN).hasAnyRole(Roles.ADMIN, Roles.USER)
                         .requestMatchers(API_ACCOUNT_OWN_PATTERN).authenticated()
-                        .requestMatchers(API_IMPORT_REMOTE_PATTERN).permitAll()
                         .requestMatchers(API_IMPORT_PATTERN).hasRole(Roles.ADMIN)
                         .requestMatchers(API_EXPORT_PATTERN).hasRole(Roles.ADMIN)
                         .requestMatchers(API_SEARCH_INDEX_PATTERN).hasRole(Roles.ADMIN)

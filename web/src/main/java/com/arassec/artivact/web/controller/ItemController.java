@@ -4,12 +4,11 @@ import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.model.item.*;
 import com.arassec.artivact.domain.exchange.ExchangeProcessor;
 import com.arassec.artivact.domain.misc.ProjectDataProvider;
-import com.arassec.artivact.domain.service.ExportService;
-import com.arassec.artivact.domain.service.ImportService;
 import com.arassec.artivact.domain.service.ItemService;
 import com.arassec.artivact.web.model.ImageSet;
 import com.arassec.artivact.web.model.ItemDetails;
 import com.arassec.artivact.web.model.ModelSet;
+import com.arassec.artivact.web.model.OperationProgress;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,16 +37,6 @@ public class ItemController extends BaseController {
      * The application's {@link ItemService}.
      */
     private final ItemService itemService;
-
-    /**
-     * The export service.
-     */
-    private final ExportService exportService;
-
-    /**
-     * The import service.
-     */
-    private final ImportService importService;
 
     /**
      * The application's {@link ProjectDataProvider}.
@@ -239,7 +228,7 @@ public class ItemController extends BaseController {
     public ResponseEntity<StreamingResponseBody> exportItem(HttpServletResponse response,
                                                             @PathVariable String itemId) {
 
-        Path exportFile = exportService.exportItem(itemId);
+        Path exportFile = itemService.exportItem(itemId);
 
         response.setContentType(TYPE_ZIP);
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION, ATTACHMENT_PREFIX
@@ -247,19 +236,29 @@ public class ItemController extends BaseController {
         response.addHeader(HttpHeaders.PRAGMA, NO_CACHE);
         response.addHeader(HttpHeaders.EXPIRES, EXPIRES_IMMEDIATELY);
 
-        return ResponseEntity.ok(outputStream -> exportService.copyExportAndDelete(exportFile, outputStream));
+        return ResponseEntity.ok(outputStream -> itemService.copyExportAndDelete(exportFile, outputStream));
     }
 
     /**
-     * Imports an item's export ZIP file.
+     * Called from the UI to start syncing an item with a remote application instance.
      *
-     * @param file The export file to import.
-     * @return A status string.
+     * @param itemId The item's ID.
+     * @return The operation progress.
      */
-    @PostMapping(value = "/import")
-    public ResponseEntity<String> importItem(@RequestPart(value = "file") final MultipartFile file) {
-        importService.importDirectly(file);
-        return ResponseEntity.ok("Item imported.");
+    @PostMapping(value = "/{itemId}/upload")
+    public ResponseEntity<OperationProgress> uploadItemToRemoteInstance(@PathVariable String itemId) {
+        itemService.exportItemToRemoteInstance(itemId);
+        return getProgress();
+    }
+
+    /**
+     * Returns the progress of a previously started long-running operation.
+     *
+     * @return The progress.
+     */
+    @GetMapping("/progress")
+    public ResponseEntity<OperationProgress> getProgress() {
+        return convert(itemService.getProgressMonitor());
     }
 
     /**

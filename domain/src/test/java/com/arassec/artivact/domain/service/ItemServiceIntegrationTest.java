@@ -14,6 +14,7 @@ import com.arassec.artivact.core.repository.ItemRepository;
 import com.arassec.artivact.domain.aspect.GenerateIdsAspect;
 import com.arassec.artivact.domain.aspect.RestrictResultAspect;
 import com.arassec.artivact.domain.aspect.TranslateResultAspect;
+import com.arassec.artivact.domain.exchange.ArtivactExporter;
 import com.arassec.artivact.domain.misc.ProjectDataProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
@@ -87,7 +88,13 @@ class ItemServiceIntegrationTest {
     private ProjectDataProvider projectDataProvider;
 
     /**
-     * Mock for the items-directory.
+     * Mock for the Artivact exporter.
+     */
+    @MockitoBean
+    private ArtivactExporter artivactExporter;
+
+    /**
+     * Mock for the items directory.
      */
     @MockitoBean
     private Path itemsDir;
@@ -126,6 +133,8 @@ class ItemServiceIntegrationTest {
         when(configurationService.loadPropertiesConfiguration()).thenReturn(new PropertiesConfiguration(List.of(
                 new PropertyCategory(List.of(testProperty))
         )));
+
+        itemService.init();
     }
 
     /**

@@ -47,7 +47,7 @@
 
       <div class="q-mb-md">
         {{ $t('TagsConfigurationPage.export.description') }}
-        <q-form :action="'/api/export/tags'" method="get">
+        <q-form :action="'/api/configuration/tags/export'" method="get">
           <q-btn
             icon="download"
             :label="$t('TagsConfigurationPage.export.button')"

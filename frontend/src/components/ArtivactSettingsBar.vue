@@ -340,7 +340,7 @@
                         field-name="file"
                         :no-thumbnails="true"
                         class="col"
-                        :url="'/api/item/import'"
+                        :url="'/api/import/item'"
                         @uploaded="itemImported()"
             />
           </div>

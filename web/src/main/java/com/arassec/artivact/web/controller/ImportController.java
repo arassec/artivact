@@ -5,7 +5,6 @@ import com.arassec.artivact.core.model.configuration.PropertiesConfiguration;
 import com.arassec.artivact.core.model.configuration.TagsConfiguration;
 import com.arassec.artivact.domain.service.ConfigurationService;
 import com.arassec.artivact.domain.service.ImportService;
-import com.arassec.artivact.web.model.OperationProgress;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,14 +24,14 @@ import java.io.IOException;
 public class ImportController extends BaseController {
 
     /**
-     * The application's {@link ConfigurationService}.
-     */
-    private final ConfigurationService configurationService;
-
-    /**
      * The application's {@link ImportService}.
      */
     private final ImportService importService;
+
+    /**
+     * The application's {@link ConfigurationService}.
+     */
+    private final ConfigurationService configurationService;
 
     /**
      * The object mapper for exports.
@@ -73,6 +72,29 @@ public class ImportController extends BaseController {
         return ResponseEntity.ok("Tags imported.");
     }
 
+    /**
+     * Imports a menu export ZIP file.
+     *
+     * @param file The export file to import.
+     * @return A status string.
+     */
+    @PostMapping(value = "/menu")
+    public ResponseEntity<String> importMenu(@RequestPart(value = "file") final MultipartFile file) {
+        importService.importContent(file);
+        return ResponseEntity.ok("Menu imported.");
+    }
+
+    /**
+     * Imports an item's export ZIP file.
+     *
+     * @param file The export file to import.
+     * @return A status string.
+     */
+    @PostMapping(value = "/item")
+    public ResponseEntity<String> importItem(@RequestPart(value = "file") final MultipartFile file) {
+        importService.importContent(file);
+        return ResponseEntity.ok("Item imported.");
+    }
 
     /**
      * Called by another server instance for remote import/sync!
@@ -81,21 +103,11 @@ public class ImportController extends BaseController {
      * @param apiToken The API token of the local user account used to import the item.
      * @return A status string.
      */
-    @PostMapping(value = "/remote/item/{apiToken}")
-    public ResponseEntity<String> syncItem(@RequestPart(value = "file") final MultipartFile file,
+    @PostMapping(value = "/item/{apiToken}")
+    public ResponseEntity<String> importItemWithApiToken(@RequestPart(value = "file") final MultipartFile file,
                                            @PathVariable final String apiToken) {
-        importService.importAsync(file, apiToken);
+        importService.importContent(file, apiToken);
         return ResponseEntity.ok("Item synchronized.");
-    }
-
-    /**
-     * Returns the progress of a previously started long-running operation.
-     *
-     * @return The progress.
-     */
-    @GetMapping("/progress")
-    public ResponseEntity<OperationProgress> getProgress() {
-        return convert(importService.getProgressMonitor());
     }
 
 }

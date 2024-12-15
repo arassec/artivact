@@ -10,6 +10,8 @@ import com.arassec.artivact.core.repository.FileRepository;
 import com.arassec.artivact.domain.aspect.GenerateIds;
 import com.arassec.artivact.domain.aspect.RestrictResult;
 import com.arassec.artivact.domain.aspect.TranslateResult;
+import com.arassec.artivact.domain.exchange.ArtivactExporter;
+import com.arassec.artivact.domain.misc.ProjectDataProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.Getter;
@@ -25,6 +27,9 @@ import java.io.InputStream;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
+
+import static com.arassec.artivact.domain.exchange.ExchangeProcessor.PROPERTIES_EXCHANGE_FILENAME_JSON;
+import static com.arassec.artivact.domain.exchange.ExchangeProcessor.TAGS_EXCHANGE_FILENAME_JSON;
 
 /**
  * Service for configuration management.
@@ -58,6 +63,16 @@ public class ConfigurationService extends BaseFileService {
     private final ObjectMapper objectMapper;
 
     /**
+     * Provider for project data.
+     */
+    private final ProjectDataProvider projectDataProvider;
+
+    /**
+     * Exporter for Artivact objects.
+     */
+    private final ArtivactExporter artivactExporter;
+
+    /**
      * Loads the current property configuration.
      *
      * @return The properties currently configured.
@@ -88,6 +103,24 @@ public class ConfigurationService extends BaseFileService {
     public List<PropertyCategory> loadTranslatedRestrictedProperties() {
         PropertiesConfiguration propertiesConfiguration = loadPropertiesConfiguration();
         return propertiesConfiguration.getCategories();
+    }
+
+    /**
+     * Exports the current property configuration and returns the export result as String.
+     *
+     * @return The exported property configuration.
+     */
+    public String exportPropertiesConfiguration() {
+        return fileRepository.read(artivactExporter.exportPropertiesConfiguration(loadPropertiesConfiguration()));
+    }
+
+    /**
+     * Removes a previously exported properties configuration file.
+     */
+    public void cleanupPropertiesConfigurationExport() {
+        fileRepository.delete(projectDataProvider.getProjectRoot()
+                .resolve(ProjectDataProvider.EXPORT_DIR)
+                .resolve(PROPERTIES_EXCHANGE_FILENAME_JSON));
     }
 
     /**
@@ -189,6 +222,24 @@ public class ConfigurationService extends BaseFileService {
     @GenerateIds
     public void saveTagsConfiguration(TagsConfiguration tagsConfiguration) {
         configurationRepository.saveConfiguration(ConfigurationType.TAGS, tagsConfiguration);
+    }
+
+    /**
+     * Exports the current tags configuration and returns the result as String.
+     *
+     * @return The exported tags configuration.
+     */
+    public String exportTagsConfiguration() {
+        return fileRepository.read(artivactExporter.exportTagsConfiguration(loadTagsConfiguration()));
+    }
+
+    /**
+     * Removes a previously exported tags configuration file.
+     */
+    public void cleanupTagsConfigurationExport() {
+        fileRepository.delete(projectDataProvider.getProjectRoot()
+                .resolve(ProjectDataProvider.EXPORT_DIR)
+                .resolve(TAGS_EXCHANGE_FILENAME_JSON));
     }
 
     /**

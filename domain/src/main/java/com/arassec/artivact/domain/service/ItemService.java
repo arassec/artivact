@@ -1,8 +1,10 @@
 package com.arassec.artivact.domain.service;
 
 import com.arassec.artivact.core.exception.ArtivactException;
+import com.arassec.artivact.core.misc.ProgressMonitor;
 import com.arassec.artivact.core.model.Roles;
 import com.arassec.artivact.core.model.TranslatableString;
+import com.arassec.artivact.core.model.configuration.ExchangeConfiguration;
 import com.arassec.artivact.core.model.configuration.TagsConfiguration;
 import com.arassec.artivact.core.model.item.ImageSize;
 import com.arassec.artivact.core.model.item.Item;
@@ -14,10 +16,20 @@ import com.arassec.artivact.core.repository.ItemRepository;
 import com.arassec.artivact.domain.aspect.GenerateIds;
 import com.arassec.artivact.domain.aspect.RestrictResult;
 import com.arassec.artivact.domain.aspect.TranslateResult;
+import com.arassec.artivact.domain.exchange.ArtivactExporter;
 import com.arassec.artivact.domain.misc.ProjectDataProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.PostConstruct;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.entity.mime.FileBody;
+import org.apache.hc.client5.http.entity.mime.HttpMultipartMode;
+import org.apache.hc.client5.http.entity.mime.MultipartEntityBuilder;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.HttpEntity;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,10 +38,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 /**
@@ -37,6 +52,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 @Transactional
 public class ItemService extends BaseFileService {
 
@@ -73,35 +89,37 @@ public class ItemService extends BaseFileService {
     private final ObjectMapper objectMapper;
 
     /**
-     * The directory containing the project's items.
+     * Exporter for Artivact objects.
      */
-    private final Path itemsDir;
+    private final ArtivactExporter artivactExporter;
 
     /**
-     * Creates a new instance.
-     *
-     * @param itemRepository       Repository for items.
-     * @param configurationService Service for configuration handling.
-     * @param searchService        Service for search management.
-     * @param fileRepository       The application's {@link FileRepository}.
-     * @param objectMapper         The object mapper.
-     * @param projectDataProvider  The directory containing the project's items.
+     * Project data provider.
      */
-    public ItemService(ItemRepository itemRepository,
-                       ConfigurationService configurationService,
-                       SearchService searchService,
-                       FileRepository fileRepository,
-                       ObjectMapper objectMapper,
-                       ProjectDataProvider projectDataProvider) {
+    private final ProjectDataProvider projectDataProvider;
 
-        this.itemRepository = itemRepository;
-        this.configurationService = configurationService;
-        this.searchService = searchService;
-        this.fileRepository = fileRepository;
-        this.objectMapper = objectMapper;
-        this.itemsDir = projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.ITEMS_DIR);
+    /**
+     * The service's progress monitor for long-running tasks.
+     */
+    @Getter
+    private ProgressMonitor progressMonitor;
 
-        fileRepository.createDirIfRequired(itemsDir);
+    /**
+     * Executor service for background tasks.
+     */
+    private final ExecutorService executorService = Executors.newFixedThreadPool(1);
+
+    /**
+     * The directory containing the project's items.
+     */
+    private Path itemsDir;
+
+    /**
+     * Initializes the service.
+     */
+    @PostConstruct
+    public void init() {
+        itemsDir = projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.ITEMS_DIR);
     }
 
     /**
@@ -361,12 +379,98 @@ public class ItemService extends BaseFileService {
     }
 
     /**
-     * Returns the IDs of items that have to be updated on the remote instance.
+     * Creates an item's export ZIP file.
      *
-     * @return List of item IDs.
+     * @param itemId The item's ID.
      */
-    public List<String> getItemIdsForRemoteSync() {
-        return itemRepository.findItemIdsForRemoteExport();
+    public Path exportItem(String itemId) {
+        Item item = loadTranslated(itemId);
+        return artivactExporter.exportItem(item, configurationService.loadPropertiesConfiguration(), configurationService.loadTagsConfiguration());
+    }
+
+    /**
+     * Exports the item with the given ID and uploads it to a remote application instance configured in the exchange
+     * configuration.
+     *
+     * @param itemId The item's ID.
+     */
+    public synchronized void exportItemToRemoteInstance(String itemId) {
+
+        if (progressMonitor != null && progressMonitor.getException() == null) {
+            return;
+        }
+
+        progressMonitor = new ProgressMonitor(getClass(), "packaging");
+
+        ExchangeConfiguration exchangeConfiguration = configurationService.loadExchangeConfiguration();
+        String remoteServer = exchangeConfiguration.getRemoteServer();
+        String apiToken = exchangeConfiguration.getApiToken();
+
+        if (!StringUtils.hasText(remoteServer)) {
+            progressMonitor.updateProgress("configMissing", new ArtivactException("Remote server configuration missing!"));
+            return;
+        }
+        if (!remoteServer.endsWith("/")) {
+            remoteServer += "/";
+        }
+
+        if (!StringUtils.hasText(apiToken)) {
+            progressMonitor.updateProgress("configMissing", new ArtivactException("API token configuration missing!"));
+            return;
+        }
+
+        final String syncUrl = remoteServer + "api/import/item/" + apiToken;
+
+        executorService.submit(() -> {
+            progressMonitor.updateLabelKey("transferring");
+
+            Path exportFile = exportItem(itemId);
+
+            progressMonitor.updateLabelKey("uploading");
+
+            try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+                HttpPost httpPost = new HttpPost(syncUrl);
+
+                HttpEntity entity = MultipartEntityBuilder.create()
+                        .setMode(HttpMultipartMode.STRICT)
+                        .addPart("file", new FileBody(exportFile.toFile()))
+                        .build();
+                httpPost.setEntity(entity);
+
+                httpclient.execute(httpPost, response -> {
+                    if (response.getCode() != 200) {
+                        progressMonitor.updateProgress("uploadFailed",
+                                new ArtivactException("HTTP result code: " + response.getCode()));
+                        log.error("Could not upload item file to remote server: HTTP result code {}, File '{}'", response.getCode(), exportFile);
+                    } else {
+                        Item item = load(itemId).orElseThrow();
+                        item.setSyncVersion(item.getVersion() + 1); // Saving the item will increase its version by one!
+                        save(item);
+
+                        fileRepository.delete(exportFile);
+                    }
+                    return response;
+                });
+
+            } catch (Exception e) {
+                progressMonitor.updateProgress("uploadFailed", e);
+                log.error("Could not upload item file to remote server!", e);
+            }
+            if (progressMonitor.getException() == null) {
+                progressMonitor = null;
+            }
+        });
+    }
+
+    /**
+     * Copies a created export to an output stream and deletes it afterward.
+     *
+     * @param export       The export.
+     * @param outputStream The target stream.
+     */
+    public void copyExportAndDelete(Path export, OutputStream outputStream) {
+        fileRepository.copy(export, outputStream);
+        fileRepository.delete(export);
     }
 
     /**
@@ -461,3 +565,4 @@ public class ItemService extends BaseFileService {
     }
 
 }
+

@@ -49,7 +49,7 @@
               </q-item-section>
 
               <q-item-section side>
-                <q-form :action="'/api/collection/export/' + element.id + '/export-file'" method="get">
+                <q-form :action="'/api/collection/export/' + element.id + '/file'" method="get">
                   <q-btn
                     v-if="element.filePresent"
                     round

@@ -7,13 +7,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Contains details about a standard export.
+ * Contains basic information about a collection export.
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class StandardExportInfo {
+public class CollectionExportInfo {
 
     /**
      * The export's ID.

@@ -3,6 +3,7 @@ package com.arassec.artivact.domain.service;
 
 import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.model.configuration.MenuConfiguration;
+import com.arassec.artivact.core.model.exchange.ExportConfiguration;
 import com.arassec.artivact.core.model.item.ImageSize;
 import com.arassec.artivact.core.model.menu.Menu;
 import com.arassec.artivact.core.model.page.Page;
@@ -11,6 +12,7 @@ import com.arassec.artivact.core.repository.MenuRepository;
 import com.arassec.artivact.domain.aspect.GenerateIds;
 import com.arassec.artivact.domain.aspect.RestrictResult;
 import com.arassec.artivact.domain.aspect.TranslateResult;
+import com.arassec.artivact.domain.exchange.ArtivactExporter;
 import com.arassec.artivact.domain.misc.ProjectDataProvider;
 import jakarta.transaction.Transactional;
 import lombok.Getter;
@@ -44,6 +46,16 @@ public class MenuService extends BaseFileService {
      * Service for page handling.
      */
     private final PageService pageService;
+
+    /**
+     * Service for configurations.
+     */
+    private final ConfigurationService configurationService;
+
+    /**
+     * Artivact Exporter.
+     */
+    private final ArtivactExporter artivactExporter;
 
     /**
      * The application's {@link ProjectDataProvider}.
@@ -270,6 +282,21 @@ public class MenuService extends BaseFileService {
                 .filter(existingMenu -> existingMenu.getId().equals(menuId))
                 .findFirst()
                 .orElseThrow();
+    }
+
+    /**
+     * Exports a menu without items.
+     *
+     * @param menuId The ID of the menu to export.
+     * @return Path to the export file.
+     */
+    public Path exportMenu(String menuId) {
+        Menu menu = findMenu(menuId);
+        return artivactExporter.exportMenu(ExportConfiguration.builder()
+                .applyRestrictions(false)
+                .optimizeSize(false)
+                .excludeItems(true)
+                .build(), menu, configurationService.loadPropertiesConfiguration(), configurationService.loadTagsConfiguration());
     }
 
 }

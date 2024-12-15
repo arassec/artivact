@@ -1,6 +1,7 @@
 package com.arassec.artivact.web.controller;
 
 
+import com.arassec.artivact.core.misc.ProgressMonitor;
 import com.arassec.artivact.core.model.TranslatableString;
 import com.arassec.artivact.core.model.item.CreationImageSet;
 import com.arassec.artivact.core.model.item.CreationModelSet;
@@ -8,9 +9,9 @@ import com.arassec.artivact.core.model.item.ImageSize;
 import com.arassec.artivact.core.model.item.Item;
 import com.arassec.artivact.core.model.tag.Tag;
 import com.arassec.artivact.domain.misc.ProjectDataProvider;
-import com.arassec.artivact.domain.service.ExportService;
 import com.arassec.artivact.domain.service.ItemService;
 import com.arassec.artivact.web.model.ItemDetails;
+import com.arassec.artivact.web.model.OperationProgress;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -48,12 +49,6 @@ class ItemControllerTest {
      */
     @Mock
     private ItemService itemService;
-
-    /**
-     * Service mock.
-     */
-    @Mock
-    private ExportService exportService;
 
     /**
      * Mock of the {@link ProjectDataProvider}.
@@ -237,7 +232,7 @@ class ItemControllerTest {
         HttpServletResponse httpServletResponse = mock(HttpServletResponse.class, Answers.RETURNS_DEEP_STUBS);
 
         Path pathMock = mock(Path.class);
-        when(exportService.exportItem("123-ABC")).thenReturn(pathMock);
+        when(itemService.exportItem("123-ABC")).thenReturn(pathMock);
 
         ResponseEntity<StreamingResponseBody> streamingResponseBodyResponseEntity =
                 controller.exportItem(httpServletResponse, "123-ABC");
@@ -250,6 +245,35 @@ class ItemControllerTest {
         verify(httpServletResponse, times(1)).addHeader(HttpHeaders.EXPIRES, "0");
 
         assertNotNull(streamingResponseBodyResponseEntity.getBody());
+    }
+
+    /**
+     * Tests the UI API for syncing items.
+     */
+    @Test
+    void testUploadItemToRemoteInstance() {
+        controller.uploadItemToRemoteInstance("123-abc");
+        verify(itemService, times(1)).exportItemToRemoteInstance("123-abc");
+    }
+
+    /**
+     * Tests getting the progress of a long-running operation.
+     */
+    @Test
+    void testGetProgress() {
+        ProgressMonitor progressMonitor = new ProgressMonitor(this.getClass(), "test");
+        progressMonitor.updateProgress(10, 25);
+        progressMonitor.updateProgress("error", new Exception());
+
+        when(itemService.getProgressMonitor()).thenReturn(progressMonitor);
+
+        ResponseEntity<OperationProgress> progress = controller.getProgress();
+
+        assertNotNull(progress.getBody());
+        assertEquals("Progress.ItemControllerTest.error", progress.getBody().getKey());
+        assertEquals(10, progress.getBody().getCurrentAmount());
+        assertEquals(25, progress.getBody().getTargetAmount());
+        assertNotNull(progress.getBody().getError());
     }
 
 }

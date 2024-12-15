@@ -4,8 +4,6 @@ import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.model.menu.Menu;
 import com.arassec.artivact.core.repository.FileRepository;
 import com.arassec.artivact.domain.exchange.ExchangeProcessor;
-import com.arassec.artivact.domain.service.ExportService;
-import com.arassec.artivact.domain.service.ImportService;
 import com.arassec.artivact.domain.service.MenuService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -35,16 +33,6 @@ public class MenuController extends BaseController {
      * The application's {@link MenuService}.
      */
     private final MenuService menuService;
-
-    /**
-     * The export service.
-     */
-    private final ExportService exportService;
-
-    /**
-     * The import service.
-     */
-    private final ImportService importService;
 
     /**
      * Repository for file handling.
@@ -131,12 +119,11 @@ public class MenuController extends BaseController {
      */
     @GetMapping("/{menuId}/export")
     public ResponseEntity<StreamingResponseBody> exportMenu(@PathVariable String menuId, HttpServletResponse response) {
-        Path menuExport = exportService.exportMenu(menuId);
+        Path menuExport = menuService.exportMenu(menuId);
 
         StreamingResponseBody streamResponseBody = out -> {
             long bytesWritten = fileRepository.copy(menuExport, response.getOutputStream());
             response.setContentLength(Math.toIntExact(bytesWritten));
-            exportService.cleanupPropertiesConfigurationExport();
             fileRepository.delete(menuExport);
         };
 
@@ -147,18 +134,6 @@ public class MenuController extends BaseController {
         response.addHeader(HttpHeaders.EXPIRES, EXPIRES_IMMEDIATELY);
 
         return ResponseEntity.ok(streamResponseBody);
-    }
-
-    /**
-     * Imports a menu export ZIP file.
-     *
-     * @param file The export file to import.
-     * @return A status string.
-     */
-    @PostMapping(value = "/import")
-    public ResponseEntity<String> importMenu(@RequestPart(value = "file") final MultipartFile file) {
-        importService.importDirectly(file);
-        return ResponseEntity.ok("Menu imported.");
     }
 
 }

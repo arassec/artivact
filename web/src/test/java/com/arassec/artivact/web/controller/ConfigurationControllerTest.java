@@ -8,20 +8,20 @@ import com.arassec.artivact.domain.service.ConfigurationService;
 import com.arassec.artivact.web.model.ApplicationSettings;
 import com.arassec.artivact.web.model.Profiles;
 import com.arassec.artivact.web.model.UserData;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.util.Base64;
 import java.util.LinkedList;
@@ -174,6 +174,27 @@ class ConfigurationControllerTest {
     }
 
     /**
+     * Tests exporting the current properties configuration.
+     */
+    @Test
+    @SneakyThrows
+    void testExportPropertiesConfiguration() {
+        when(configurationService.exportPropertiesConfiguration()).thenReturn("properties-configuration-json");
+
+        HttpServletResponse httpServletResponse = mock(HttpServletResponse.class, Answers.RETURNS_DEEP_STUBS);
+
+        ResponseEntity<StreamingResponseBody> streamingResponseBodyResponseEntity =
+                controller.exportPropertiesConfiguration(httpServletResponse);
+
+        assertEquals(HttpStatus.OK, streamingResponseBodyResponseEntity.getStatusCode());
+
+        verify(httpServletResponse, times(1)).setContentType(MediaType.APPLICATION_JSON_VALUE);
+        verify(httpServletResponse, times(1)).setHeader(eq(HttpHeaders.CONTENT_DISPOSITION), anyString());
+        verify(httpServletResponse, times(1)).addHeader(HttpHeaders.PRAGMA, "no-cache");
+        verify(httpServletResponse, times(1)).addHeader(HttpHeaders.EXPIRES, "0");
+    }
+
+    /**
      * Tests saving the properties configuration.
      */
     @Test
@@ -221,6 +242,27 @@ class ConfigurationControllerTest {
         TagsConfiguration tagsConfiguration = new TagsConfiguration();
         controller.saveTagsConfiguration(tagsConfiguration);
         verify(configurationService, times(1)).saveTagsConfiguration(tagsConfiguration);
+    }
+
+    /**
+     * Tests the tag configuration export.
+     */
+    @Test
+    @SneakyThrows
+    void testExportTagsConfiguration() {
+        when(configurationService.exportTagsConfiguration()).thenReturn("tags-configuration-json");
+
+        HttpServletResponse httpServletResponse = mock(HttpServletResponse.class, Answers.RETURNS_DEEP_STUBS);
+
+        ResponseEntity<StreamingResponseBody> streamingResponseBodyResponseEntity =
+                controller.exportTagsConfiguration(httpServletResponse);
+
+        assertEquals(HttpStatus.OK, streamingResponseBodyResponseEntity.getStatusCode());
+
+        verify(httpServletResponse, times(1)).setContentType(MediaType.APPLICATION_JSON_VALUE);
+        verify(httpServletResponse, times(1)).setHeader(eq(HttpHeaders.CONTENT_DISPOSITION), anyString());
+        verify(httpServletResponse, times(1)).addHeader(HttpHeaders.PRAGMA, "no-cache");
+        verify(httpServletResponse, times(1)).addHeader(HttpHeaders.EXPIRES, "0");
     }
 
     /**

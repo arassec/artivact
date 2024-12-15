@@ -18,7 +18,6 @@ import com.arassec.artivact.core.repository.FileRepository;
 import com.arassec.artivact.domain.exchange.model.ExchangeMainData;
 import com.arassec.artivact.domain.exchange.model.ExportContext;
 import com.arassec.artivact.domain.misc.ProjectDataProvider;
-import com.arassec.artivact.domain.service.ConfigurationService;
 import com.arassec.artivact.domain.service.PageService;
 import com.arassec.artivact.domain.service.SearchService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,14 +27,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 /**
  * Standard {@link ArtivactExporter}.
@@ -44,11 +39,6 @@ import java.util.zip.ZipFile;
 @Component
 @RequiredArgsConstructor
 public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProcessor {
-
-    /**
-     * The application's configuration service.
-     */
-    private final ConfigurationService configurationService;
 
     /**
      * The service for page handling.
@@ -79,7 +69,7 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
      * {@inheritDoc}
      */
     @Override
-    public Path exportCollection(CollectionExport collectionExport, Menu menu) {
+    public Path exportCollection(CollectionExport collectionExport, Menu menu, PropertiesConfiguration propertiesConfiguration, TagsConfiguration tagsConfiguration) {
         ExportContext exportContext = createExportContext(collectionExport.getId(), collectionExport.getExportConfiguration());
         exportContext.setId(collectionExport.getId());
         exportContext.setCoverPictureExtension(collectionExport.getCoverPictureExtension());
@@ -88,8 +78,8 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
 
         exportMainData(exportContext, ContentSource.MENU, menu.getId(), collectionExport.getTitle(), collectionExport.getDescription());
 
-        exportPropertiesConfiguration(exportContext);
-        exportTagsConfiguration(exportContext);
+        exportPropertiesConfiguration(exportContext, propertiesConfiguration);
+        exportTagsConfiguration(exportContext, tagsConfiguration);
 
         exportMenu(exportContext, menu);
 
@@ -113,7 +103,7 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
      * {@inheritDoc}
      */
     @Override
-    public Path exportMenu(ExportConfiguration exportConfiguration, Menu menu) {
+    public Path exportMenu(ExportConfiguration exportConfiguration, Menu menu, PropertiesConfiguration propertiesConfiguration, TagsConfiguration tagsConfiguration) {
         ExportContext exportContext = createExportContext(menu.getId(), exportConfiguration);
 
         prepareExport(exportContext);
@@ -122,8 +112,8 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
 
         // Properties and tags configuration is only exported if items are exported as well.
         if (!exportConfiguration.isExcludeItems()) {
-            exportPropertiesConfiguration(exportContext);
-            exportTagsConfiguration(exportContext);
+            exportPropertiesConfiguration(exportContext, propertiesConfiguration);
+            exportTagsConfiguration(exportContext, tagsConfiguration);
         }
 
         exportMenu(exportContext, menu);
@@ -138,14 +128,14 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
      * {@inheritDoc}
      */
     @Override
-    public Path exportItem(Item item) {
+    public Path exportItem(Item item, PropertiesConfiguration propertiesConfiguration, TagsConfiguration tagsConfiguration) {
         ExportContext exportContext = createExportContext(item.getId(), null);
 
         prepareExport(exportContext);
 
         exportMainData(exportContext, ContentSource.ITEM, item.getId(), item.getTitle(), item.getDescription());
-        exportPropertiesConfiguration(exportContext);
-        exportTagsConfiguration(exportContext);
+        exportPropertiesConfiguration(exportContext, propertiesConfiguration);
+        exportTagsConfiguration(exportContext, tagsConfiguration);
 
         exportItem(exportContext, item);
 
@@ -158,11 +148,11 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
      * {@inheritDoc}
      */
     @Override
-    public Path exportPropertiesConfiguration() {
+    public Path exportPropertiesConfiguration(PropertiesConfiguration propertiesConfiguration) {
         return exportPropertiesConfiguration(ExportContext.builder()
                 .exportDir(projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.EXPORT_DIR))
                 .exportConfiguration(new ExportConfiguration())
-                .build()
+                .build(), propertiesConfiguration
         );
     }
 
@@ -170,34 +160,12 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
      * {@inheritDoc}
      */
     @Override
-    public Path exportTagsConfiguration() {
+    public Path exportTagsConfiguration(TagsConfiguration tagsConfiguration) {
         return exportTagsConfiguration(ExportContext.builder()
                 .exportDir(projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.EXPORT_DIR))
                 .exportConfiguration(new ExportConfiguration())
-                .build()
+                .build(), tagsConfiguration
         );
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ExchangeMainData readExchangeMainData(Path path) {
-        try {
-            try (ZipFile zipFile = new ZipFile(path.toFile())) {
-                Enumeration<? extends ZipEntry> entries = zipFile.entries();
-                while (entries.hasMoreElements()) {
-                    ZipEntry entry = entries.nextElement();
-                    if (entry.getName().equals(CONTENT_EXCHANGE_MAIN_DATA_FILENAME_JSON)) {
-                        InputStream stream = zipFile.getInputStream(entry);
-                        return objectMapper.readValue(stream.readAllBytes(), ExchangeMainData.class);
-                    }
-                }
-            }
-        } catch (IOException e) {
-            log.error("Couldn't read export main data from ZIP file.", e);
-        }
-        throw new ArtivactException("Could not read export main data file!");
     }
 
     /**
@@ -262,9 +230,8 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
      *
      * @param exportContext Export parameters.
      */
-    private Path exportPropertiesConfiguration(ExportContext exportContext) {
+    private Path exportPropertiesConfiguration(ExportContext exportContext, PropertiesConfiguration propertiesConfiguration) {
         Path exportFile = exportContext.getExportDir().resolve(PROPERTIES_EXCHANGE_FILENAME_JSON);
-        PropertiesConfiguration propertiesConfiguration = configurationService.loadPropertiesConfiguration();
         cleanupPropertyConfiguration(exportContext, propertiesConfiguration);
         writeJsonFile(exportFile, propertiesConfiguration);
         return exportFile;
@@ -275,9 +242,8 @@ public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProce
      *
      * @param exportContext Export parameters.
      */
-    private Path exportTagsConfiguration(ExportContext exportContext) {
+    private Path exportTagsConfiguration(ExportContext exportContext, TagsConfiguration tagsConfiguration) {
         Path exportFile = exportContext.getExportDir().resolve(TAGS_EXCHANGE_FILENAME_JSON);
-        TagsConfiguration tagsConfiguration = configurationService.loadTagsConfiguration();
         cleanupTagsConfiguration(exportContext, tagsConfiguration);
         writeJsonFile(exportFile, tagsConfiguration);
         return exportFile;
