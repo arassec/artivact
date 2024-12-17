@@ -2,7 +2,9 @@ package com.arassec.artivact.domain.service;
 
 import com.arassec.artivact.core.misc.ProgressMonitor;
 import com.arassec.artivact.core.model.batch.BatchProcessingParameters;
+import com.arassec.artivact.core.model.batch.BatchProcessingTask;
 import com.arassec.artivact.core.model.batch.BatchProcessor;
+import com.arassec.artivact.core.model.item.Item;
 import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -55,11 +57,12 @@ public class BatchService {
      * @param parameters The parameters for the batch processing.
      */
     public void process(BatchProcessingParameters parameters) {
-        if (!StringUtils.hasText(parameters.getSearchTerm())) {
+        if (!StringUtils.hasText(parameters.getSearchTerm())
+                && !BatchProcessingTask.UPLOAD_MODIFIED_ITEM.equals(parameters.getTask())) {
             return;
         }
 
-        if (parameters.getTask() == null) {
+        if (parameters.getTask() == null || parameters.getMaxItems() <= 0) {
             return;
         }
 
@@ -74,7 +77,14 @@ public class BatchService {
                 log.info("Starting batch processing of items: {}", parameters.getTask());
                 batchProcessors.forEach(BatchProcessor::initialize);
 
-                searchService.search(parameters.getSearchTerm(), Integer.MAX_VALUE).forEach(
+                List<Item> itemsToProcess;
+                if (BatchProcessingTask.UPLOAD_MODIFIED_ITEM.equals(parameters.getTask())) {
+                    itemsToProcess = itemService.loadModifiedItems(parameters.getMaxItems());
+                } else {
+                    itemsToProcess = searchService.search(parameters.getSearchTerm(), parameters.getMaxItems());
+                }
+
+                itemsToProcess.forEach(
                         item -> batchProcessors.stream()
                                 .map(batchProcessor -> batchProcessor.process(parameters, item))
                                 .filter(result -> result)

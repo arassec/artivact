@@ -8,7 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Tests the {@link ProgressMonitor}.
  */
-public class ProgressMonitorTest {
+class ProgressMonitorTest {
 
     /**
      * Tests updating the progress.
@@ -16,8 +16,8 @@ public class ProgressMonitorTest {
     @Test
     void testUpdateProgress() {
         ProgressMonitor progressMonitor = new ProgressMonitor(ProgressMonitorTest.class, "suffix");
-        assertThat(progressMonitor.getTargetAmount()).isEqualTo(0);
-        assertThat(progressMonitor.getCurrentAmount()).isEqualTo(0);
+        assertThat(progressMonitor.getTargetAmount()).isZero();
+        assertThat(progressMonitor.getCurrentAmount()).isZero();
         assertThat(progressMonitor.getException()).isNull();
 
         progressMonitor.updateProgress(25, 100);

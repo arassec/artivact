@@ -20,7 +20,7 @@ import static org.mockito.Mockito.when;
  * Tests the {@link BatchController}.
  */
 @ExtendWith(MockitoExtension.class)
-public class BatchControllerTest {
+class BatchControllerTest {
 
     /**
      * The controller under test.

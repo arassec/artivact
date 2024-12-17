@@ -9,11 +9,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 /**
- * {@link BatchProcessor} that deletes items.
+ * {@link BatchProcessor} to upload a modified item to a remote Artivact instance.
  */
 @Component
 @RequiredArgsConstructor
-public class DeleteItemBatchProcessor implements BatchProcessor {
+public class UploadModifiedItemBatchProcessor implements BatchProcessor {
 
     /**
      * Service for items.
@@ -25,19 +25,18 @@ public class DeleteItemBatchProcessor implements BatchProcessor {
      */
     @Override
     public void initialize() {
-        // Nothing to do here...
+        // Nothing to do here.
     }
 
     /**
-     * Deletes the given item.
-     *
-     * @param params The parameters for batch processing an item.
-     * @param item   The item to process.
+     * {@inheritDoc}
      */
     @Override
     public boolean process(BatchProcessingParameters params, Item item) {
-        if (BatchProcessingTask.DELETE_ITEM.equals(params.getTask())) {
-            itemService.delete(item.getId());
+        if (BatchProcessingTask.UPLOAD_MODIFIED_ITEM.equals(params.getTask())) {
+            itemService.uploadItemToRemoteInstance(item.getId(), false);
+            item.setSyncVersion(item.getVersion() + 1); // Saving the item later increments the "version" property!
+            return true;
         }
         return false;
     }

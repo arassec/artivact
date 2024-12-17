@@ -884,14 +884,9 @@ export default {
       createIndex: 'Erstelle Suchindex...',
       createIndexFailed: 'Fehler bei Erstellung/Aktualisierung des Suchindexes!'
     },
-    ExportService: {
-      exportContent: 'Erstelle Export...',
-      exportContentFailed: 'Erstellung des Exports fehlgeschlagen!',
-      packaging: 'Erstelle Exportdatei für Upload.',
-      exportFileCreationFailed: 'Konnte Exportdatei für Upload nicht erstellen!',
-      configMissing: 'Austausch-Konfiguration für Upload zu entferntem Artivact- Server fehlt!',
-      uploading: 'Lade Exportdatei zu entferntem Artivact-Server hoch.',
-      uploadFailed: 'Konnte Exportdatei nicht zu entferntem Artivact-Server hochladen!'
+    ItemService: {
+      uploading: 'Lade Exportdatei zu entfernter Artivact-Instanz hoch.',
+      uploadFailed: 'Konnte Exportdatei nicht zu entfernter Artivact-Instanz hochladen!'
     },
     ImportService: {
       importContent: 'Importiere Daten...',
@@ -945,6 +940,7 @@ export default {
 
   DELETE_ITEM: 'Objekt löschen',
   ADD_TAG_TO_ITEM: 'Tag hinzufügen',
-  REMOVE_TAG_FROM_ITEM: 'Tag entfernen'
+  REMOVE_TAG_FROM_ITEM: 'Tag entfernen',
+  UPLOAD_MODIFIED_ITEM: 'Geänderte Objekte hochladen'
 
 };

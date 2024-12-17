@@ -142,8 +142,8 @@ public class JdbcItemRepositoryTest {
     @Test
     void testFindItemIdsForRemoteExport() {
         List<String> ids = List.of("id1", "id2");
-        when(itemEntityRepository.findItemIdsForRemoteExport()).thenReturn(ids);
-        List<String> itemIds = jdbcItemRepository.findItemIdsForRemoteExport();
+        when(itemEntityRepository.findItemIdsForRemoteExport(anyInt())).thenReturn(ids);
+        List<String> itemIds = jdbcItemRepository.findItemIdsForRemoteExport(123);
         assertEquals(ids, itemIds);
     }
 

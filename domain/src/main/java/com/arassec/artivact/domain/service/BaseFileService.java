@@ -89,6 +89,7 @@ public abstract class BaseFileService {
      * @param file The uploaded import file to save.
      * @return Path into the project's directory structure to the import file.
      */
+    @SuppressWarnings("javasecurity:S2083") // Path is not entered by user!
     protected Path saveFile(Path root, MultipartFile file) {
         String originalFilename = Optional.ofNullable(file.getOriginalFilename()).orElse("fallback.zip");
         Path importFileZip = root

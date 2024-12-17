@@ -20,4 +20,9 @@ public enum BatchProcessingTask {
      */
     REMOVE_TAG_FROM_ITEM,
 
+    /**
+     * Uploads all modified items to a remote Artivact instance.
+     */
+    UPLOAD_MODIFIED_ITEM
+
 }

@@ -84,8 +84,8 @@ public class JdbcItemRepository extends BaseJdbcRepository implements ItemReposi
      * {@inheritDoc}
      */
     @Override
-    public List<String> findItemIdsForRemoteExport() {
-        return itemEntityRepository.findItemIdsForRemoteExport();
+    public List<String> findItemIdsForRemoteExport(int maxItems) {
+        return itemEntityRepository.findItemIdsForRemoteExport(maxItems);
     }
 
     /**

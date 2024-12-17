@@ -17,7 +17,7 @@ import static org.mockito.Mockito.verify;
  * Tests the {@link DeleteItemBatchProcessor}.
  */
 @ExtendWith(MockitoExtension.class)
-public class DeleteItemBatchProcessorTest {
+class DeleteItemBatchProcessorTest {
 
     /**
      * The processor under test.

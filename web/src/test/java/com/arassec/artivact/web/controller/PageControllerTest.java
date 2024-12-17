@@ -29,7 +29,7 @@ import static org.mockito.Mockito.*;
  * Tests the {@link PageController}.
  */
 @ExtendWith(MockitoExtension.class)
-public class PageControllerTest {
+class PageControllerTest {
 
     /**
      * The controller under test.

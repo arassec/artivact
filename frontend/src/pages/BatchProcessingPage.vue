@@ -16,7 +16,8 @@
         :option-label="(task: BatchProcessingTask) => $t(task)">
       </q-select>
 
-      <template v-if="batchProcessingParamersRef.task !== BatchProcessingTask.DELETE_ITEM">
+      <template v-if="batchProcessingParamersRef.task !== BatchProcessingTask.DELETE_ITEM
+                        && batchProcessingParamersRef.task !== BatchProcessingTask.UPLOAD_MODIFIED_ITEM">
         <h2 class="av-text-h2 q-mt-lg">{{ $t('BatchProcessingPage.parameters.targetId') }}</h2>
         <div class="full-width q-mb-md">{{ $t('BatchProcessingPage.parameters.targetIdDescription') }}</div>
         <q-select
@@ -36,12 +37,21 @@
     <div class="full-width">{{ $t('BatchProcessingPage.parameters.searchTermDescription') }}</div>
   </ArtivactContent>
 
-  <artivact-item-search-widget
-    :widget-data="searchWidgetDataRef"
-    :move-down-enabled="false"
-    :move-up-enabled="false"
-    :in-edit-mode="false"
-    :expert-mode="true" />
+  <artivact-item-search-widget v-if="batchProcessingParamersRef.task !== BatchProcessingTask.UPLOAD_MODIFIED_ITEM"
+                               :widget-data="searchWidgetDataRef"
+                               :move-down-enabled="false"
+                               :move-up-enabled="false"
+                               :in-edit-mode="false"
+                               :expert-mode="true" />
+  <artivact-content v-else>
+    <q-input
+      outlined
+      v-model="uploadModifiedMaxResultsRef"
+      :label="$t('ArtivactItemSearchInput.label.maxResults')"
+      type="number"
+      class="q-mb-md full-width"
+    />
+  </artivact-content>
 
   <ArtivactContent>
     <q-separator />
@@ -112,6 +122,7 @@ const i18n = useI18n();
 const batchProcessingParamersRef = ref({
   task: BatchProcessingTask.DELETE_ITEM,
   searchTerm: '',
+  maxItems: 0,
   targetId: ''
 } as BatchProcessingParameters);
 
@@ -119,6 +130,8 @@ const showConfirmBatchProcessingModalRef = ref(false);
 
 const progressMonitorRef = ref<OperationProgress>();
 const showOperationInProgressModalRef = ref(false);
+
+const uploadModifiedMaxResultsRef = ref(10000);
 
 const tagsConfigurationRef: Ref<TagsConfiguration | null> = ref(null);
 const selectedTagRef: Ref<BaseTranslatableRestrictedObject> = ref({
@@ -164,10 +177,12 @@ function loadTagsConfiguration() {
 }
 
 function process() {
+  batchProcessingParamersRef.value.maxItems = searchWidgetDataRef.value.maxResults;
+  if (batchProcessingParamersRef.value.task === BatchProcessingTask.UPLOAD_MODIFIED_ITEM) {
+    batchProcessingParamersRef.value.maxItems = uploadModifiedMaxResultsRef.value;
+  }
   if (searchWidgetDataRef.value.searchTerm) {
     batchProcessingParamersRef.value.searchTerm = searchWidgetDataRef.value.searchTerm;
-  } else {
-    return;
   }
   if (selectedTagRef.value) {
     batchProcessingParamersRef.value.targetId = selectedTagRef.value.id;

@@ -25,6 +25,11 @@ public class BatchProcessingParameters {
     private String searchTerm;
 
     /**
+     * Maximum number of items to process.
+     */
+    private int maxItems;
+
+    /**
      * The ID of the object to apply the task to.
      */
     private String targetId;

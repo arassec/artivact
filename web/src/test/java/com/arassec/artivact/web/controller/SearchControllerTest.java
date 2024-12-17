@@ -21,7 +21,7 @@ import static org.mockito.Mockito.*;
  * Tests the {@link SearchController}.
  */
 @ExtendWith(MockitoExtension.class)
-public class SearchControllerTest {
+class SearchControllerTest {
 
     /**
      * The controller under test.

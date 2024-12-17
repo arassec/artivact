@@ -25,7 +25,7 @@ import static org.mockito.Mockito.*;
  * Tests the {@link JdbcPageRepository}.
  */
 @ExtendWith(MockitoExtension.class)
-public class JdbcPageRepositoryTest {
+class JdbcPageRepositoryTest {
 
     /**
      * The repository under test.
@@ -128,7 +128,7 @@ public class JdbcPageRepositoryTest {
 
         List<Page> pages = jdbcPageRepository.findAll();
 
-        assertThat(pages.size()).isEqualTo(2);
+        assertThat(pages).hasSize(2);
     }
 
     /**
@@ -183,7 +183,7 @@ public class JdbcPageRepositoryTest {
 
         PageContent pageContent = new PageContent();
 
-        when(objectMapper.readValue(eq("{contentJson}"), eq(PageContent.class))).thenReturn(pageContent);
+        when(objectMapper.readValue("{contentJson}", PageContent.class)).thenReturn(pageContent);
 
         Page page = jdbcPageRepository.findIndexPage();
 

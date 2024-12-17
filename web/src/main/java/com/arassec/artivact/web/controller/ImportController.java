@@ -97,7 +97,7 @@ public class ImportController extends BaseController {
     }
 
     /**
-     * Called by another server instance for remote import/sync!
+     * Called by another Artivact instance for remote import/sync!
      *
      * @param file     The item's export file to import.
      * @param apiToken The API token of the local user account used to import the item.

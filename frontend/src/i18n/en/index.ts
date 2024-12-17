@@ -884,12 +884,7 @@ export default {
       createIndex: '(Re-)Creating search index...',
       createIndexFailed: '(Re-)Creation of search index failed!',
     },
-    ExportService: {
-      exportContent: 'Creating export...',
-      exportContentFailed: 'Export creation failed!',
-      packaging: 'Packaging item for upload.',
-      exportFileCreationFailed: 'Could not create export file to upload item to remote server!',
-      configMissing: 'Exchange configuration is missing a remote server to synchronize with!',
+    ItemService: {
       uploading: 'Uploading file to remote Artivact server.',
       uploadFailed: 'Could not upload item file to remote server!',
     },
@@ -944,5 +939,6 @@ export default {
   DELETE_ITEM: 'Delete item',
   ADD_TAG_TO_ITEM: 'Add tag',
   REMOVE_TAG_FROM_ITEM: 'Remove tag',
+  UPLOAD_MODIFIED_ITEM: 'Upload modified item'
 
 };

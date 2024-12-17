@@ -247,7 +247,7 @@ public class ItemController extends BaseController {
      */
     @PostMapping(value = "/{itemId}/upload")
     public ResponseEntity<OperationProgress> uploadItemToRemoteInstance(@PathVariable String itemId) {
-        itemService.exportItemToRemoteInstance(itemId);
+        itemService.uploadItemToRemoteInstance(itemId, true);
         return getProgress();
     }
 

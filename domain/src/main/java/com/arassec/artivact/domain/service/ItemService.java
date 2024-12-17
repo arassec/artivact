@@ -394,72 +394,50 @@ public class ItemService extends BaseFileService {
      *
      * @param itemId The item's ID.
      */
-    public synchronized void exportItemToRemoteInstance(String itemId) {
-
-        if (progressMonitor != null && progressMonitor.getException() == null) {
-            return;
-        }
-
-        progressMonitor = new ProgressMonitor(getClass(), "packaging");
-
+    public synchronized void uploadItemToRemoteInstance(String itemId, boolean asynchronous) {
         ExchangeConfiguration exchangeConfiguration = configurationService.loadExchangeConfiguration();
         String remoteServer = exchangeConfiguration.getRemoteServer();
         String apiToken = exchangeConfiguration.getApiToken();
 
         if (!StringUtils.hasText(remoteServer)) {
-            progressMonitor.updateProgress("configMissing", new ArtivactException("Remote server configuration missing!"));
-            return;
+            throw new ArtivactException("Remote server is not configured!");
         }
         if (!remoteServer.endsWith("/")) {
             remoteServer += "/";
         }
 
         if (!StringUtils.hasText(apiToken)) {
-            progressMonitor.updateProgress("configMissing", new ArtivactException("API token configuration missing!"));
-            return;
+            throw new ArtivactException("API token is not configured!");
         }
 
         final String syncUrl = remoteServer + "api/import/item/" + apiToken;
+        Path exportFile = exportItem(itemId);
 
-        executorService.submit(() -> {
-            progressMonitor.updateLabelKey("transferring");
-
-            Path exportFile = exportItem(itemId);
-
-            progressMonitor.updateLabelKey("uploading");
-
-            try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
-                HttpPost httpPost = new HttpPost(syncUrl);
-
-                HttpEntity entity = MultipartEntityBuilder.create()
-                        .setMode(HttpMultipartMode.STRICT)
-                        .addPart("file", new FileBody(exportFile.toFile()))
-                        .build();
-                httpPost.setEntity(entity);
-
-                httpclient.execute(httpPost, response -> {
-                    if (response.getCode() != 200) {
-                        progressMonitor.updateProgress("uploadFailed",
-                                new ArtivactException("HTTP result code: " + response.getCode()));
-                        log.error("Could not upload item file to remote server: HTTP result code {}, File '{}'", response.getCode(), exportFile);
-                    } else {
-                        Item item = load(itemId).orElseThrow();
-                        item.setSyncVersion(item.getVersion() + 1); // Saving the item will increase its version by one!
-                        save(item);
-
-                        fileRepository.delete(exportFile);
-                    }
-                    return response;
-                });
-
-            } catch (Exception e) {
-                progressMonitor.updateProgress("uploadFailed", e);
-                log.error("Could not upload item file to remote server!", e);
+        if (asynchronous) {
+            if (progressMonitor != null && progressMonitor.getException() == null) {
+                return;
             }
-            if (progressMonitor.getException() == null) {
-                progressMonitor = null;
+
+            progressMonitor = new ProgressMonitor(getClass(), "uploading");
+
+            executorService.submit(() -> {
+                try {
+                    uploadItem(syncUrl, itemId, exportFile, progressMonitor);
+                } catch (Exception e) {
+                    progressMonitor.updateProgress("uploadFailed", e);
+                    log.error("Could not upload item file to remote server!", e);
+                }
+                if (progressMonitor.getException() == null) {
+                    progressMonitor = null;
+                }
+            });
+        } else {
+            try {
+                uploadItem(syncUrl, itemId, exportFile, progressMonitor);
+            } catch (IOException e) {
+                throw new ArtivactException("Could not upload item file to remote server!", e);
             }
-        });
+        }
     }
 
     /**
@@ -471,6 +449,59 @@ public class ItemService extends BaseFileService {
     public void copyExportAndDelete(Path export, OutputStream outputStream) {
         fileRepository.copy(export, outputStream);
         fileRepository.delete(export);
+    }
+
+    /**
+     * Loads all items that have been modified since last uploaded to a remote Artivact instance.
+     *
+     * @return List of modified items.
+     */
+    public List<Item> loadModifiedItems(int maxItems) {
+        return itemRepository.findItemIdsForRemoteExport(maxItems).stream()
+                .map(itemId -> load(itemId).orElseThrow())
+                .toList();
+    }
+
+    /**
+     * Uploads an item to a remote Artivact instance.
+     *
+     * @param syncUrl                 The URL to use for upload.
+     * @param itemId                  The item's ID.
+     * @param exportFile              The export file containing the exported item.
+     * @param progressMonitorInstance An optional {@link ProgressMonitor} to track errors.
+     * @throws IOException In case of upload errors.
+     */
+    private void uploadItem(String syncUrl, String itemId, Path exportFile, ProgressMonitor progressMonitorInstance) throws IOException {
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+            HttpPost httpPost = new HttpPost(syncUrl);
+
+            HttpEntity entity = MultipartEntityBuilder.create()
+                    .setMode(HttpMultipartMode.STRICT)
+                    .addPart("file", new FileBody(exportFile.toFile()))
+                    .build();
+            httpPost.setEntity(entity);
+
+            httpclient.execute(httpPost, response -> {
+                if (response.getCode() != 200) {
+                    if (progressMonitorInstance != null) {
+                        progressMonitorInstance.updateProgress("uploadFailed",
+                                new ArtivactException("HTTP result code: " + response.getCode()));
+                    }
+                    log.error("Could not upload item file to remote server: HTTP result code {}, File '{}'", response.getCode(), exportFile);
+                } else {
+                    Item item = load(itemId).orElseThrow();
+                    item.setSyncVersion(item.getVersion() + 1); // Saving the item will increase its version by one!
+                    save(item);
+
+                    fileRepository.delete(exportFile);
+                }
+                return response;
+            });
+        } finally {
+            if (fileRepository.exists(exportFile)) {
+                fileRepository.delete(exportFile);
+            }
+        }
     }
 
     /**

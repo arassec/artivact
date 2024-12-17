@@ -4,6 +4,7 @@ import com.arassec.artivact.persistence.jdbc.springdata.entity.ItemEntity;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ public interface ItemEntityRepository extends PagingAndSortingRepository<ItemEnt
      *
      * @return List of IDs for syncing.
      */
-    @Query("SELECT id FROM ItemEntity WHERE version != syncVersion")
-    List<String> findItemIdsForRemoteExport();
+    @Query(value = "SELECT id FROM av_item WHERE version != sync_version OR sync_version IS NULL ORDER BY id LIMIT :limit", nativeQuery = true)
+    List<String> findItemIdsForRemoteExport(@Param("limit") int limit);
 
 }

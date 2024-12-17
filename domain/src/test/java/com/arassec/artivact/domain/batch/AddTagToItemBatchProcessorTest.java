@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
  * Tests the {@link AddTagToItemBatchProcessor}.
  */
 @ExtendWith(MockitoExtension.class)
-public class AddTagToItemBatchProcessorTest {
+class AddTagToItemBatchProcessorTest {
 
     /**
      * The batch processor under test.
@@ -71,7 +71,7 @@ public class AddTagToItemBatchProcessorTest {
                 .targetId("tag1")
                 .build(), item)).isTrue();
 
-        assertThat(item.getTags().size()).isEqualTo(1);
+        assertThat(item.getTags()).hasSize(1);
         assertThat(item.getTags().getFirst().getId()).isEqualTo("tag1");
     }
 
@@ -100,7 +100,7 @@ public class AddTagToItemBatchProcessorTest {
                 .targetId("tag1")
                 .build(), item)).isFalse();
 
-        assertThat(item.getTags().size()).isEqualTo(1);
+        assertThat(item.getTags()).hasSize(1);
         assertThat(item.getTags().getFirst().getId()).isEqualTo("tag1");
     }
 

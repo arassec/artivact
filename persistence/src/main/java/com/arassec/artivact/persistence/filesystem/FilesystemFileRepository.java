@@ -106,6 +106,7 @@ public class FilesystemFileRepository implements FileRepository {
      * {@inheritDoc}
      */
     @Override
+    @SuppressWarnings("javasecurity:S2083") // Path is not entered by user!
     public void createDirIfRequired(Path directory) {
         if (!Files.exists(directory)) {
             try {
@@ -120,6 +121,7 @@ public class FilesystemFileRepository implements FileRepository {
      * {@inheritDoc}
      */
     @Override
+    @SuppressWarnings("javasecurity:S2083") // Path is not entered by user!
     public void delete(Path path) {
         try {
             if (Files.exists(path) && Files.isDirectory(path)) {

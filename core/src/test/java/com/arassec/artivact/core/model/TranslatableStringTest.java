@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Tests the {@link TranslatableString}.
  */
-public class TranslatableStringTest {
+class TranslatableStringTest {
 
     /**
      * Tests fallback if no translations are given.

@@ -36,9 +36,10 @@ public interface ItemRepository {
     /**
      * Returns all item IDs of items which have been modified locally and not yet been synced with a remote instance.
      *
+     * @param maxItems Maximum number of item IDs to find.
      * @return List of item IDs.
      */
-    List<String> findItemIdsForRemoteExport();
+    List<String> findItemIdsForRemoteExport(int maxItems);
 
     /**
      * Returns all items.

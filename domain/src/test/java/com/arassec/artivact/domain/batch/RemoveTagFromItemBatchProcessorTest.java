@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Tests the {@link RemoveTagFromItemBatchProcessor}.
  */
-public class RemoveTagFromItemBatchProcessorTest {
+class RemoveTagFromItemBatchProcessorTest {
 
     /**
      * The processor under test.

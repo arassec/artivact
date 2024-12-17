@@ -253,7 +253,7 @@ class ItemControllerTest {
     @Test
     void testUploadItemToRemoteInstance() {
         controller.uploadItemToRemoteInstance("123-abc");
-        verify(itemService, times(1)).exportItemToRemoteInstance("123-abc");
+        verify(itemService, times(1)).uploadItemToRemoteInstance("123-abc", true);
     }
 
     /**
