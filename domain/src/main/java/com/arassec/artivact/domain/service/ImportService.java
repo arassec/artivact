@@ -3,7 +3,6 @@ package com.arassec.artivact.domain.service;
 import com.arassec.artivact.core.model.account.Account;
 import com.arassec.artivact.core.repository.FileRepository;
 import com.arassec.artivact.domain.exchange.ArtivactImporter;
-import com.arassec.artivact.domain.exchange.ExchangeProcessor;
 import com.arassec.artivact.domain.misc.ProjectDataProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
@@ -23,7 +22,7 @@ import java.nio.file.Path;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class ImportService extends BaseFileService implements ExchangeProcessor {
+public class ImportService extends BaseFileService {
 
     /**
      * The service for account handling.

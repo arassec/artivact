@@ -105,6 +105,7 @@ public class JdbcPageRepository extends BaseJdbcRepository implements PageReposi
     /**
      * Converts a page entity into a page.
      */
+    @SuppressWarnings("java:S6204") // Widget list needs to be modifiable!
     private Page convert(PageEntity pageEntity) {
         Page page = new Page();
         page.setId(pageEntity.getId());

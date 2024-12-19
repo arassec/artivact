@@ -2,7 +2,7 @@ package com.arassec.artivact.web.controller;
 
 import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.model.exchange.CollectionExport;
-import com.arassec.artivact.domain.exchange.ExchangeProcessor;
+import com.arassec.artivact.domain.exchange.ExchangeDefinitions;
 import com.arassec.artivact.domain.service.CollectionExportService;
 import com.arassec.artivact.web.model.OperationProgress;
 import jakarta.servlet.http.HttpServletResponse;
@@ -49,7 +49,7 @@ public class CollectionExportController extends BaseController {
     }
 
     /**
-     * Creates a new collection export with the given parameters.
+     * Saves a new collection export with the given parameters.
      *
      * @param collectionExport The collection export to save.
      * @return List of {@link CollectionExport}s.
@@ -61,7 +61,7 @@ public class CollectionExportController extends BaseController {
     }
 
     /**
-     * Creates a new collection export with the given parameters.
+     * Saves the sort order of all supplied collection exports.
      *
      * @param collectionExports The collection exports to save.
      * @return List of {@link CollectionExport}s.
@@ -139,7 +139,7 @@ public class CollectionExportController extends BaseController {
 
         response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION, ATTACHMENT_PREFIX
-                + id + ExchangeProcessor.COLLECTION_EXCHANGE_SUFFIX + ExchangeProcessor.ZIP_FILE_SUFFIX);
+                + id + ExchangeDefinitions.COLLECTION_EXCHANGE_SUFFIX + ExchangeDefinitions.ZIP_FILE_SUFFIX);
         response.addHeader(HttpHeaders.PRAGMA, NO_CACHE);
         response.addHeader(HttpHeaders.EXPIRES, EXPIRES_IMMEDIATELY);
 
@@ -225,16 +225,6 @@ public class CollectionExportController extends BaseController {
     }
 
     /**
-     * Returns the progress of a previously started long-running operation.
-     *
-     * @return The progress.
-     */
-    @GetMapping("/progress")
-    public ResponseEntity<OperationProgress> getProgress() {
-        return convert(collectionExportService.getProgressMonitor());
-    }
-
-    /**
      * Returns infos about available collection exports.
      *
      * @return ZIP file containing the information about available content exports.
@@ -248,6 +238,16 @@ public class CollectionExportController extends BaseController {
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION, ATTACHMENT_PREFIX + CollectionExportService.COLLECTION_EXPORT_OVERVIEWS_FILE);
 
         return ResponseEntity.ok(streamResponseBody);
+    }
+
+    /**
+     * Returns the progress of a previously started long-running operation.
+     *
+     * @return The progress.
+     */
+    @GetMapping("/progress")
+    public ResponseEntity<OperationProgress> getProgress() {
+        return convert(collectionExportService.getProgressMonitor());
     }
 
 }

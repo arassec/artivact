@@ -31,8 +31,8 @@ import java.util.concurrent.Executors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import static com.arassec.artivact.domain.exchange.ExchangeProcessor.COLLECTION_EXCHANGE_SUFFIX;
-import static com.arassec.artivact.domain.exchange.ExchangeProcessor.ZIP_FILE_SUFFIX;
+import static com.arassec.artivact.domain.exchange.ExchangeDefinitions.COLLECTION_EXCHANGE_SUFFIX;
+import static com.arassec.artivact.domain.exchange.ExchangeDefinitions.ZIP_FILE_SUFFIX;
 
 /**
  * Service for collection export handling.

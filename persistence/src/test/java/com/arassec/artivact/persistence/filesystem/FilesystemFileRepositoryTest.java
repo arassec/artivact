@@ -241,7 +241,7 @@ class FilesystemFileRepositoryTest {
 
         assertFalse(Files.exists(target));
 
-        filesystemFileRepository.copy(source, target);
+        filesystemFileRepository.copyDir(source, target);
 
         assertTrue(Files.exists(target));
     }
@@ -290,6 +290,17 @@ class FilesystemFileRepositoryTest {
 
         assertEquals(1, files.size());
         assertEquals(file, files.getFirst());
+    }
+
+    /**
+     * Tests listing files and directories from a path that does not exist.
+     */
+    @Test
+    @SneakyThrows
+    void testListFailsafe() {
+        Path file = targetDir.resolve("non-existent-dir");
+        List<Path> files = filesystemFileRepository.list(file);
+        assertThat(files).isEmpty();
     }
 
     /**

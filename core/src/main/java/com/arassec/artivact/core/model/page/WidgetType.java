@@ -1,9 +1,6 @@
 package com.arassec.artivact.core.model.page;
 
-import com.arassec.artivact.core.model.page.widget.*;
 import lombok.Getter;
-
-import java.util.Arrays;
 
 /**
  * The widget type.
@@ -14,64 +11,36 @@ public enum WidgetType {
     /**
      * A page title.
      */
-    PAGE_TITLE(PageTitleWidget.class),
+    PAGE_TITLE,
 
     /**
      * A text block.
      */
-    TEXT(TextWidget.class),
+    TEXT,
 
     /**
      * Item search.
      */
-    ITEM_SEARCH(ItemSearchWidget.class),
+    ITEM_SEARCH,
 
     /**
      * An info box.
      */
-    INFO_BOX(InfoBoxWidget.class),
+    INFO_BOX,
 
     /**
      * An avatar.
      */
-    AVATAR(AvatarWidget.class),
+    AVATAR,
 
     /**
      * Some space.
      */
-    SPACE(SpaceWidget.class),
+    SPACE,
 
     /**
      * An image with associated text.
      */
-    IMAGE_TEXT(ImageTextWidget.class);
-
-    /**
-     * The widget's java class.
-     */
-    private final Class<? extends Widget> widgetClass;
-
-    /**
-     * Creates a new instance.
-     *
-     * @param widgetClass The widget's java class.
-     */
-    WidgetType(Class<? extends Widget> widgetClass) {
-        this.widgetClass = widgetClass;
-    }
-
-    /**
-     * Returns the java class for a given type.
-     *
-     * @param type The type to get the class for.
-     * @return The java class.
-     */
-    public static Class<?> getClassOfType(String type) {
-        return Arrays.stream(values())
-                .filter(value -> value.name().equals(type))
-                .findFirst()
-                .orElseThrow()
-                .getWidgetClass();
-    }
+    IMAGE_TEXT,
 
 }

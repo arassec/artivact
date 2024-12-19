@@ -32,13 +32,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static com.arassec.artivact.domain.exchange.ExchangeDefinitions.*;
+
 /**
  * Standard {@link ArtivactExporter}.
  */
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ArtivactStandardExporter implements ArtivactExporter, ExchangeProcessor {
+public class ArtivactStandardExporter implements ArtivactExporter {
 
     /**
      * The service for page handling.

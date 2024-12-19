@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -27,7 +28,7 @@ class ImportControllerTest {
      * The controller under test.
      */
     @InjectMocks
-    private ImportController importController;
+    private ImportController controller;
 
     /**
      * The application's {@link ConfigurationService}.
@@ -59,7 +60,7 @@ class ImportControllerTest {
         MultipartFile file = mock(MultipartFile.class);
         when(file.getBytes()).thenReturn("properties-config-json".getBytes());
 
-        ResponseEntity<String> stringResponseEntity = importController.importPropertiesConfiguration(file);
+        ResponseEntity<String> stringResponseEntity = controller.importPropertiesConfiguration(file);
 
         assertEquals("Properties imported.", stringResponseEntity.getBody());
         verify(configurationService, times(1)).savePropertiesConfiguration(propertiesConfiguration);
@@ -77,10 +78,43 @@ class ImportControllerTest {
         MultipartFile file = mock(MultipartFile.class);
         when(file.getBytes()).thenReturn("tags-config-json".getBytes());
 
-        ResponseEntity<String> stringResponseEntity = importController.importTagsConfiguration(file);
+        ResponseEntity<String> stringResponseEntity = controller.importTagsConfiguration(file);
 
         assertEquals("Tags imported.", stringResponseEntity.getBody());
         verify(configurationService, times(1)).saveTagsConfiguration(tagsConfiguration);
+    }
+
+    /**
+     * Tests importing a menu.
+     */
+    @Test
+    void testImportMenu() {
+        MultipartFile file = mock(MultipartFile.class);
+        ResponseEntity<String> stringResponseEntity = controller.importMenu(file);
+        assertThat(stringResponseEntity.getBody()).isEqualTo("Menu imported.");
+        verify(importService).importContent(file);
+    }
+
+    /**
+     * Test importing an item.
+     */
+    @Test
+    void testImportItem() {
+        MultipartFile file = mock(MultipartFile.class);
+        ResponseEntity<String> stringResponseEntity = controller.importItem(file);
+        assertThat(stringResponseEntity.getBody()).isEqualTo("Item imported.");
+        verify(importService).importContent(file);
+    }
+
+    /**
+     * Tests importing an item using an API token.
+     */
+    @Test
+    void testImportItemWithApiToken() {
+        MultipartFile file = mock(MultipartFile.class);
+        ResponseEntity<String> stringResponseEntity = controller.importItemWithApiToken(file, "123-abc");
+        assertThat(stringResponseEntity.getBody()).isEqualTo("Item synchronized.");
+        verify(importService).importContent(file, "123-abc");
     }
 
 }

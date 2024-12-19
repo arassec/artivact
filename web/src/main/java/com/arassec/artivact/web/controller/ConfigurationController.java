@@ -4,7 +4,7 @@ import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.model.Roles;
 import com.arassec.artivact.core.model.configuration.*;
 import com.arassec.artivact.core.model.property.PropertyCategory;
-import com.arassec.artivact.domain.exchange.ExchangeProcessor;
+import com.arassec.artivact.domain.exchange.ExchangeDefinitions;
 import com.arassec.artivact.domain.service.ConfigurationService;
 import com.arassec.artivact.web.model.ApplicationSettings;
 import com.arassec.artivact.web.model.Profiles;
@@ -192,7 +192,7 @@ public class ConfigurationController extends BaseController {
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION, ATTACHMENT_PREFIX
-                + LocalDate.now() + "." + ExchangeProcessor.PROPERTIES_EXCHANGE_FILENAME_JSON);
+                + LocalDate.now() + "." + ExchangeDefinitions.PROPERTIES_EXCHANGE_FILENAME_JSON);
         response.addHeader(HttpHeaders.PRAGMA, NO_CACHE);
         response.addHeader(HttpHeaders.EXPIRES, EXPIRES_IMMEDIATELY);
 
@@ -257,7 +257,7 @@ public class ConfigurationController extends BaseController {
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION, ATTACHMENT_PREFIX
-                + LocalDate.now() + "." + ExchangeProcessor.TAGS_EXCHANGE_FILENAME_JSON);
+                + LocalDate.now() + "." + ExchangeDefinitions.TAGS_EXCHANGE_FILENAME_JSON);
         response.addHeader(HttpHeaders.PRAGMA, NO_CACHE);
         response.addHeader(HttpHeaders.EXPIRES, EXPIRES_IMMEDIATELY);
 

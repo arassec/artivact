@@ -2,7 +2,7 @@ package com.arassec.artivact.web.controller;
 
 import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.model.item.*;
-import com.arassec.artivact.domain.exchange.ExchangeProcessor;
+import com.arassec.artivact.domain.exchange.ExchangeDefinitions;
 import com.arassec.artivact.domain.misc.ProjectDataProvider;
 import com.arassec.artivact.domain.service.ItemService;
 import com.arassec.artivact.web.model.ImageSet;
@@ -232,7 +232,7 @@ public class ItemController extends BaseController {
 
         response.setContentType(TYPE_ZIP);
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION, ATTACHMENT_PREFIX
-                + LocalDate.now() + "." + itemId + "." + ExchangeProcessor.ITEM_EXCHANGE_FILENAME_ZIP);
+                + LocalDate.now() + "." + itemId + "." + ExchangeDefinitions.ITEM_EXCHANGE_FILENAME_ZIP);
         response.addHeader(HttpHeaders.PRAGMA, NO_CACHE);
         response.addHeader(HttpHeaders.EXPIRES, EXPIRES_IMMEDIATELY);
 

@@ -28,8 +28,8 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
-import static com.arassec.artivact.domain.exchange.ExchangeProcessor.PROPERTIES_EXCHANGE_FILENAME_JSON;
-import static com.arassec.artivact.domain.exchange.ExchangeProcessor.TAGS_EXCHANGE_FILENAME_JSON;
+import static com.arassec.artivact.domain.exchange.ExchangeDefinitions.PROPERTIES_EXCHANGE_FILENAME_JSON;
+import static com.arassec.artivact.domain.exchange.ExchangeDefinitions.TAGS_EXCHANGE_FILENAME_JSON;
 
 /**
  * Service for configuration management.

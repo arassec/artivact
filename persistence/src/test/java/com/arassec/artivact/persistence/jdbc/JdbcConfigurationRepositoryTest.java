@@ -22,7 +22,7 @@ import static org.mockito.Mockito.*;
  * Tests the {@link JdbcConfigurationRepository}.
  */
 @ExtendWith(MockitoExtension.class)
-public class JdbcConfigurationRepositoryTest {
+class JdbcConfigurationRepositoryTest {
 
     /**
      * Repository under test.

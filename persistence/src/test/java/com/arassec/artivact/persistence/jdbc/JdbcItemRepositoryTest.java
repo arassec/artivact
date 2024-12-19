@@ -28,7 +28,7 @@ import static org.mockito.Mockito.*;
  * Tests the {@link JdbcItemRepository}.
  */
 @ExtendWith(MockitoExtension.class)
-public class JdbcItemRepositoryTest {
+class JdbcItemRepositoryTest {
 
     /**
      * The repository under test.

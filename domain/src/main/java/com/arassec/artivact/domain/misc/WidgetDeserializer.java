@@ -1,9 +1,9 @@
 package com.arassec.artivact.domain.misc;
 
+import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.model.TranslatableString;
 import com.arassec.artivact.core.model.page.Widget;
-import com.arassec.artivact.core.model.page.WidgetType;
-import com.arassec.artivact.core.model.page.widget.ItemSearchWidget;
+import com.arassec.artivact.core.model.page.widget.*;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -43,7 +43,7 @@ public class WidgetDeserializer extends StdDeserializer<Widget> {
     public Widget deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
         Map<String, Object> map = deserializationContext.readValue(jsonParser, Map.class);
         try {
-            Class<?> classOfType = WidgetType.getClassOfType(getType(map));
+            Class<?> classOfType = getClassOfType(getType(map));
             Widget widget = (Widget) objectMapper.readValue(objectMapper.writeValueAsString(map), classOfType);
             if (widget.getNavigationTitle() == null) {
                 widget.setNavigationTitle(TranslatableString.builder().value("").build());
@@ -75,6 +75,36 @@ public class WidgetDeserializer extends StdDeserializer<Widget> {
             return type;
         }
         return null;
+    }
+
+    private Class<? extends Widget> getClassOfType(String type) {
+        if (type == null) {
+            throw new ArtivactException("Unknown widget type!");
+        }
+        switch (type) {
+            case "PAGE_TITLE" -> {
+                return PageTitleWidget.class;
+            }
+            case "TEXT" -> {
+                return TextWidget.class;
+            }
+            case "ITEM_SEARCH" -> {
+                return ItemSearchWidget.class;
+            }
+            case "INFO_BOX" -> {
+                return InfoBoxWidget.class;
+            }
+            case "AVATAR" -> {
+                return AvatarWidget.class;
+            }
+            case "SPACE" -> {
+                return SpaceWidget.class;
+            }
+            case "IMAGE_TEXT" -> {
+                return ImageTextWidget.class;
+            }
+            default -> throw new ArtivactException("Unknown widget type: " + type);
+        }
     }
 
 }

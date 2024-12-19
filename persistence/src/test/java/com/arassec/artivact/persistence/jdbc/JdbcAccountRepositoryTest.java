@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
  * Tests the {@link JdbcAccountRepository}.
  */
 @ExtendWith(MockitoExtension.class)
-public class JdbcAccountRepositoryTest {
+class JdbcAccountRepositoryTest {
 
     /**
      * Repository under test.

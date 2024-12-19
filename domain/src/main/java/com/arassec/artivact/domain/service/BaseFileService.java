@@ -68,6 +68,7 @@ public abstract class BaseFileService {
      * @param file The file to save.
      * @return The name of the saved file.
      */
+    @SuppressWarnings("javasecurity:S2083") // Path is not entered by user!
     protected String saveFile(Path root, String id, MultipartFile file) {
         String filename = file.getOriginalFilename();
 

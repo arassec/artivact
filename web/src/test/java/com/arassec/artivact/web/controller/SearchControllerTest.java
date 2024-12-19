@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -93,6 +94,21 @@ class SearchControllerTest {
         assertEquals("four", result.getData().get(1).getItemId());
 
         assertEquals(3, result.getTotalPages());
+    }
+
+    /**
+     * Tests searching with an empty result.
+     */
+    @Test
+    void testSearchEmptyResult() {
+        when(searchService.searchTranslatedRestricted("query", 5)).thenReturn(List.of());
+
+        SearchResult result = controller.search("query", 1, 2, 5);
+
+        assertThat(result.getPageNumber()).isEqualTo(1);
+        assertThat(result.getPageSize()).isZero();
+        assertThat(result.getTotalPages()).isZero();
+        assertThat(result.getData()).isEmpty();
     }
 
     /**
