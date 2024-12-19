@@ -1,6 +1,5 @@
 package com.arassec.artivact.domain.misc;
 
-import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.model.TranslatableString;
 import com.arassec.artivact.core.model.page.Widget;
 import com.arassec.artivact.core.model.page.widget.*;
@@ -44,6 +43,9 @@ public class WidgetDeserializer extends StdDeserializer<Widget> {
         Map<String, Object> map = deserializationContext.readValue(jsonParser, Map.class);
         try {
             Class<?> classOfType = getClassOfType(getType(map));
+            if (classOfType == null) {
+                return null;
+            }
             Widget widget = (Widget) objectMapper.readValue(objectMapper.writeValueAsString(map), classOfType);
             if (widget.getNavigationTitle() == null) {
                 widget.setNavigationTitle(TranslatableString.builder().value("").build());
@@ -77,9 +79,15 @@ public class WidgetDeserializer extends StdDeserializer<Widget> {
         return null;
     }
 
+    /**
+     * Returns a widget's class for its type.
+     *
+     * @param type The widget's type.
+     * @return The class of the widgte.
+     */
     private Class<? extends Widget> getClassOfType(String type) {
         if (type == null) {
-            throw new ArtivactException("Unknown widget type!");
+            return null;
         }
         switch (type) {
             case "PAGE_TITLE" -> {
@@ -103,7 +111,9 @@ public class WidgetDeserializer extends StdDeserializer<Widget> {
             case "IMAGE_TEXT" -> {
                 return ImageTextWidget.class;
             }
-            default -> throw new ArtivactException("Unknown widget type: " + type);
+            default -> {
+                return null;
+            }
         }
     }
 
