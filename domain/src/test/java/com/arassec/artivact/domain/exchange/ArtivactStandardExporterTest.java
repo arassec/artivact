@@ -177,7 +177,7 @@ class ArtivactStandardExporterTest {
 
         Path exportedTagsConfiguration = exporter.exportPropertiesConfiguration(propertiesConfiguration);
 
-        assertThat(exportedTagsConfiguration.toString()).hasToString("test/exports/artivact.properties-configuration.json");
+        assertThat(exportedTagsConfiguration).isEqualTo(Path.of("test/exports/artivact.properties-configuration.json"));
         verify(objectMapper).writeValue(any(File.class), eq(propertiesConfiguration));
     }
 
@@ -192,7 +192,7 @@ class ArtivactStandardExporterTest {
 
         Path exportedTagsConfiguration = exporter.exportTagsConfiguration(tagsConfiguration);
 
-        assertThat(exportedTagsConfiguration.toString()).hasToString("test/exports/artivact.tags-configuration.json");
+        assertThat(exportedTagsConfiguration).isEqualTo(Path.of("test/exports/artivact.tags-configuration.json"));
         verify(objectMapper).writeValue(any(File.class), eq(tagsConfiguration));
     }
 
