@@ -86,12 +86,12 @@ public class ArtivactServerSecurityConfiguration {
     /**
      * Public API path for collection export file downloads.
      */
-    private static final String API_COLLECTION_EXPORT_FILE_PATTERN = "/api/collection/export/**/file";
+    private static final String API_COLLECTION_EXPORT_FILE_PATTERN = "/api/collection/export/{id}/file";
 
     /**
      * Public API path for collection export infos.
      */
-    private static final String API_COLLECTION_EXPORT_INFO_PATTERN = "/api/collection/export/**/file";
+    private static final String API_COLLECTION_EXPORT_INFO_PATTERN = "/api/collection/export/{id}/file";
 
     /**
      * API path for content export handling.
