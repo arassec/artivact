@@ -41,7 +41,7 @@ public class ItemSearchWidget extends Widget {
     /**
      * Creates a new instance.
      */
-    protected ItemSearchWidget() {
+    public ItemSearchWidget() {
         super(WidgetType.ITEM_SEARCH);
     }
 

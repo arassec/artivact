@@ -192,6 +192,7 @@ public abstract class BaseFileService {
      * @param filename The file to get the path of.
      * @return The path to the file.
      */
+    @SuppressWarnings("javasecurity:S2083") // Path is not entered by user!
     private Path getSimpleFilePath(Path root, String id, String filename) {
         return root.resolve(getFileRepository().getSubDir(id, 0)).resolve(getFileRepository().getSubDir(id, 1)).resolve(id).resolve(filename);
     }

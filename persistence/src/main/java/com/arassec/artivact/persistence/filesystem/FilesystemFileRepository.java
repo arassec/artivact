@@ -191,6 +191,7 @@ public class FilesystemFileRepository implements FileRepository {
      * {@inheritDoc}
      */
     @Override
+    @SuppressWarnings("javasecurity:S2083") // Path is not entered by user!
     public void copy(InputStream source, Path target, CopyOption... copyOptions) {
         try {
             Files.copy(source, target, copyOptions);
@@ -364,6 +365,7 @@ public class FilesystemFileRepository implements FileRepository {
      * {@inheritDoc}
      */
     @Override
+    @SuppressWarnings("javasecurity:S2083") // Path is not entered by user!
     public void unpack(Path source, Path target) {
         ZipUtil.unpack(source.toFile(), target.toFile());
     }

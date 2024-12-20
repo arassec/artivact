@@ -95,10 +95,10 @@ public class ArtivactStandardExporter implements ArtivactExporter {
             }
         }
 
-        fileRepository.pack(exportContext.getExportDir().toAbsolutePath(), exportContext.getExportFile().toAbsolutePath());
-        fileRepository.delete(exportContext.getExportDir().toAbsolutePath());
+        fileRepository.pack(exportContext.getExportDir(), exportContext.getExportFile());
+        fileRepository.delete(exportContext.getExportDir());
 
-        return exportContext.getExportFile().toAbsolutePath();
+        return exportContext.getExportFile();
     }
 
     /**
@@ -120,10 +120,10 @@ public class ArtivactStandardExporter implements ArtivactExporter {
 
         exportMenu(exportContext, menu);
 
-        fileRepository.pack(exportContext.getExportDir().toAbsolutePath(), exportContext.getExportFile().toAbsolutePath());
-        fileRepository.delete(exportContext.getExportDir().toAbsolutePath());
+        fileRepository.pack(exportContext.getExportDir(), exportContext.getExportFile());
+        fileRepository.delete(exportContext.getExportDir());
 
-        return exportContext.getExportFile().toAbsolutePath();
+        return exportContext.getExportFile();
     }
 
     /**
@@ -141,9 +141,10 @@ public class ArtivactStandardExporter implements ArtivactExporter {
 
         exportItem(exportContext, item);
 
-        fileRepository.pack(exportContext.getExportDir().toAbsolutePath(), exportContext.getExportFile().toAbsolutePath());
+        fileRepository.pack(exportContext.getExportDir(), exportContext.getExportFile());
+        fileRepository.delete(exportContext.getExportDir());
 
-        return exportContext.getExportFile().toAbsolutePath();
+        return exportContext.getExportFile();
     }
 
     /**
@@ -299,32 +300,32 @@ public class ArtivactStandardExporter implements ArtivactExporter {
      * @param widget        The widget to export.
      */
     private void exportWidget(ExportContext exportContext, Widget widget) {
-        widget.getNavigationTitle().setTranslatedValue(null);
+        Optional.ofNullable(widget.getNavigationTitle()).ifPresent(title -> title.setTranslatedValue(null));
         switch (widget) {
             case AvatarWidget avatarWidget -> {
-                avatarWidget.getAvatarSubtext().setTranslatedValue(null);
+                Optional.ofNullable(avatarWidget.getAvatarSubtext()).ifPresent(subtext -> subtext.setTranslatedValue(null));
                 copyWidgetFile(exportContext, avatarWidget, avatarWidget.getAvatarImage());
             }
             case ImageTextWidget imageTextWidget -> {
-                imageTextWidget.getText().setTranslatedValue(null);
+                Optional.ofNullable(imageTextWidget.getText()).ifPresent(text -> text.setTranslatedValue(null));
                 copyWidgetFile(exportContext, imageTextWidget, imageTextWidget.getImage());
             }
             case InfoBoxWidget infoBoxWidget -> {
-                infoBoxWidget.getHeading().setTranslatedValue(null);
-                infoBoxWidget.getContent().setTranslatedValue(null);
+                Optional.ofNullable(infoBoxWidget.getHeading()).ifPresent(heading -> heading.setTranslatedValue(null));
+                Optional.ofNullable(infoBoxWidget.getContent()).ifPresent(content -> content.setTranslatedValue(null));
             }
             case PageTitleWidget pageTitleWidget -> {
-                pageTitleWidget.getTitle().setTranslatedValue(null);
+                Optional.ofNullable(pageTitleWidget.getTitle()).ifPresent(title -> title.setTranslatedValue(null));
                 copyWidgetFile(exportContext, pageTitleWidget, pageTitleWidget.getBackgroundImage());
             }
             case ItemSearchWidget itemSearchWidget -> {
-                itemSearchWidget.getHeading().setTranslatedValue(null);
-                itemSearchWidget.getContent().setTranslatedValue(null);
+                Optional.ofNullable(itemSearchWidget.getHeading()).ifPresent(heading -> heading.setTranslatedValue(null));
+                Optional.ofNullable(itemSearchWidget.getContent()).ifPresent(content -> content.setTranslatedValue(null));
                 exportItemSearchWidgetsItems(exportContext, itemSearchWidget);
             }
             case TextWidget textWidget -> {
-                textWidget.getHeading().setTranslatedValue(null);
-                textWidget.getContent().setTranslatedValue(null);
+                Optional.ofNullable(textWidget.getHeading()).ifPresent(heading -> heading.setTranslatedValue(null));
+                Optional.ofNullable(textWidget.getContent()).ifPresent(content -> content.setTranslatedValue(null));
             }
             default -> log.info("No export available for widget type: {}", widget.getType());
         }
@@ -391,8 +392,10 @@ public class ArtivactStandardExporter implements ArtivactExporter {
 
         item.setMediaCreationContent(null); // Not needed in standard exports at the moment.
 
-        Path imagesSourceDir = fileRepository.getDirFromId(projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.ITEMS_DIR), item.getId()).resolve(ProjectDataProvider.IMAGES_DIR);
-        Path modelsSourceDir = fileRepository.getDirFromId(projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.ITEMS_DIR), item.getId()).resolve(ProjectDataProvider.MODELS_DIR);
+        Path imagesSourceDir = fileRepository.getDirFromId(projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.ITEMS_DIR), item.getId())
+                .resolve(ProjectDataProvider.IMAGES_DIR);
+        Path modelsSourceDir = fileRepository.getDirFromId(projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.ITEMS_DIR), item.getId())
+                .resolve(ProjectDataProvider.MODELS_DIR);
 
         if (exportContext.getExportConfiguration().isOptimizeSize()) {
             if (!models.isEmpty()) {
@@ -526,7 +529,7 @@ public class ArtivactStandardExporter implements ArtivactExporter {
      */
     private void writeJsonFile(Path targetPath, Object object) {
         try {
-            objectMapper.writeValue(targetPath.toAbsolutePath().toFile(), object);
+            objectMapper.writeValue(targetPath.toFile(), object);
         } catch (IOException e) {
             throw new ArtivactException("Could not write export file!", e);
         }
