@@ -1,11 +1,7 @@
 package com.arassec.artivact.domain.service;
 
 import com.arassec.artivact.core.model.account.Account;
-import com.arassec.artivact.core.model.configuration.ConfigurationType;
-import com.arassec.artivact.core.model.configuration.MenuConfiguration;
-import com.arassec.artivact.core.model.menu.Menu;
 import com.arassec.artivact.core.repository.AccountRepository;
-import com.arassec.artivact.core.repository.ConfigurationRepository;
 import com.arassec.artivact.core.repository.PageRepository;
 import com.arassec.artivact.domain.exchange.ArtivactImporter;
 import com.arassec.artivact.domain.misc.ProjectDataProvider;
@@ -18,8 +14,6 @@ import org.springframework.util.StringUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -72,16 +66,6 @@ public class SetupService {
     private final ConfigurationService configurationService;
 
     /**
-     * The configuration repository.
-     */
-    private final ConfigurationRepository configurationRepository;
-
-    /**
-     * Service for menus.
-     */
-    private final MenuService menuService;
-
-    /**
      * Initial administrator password. Can be set per JVM parameter for integration testing.
      */
     @Value("${artivact.initial.password:}")
@@ -95,7 +79,6 @@ public class SetupService {
     @PostConstruct
     public void initialize() {
         initializeAdminAccount();
-        migrateMenus();
         importWelcomePage();
     }
 
@@ -121,21 +104,6 @@ public class SetupService {
             log.info("Initial user created: {} / {}", INITIAL_USERNAME, initialPassword);
             log.info("##############################################################");
             log.info("");
-        }
-    }
-
-    /**
-     * Migrates menus from the configuration table to the menus table.
-     */
-    private void migrateMenus() {
-        Optional<MenuConfiguration> menuConfigurationOptional = configurationRepository.findByType(ConfigurationType.MENU, MenuConfiguration.class);
-        if (menuConfigurationOptional.isPresent()) {
-            List<Menu> menus = menuService.loadTranslatedRestrictedMenus();
-            if (menus.isEmpty()) {
-                MenuConfiguration menuConfiguration = menuConfigurationOptional.get();
-                menuService.saveMenus(menuConfiguration.getMenus());
-                log.info("Migrated menus!");
-            }
         }
     }
 

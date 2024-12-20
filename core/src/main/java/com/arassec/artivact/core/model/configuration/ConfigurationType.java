@@ -16,11 +16,6 @@ public enum ConfigurationType {
     TAGS,
 
     /**
-     * Application menus.
-     */
-    MENU,
-
-    /**
      * The application appearance.
      */
     APPEARANCE,
