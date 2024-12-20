@@ -2,8 +2,7 @@ package com.arassec.artivact.domain.misc;
 
 import com.arassec.artivact.core.model.page.Widget;
 import com.arassec.artivact.core.model.page.WidgetType;
-import com.arassec.artivact.core.model.page.widget.ItemSearchWidget;
-import com.arassec.artivact.core.model.page.widget.SpaceWidget;
+import com.arassec.artivact.core.model.page.widget.*;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import lombok.SneakyThrows;
@@ -22,29 +21,43 @@ import static org.mockito.Mockito.when;
 class WidgetDeserializerTest {
 
     /**
-     * Tests deserializing a widget.
+     * Tests deserializing the {@link com.arassec.artivact.core.model.page.widget.PageTitleWidget}.
      */
     @Test
     @SneakyThrows
-    void testDeserialize() {
+    void testDeserializePageTitleWidget() {
         JsonParser jsonParserMock = mock(JsonParser.class);
         DeserializationContext deserializationContextMock = mock(DeserializationContext.class);
 
         when(deserializationContextMock.readValue(jsonParserMock, Map.class)).thenReturn(Map.of(
-                "type", WidgetType.SPACE.toString(),
-                "size", 42
+                "type", WidgetType.PAGE_TITLE.toString()
         ));
 
         WidgetDeserializer widgetDeserializer = new WidgetDeserializer();
-
         Widget widget = widgetDeserializer.deserialize(jsonParserMock, deserializationContextMock);
-
-        assertInstanceOf(SpaceWidget.class, widget);
-        assertEquals(42, ((SpaceWidget) widget).getSize());
+        assertInstanceOf(PageTitleWidget.class, widget);
     }
 
     /**
-     * Tests deserializing the {@link com.arassec.artivact.core.model.page.widget.ItemSearchWidget} widget.
+     * Tests deserializing the {@link com.arassec.artivact.core.model.page.widget.TextWidget}.
+     */
+    @Test
+    @SneakyThrows
+    void testDeserializeTextWidget() {
+        JsonParser jsonParserMock = mock(JsonParser.class);
+        DeserializationContext deserializationContextMock = mock(DeserializationContext.class);
+
+        when(deserializationContextMock.readValue(jsonParserMock, Map.class)).thenReturn(Map.of(
+                "type", WidgetType.TEXT.toString()
+        ));
+
+        WidgetDeserializer widgetDeserializer = new WidgetDeserializer();
+        Widget widget = widgetDeserializer.deserialize(jsonParserMock, deserializationContextMock);
+        assertInstanceOf(TextWidget.class, widget);
+    }
+
+    /**
+     * Tests deserializing the {@link com.arassec.artivact.core.model.page.widget.ItemSearchWidget}.
      */
     @Test
     @SneakyThrows
@@ -64,6 +77,82 @@ class WidgetDeserializerTest {
         assertInstanceOf(ItemSearchWidget.class, widget);
         assertThat(((ItemSearchWidget) widget).getHeading()).isNotNull();
         assertThat(((ItemSearchWidget) widget).getContent()).isNotNull();
+    }
+
+    /**
+     * Tests deserializing the {@link com.arassec.artivact.core.model.page.widget.InfoBoxWidget}.
+     */
+    @Test
+    @SneakyThrows
+    void testDeserializeInfoBoxWidget() {
+        JsonParser jsonParserMock = mock(JsonParser.class);
+        DeserializationContext deserializationContextMock = mock(DeserializationContext.class);
+
+        when(deserializationContextMock.readValue(jsonParserMock, Map.class)).thenReturn(Map.of(
+                "type", WidgetType.INFO_BOX.toString()
+        ));
+
+        WidgetDeserializer widgetDeserializer = new WidgetDeserializer();
+        Widget widget = widgetDeserializer.deserialize(jsonParserMock, deserializationContextMock);
+        assertInstanceOf(InfoBoxWidget.class, widget);
+    }
+
+    /**
+     * Tests deserializing the {@link com.arassec.artivact.core.model.page.widget.AvatarWidget}.
+     */
+    @Test
+    @SneakyThrows
+    void testDeserializeAvatarWidget() {
+        JsonParser jsonParserMock = mock(JsonParser.class);
+        DeserializationContext deserializationContextMock = mock(DeserializationContext.class);
+
+        when(deserializationContextMock.readValue(jsonParserMock, Map.class)).thenReturn(Map.of(
+                "type", WidgetType.AVATAR.toString()
+        ));
+
+        WidgetDeserializer widgetDeserializer = new WidgetDeserializer();
+        Widget widget = widgetDeserializer.deserialize(jsonParserMock, deserializationContextMock);
+        assertInstanceOf(AvatarWidget.class, widget);
+    }
+
+    /**
+     * Tests deserializing the {@link com.arassec.artivact.core.model.page.widget.SpaceWidget}.
+     */
+    @Test
+    @SneakyThrows
+    void testDeserializeSpaceWidget() {
+        JsonParser jsonParserMock = mock(JsonParser.class);
+        DeserializationContext deserializationContextMock = mock(DeserializationContext.class);
+
+        when(deserializationContextMock.readValue(jsonParserMock, Map.class)).thenReturn(Map.of(
+                "type", WidgetType.SPACE.toString(),
+                "size", 42
+        ));
+
+        WidgetDeserializer widgetDeserializer = new WidgetDeserializer();
+
+        Widget widget = widgetDeserializer.deserialize(jsonParserMock, deserializationContextMock);
+
+        assertInstanceOf(SpaceWidget.class, widget);
+        assertEquals(42, ((SpaceWidget) widget).getSize());
+    }
+
+    /**
+     * Tests deserializing the {@link com.arassec.artivact.core.model.page.widget.ImageTextWidget}.
+     */
+    @Test
+    @SneakyThrows
+    void testDeserializeImageTextWidget() {
+        JsonParser jsonParserMock = mock(JsonParser.class);
+        DeserializationContext deserializationContextMock = mock(DeserializationContext.class);
+
+        when(deserializationContextMock.readValue(jsonParserMock, Map.class)).thenReturn(Map.of(
+                "type", WidgetType.IMAGE_TEXT.toString()
+        ));
+
+        WidgetDeserializer widgetDeserializer = new WidgetDeserializer();
+        Widget widget = widgetDeserializer.deserialize(jsonParserMock, deserializationContextMock);
+        assertInstanceOf(ImageTextWidget.class, widget);
     }
 
     /**

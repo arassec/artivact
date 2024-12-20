@@ -392,52 +392,50 @@ public class ItemService extends BaseFileService {
      * Exports the item with the given ID and uploads it to a remote application instance configured in the exchange
      * configuration.
      *
-     * @param itemId The item's ID.
+     * @param itemId       The item's ID.
+     * @param asynchronous Set to {@code true} to upload the item in a different thread.
      */
     public synchronized void uploadItemToRemoteInstance(String itemId, boolean asynchronous) {
         ExchangeConfiguration exchangeConfiguration = configurationService.loadExchangeConfiguration();
         String remoteServer = exchangeConfiguration.getRemoteServer();
         String apiToken = exchangeConfiguration.getApiToken();
 
-        if (!StringUtils.hasText(remoteServer)) {
-            throw new ArtivactException("Remote server is not configured!");
-        }
-        if (!remoteServer.endsWith("/")) {
-            remoteServer += "/";
+        if (!StringUtils.hasText(remoteServer) || !StringUtils.hasText(apiToken)) {
+            throw new ArtivactException("Remote instance access is not configured properly!");
         }
 
-        if (!StringUtils.hasText(apiToken)) {
-            throw new ArtivactException("API token is not configured!");
+        if (!remoteServer.endsWith("/")) {
+            remoteServer += "/";
         }
 
         final String syncUrl = remoteServer + "api/import/item/" + apiToken;
         Path exportFile = exportItem(itemId);
 
         if (asynchronous) {
-            if (progressMonitor != null && progressMonitor.getException() == null) {
-                return;
-            }
-
-            progressMonitor = new ProgressMonitor(getClass(), "uploading");
-
-            executorService.submit(() -> {
-                try {
-                    uploadItem(syncUrl, itemId, exportFile, progressMonitor);
-                } catch (Exception e) {
-                    progressMonitor.updateProgress("uploadFailed", e);
-                    log.error("Could not upload item file to remote server!", e);
-                }
-                if (progressMonitor.getException() == null) {
-                    progressMonitor = null;
-                }
-            });
+            uploadItemAsync(syncUrl, itemId, exportFile);
         } else {
+            uploadItem(syncUrl, itemId, exportFile, progressMonitor);
+        }
+    }
+
+    private void uploadItemAsync(String syncUrl, String itemId, Path exportFile) {
+        if (progressMonitor != null && progressMonitor.getException() == null) {
+            return;
+        }
+
+        progressMonitor = new ProgressMonitor(getClass(), "uploading");
+
+        executorService.submit(() -> {
             try {
                 uploadItem(syncUrl, itemId, exportFile, progressMonitor);
-            } catch (IOException e) {
-                throw new ArtivactException("Could not upload item file to remote server!", e);
+            } catch (Exception e) {
+                progressMonitor.updateProgress("uploadFailed", e);
+                log.error("Could not upload item file to remote server!", e);
             }
-        }
+            if (progressMonitor.getException() == null) {
+                progressMonitor = null;
+            }
+        });
     }
 
     /**
@@ -469,9 +467,8 @@ public class ItemService extends BaseFileService {
      * @param itemId                  The item's ID.
      * @param exportFile              The export file containing the exported item.
      * @param progressMonitorInstance An optional {@link ProgressMonitor} to track errors.
-     * @throws IOException In case of upload errors.
      */
-    private void uploadItem(String syncUrl, String itemId, Path exportFile, ProgressMonitor progressMonitorInstance) throws IOException {
+    private void uploadItem(String syncUrl, String itemId, Path exportFile, ProgressMonitor progressMonitorInstance) {
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             HttpPost httpPost = new HttpPost(syncUrl);
 
@@ -497,6 +494,8 @@ public class ItemService extends BaseFileService {
                 }
                 return response;
             });
+        } catch (IOException e) {
+            throw new ArtivactException("Could not upload item!", e);
         } finally {
             if (fileRepository.exists(exportFile)) {
                 fileRepository.delete(exportFile);
