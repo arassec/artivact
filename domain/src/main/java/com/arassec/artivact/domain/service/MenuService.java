@@ -150,6 +150,13 @@ public class MenuService extends BaseFileService {
         if (StringUtils.hasText(menu.getTargetPageId())) {
             pageService.updatePageRestrictions(menu.getTargetPageId(), menu.getRestrictions());
         }
+        menu.getMenuEntries().forEach(menuEntry -> {
+            if (menuEntry.getRestrictions().isEmpty() && !menu.getRestrictions().isEmpty()) {
+                pageService.updatePageRestrictions(menuEntry.getTargetPageId(), menu.getRestrictions());
+            } else {
+                pageService.updatePageRestrictions(menuEntry.getTargetPageId(), menuEntry.getRestrictions());
+            }
+        });
 
         // We add pages for sub-menu entries automatically:
         menuConfiguration.getMenus().forEach(existingMenu ->
