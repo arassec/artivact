@@ -1,7 +1,7 @@
 <template>
 
   <artivact-page
-    v-if="pageContentRef && pageIdRef && !editModeRef"
+    v-if="pageContentRef && pageIdRef"
     :page-id="pageIdRef"
     :page-content="pageContentRef"
     v-on:update-page-content="updatePageContent"
@@ -34,15 +34,15 @@
 </template>
 
 <script setup lang="ts">
-import {useQuasar} from 'quasar';
-import {onBeforeRouteLeave, onBeforeRouteUpdate, RouteLocationNormalized, useRoute, useRouter} from 'vue-router';
-import {api} from 'boot/axios';
-import {onMounted, ref} from 'vue';
+import { useQuasar } from 'quasar';
+import { onBeforeRouteLeave, onBeforeRouteUpdate, RouteLocationNormalized, useRoute, useRouter } from 'vue-router';
+import { api } from 'boot/axios';
+import { onMounted, ref } from 'vue';
 import ArtivactPage from 'components/ArtivactPage.vue';
-import {PageContent, Widget} from 'components/artivact-models';
-import {useBreadcrumbsStore} from 'stores/breadcrumbs';
-import {useMenuStore} from 'stores/menu';
-import {useI18n} from 'vue-i18n';
+import { PageContent, Widget } from 'components/artivact-models';
+import { useBreadcrumbsStore } from 'stores/breadcrumbs';
+import { useMenuStore } from 'stores/menu';
+import { useI18n } from 'vue-i18n';
 import ArtivactDialog from 'components/ArtivactDialog.vue';
 
 const quasar = useQuasar();
@@ -55,8 +55,6 @@ const menuStore = useMenuStore();
 
 const pageContentRef = ref();
 const pageIdRef = ref('');
-
-const editModeRef = ref(false);
 
 let originalPageContentJson: string;
 let nextRoute: RouteLocationNormalized;

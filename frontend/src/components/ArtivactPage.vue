@@ -92,6 +92,7 @@
         v-if="widgetData.type === 'PAGE_TITLE'"
         :widget-data="widgetData as PageTitleWidgetData"
         :in-edit-mode="inEditMode"
+        :showEditor="inEditMode && pageStore.latestWidgetIndex === index"
         :move-up-enabled="index > 0"
         :move-down-enabled="index < pageContentRef.widgets.length - 1"
         @move-widget-up="moveWidgetUp(pageContentRef.widgets, index)"
@@ -108,6 +109,7 @@
         v-if="widgetData.type === 'TEXT'"
         :widget-data="widgetData as TextWidgetData"
         :in-edit-mode="inEditMode"
+        :showEditor="inEditMode && pageStore.latestWidgetIndex === index"
         :move-up-enabled="index > 0"
         :move-down-enabled="index < pageContentRef.widgets.length - 1"
         @move-widget-up="moveWidgetUp(pageContentRef.widgets, index)"
@@ -122,6 +124,7 @@
         v-if="widgetData.type === 'IMAGE_TEXT'"
         :widget-data="widgetData as ImageTextWidgetData"
         :in-edit-mode="inEditMode"
+        :showEditor="inEditMode && pageStore.latestWidgetIndex === index"
         :move-up-enabled="index > 0"
         :move-down-enabled="index < pageContentRef.widgets.length - 1"
         @move-widget-up="moveWidgetUp(pageContentRef.widgets, index)"
@@ -138,6 +141,7 @@
         v-if="widgetData.type === 'ITEM_SEARCH'"
         :widget-data="widgetData as ItemSearchWidget"
         :in-edit-mode="inEditMode"
+        :showEditor="inEditMode && pageStore.latestWidgetIndex === index"
         :move-up-enabled="index > 0"
         :move-down-enabled="index < pageContentRef.widgets.length - 1"
         @move-widget-up="moveWidgetUp(pageContentRef.widgets, index)"
@@ -152,6 +156,7 @@
         v-if="widgetData.type === 'INFO_BOX'"
         :widget-data="widgetData as InfoBoxWidgetData"
         :in-edit-mode="inEditMode"
+        :showEditor="inEditMode && pageStore.latestWidgetIndex === index"
         :move-up-enabled="index > 0"
         :move-down-enabled="index < pageContentRef.widgets.length - 1"
         @move-widget-up="moveWidgetUp(pageContentRef.widgets, index)"
@@ -166,6 +171,7 @@
         v-if="widgetData.type === 'AVATAR'"
         :widget-data="widgetData as AvatarWidgetData"
         :in-edit-mode="inEditMode"
+        :showEditor="inEditMode && pageStore.latestWidgetIndex === index"
         :move-up-enabled="index > 0"
         :move-down-enabled="index < pageContentRef.widgets.length - 1"
         @move-widget-up="moveWidgetUp(pageContentRef.widgets, index)"
@@ -182,6 +188,7 @@
         v-if="widgetData.type === 'SPACE'"
         :widget-data="widgetData as SpaceWidgetData"
         :in-edit-mode="inEditMode"
+        :showEditor="inEditMode && pageStore.latestWidgetIndex === index"
         :move-up-enabled="index > 0"
         :move-down-enabled="index < pageContentRef.widgets.length - 1"
         @move-widget-up="moveWidgetUp(pageContentRef.widgets, index)"
@@ -243,10 +250,10 @@
 </template>
 
 <script setup lang="ts">
-import {PropType, ref, toRef} from 'vue';
-import {PageContent, TranslatableString, Widget} from 'components/artivact-models';
-import {useUserdataStore} from 'stores/userdata';
-import {useQuasar} from 'quasar';
+import { onMounted, PropType, ref, toRef } from 'vue';
+import { PageContent, TranslatableString, Widget } from 'components/artivact-models';
+import { useUserdataStore } from 'stores/userdata';
+import { useQuasar } from 'quasar';
 import {
   AvatarWidgetData,
   ImageTextWidgetData,
@@ -254,11 +261,11 @@ import {
   ItemSearchWidget,
   PageTitleWidgetData,
   SpaceWidgetData,
-  TextWidgetData,
+  TextWidgetData
 } from 'components/widgets/artivact-widget-models';
-import {moveDown, moveUp} from 'components/artivact-utils';
-import {api} from 'boot/axios';
-import {useI18n} from 'vue-i18n';
+import { moveDown, moveUp } from 'components/artivact-utils';
+import { api } from 'boot/axios';
+import { useI18n } from 'vue-i18n';
 import ArtivactDialog from 'components/ArtivactDialog.vue';
 import ArtivactAvatarWidget from 'components/widgets/ArtivactAvatarWidget.vue';
 import ArtivactImageTextWidget from 'components/widgets/ArtivactImageTextWidget.vue';
@@ -268,6 +275,7 @@ import ArtivactTextWidget from 'components/widgets/ArtivactTextWidget.vue';
 import ArtivactPageTitleWidget from 'components/widgets/ArtivactPageTitleWidget.vue';
 import ArtivactItemSearchWidget from 'components/widgets/ArtivactItemSearchWidget.vue';
 import ArtivactContent from 'components/ArtivactContent.vue';
+import { usePageStore } from 'stores/page';
 
 const props = defineProps({
   pageId: {
@@ -289,6 +297,7 @@ const quasar = useQuasar();
 const i18n = useI18n();
 
 const userdataStore = useUserdataStore();
+const pageStore = usePageStore();
 
 const pageContentRef = toRef(props, 'pageContent');
 const pageIdRef = toRef(props, 'pageId');
@@ -403,6 +412,8 @@ function addWidget() {
   }
   showAddWidgetDialogRef.value = false;
   savePage(false);
+
+  pageStore.setLatestWidgetIndex(index);
 }
 
 function deleteWidget(index: number) {
@@ -445,6 +456,15 @@ function savePage(leaveEditMode: boolean) {
 function fileAdded(propertyName: string, widgetId: string) {
   emit('file-added', widgetId, propertyName);
 }
+
+onMounted(() => {
+  if (pageStore.isNewPageCreated) {
+    pageStore.setNewPageCreated(false);
+    inEditMode.value = true
+    showAddWidgetDialogRef.value = true
+  }
+});
+
 </script>
 
 <style scoped>

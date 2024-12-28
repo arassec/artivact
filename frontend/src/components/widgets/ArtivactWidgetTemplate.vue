@@ -17,7 +17,7 @@
               data-test="widget-context-menu-edit-button"
               clickable
               v-close-popup
-              @click="showDetailsRef = true"
+              @click="showEditorRef = true"
             >
               <q-item-section>
                 <label>
@@ -126,7 +126,7 @@
 
         <slot name="widget-content"></slot>
 
-        <artivact-widget-editor-modal :dialog-model="showDetailsRef">
+        <artivact-widget-editor-modal :dialog-model="showEditorRef">
 
           <template v-slot:editor-preview>
             <slot name="widget-editor-preview"></slot>
@@ -156,7 +156,7 @@
               data-test="widget-editor-modal-approve"
               :label="$t('Common.apply')"
               color="primary"
-              @click="showDetailsRef = false"
+              @click="showEditorRef = false"
             />
           </template>
         </artivact-widget-editor-modal>
@@ -167,13 +167,13 @@
 </template>
 
 <script setup lang="ts">
-import {PropType, ref, toRef} from 'vue';
+import { onMounted, PropType, ref, toRef } from 'vue';
 import ArtivactRestrictionsEditor from 'components/ArtivactRestrictionsEditor.vue';
 import ArtivactWidgetEditorModal from 'components/widgets/ArtivactWidgetEditorModal.vue';
 import ArtivactContent from 'components/ArtivactContent.vue';
 import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
-import {TranslatableString} from 'components/artivact-models';
-import {useLocaleStore} from 'stores/locale';
+import { TranslatableString } from 'components/artivact-models';
+import { useLocaleStore } from 'stores/locale';
 
 const props = defineProps({
   inEditMode: {
@@ -196,6 +196,11 @@ const props = defineProps({
     required: true,
     type: Object as PropType<TranslatableString>
   },
+  showEditor: {
+    required: false,
+    type: Boolean,
+    default: false
+  }
 });
 
 defineEmits<{
@@ -209,8 +214,7 @@ defineEmits<{
 const localStore = useLocaleStore();
 
 const restrictionsRef = toRef(props, 'restrictions');
-
-const showDetailsRef = ref(false);
+const showEditorRef = ref(false);
 
 function addRestriction(value: string) {
   if (restrictionsRef.value) {
@@ -227,6 +231,13 @@ function deleteRestriction(value: string) {
     });
   }
 }
+
+onMounted(() => {
+  if (props.showEditor) {
+    showEditorRef.value = true
+  }
+});
+
 </script>
 
 <style scoped>

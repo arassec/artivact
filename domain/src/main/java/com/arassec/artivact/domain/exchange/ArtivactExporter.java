@@ -3,7 +3,6 @@ package com.arassec.artivact.domain.exchange;
 import com.arassec.artivact.core.model.configuration.PropertiesConfiguration;
 import com.arassec.artivact.core.model.configuration.TagsConfiguration;
 import com.arassec.artivact.core.model.exchange.CollectionExport;
-import com.arassec.artivact.core.model.exchange.ExportConfiguration;
 import com.arassec.artivact.core.model.item.Item;
 import com.arassec.artivact.core.model.menu.Menu;
 
@@ -26,13 +25,10 @@ public interface ArtivactExporter {
     /**
      * Exports the given menu and all its content.
      *
-     * @param exportConfiguration     The export's configuration.
      * @param menu                    The menu to export.
-     * @param propertiesConfiguration The current property configuration.
-     * @param tagsConfiguration       The current tags configuration.
      * @return The path to the newly created export.
      */
-    Path exportMenu(ExportConfiguration exportConfiguration, Menu menu, PropertiesConfiguration propertiesConfiguration, TagsConfiguration tagsConfiguration);
+    Path exportMenu(Menu menu);
 
     /**
      * Exports a single item.

@@ -119,9 +119,10 @@ public class PageService extends BaseFileService {
      * @param restrictions The new restrictions to apply.
      */
     public void updatePageRestrictions(String pageId, Set<String> restrictions) {
-        Page page = pageRepository.findById(pageId).orElseThrow();
-        page.getPageContent().setRestrictions(restrictions);
-        pageRepository.save(page);
+        pageRepository.findById(pageId).ifPresent(page -> {
+            page.getPageContent().setRestrictions(restrictions);
+            pageRepository.save(page);
+        });
     }
 
     /**

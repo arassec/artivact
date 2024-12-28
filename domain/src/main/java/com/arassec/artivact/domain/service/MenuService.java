@@ -3,7 +3,6 @@ package com.arassec.artivact.domain.service;
 
 import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.model.configuration.MenuConfiguration;
-import com.arassec.artivact.core.model.exchange.ExportConfiguration;
 import com.arassec.artivact.core.model.item.ImageSize;
 import com.arassec.artivact.core.model.menu.Menu;
 import com.arassec.artivact.core.model.page.Page;
@@ -299,11 +298,7 @@ public class MenuService extends BaseFileService {
      */
     public Path exportMenu(String menuId) {
         Menu menu = findMenu(menuId);
-        return artivactExporter.exportMenu(ExportConfiguration.builder()
-                .applyRestrictions(false)
-                .optimizeSize(false)
-                .excludeItems(true)
-                .build(), menu, configurationService.loadPropertiesConfiguration(), configurationService.loadTagsConfiguration());
+        return artivactExporter.exportMenu(menu);
     }
 
 }

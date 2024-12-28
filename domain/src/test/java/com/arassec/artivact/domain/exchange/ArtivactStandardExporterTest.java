@@ -5,16 +5,16 @@ import com.arassec.artivact.core.model.configuration.PropertiesConfiguration;
 import com.arassec.artivact.core.model.configuration.TagsConfiguration;
 import com.arassec.artivact.core.model.exchange.CollectionExport;
 import com.arassec.artivact.core.model.exchange.ContentSource;
-import com.arassec.artivact.core.model.exchange.ExportConfiguration;
 import com.arassec.artivact.core.model.item.Item;
 import com.arassec.artivact.core.model.menu.Menu;
-import com.arassec.artivact.core.model.page.PageContent;
-import com.arassec.artivact.core.model.page.widget.*;
 import com.arassec.artivact.core.repository.FileRepository;
+import com.arassec.artivact.domain.exchange.exp.ItemExporter;
+import com.arassec.artivact.domain.exchange.exp.MenuExporter;
+import com.arassec.artivact.domain.exchange.exp.PropertiesExporter;
+import com.arassec.artivact.domain.exchange.exp.TagsExporter;
 import com.arassec.artivact.domain.exchange.model.ExchangeMainData;
+import com.arassec.artivact.domain.exchange.model.ExportContext;
 import com.arassec.artivact.domain.misc.ProjectDataProvider;
-import com.arassec.artivact.domain.service.PageService;
-import com.arassec.artivact.domain.service.SearchService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
@@ -24,9 +24,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.File;
 import java.nio.file.Path;
-import java.util.List;
+import java.nio.file.Paths;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -38,22 +37,34 @@ import static org.mockito.Mockito.*;
 class ArtivactStandardExporterTest {
 
     /**
-     * The tested exporter.
+     * Tested exporter
      */
     @InjectMocks
     private ArtivactStandardExporter exporter;
 
     /**
-     * The service for page handling.
+     * Exporter for the property configuration.
      */
     @Mock
-    private PageService pageService;
+    private PropertiesExporter propertiesExporter;
 
     /**
-     * The service for searching items.
+     * Exporter for the tag configuration.
      */
     @Mock
-    private SearchService searchService;
+    private TagsExporter tagsExporter;
+
+    /**
+     * Exporter for items.
+     */
+    @Mock
+    private ItemExporter itemExporter;
+
+    /**
+     * Exporter for menus.
+     */
+    @Mock
+    private MenuExporter menuExporter;
 
     /**
      * The application's file repository.
@@ -74,12 +85,12 @@ class ArtivactStandardExporterTest {
     private ObjectMapper objectMapper;
 
     /**
-     * Path to the export directory used during tests.
+     * Export directory used during tests.
      */
     private Path exportDir;
 
     /**
-     * Path to the export file used during tests.
+     * Export file used during tests.
      */
     private Path exportFile;
 
@@ -97,223 +108,149 @@ class ArtivactStandardExporterTest {
      * Tests exporting a collection.
      */
     @Test
-    @SneakyThrows
     void testExportCollection() {
-        String exportId = "000-xyz";
-        prepareExportTest(exportId);
+        String exportId = "666-ase";
 
-        Menu menu = prepareMenuExportTest();
-        Item item = prepareItemExportTest();
-
-        when(searchService.search(any(), anyInt())).thenReturn(List.of(item));
-
-        Path coverPicture = Path.of("test/exports/000-xyz.jpg");
-        lenient().when(fileRepository.exists(coverPicture)).thenReturn(true);
+        initializeCreateExportContext();
+        initializePrepareExport(exportId, true);
 
         CollectionExport collectionExport = new CollectionExport();
         collectionExport.setId(exportId);
-        collectionExport.setTitle(new TranslatableString("title"));
-        collectionExport.setDescription(new TranslatableString("description"));
-        collectionExport.setCoverPictureExtension("jpg");
+        collectionExport.setTitle(new TranslatableString("collection-title"));
+        collectionExport.setDescription(new TranslatableString("collection-description"));
+        collectionExport.setCoverPictureExtension("JPG");
+
+        Menu menu = new Menu();
+        menu.setId("456-def");
+
+        Path coverPicturePath = Paths.get("root/exports/666-ase.JPG");
+        when(fileRepository.exists(coverPicturePath)).thenReturn(true);
 
         exporter.exportCollection(collectionExport, menu, propertiesConfiguration, tagsConfiguration);
 
-        verifyConfigFileHandling(1);
-        verifyDirAndMainFileHandling("456-def", ContentSource.MENU);
-        verifyMenuFileIsWritten(exportId, menu);
-        verifyItemAndMediaFilesAreWritten(exportId, item);
+        verify(menuExporter).exportMenu(any(ExportContext.class), eq(menu));
 
-        // Verify cover picture is copied to export:
-        verify(fileRepository).copy(
-                coverPicture,
-                Path.of("test/exports/000-xyz.artivact.collection/cover-picture.jpg")
-        );
+        verify(fileRepository).copy(coverPicturePath,
+                Path.of("root/exports/666-ase.artivact.collection/cover-picture.JPG"));
+
+        ExchangeMainData exchangeMainData = verifyExportMainData(exportId, ContentSource.MENU);
+        assertThat(exchangeMainData.getTitle().getValue()).isEqualTo("collection-title");
+        assertThat(exchangeMainData.getDescription().getValue()).isEqualTo("collection-description");
+
+        verifyConfigExport();
+        verifyFileHandling(true);
     }
 
     /**
      * Tests exporting a menu.
      */
     @Test
-    @SneakyThrows
     void testExportMenu() {
-        String menuId = "456-def";
+        String exportId = "456-def";
 
-        prepareExportTest(menuId);
-        Menu menu = prepareMenuExportTest();
+        initializeCreateExportContext();
+        initializePrepareExport(exportId, true);
 
-        exporter.exportMenu(ExportConfiguration.builder().excludeItems(true).build(), menu, propertiesConfiguration, tagsConfiguration);
+        Menu menu = new Menu();
+        menu.setId("456-def");
 
-        verifyConfigFileHandling(0);
-        verifyDirAndMainFileHandling(menuId, ContentSource.MENU);
-        verifyMenuFileIsWritten(menuId, menu);
+        exporter.exportMenu(menu);
+
+        verify(menuExporter).exportMenu(any(ExportContext.class), eq(menu));
+
+        ExchangeMainData exchangeMainData = verifyExportMainData(exportId, ContentSource.MENU);
+        assertThat(exchangeMainData.getTitle().getValue()).isNull();
+        assertThat(exchangeMainData.getDescription().getValue()).isNull();
+
+        verifyFileHandling(true);
     }
 
     /**
      * Tests exporting an item.
      */
     @Test
-    @SneakyThrows
     void testExportItem() {
-        String itemId = "123-abc";
+        String exportId = "123-abc";
 
-        prepareExportTest(itemId);
-        Item item = prepareItemExportTest();
+        initializeCreateExportContext();
+        initializePrepareExport(exportId, false);
+
+        Item item = new Item();
+        item.setId(exportId);
+        item.setTitle(new TranslatableString("item-title"));
+        item.setDescription(new TranslatableString("item-description"));
 
         exporter.exportItem(item, propertiesConfiguration, tagsConfiguration);
 
-        verifyDirAndMainFileHandling(itemId, ContentSource.ITEM);
-        verifyConfigFileHandling(1);
-        verifyItemAndMediaFilesAreWritten(itemId, item);
+        verify(itemExporter).exportItem(any(ExportContext.class), eq(item));
+
+        ExchangeMainData exchangeMainData = verifyExportMainData(exportId, ContentSource.ITEM);
+        assertThat(exchangeMainData.getTitle().getValue()).isEqualTo("item-title");
+        assertThat(exchangeMainData.getDescription().getValue()).isEqualTo("item-description");
+
+        verifyConfigExport();
+        verifyFileHandling(false);
     }
 
     /**
-     * Tests exporting the property configuration.
+     * Initializes the test environment for creating the export context.
      */
-    @Test
-    @SneakyThrows
-    void testExportPropertiesConfiguration() {
-        Path root = Path.of("test");
+    private void initializeCreateExportContext() {
+        Path root = Path.of("root");
         when(projectDataProvider.getProjectRoot()).thenReturn(root);
-
-        Path exportedTagsConfiguration = exporter.exportPropertiesConfiguration(propertiesConfiguration);
-
-        assertThat(exportedTagsConfiguration).isEqualTo(Path.of("test/exports/artivact.properties-configuration.json"));
-        verify(objectMapper).writeValue(any(File.class), eq(propertiesConfiguration));
     }
 
     /**
-     * Tests exporting the tags configuration.
-     */
-    @Test
-    @SneakyThrows
-    void testExportTagsConfiguration() {
-        Path root = Path.of("test");
-        when(projectDataProvider.getProjectRoot()).thenReturn(root);
-
-        Path exportedTagsConfiguration = exporter.exportTagsConfiguration(tagsConfiguration);
-
-        assertThat(exportedTagsConfiguration).isEqualTo(Path.of("test/exports/artivact.tags-configuration.json"));
-        verify(objectMapper).writeValue(any(File.class), eq(tagsConfiguration));
-    }
-
-    /**
-     * Prepare an export test.
+     * Initializes the test environment for preparing the export.
      *
-     * @param id The export's ID.
+     * @param exportId        The export's ID.
+     * @param fileAndDirExist Set to {@code true} if export dir and file should be tested as already existing.
      */
-    private void prepareExportTest(String id) {
-        Path root = Path.of("test");
-        when(projectDataProvider.getProjectRoot()).thenReturn(root);
-
-        exportDir = Path.of("test/exports/" + id + ".artivact.collection");
-        exportFile = Path.of("test/exports/" + id + ".artivact.collection.zip");
-
-        when(fileRepository.exists(exportDir)).thenReturn(true);
-        when(fileRepository.exists(exportFile)).thenReturn(true);
+    private void initializePrepareExport(String exportId, boolean fileAndDirExist) {
+        exportDir = Path.of("root/exports/" + exportId + ".artivact.collection");
+        when(fileRepository.exists(exportDir)).thenReturn(fileAndDirExist);
+        exportFile = Path.of("root/exports/" + exportId + ".artivact.collection.zip");
+        when(fileRepository.exists(exportFile)).thenReturn(fileAndDirExist);
     }
 
     /**
-     * Prepares an item export.
+     * Verifies the general handling of the export's main data file.
      *
-     * @return A newly created {@link Item}.
-     */
-    private Item prepareItemExportTest() {
-        Item item = new Item();
-        item.setId("123-abc");
-        item.setTitle(new TranslatableString("title"));
-        item.setDescription(new TranslatableString());
-        item.getMediaContent().getModels().add("model.glb");
-        item.getMediaContent().getImages().add("image.jpg");
-
-        Path itemDir = Path.of("itemDir");
-        when(fileRepository.getDirFromId(any(Path.class), anyString())).thenReturn(itemDir);
-
-        return item;
-    }
-
-    /**
-     * Prepares a menu export.
-     *
-     * @return A newly created {@link Menu}.
-     */
-    private Menu prepareMenuExportTest() {
-        Menu menu = new Menu();
-        menu.setId("456-def");
-        menu.setTargetPageId("789-ghi");
-
-        PageContent pageContent = new PageContent();
-        pageContent.setWidgets(List.of(
-                new AvatarWidget(),
-                new ImageTextWidget(),
-                new InfoBoxWidget(),
-                new PageTitleWidget(),
-                new ItemSearchWidget(),
-                new TextWidget()
-        ));
-        when(pageService.loadPageContent(eq("789-ghi"), anySet())).thenReturn(pageContent);
-
-        return menu;
-    }
-
-    /**
-     * Verifies general export directory handling and that the main file is written with the correct values.
-     *
-     * @param expectedSourceId      The expected source ID from the export's main file.
-     * @param expectedContentSource The expected content source value from the export's main file.
+     * @param exportId              The export's ID.
+     * @param expectedContentSource The expected content source set in the export's main data file.
+     * @return The captured {@link ExchangeMainData} for further verification.
      */
     @SneakyThrows
-    private void verifyDirAndMainFileHandling(String expectedSourceId, ContentSource expectedContentSource) {
-        // Verify old export data is deleted before export and dir is cleaned up afterward:
-        verify(fileRepository, times(2)).delete(exportDir);
-        verify(fileRepository).delete(exportFile);
-        verify(fileRepository).createDirIfRequired(exportDir);
-
-        // Verify main file is written:
+    private ExchangeMainData verifyExportMainData(String exportId, ContentSource expectedContentSource) {
         ArgumentCaptor<ExchangeMainData> argCap = ArgumentCaptor.forClass(ExchangeMainData.class);
-        verify(objectMapper).writeValue(eq(exportDir.resolve("artivact.content.json").toFile()), argCap.capture());
-        assertThat(argCap.getValue().getSourceId()).isEqualTo(expectedSourceId);
-        assertThat(argCap.getValue().getContentSource()).isEqualTo(expectedContentSource);
-        assertThat(argCap.getValue().getSchemaVersion()).isEqualTo(1);
 
-        // Verify result is packed:
+        verify(objectMapper).writeValue(
+                eq(Path.of("root/exports/" + exportId + ".artivact.collection/artivact.content.json").toFile()),
+                argCap.capture()
+        );
+        ExchangeMainData exchangeMainData = argCap.getValue();
+        assertThat(exchangeMainData.getContentSource()).isEqualTo(expectedContentSource);
+
+        return exchangeMainData;
+    }
+
+    /**
+     * Verifies that configurations have been exported.
+     */
+    private void verifyConfigExport() {
+        verify(propertiesExporter).exportPropertiesConfiguration(any(ExportContext.class), eq(propertiesConfiguration));
+        verify(tagsExporter).exportTagsConfiguration(any(ExportContext.class), eq(tagsConfiguration));
+    }
+
+    /**
+     * Verifies export dir and file handling.
+     *
+     * @param fileAndDirExist Set to {@code true} if the export dir and file were tested as already existing.
+     */
+    private void verifyFileHandling(boolean fileAndDirExist) {
+        verify(fileRepository, times(fileAndDirExist ? 2 : 1)).delete(exportDir);
+        verify(fileRepository, times(fileAndDirExist ? 1 : 0)).delete(exportFile);
         verify(fileRepository).pack(exportDir, exportFile);
-    }
-
-    /**
-     * Verifies that the properties and tags configuration files are written or not.
-     *
-     * @param expectedNumberOfConfigExportInvocations Set to {@code 0} to verify config files are NOT written, to {@code 1} otherwise.
-     */
-    @SneakyThrows
-    private void verifyConfigFileHandling(int expectedNumberOfConfigExportInvocations) {
-        verify(objectMapper, times(expectedNumberOfConfigExportInvocations))
-                .writeValue(exportDir.resolve("artivact.properties-configuration.json").toFile(), propertiesConfiguration);
-        verify(objectMapper, times(expectedNumberOfConfigExportInvocations))
-                .writeValue(exportDir.resolve("artivact.tags-configuration.json").toFile(), tagsConfiguration);
-    }
-
-    /**
-     * Verifies item files are written and media files are copied:
-     *
-     * @param exportId The export's ID.
-     * @param item     The exported item.
-     */
-    @SneakyThrows
-    private void verifyItemAndMediaFilesAreWritten(String exportId, Item item) {
-        verify(objectMapper).writeValue(new File("test/exports/" + exportId + ".artivact.collection/123-abc/artivact.item.json"), item);
-        verify(fileRepository).copy(Path.of("itemDir/models/model.glb"), Path.of("test/exports/" + exportId + ".artivact.collection/123-abc/model.glb"));
-        verify(fileRepository).copy(Path.of("itemDir/images/image.jpg"), Path.of("test/exports/" + exportId + ".artivact.collection/123-abc/image.jpg"));
-    }
-
-    /**
-     * Verifies that the menu file is written.
-     *
-     * @param exportId The export's ID.
-     * @param menu     The exported menu.
-     */
-    @SneakyThrows
-    private void verifyMenuFileIsWritten(String exportId, Menu menu) {
-        verify(objectMapper).writeValue(new File("test/exports/" + exportId + ".artivact.collection/456-def.artivact.menu.json"), menu);
     }
 
 }

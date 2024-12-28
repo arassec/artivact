@@ -667,11 +667,12 @@ import { ref } from 'vue';
 import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
 import { useLocaleStore } from 'stores/locale';
 import { moveDown, moveUp, translate } from 'components/artivact-utils';
-import { Menu, TranslatableString } from 'components/artivact-models';
+import { Menu } from 'components/artivact-models';
 import { useBreadcrumbsStore } from 'stores/breadcrumbs';
 import ArtivactDialog from 'components/ArtivactDialog.vue';
 import { useI18n } from 'vue-i18n';
 import { useProfilesStore } from 'stores/profiles';
+import { usePageStore } from 'stores/page';
 
 const quasar = useQuasar();
 const router = useRouter();
@@ -682,6 +683,7 @@ const userdataStore = useUserdataStore();
 const localeStore = useLocaleStore();
 const breadcrumbsStore = useBreadcrumbsStore();
 const profilesStore = useProfilesStore();
+const pageStore = usePageStore();
 
 const showMenuRef = ref({} as Record<string, boolean>);
 
@@ -703,8 +705,6 @@ function createEmptyMenuRef(): Menu {
     parentId: null,
     menuEntries: [],
     targetPageId: '',
-    exportTitle: {} as TranslatableString,
-    exportDescription: {} as TranslatableString
   };
 }
 
@@ -750,6 +750,7 @@ function saveMenu(menu: Menu) {
         menuStore.menus.forEach((existingMenu) => {
           if (existingMenu.id === menu.parentId) {
             existingMenu.menuEntries.forEach(existingMenuEntry => {
+              pageStore.setNewPageCreated(true);
               router.push('/page/' + existingMenuEntry.targetPageId);
             });
           }
@@ -821,6 +822,7 @@ function addPage(menu: Menu) {
       menuStore.setAvailableMenus(response.data);
       menuStore.availableMenus.forEach(storedMenu => {
         if (menu.id === storedMenu.id) {
+          pageStore.setNewPageCreated(true);
           router.push('/page/' + storedMenu.targetPageId);
         }
       });
