@@ -277,7 +277,6 @@ public class MenuService extends BaseFileService {
      * @return The menu with the given ID.
      */
     @TranslateResult
-    @RestrictResult
     public Menu findMenu(String menuId) {
         List<Menu> flattenedMenus = loadTranslatedRestrictedMenus();
         flattenedMenus.addAll(flattenedMenus.stream()
