@@ -21,4 +21,8 @@ public interface TranslatableObject {
      */
     void translate(Locale locale);
 
+    /**
+     * Clears the current translation of the object.
+     */
+    void clear();
 }

@@ -1,4 +1,4 @@
-package com.arassec.artivact.domain.exchange.imp;
+package com.arassec.artivact.domain.exchange.importer;
 
 import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.model.item.Item;

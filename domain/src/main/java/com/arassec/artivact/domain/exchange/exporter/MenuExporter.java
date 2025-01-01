@@ -1,4 +1,4 @@
-package com.arassec.artivact.domain.exchange.exp;
+package com.arassec.artivact.domain.exchange.exporter;
 
 import com.arassec.artivact.core.model.Roles;
 import com.arassec.artivact.core.model.menu.Menu;

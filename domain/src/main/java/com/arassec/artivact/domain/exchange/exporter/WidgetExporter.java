@@ -1,5 +1,6 @@
-package com.arassec.artivact.domain.exchange.exp;
+package com.arassec.artivact.domain.exchange.exporter;
 
+import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.model.item.Item;
 import com.arassec.artivact.core.model.page.Widget;
 import com.arassec.artivact.core.model.page.widget.*;
@@ -15,8 +16,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.arassec.artivact.domain.exchange.ExchangeDefinitions.SEARCH_RESULT_FILE_SUFFIX;
 
@@ -64,31 +67,32 @@ public class WidgetExporter extends BaseExporter {
         Optional.ofNullable(widget.getNavigationTitle()).ifPresent(title -> title.setTranslatedValue(null));
         switch (widget) {
             case AvatarWidget avatarWidget -> {
-                Optional.ofNullable(avatarWidget.getAvatarSubtext()).ifPresent(subtext -> subtext.setTranslatedValue(null));
+                cleanupTranslations(avatarWidget.getAvatarSubtext());
                 copyWidgetFile(exportContext, avatarWidget, avatarWidget.getAvatarImage());
             }
             case ImageTextWidget imageTextWidget -> {
-                Optional.ofNullable(imageTextWidget.getText()).ifPresent(text -> text.setTranslatedValue(null));
+                cleanupTranslations(imageTextWidget.getText());
                 copyWidgetFile(exportContext, imageTextWidget, imageTextWidget.getImage());
             }
             case InfoBoxWidget infoBoxWidget -> {
-                Optional.ofNullable(infoBoxWidget.getHeading()).ifPresent(heading -> heading.setTranslatedValue(null));
-                Optional.ofNullable(infoBoxWidget.getContent()).ifPresent(content -> content.setTranslatedValue(null));
+                cleanupTranslations(infoBoxWidget.getHeading());
+                cleanupTranslations(infoBoxWidget.getContent());
             }
             case PageTitleWidget pageTitleWidget -> {
-                Optional.ofNullable(pageTitleWidget.getTitle()).ifPresent(title -> title.setTranslatedValue(null));
+                cleanupTranslations(pageTitleWidget.getTitle());
                 copyWidgetFile(exportContext, pageTitleWidget, pageTitleWidget.getBackgroundImage());
             }
             case ItemSearchWidget itemSearchWidget -> {
-                Optional.ofNullable(itemSearchWidget.getHeading()).ifPresent(heading -> heading.setTranslatedValue(null));
-                Optional.ofNullable(itemSearchWidget.getContent()).ifPresent(content -> content.setTranslatedValue(null));
+                cleanupTranslations(itemSearchWidget.getHeading());
+                cleanupTranslations(itemSearchWidget.getContent());
                 exportItemSearchWidgetsItems(exportContext, itemSearchWidget);
             }
             case TextWidget textWidget -> {
-                Optional.ofNullable(textWidget.getHeading()).ifPresent(heading -> heading.setTranslatedValue(null));
-                Optional.ofNullable(textWidget.getContent()).ifPresent(content -> content.setTranslatedValue(null));
+                cleanupTranslations(textWidget.getHeading());
+                cleanupTranslations(textWidget.getContent());
             }
-            default -> log.info("No export available for widget type: {}", widget.getType());
+            case SpaceWidget spaceWidget -> cleanupTranslations(spaceWidget.getNavigationTitle());
+            default -> throw new ArtivactException("Unknown widget type for export: " + widget.getType());
         }
     }
 
@@ -104,14 +108,16 @@ public class WidgetExporter extends BaseExporter {
             int maxResults = itemSearchWidget.getMaxResults();
             List<Item> searchResult = searchService.search(searchTerm, maxResults);
             if (searchResult != null && !searchResult.isEmpty()) {
+                Set<String> excludedItemIds = new HashSet<>();
                 for (Item item : searchResult) {
                     if (exportContext.getExportConfiguration().isApplyRestrictions() && !item.getRestrictions().isEmpty()) {
+                        excludedItemIds.add(item.getId());
                         continue;
                     }
                     itemExporter.exportItem(exportContext, item);
                 }
                 writeJsonFile(exportContext.getExportDir().resolve(itemSearchWidget.getId() + SEARCH_RESULT_FILE_SUFFIX),
-                        searchResult.stream().map(Item::getId).toArray());
+                        searchResult.stream().map(Item::getId).filter(itemId -> !excludedItemIds.contains(itemId)).toArray());
             }
         }
     }

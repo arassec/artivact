@@ -1,11 +1,12 @@
-package com.arassec.artivact.domain.exchange.exp;
+package com.arassec.artivact.domain.exchange.exporter;
 
 import com.arassec.artivact.core.exception.ArtivactException;
-import com.arassec.artivact.core.model.BaseTranslatableRestrictedObject;
+import com.arassec.artivact.core.model.TranslatableObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Optional;
 
 /**
  * Base class for exporters.
@@ -24,8 +25,8 @@ public abstract class BaseExporter {
      *
      * @param translatableRestrictedObject The object to clean up.
      */
-    protected void cleanupTranslations(BaseTranslatableRestrictedObject translatableRestrictedObject) {
-        translatableRestrictedObject.setTranslatedValue(null);
+    protected void cleanupTranslations(TranslatableObject translatableRestrictedObject) {
+        Optional.ofNullable(translatableRestrictedObject).ifPresent(TranslatableObject::clear);
     }
 
     /**

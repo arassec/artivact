@@ -1,4 +1,4 @@
-package com.arassec.artivact.domain.exchange.imp;
+package com.arassec.artivact.domain.exchange.importer;
 
 import com.arassec.artivact.core.model.configuration.TagsConfiguration;
 import com.arassec.artivact.core.repository.FileRepository;

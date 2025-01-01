@@ -1,7 +1,8 @@
-package com.arassec.artivact.domain.exchange.exp;
+package com.arassec.artivact.domain.exchange.exporter;
 
 
 import com.arassec.artivact.core.model.configuration.TagsConfiguration;
+import com.arassec.artivact.core.model.tag.Tag;
 import com.arassec.artivact.domain.exchange.model.ExportContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
@@ -9,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
+import java.util.LinkedList;
+import java.util.List;
 
 import static com.arassec.artivact.domain.exchange.ExchangeDefinitions.TAGS_EXCHANGE_FILENAME_JSON;
 
@@ -44,14 +47,19 @@ public class TagsExporter extends BaseExporter {
      * @param tagsConfiguration The tags configuration to clean up.
      */
     private void cleanupTagsConfiguration(ExportContext exportContext, TagsConfiguration tagsConfiguration) {
+        List<Tag> cleanedTags = new LinkedList<>();
         tagsConfiguration.getTags().stream()
-                .filter(propertyCategory -> {
+                .filter(tag -> {
                     if (exportContext.getExportConfiguration().isApplyRestrictions()) {
-                        return propertyCategory.getRestrictions().isEmpty();
+                        return tag.getRestrictions().isEmpty();
                     }
                     return true;
                 })
-                .forEach(this::cleanupTranslations);
+                .forEach(tag -> {
+                    cleanupTranslations(tag);
+                    cleanedTags.add(tag);
+                });
+        tagsConfiguration.setTags(cleanedTags);
     }
 
 }

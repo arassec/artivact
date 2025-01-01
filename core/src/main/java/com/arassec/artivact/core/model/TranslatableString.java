@@ -78,4 +78,12 @@ public class TranslatableString implements TranslatableObject {
         translate(locale.toString());
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void clear() {
+        this.translatedValue = null;
+    }
+
 }

@@ -1,4 +1,4 @@
-package com.arassec.artivact.domain.exchange.imp;
+package com.arassec.artivact.domain.exchange.importer;
 
 import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.model.page.Page;
@@ -68,11 +68,10 @@ public class PageImporter {
             pageContent.getWidgets().forEach(widget -> {
                 // Import the widget:
                 Path widgetSource = importContext.getImportDir().resolve(widget.getId());
-                Path widgetTarget = projectDataProvider.getProjectRoot()
-                        .resolve(ProjectDataProvider.WIDGETS_DIR)
-                        .resolve(fileRepository.getSubDir(widget.getId(), 0))
-                        .resolve(fileRepository.getSubDir(widget.getId(), 1))
-                        .resolve(widget.getId());
+
+                Path widgetTarget = fileRepository.getDirFromId(projectDataProvider.getProjectRoot()
+                        .resolve(ProjectDataProvider.WIDGETS_DIR), widget.getId());
+
                 fileRepository.copyDir(widgetSource, widgetTarget);
 
                 // Import Items:
