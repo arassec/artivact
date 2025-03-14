@@ -58,9 +58,10 @@ class ProjectDataProviderTest {
         );
 
         List<FileModification> fileModifications = argumentCaptor.getValue();
-        assertEquals(2, fileModifications.size());
-        assertTrue(fileModifications.get(0).file().endsWith("artivact-metashape-2.1.1-workflow.xml"));
-        assertTrue(fileModifications.get(1).file().endsWith("artivact-meshroom-workflow.mg"));
+        assertEquals(3, fileModifications.size());
+        assertTrue(fileModifications.get(0).file().endsWith("artivact-metashape-2.1-workflow.xml"));
+        assertTrue(fileModifications.get(1).file().endsWith("artivact-metashape-2.2-workflow.xml"));
+        assertTrue(fileModifications.get(2).file().endsWith("artivact-meshroom-workflow.mg"));
     }
 
 }

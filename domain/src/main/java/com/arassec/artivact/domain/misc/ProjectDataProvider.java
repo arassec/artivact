@@ -68,6 +68,11 @@ public class ProjectDataProvider {
     public static final Path PROJECT_SETUP_DIR_FALLBACK = Path.of("domain/src/main/resources/project-setup");
 
     /**
+     * Placeholder for the export path in templates.
+     */
+    private static final String TPL_EXPORT_PATH_PLACEHOLDER = "##EXPORT_PATH##";
+
+    /**
      * Path to the project's root directory.
      */
     private final Path projectRoot;
@@ -102,9 +107,11 @@ public class ProjectDataProvider {
 
         fileRepository.updateProjectDirectory(projectRoot, PROJECT_SETUP_DIR, PROJECT_SETUP_DIR_FALLBACK,
                 List.of(
-                        new FileModification("utils/Metashape/artivact-metashape-2.1.1-workflow.xml", "##EXPORT_PATH##",
+                        new FileModification("utils/Metashape/artivact-metashape-2.1-workflow.xml", TPL_EXPORT_PATH_PLACEHOLDER,
                                 projectRoot.resolve("temp/export/metashape-export.obj").toAbsolutePath().toString()),
-                        new FileModification("utils/Meshroom/artivact-meshroom-workflow.mg", "##EXPORT_PATH##",
+                        new FileModification("utils/Metashape/artivact-metashape-2.2-workflow.xml", TPL_EXPORT_PATH_PLACEHOLDER,
+                                projectRoot.resolve("temp/export/metashape-export.obj").toAbsolutePath().toString()),
+                        new FileModification("utils/Meshroom/artivact-meshroom-workflow.mg", TPL_EXPORT_PATH_PLACEHOLDER,
                                 projectRoot.resolve("temp/export/").toAbsolutePath().toString().replace("\\", "/"))
                 )
         );
