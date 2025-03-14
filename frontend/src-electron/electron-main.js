@@ -1,17 +1,23 @@
-import {app, BrowserWindow} from 'electron';
-import path from 'path';
-import os from 'os';
+import * as electron from 'electron';
+import { app, BrowserWindow } from 'electron';
+import path from 'node:path';
+import os from 'node:os';
+import { fileURLToPath } from 'node:url';
 import * as http from 'http';
+import * as child_process from 'node:child_process';
 
 // needed in case process is undefined under Linux
-const platform = process.platform || os.platform();
+const platform = process.platform || os.platform()
 
-let mainWindow;
+const currentDir = fileURLToPath(new URL('.', import.meta.url))
+
+let mainWindow
 
 // Artivact: +++
-const { Menu } = require('electron');
+let splashWindow
+
 // Disable the application menu, even for new window instances!
-Menu.setApplicationMenu(null);
+electron.Menu.setApplicationMenu(null);
 
 let backendChildProcess;
 let backendPort = 8080;
@@ -30,7 +36,7 @@ if (projectRoot) {
 
 function startBackend() {
   backendPort = 51232;
-  backendChildProcess = require('child_process').spawn('bin/java', [
+  backendChildProcess = child_process.spawn('bin/java', [
     '-Dserver.port=' + backendPort,
     '-Dspring.profiles.active=desktop',
     '-Dartivact.project.root=' + projectRoot,
@@ -68,16 +74,14 @@ async function waitForBackend() {
     }
   }
 }
-
 // Artivact: ---
 
-function createWindow() {
-
+async function createWindow () {
   /**
    * Initial window options
    */
   mainWindow = new BrowserWindow({
-    icon: path.resolve(__dirname, 'icons/icon.png'), // tray icon
+    icon: path.resolve(currentDir, 'icons/icon.png'), // tray icon
     width: 1440,
     height: 1024,
     useContentSize: true,
@@ -88,13 +92,17 @@ function createWindow() {
     webPreferences: {
       contextIsolation: true,
       // More info: https://v2.quasar.dev/quasar-cli-vite/developing-electron-apps/electron-preload-script
-      preload: path.resolve(__dirname, process.env.QUASAR_ELECTRON_PRELOAD),
-    },
+      preload: path.resolve(
+        currentDir,
+        path.join(process.env.QUASAR_ELECTRON_PRELOAD_FOLDER, 'electron-preload' + process.env.QUASAR_ELECTRON_PRELOAD_EXTENSION)
+      )
+    }
   });
-  mainWindow.removeMenu();
 
   // Artivact: +++
-  let splash = new BrowserWindow({
+  mainWindow.removeMenu()
+
+  splashWindow = new BrowserWindow({
     width: 500,
     height: 500,
     transparent: true,
@@ -102,16 +110,24 @@ function createWindow() {
     alwaysOnTop: true,
     focusable: false,
   });
-  const splashFile = path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER, 'splash.html')
-  splash.loadFile(splashFile).then(() => console.log('Loaded splash.html'));
-  splash.center();
+  const splashFile = path.resolve(currentDir, process.env.QUASAR_PUBLIC_FOLDER, 'splash.html')
+  splashWindow.loadFile(splashFile).then(() => console.log('Loaded splash.html'));
+  splashWindow.center();
+
+  // Clean up resources when splash window is closed
+  splashWindow.on('closed', () => {
+    splashWindow.removeAllListeners()
+    splashWindow = null
+  })
 
   if (!process.env.DEBUGGING) {
     startBackend();
+  } else {
+    // Wait for splash window to show up...
+    await timer(3000);
   }
 
   waitForBackend().then(() => {
-    // Artivact: +++
     if (!process.env.DEBUGGING) {
       mainWindow.loadURL('http://localhost:' + backendPort + '/');
       // we're on production; no access to devtools pls
@@ -121,15 +137,13 @@ function createWindow() {
     } else {
       mainWindow.loadURL(process.env.APP_URL);
     }
-    // Artivact: ---
   });
 
-  mainWindow.on('ready-to-show', () => {
-    // Artivact: +++
-    splash.close();
-    // Artivact: ---
+  mainWindow.once('ready-to-show', () => {
+    splashWindow.close();
     mainWindow.show();
   })
+  // Artivact: ---
 
   mainWindow.on('closed', () => {
     // Artivact: +++
@@ -137,20 +151,20 @@ function createWindow() {
       backendChildProcess.kill()
     }
     // Artivact: ---
-    mainWindow = null;
-  });
+    mainWindow = null
+  })
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(createWindow)
 
 app.on('window-all-closed', () => {
   if (platform !== 'darwin') {
-    app.quit();
+    app.quit()
   }
-});
+})
 
 app.on('activate', () => {
   if (mainWindow === null) {
-    createWindow();
+    createWindow()
   }
-});
+})

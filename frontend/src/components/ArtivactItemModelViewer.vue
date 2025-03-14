@@ -1,3 +1,4 @@
+<!--suppress ALL -->
 <template>
   <model-viewer
     id="av-model-viewer"
@@ -27,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref} from 'vue';
+import { ref } from 'vue';
 
 defineProps({
   modelUrl: {
