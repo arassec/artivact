@@ -72,7 +72,6 @@
         <module>artivact-spring-boot-starter</module>
         <module>artivact-server</module>
         <module>artivact-desktop</module>
-        <module>artivact-vr</module>
     </modules>
 
     <repositories>
