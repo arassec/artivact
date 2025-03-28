@@ -1,6 +1,6 @@
 <template>
   <template v-if="!disabled">
-    <router-link :to="'/item/' + artivactCardData.itemId">
+    <router-link :to="'/item/' + artivactCardData.itemId" @click="addAnchorToBreadcrumbs">
       <q-card class="bg-info card">
         <q-img v-if="artivactCardData.imageUrl"
           :src="artivactCardData.imageUrl + '?imageSize=ITEM_CARD'"
@@ -52,8 +52,9 @@
 import {ItemCardData} from './artivact-models';
 import {PropType} from 'vue';
 import {translate} from './artivact-utils';
+import {useBreadcrumbsStore} from "../stores/breadcrumbs";
 
-defineProps({
+const props = defineProps({
   artivactCardData: {
     type: Object as PropType<ItemCardData>,
     required: true,
@@ -63,7 +64,21 @@ defineProps({
     required: false,
     default: false,
   },
+  widgetId: {
+    type: String,
+    required: false,
+    default: false
+  }
 });
+
+const breadcrumbsStore = useBreadcrumbsStore();
+
+function addAnchorToBreadcrumbs() {
+  if (props.widgetId) {
+    breadcrumbsStore.addAnchor(props.widgetId)
+  }
+}
+
 </script>
 
 <style lang="sass" scoped>

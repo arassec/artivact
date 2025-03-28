@@ -60,7 +60,7 @@
           >
             <q-breadcrumbs-el
               :label="breadcrumb.label"
-              :to="'/page/' + breadcrumb.target"
+              :to="'/page/' + breadcrumb.target + (breadcrumb.anchor ? breadcrumb.anchor : '')"
               v-if="breadcrumb.label && breadcrumb.target"
               style="text-decoration: underline"
             />

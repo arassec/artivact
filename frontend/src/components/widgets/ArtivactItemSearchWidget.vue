@@ -54,6 +54,7 @@
         >
           <div class="row">
             <artivact-item-card
+              :widget-id="widgetData.id"
               :artivact-card-data="resultEntry"
               v-for="(resultEntry, index) in searchResultRef.data"
               v-bind:key="index"

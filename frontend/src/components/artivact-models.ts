@@ -202,6 +202,7 @@ export interface PageContent extends BaseRestrictedObject {
 export interface BreadcrumbData {
   label: string;
   target: string | null;
+  anchor: string | null;
 }
 
 export interface WidgetPageContainer {

@@ -88,6 +88,7 @@
       v-bind:key="widgetData.id"
     >
       <artivact-page-title-widget
+        :id="widgetData.id"
         :class="inEditMode ? 'widget' : ''"
         v-if="widgetData.type === 'PAGE_TITLE'"
         :widget-data="widgetData as PageTitleWidgetData"
@@ -105,6 +106,7 @@
       />
 
       <artivact-text-widget
+        :id="widgetData.id"
         :class="inEditMode ? 'widget' : ''"
         v-if="widgetData.type === 'TEXT'"
         :widget-data="widgetData as TextWidgetData"
@@ -120,6 +122,7 @@
       />
 
       <artivact-image-text-widget
+        :id="widgetData.id"
         :class="inEditMode ? 'widget' : ''"
         v-if="widgetData.type === 'IMAGE_TEXT'"
         :widget-data="widgetData as ImageTextWidgetData"
@@ -137,6 +140,7 @@
       />
 
       <artivact-item-search-widget
+        :id="widgetData.id"
         :class="inEditMode ? 'widget' : ''"
         v-if="widgetData.type === 'ITEM_SEARCH'"
         :widget-data="widgetData as ItemSearchWidget"
@@ -152,6 +156,7 @@
       />
 
       <artivact-info-box-widget
+        :id="widgetData.id"
         :class="inEditMode ? 'widget' : ''"
         v-if="widgetData.type === 'INFO_BOX'"
         :widget-data="widgetData as InfoBoxWidgetData"
@@ -167,6 +172,7 @@
       />
 
       <artivact-avatar-widget
+        :id="widgetData.id"
         :class="inEditMode ? 'widget' : ''"
         v-if="widgetData.type === 'AVATAR'"
         :widget-data="widgetData as AvatarWidgetData"
@@ -184,6 +190,7 @@
       />
 
       <artivact-space-widget
+        :id="widgetData.id"
         :class="inEditMode ? 'widget' : ''"
         v-if="widgetData.type === 'SPACE'"
         :widget-data="widgetData as SpaceWidgetData"
