@@ -120,7 +120,10 @@ export default defineConfig((/* ctx */) => {
       // directives: [],
 
       // Quasar plugins
-      plugins: []
+
+      // Artivact: +++
+      plugins: ['Notify']
+      // Artivact: ---
     },
 
     // animations: 'all', // --- includes all animations

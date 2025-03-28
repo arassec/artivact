@@ -94,16 +94,19 @@ public class DirectoryWatcher {
      * @param timeout A timeout in milliseconds until the watcher will wait for the expected number of files ot be added.
      */
     public void finishWatching(int timeout) {
-        try {
-            int waitTime = 0;
-            while ((detectedFiles < numExpectedFiles) && waitTime < timeout) {
-                TimeUnit.MILLISECONDS.sleep(50);
-                waitTime += 50;
-            }
+        /*
+            await()
+                    .atMost(timeout, TimeUnit.MILLISECONDS)
+                    .with()
+                    .pollInterval(Duration.ONE_HUNDRED_MILLISECONDS)
+                    .until(() -> detectedFiles < numExpectedFiles);
+*/
 
             stopWatching.set(true);
 
             executorService.shutdown();
+
+        try {
             while (!executorService.awaitTermination(100, TimeUnit.MILLISECONDS)) {
                 log.debug("Awaiting executor service termination!");
             }
