@@ -35,6 +35,8 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.awaitility.Awaitility.await;
+
 /**
  * Service for image handling.
  */
@@ -135,7 +137,10 @@ public class ImageCreator extends BaseCreator {
             progressMonitor.updateProgress((i + 1), numPhotos);
             String filename = getAssetName(getNextAssetNumber(targetDir), null);
             log.debug("Capturing image: {}", filename);
-            cameraAdapter.captureImage(filename);
+
+            await().atMost(5, TimeUnit.SECONDS)
+                    .until(() -> cameraAdapter.captureImage(filename));
+
             if (useTurnTable) {
                 turntableAdapter.rotate(numPhotos);
             }

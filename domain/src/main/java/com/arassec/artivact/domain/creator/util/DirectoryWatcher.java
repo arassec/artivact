@@ -10,6 +10,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static org.awaitility.Awaitility.await;
+
 /**
  * Watches a directory for filesystem changes, i.e. added files, that can then further be processed.
  */
@@ -94,17 +96,15 @@ public class DirectoryWatcher {
      * @param timeout A timeout in milliseconds until the watcher will wait for the expected number of files ot be added.
      */
     public void finishWatching(int timeout) {
-        /*
-            await()
-                    .atMost(timeout, TimeUnit.MILLISECONDS)
-                    .with()
-                    .pollInterval(Duration.ONE_HUNDRED_MILLISECONDS)
-                    .until(() -> detectedFiles < numExpectedFiles);
-*/
 
-            stopWatching.set(true);
+        await().atMost(timeout, TimeUnit.MILLISECONDS)
+                .with()
+                .pollInterval(50, TimeUnit.MILLISECONDS)
+                .until(() -> detectedFiles >= numExpectedFiles);
 
-            executorService.shutdown();
+        stopWatching.set(true);
+
+        executorService.shutdown();
 
         try {
             while (!executorService.awaitTermination(100, TimeUnit.MILLISECONDS)) {
@@ -114,7 +114,6 @@ public class DirectoryWatcher {
             Thread.currentThread().interrupt();
             throw new ArtivactException("Interrupted during shutdown!", e);
         }
-
     }
 
 }

@@ -30,7 +30,7 @@ public class FallbackCameraAdapter extends BaseCameraAdapter {
      * {@inheritDoc}
      */
     @Override
-    public void captureImage(String filename) {
+    public boolean captureImage(String filename) {
         log.info("Fallback camera adapter called with 'targetDir' {} and 'filename' {}", initParams.getTargetDir(), filename);
         try {
             Thread.sleep(1000);
@@ -38,6 +38,7 @@ public class FallbackCameraAdapter extends BaseCameraAdapter {
             Thread.currentThread().interrupt();
             throw new ArtivactException("Interrupted during sleep while simulating photo capture!", e);
         }
+        return true;
     }
 
 }

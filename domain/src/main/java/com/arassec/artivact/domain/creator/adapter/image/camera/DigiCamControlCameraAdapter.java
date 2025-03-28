@@ -37,7 +37,7 @@ public class DigiCamControlCameraAdapter extends BaseCameraAdapter {
      * {@inheritDoc}
      */
     @Override
-    public void captureImage(String filename) {
+    public boolean captureImage(String filename) {
         log.debug("Starting image capturing with DigiCamControl.");
 
         var cmdLine = new CommandLine(initParams.getAdapterConfiguration().getConfigValue(getSupportedImplementation()));
@@ -48,6 +48,8 @@ public class DigiCamControlCameraAdapter extends BaseCameraAdapter {
         execute(cmdLine);
 
         log.debug("Finished image capturing with DigiCamControl.");
+
+        return true;
     }
 
 }

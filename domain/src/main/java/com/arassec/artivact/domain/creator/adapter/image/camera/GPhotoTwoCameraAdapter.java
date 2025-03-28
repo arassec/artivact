@@ -34,12 +34,13 @@ public class GPhotoTwoCameraAdapter extends BaseCameraAdapter {
      * {@inheritDoc}
      */
     @Override
-    public void captureImage(String filename) {
+    public boolean captureImage(String filename) {
         var cmdLine = new CommandLine(initParams.getAdapterConfiguration().getConfigValue(getSupportedImplementation()));
         cmdLine.addArgument("--filename");
         cmdLine.addArgument(initParams.getTargetDir().resolve(filename + ".jpg").toAbsolutePath().toString());
         cmdLine.addArgument("--capture-image-and-download");
         execute(cmdLine);
+        return true;
     }
 
 }

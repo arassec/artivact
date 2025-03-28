@@ -62,8 +62,9 @@ public class DigiCamControlRemoteCameraAdapter extends BaseCameraAdapter {
      * {@inheritDoc}
      */
     @Override
-    public void captureImage(String filename) {
+    public boolean captureImage(String filename) {
         executeRemoteCommand(initParams.getAdapterConfiguration(), CAPTURE_CMD + filename);
+        return true;
     }
 
     /**
