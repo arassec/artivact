@@ -3,29 +3,14 @@
 
     <div class="col items-center sticky gt-md">
       <div class="absolute-top-left q-ma-md">
-        <router-link :to="'/item/' + itemDataRef.id">
-          <q-btn
-            data-test="close-button"
-            round
-            color="primary"
-            icon="close"
-            class="main-nav-button"
-            @click="cancel">
-            <q-tooltip>{{ $t('ItemEditPage.button.tooltip.close') }}</q-tooltip>
-          </q-btn>
-        </router-link>
-      </div>
-
-      <div class="absolute-top-right q-ma-md">
         <q-btn
-          data-test="save-button"
-          :disable="tabRef == 'creation'"
+          data-test="close-button"
           round
           color="primary"
-          icon="save"
+          icon="close"
           class="main-nav-button"
-          @click="saveItem">
-          <q-tooltip>{{ $t('ItemEditPage.button.tooltip.save') }}</q-tooltip>
+          @click="exitEditMode">
+          <q-tooltip>{{ $t('ItemEditPage.button.tooltip.close') }}</q-tooltip>
         </q-btn>
       </div>
     </div>
@@ -40,13 +25,13 @@
 
           <q-tabs data-test="edit-item-tabs" v-model="tabRef" class="q-mb-lg">
             <q-tab data-test="edit-item-base-tab" name="base" icon="text_snippet" :label="$t('ItemEditPage.tab.base')"
-                   class="nav-tab"/>
+                   class="nav-tab" @click="saveItem(false)"/>
             <q-tab data-test="edit-item-media-tab" name="media" icon="image" :label="$t('ItemEditPage.tab.media')"
-                   class="nav-tab"/>
+                   class="nav-tab" @click="saveItem(false)"/>
             <q-tab data-test="edit-item-properties-tab" name="properties" icon="library_books"
-                   :label="$t('ItemEditPage.tab.properties')" class="nav-tab"/>
+                   :label="$t('ItemEditPage.tab.properties')" class="nav-tab" @click="saveItem(false)"/>
             <q-tab data-test="edit-item-creation-tab" name="creation" icon="auto_awesome"
-                   :label="$t('ItemEditPage.tab.creation')" class="nav-tab"
+                   :label="$t('ItemEditPage.tab.creation')" class="nav-tab" @click="saveItem(false)"
                    v-if="profilesStore.isDesktopModeEnabled"/>
           </q-tabs>
 
@@ -192,7 +177,7 @@
               <artivact-item-image-set-editor ref="imageSetEditorRef"
                                               :item-id="savedItemId"
                                               :creation-image-sets="itemDataRef.creationImageSets"
-                                              @delete-image="saveItem()"
+                                              @delete-image="saveItem(false)"
                                               @update-item="loadItemData(itemDataRef.id)"/>
             </div>
             <h2 class="av-text-h2">{{ $t('ItemEditPage.label.models') }}</h2>
@@ -205,54 +190,29 @@
 
     </ArtivactContent>
 
-    <!-- "Unsaved Changes Exist"-Dialog -->
-    <artivact-dialog :dialog-model="showUnsavedChangesExistDialog" :warn="true">
-      <template v-slot:header>
-        {{ $t('ItemEditPage.dialog.unsavedChanges.heading') }}
-      </template>
-
-      <template v-slot:body>
-        <q-card-section>
-          {{ $t('ItemEditPage.dialog.unsavedChanges.content') }}
-        </q-card-section>
-      </template>
-
-      <template v-slot:cancel>
-        <q-btn :label="$t('Common.cancel')" color="primary" @click="showUnsavedChangesExistDialog = false"/>
-      </template>
-
-      <template v-slot:approve>
-        <q-btn
-          :label="$t('ItemEditPage.dialog.unsavedChanges.approve')"
-          color="primary"
-          @click="proceed"
-        />
-      </template>
-    </artivact-dialog>
-
   </div>
 </template>
 
 <script setup lang="ts">
 import {useQuasar} from 'quasar';
 import {computed, onMounted, ref} from 'vue';
-import {onBeforeRouteLeave, onBeforeRouteUpdate, RouteLocationNormalized, useRoute, useRouter} from 'vue-router';
-import {api} from 'boot/axios';
-import ArtivactContent from 'components/ArtivactContent.vue';
-import ArtivactRestrictionsEditor from 'components/ArtivactRestrictionsEditor.vue';
-import {useLocaleStore} from 'stores/locale';
-import {ItemDetails, Tag, TagsConfiguration} from 'components/artivact-models';
-import ArtivactPropertyCategoryEditor from 'components/ArtivactPropertyCategoryEditor.vue';
-import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
-import {useBreadcrumbsStore} from 'stores/breadcrumbs';
-import {useUserdataStore} from 'stores/userdata';
-import ArtivactDialog from 'components/ArtivactDialog.vue';
+import {useRoute, useRouter} from 'vue-router';
+import {api} from '../boot/axios';
+import ArtivactContent from '../components/ArtivactContent.vue';
+import ArtivactRestrictionsEditor from '../components/ArtivactRestrictionsEditor.vue';
+import {useLocaleStore} from '../stores/locale';
+import {ItemDetails, Tag, TagsConfiguration} from '../components/artivact-models';
+import ArtivactPropertyCategoryEditor from '../components/ArtivactPropertyCategoryEditor.vue';
+import ArtivactRestrictedTranslatableItemEditor from '../components/ArtivactRestrictedTranslatableItemEditor.vue';
+import {useBreadcrumbsStore} from '../stores/breadcrumbs';
+import {useUserdataStore} from '../stores/userdata';
+import ArtivactDialog from '../components/ArtivactDialog.vue';
 import {useI18n} from 'vue-i18n';
-import ArtivactItemModelEditor from 'components/ArtivactItemModelEditor.vue';
-import ArtivactItemImageEditor from 'components/ArtivactItemImageEditor.vue';
-import ArtivactItemImageSetEditor from 'components/ArtivactItemImageSetEditor.vue';
-import ArtivactItemModelSetEditor from 'components/ArtivactItemModelSetEditor.vue';
-import {useProfilesStore} from 'stores/profiles';
+import ArtivactItemModelEditor from '../components/ArtivactItemModelEditor.vue';
+import ArtivactItemImageEditor from '../components/ArtivactItemImageEditor.vue';
+import ArtivactItemImageSetEditor from '../components/ArtivactItemImageSetEditor.vue';
+import ArtivactItemModelSetEditor from '../components/ArtivactItemModelSetEditor.vue';
+import {useProfilesStore} from '../stores/profiles';
 
 const quasar = useQuasar();
 const route = useRoute();
@@ -278,8 +238,6 @@ let savedItemId: string;
 const imageSetEditorRef = ref<InstanceType<typeof ArtivactItemImageSetEditor> | null>(null)
 
 let originalItemJson: string;
-let nextRoute: RouteLocationNormalized;
-const showUnsavedChangesExistDialog = ref(false);
 
 const availableTags = computed(() => {
   return tagsDataRef.value?.tags.filter((tag: Tag) => {
@@ -401,56 +359,41 @@ function addRestriction(role: string) {
   itemDataRef.value?.restrictions.push(role);
 }
 
-function saveItem() {
-  let item = itemDataRef.value;
-  api
-    .put('/api/item', item)
-    .then(() => {
-      originalItemJson = JSON.stringify(itemDataRef.value);
-      quasar.notify({
-        color: 'positive',
-        position: 'bottom',
-        message: i18n.t('Common.messages.saving.success', {item: i18n.t('Common.items.item')}),
-        icon: 'done',
+function saveItem(exitEditMode) {
+  let currentPageContentJson = JSON.stringify(itemDataRef.value);
+  if (currentPageContentJson !== originalItemJson) {
+    let item = itemDataRef.value;
+    api
+      .put('/api/item', item)
+      .then(() => {
+        originalItemJson = JSON.stringify(itemDataRef.value);
+        quasar.notify({
+          color: 'positive',
+          position: 'bottom',
+          message: i18n.t('Common.messages.saving.success', {item: i18n.t('Common.items.item')}),
+          icon: 'done',
+        });
+        if (exitEditMode) {
+          router.push('/item/' + item.id)
+        }
+      })
+      .catch(() => {
+        quasar.notify({
+          color: 'negative',
+          position: 'bottom',
+          message: i18n.t('Common.messages.saving.failed', {item: i18n.t('Common.items.item')}),
+          icon: 'report_problem',
+        });
       });
-    })
-    .catch(() => {
-      quasar.notify({
-        color: 'negative',
-        position: 'bottom',
-        message: i18n.t('Common.messages.saving.failed', {item: i18n.t('Common.items.item')}),
-        icon: 'report_problem',
-      });
-    });
+  } else if (exitEditMode) {
+    router.push('/item/' + itemDataRef.value.id)
+  }
 }
 
-function cancel() {
+function exitEditMode() {
   breadcrumbsStore.removeLastBreadcrumb();
+  saveItem(true)
 }
-
-function proceed() {
-  showUnsavedChangesExistDialog.value = false;
-  originalItemJson = JSON.stringify(itemDataRef.value);
-  router.push(nextRoute);
-}
-
-onBeforeRouteLeave((to) => {
-  let currentPageContentJson = JSON.stringify(itemDataRef.value);
-  if (currentPageContentJson !== originalItemJson) {
-    nextRoute = to;
-    showUnsavedChangesExistDialog.value = true;
-    return false;
-  }
-})
-
-onBeforeRouteUpdate((to) => {
-  let currentPageContentJson = JSON.stringify(itemDataRef.value);
-  if (currentPageContentJson !== originalItemJson) {
-    nextRoute = to;
-    showUnsavedChangesExistDialog.value = true;
-    return false;
-  }
-})
 
 onMounted(() => {
   loadPropertiesData();

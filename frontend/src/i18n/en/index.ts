@@ -241,11 +241,6 @@ export default {
       addTag: {
         heading: 'Add Tag'
       },
-      unsavedChanges: {
-        heading: 'Unsaved Changes!',
-        content: 'There are unsaved changes to the item configuration. Do you really want to leave?',
-        approve: 'Leave'
-      }
     },
     editor: {
       title: 'Title',

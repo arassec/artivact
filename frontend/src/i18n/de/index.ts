@@ -241,11 +241,6 @@ export default {
       addTag: {
         heading: 'Tag hinzufügen'
       },
-      unsavedChanges: {
-        heading: 'Änderungen Verwerfen?',
-        content: 'Die neue Konfiguration wurden noch nicht gespeichert. Die Änderungen gehen beim Verlassen der Seite verloren. Möchten Sie trotzdem fortfahren',
-        approve: 'Fortfahren'
-      }
     },
     editor: {
       title: 'Titel',
