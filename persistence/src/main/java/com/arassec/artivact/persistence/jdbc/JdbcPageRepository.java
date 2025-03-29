@@ -54,6 +54,7 @@ public class JdbcPageRepository extends BaseJdbcRepository implements PageReposi
 
         pageEntity.setIndexPage(Boolean.TRUE.equals(page.getPageContent().getIndexPage()));
         pageEntity.setContentJson(toJson(page.getPageContent()));
+        pageEntity.setAlias(page.getAlias());
 
         pageEntityRepository.save(pageEntity);
     }
@@ -91,6 +92,16 @@ public class JdbcPageRepository extends BaseJdbcRepository implements PageReposi
      * {@inheritDoc}
      */
     @Override
+    @SuppressWarnings("java:S6204") // Widget collection needs to be modifiable...
+    public Optional<Page> findByAlias(String alias) {
+        Optional<PageEntity> pageEntityOptional = pageEntityRepository.findFirstByAlias(alias);
+        return pageEntityOptional.map(this::convert);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Page findIndexPage() {
         Optional<PageEntity> pageEntityOptional = pageEntityRepository.findFirstByIndexPage(true);
         Page page = new Page();
@@ -111,6 +122,7 @@ public class JdbcPageRepository extends BaseJdbcRepository implements PageReposi
         page.setId(pageEntity.getId());
         page.setVersion(pageEntity.getVersion());
         page.setPageContent(fromJson(pageEntity.getContentJson(), PageContent.class));
+        page.setAlias(pageEntity.getAlias());
 
         // Cleanup Widgets...
         page.getPageContent().setWidgets(page.getPageContent().getWidgets().stream()

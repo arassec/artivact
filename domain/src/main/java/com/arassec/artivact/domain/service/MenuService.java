@@ -3,7 +3,6 @@ package com.arassec.artivact.domain.service;
 
 import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.model.configuration.MenuConfiguration;
-import com.arassec.artivact.core.model.item.ImageSize;
 import com.arassec.artivact.core.model.menu.Menu;
 import com.arassec.artivact.core.model.page.Page;
 import com.arassec.artivact.core.repository.FileRepository;
@@ -12,7 +11,6 @@ import com.arassec.artivact.domain.aspect.GenerateIds;
 import com.arassec.artivact.domain.aspect.RestrictResult;
 import com.arassec.artivact.domain.aspect.TranslateResult;
 import com.arassec.artivact.domain.exchange.ArtivactExporter;
-import com.arassec.artivact.domain.misc.ProjectDataProvider;
 import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,19 +44,9 @@ public class MenuService extends BaseFileService {
     private final PageService pageService;
 
     /**
-     * Service for configurations.
-     */
-    private final ConfigurationService configurationService;
-
-    /**
      * Artivact Exporter.
      */
     private final ArtivactExporter artivactExporter;
-
-    /**
-     * The application's {@link ProjectDataProvider}.
-     */
-    private final ProjectDataProvider projectDataProvider;
 
     /**
      * The application's {@link FileRepository}.
@@ -96,10 +83,10 @@ public class MenuService extends BaseFileService {
 
         menuConfiguration.getMenus().forEach(menu -> {
             if (StringUtils.hasText(menu.getTargetPageId())) {
-                pageService.updatePageRestrictions(menu.getTargetPageId(), menu.getRestrictions());
+                pageService.updatePageAliasAndRestrictions(menu.getTargetPageId(), menu.getTargetPageAlias(), menu.getRestrictions());
             }
             menu.getMenuEntries().forEach(menuEntry ->
-                    pageService.updatePageRestrictions(menuEntry.getTargetPageId(), menuEntry.getRestrictions()));
+                    pageService.updatePageAliasAndRestrictions(menuEntry.getTargetPageId(), menu.getTargetPageAlias(), menuEntry.getRestrictions()));
         });
 
         return loadTranslatedRestrictedMenus();
@@ -141,19 +128,21 @@ public class MenuService extends BaseFileService {
             existingMenu.setTranslations(menu.getTranslations());
             existingMenu.setRestrictions(menu.getRestrictions());
             existingMenu.setTargetPageId(menu.getTargetPageId());
+            existingMenu.setTargetPageAlias(menu.getTargetPageAlias());
+            existingMenu.setHidden(menu.isHidden());
             existingMenu.setMenuEntries(menu.getMenuEntries());
         } else {
             menuConfiguration.getMenus().add(menu);
         }
 
         if (StringUtils.hasText(menu.getTargetPageId())) {
-            pageService.updatePageRestrictions(menu.getTargetPageId(), menu.getRestrictions());
+            pageService.updatePageAliasAndRestrictions(menu.getTargetPageId(), menu.getTargetPageAlias(), menu.getRestrictions());
         }
         menu.getMenuEntries().forEach(menuEntry -> {
             if (menuEntry.getRestrictions().isEmpty() && !menu.getRestrictions().isEmpty()) {
-                pageService.updatePageRestrictions(menuEntry.getTargetPageId(), menu.getRestrictions());
+                pageService.updatePageAliasAndRestrictions(menuEntry.getTargetPageId(), menuEntry.getTargetPageAlias(), menu.getRestrictions());
             } else {
-                pageService.updatePageRestrictions(menuEntry.getTargetPageId(), menuEntry.getRestrictions());
+                pageService.updatePageAliasAndRestrictions(menuEntry.getTargetPageId(), menuEntry.getTargetPageAlias(), menuEntry.getRestrictions());
             }
         });
 
@@ -162,6 +151,7 @@ public class MenuService extends BaseFileService {
                 existingMenu.getMenuEntries().forEach(existingMenuEntry -> {
                     if (!StringUtils.hasText(existingMenuEntry.getTargetPageId())) {
                         Page page = pageService.createPage(existingMenuEntry.getRestrictions());
+                        page.setAlias(existingMenuEntry.getTargetPageAlias());
                         existingMenuEntry.setTargetPageId(page.getId());
                     }
                 }));
@@ -243,6 +233,7 @@ public class MenuService extends BaseFileService {
         menuConfiguration.getMenus().forEach(menu -> {
             if (menu.getId().equals(menuId)) {
                 Page page = pageService.createPage(menu.getRestrictions());
+                page.setAlias(menu.getTargetPageAlias());
                 menu.setTargetPageId(page.getId());
             }
         });
@@ -250,24 +241,6 @@ public class MenuService extends BaseFileService {
         menuRepository.save(menuConfiguration);
 
         return loadTranslatedRestrictedMenus();
-    }
-
-    /**
-     * Saves a menu's cover picture, e.g. for exports.
-     *
-     * @param menuId           The menu the cover picture is assigned to.
-     * @param originalFilename The original filename of the cover picture.
-     * @param inputStream      The input stream containing the picture.
-     */
-    public void saveMenuCoverPicture(String menuId, String originalFilename, InputStream inputStream) {
-        String fileExtension = getExtension(originalFilename).orElseThrow();
-
-        Path targetDir = fileRepository.getSubdirFilePath(projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.MENUS_DIR), menuId, null);
-        fileRepository.createDirIfRequired(targetDir);
-
-        Path coverPicture = targetDir.resolve("cover-picture." + fileExtension);
-
-        getFileRepository().scaleImage(inputStream, coverPicture, fileExtension, ImageSize.PAGE_TITLE.getWidth());
     }
 
     /**

@@ -36,4 +36,9 @@ public class PageEntity {
      */
     private String contentJson;
 
+    /**
+     * An alias under which this page can be opened, instead of using its ID.
+     */
+    private String alias;
+
 }

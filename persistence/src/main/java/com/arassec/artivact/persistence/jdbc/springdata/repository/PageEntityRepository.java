@@ -18,4 +18,11 @@ public interface PageEntityRepository extends CrudRepository<PageEntity, String>
      */
     Optional<PageEntity> findFirstByIndexPage(boolean indexPage);
 
+    /**
+     * Finds the first page with the given alias.
+     *
+     * @return The index page.
+     */
+    Optional<PageEntity> findFirstByAlias(String alias);
+
 }

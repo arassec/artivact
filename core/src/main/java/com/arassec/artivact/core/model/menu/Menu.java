@@ -33,4 +33,21 @@ public class Menu extends BaseTranslatableRestrictedObject {
      */
     private String targetPageId;
 
+    /**
+     * An optional alias under which the page is accessible, too.
+     */
+    private String targetPageAlias;
+
+    /**
+     * If {@code true}, the menu is hidden, but the underlying page is still accessible with regard
+     * to the configured restrictions. This enables pages to be accessible to everyone without the
+     * need to login and without a visible menu.
+     */
+    private boolean hidden;
+
+    /**
+     * An optional URL to an external page that this menu entry will lead to.
+     */
+    private String external;
+
 }

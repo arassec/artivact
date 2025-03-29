@@ -47,4 +47,11 @@ public interface PageRepository {
      */
     Page findIndexPage();
 
+    /**
+     * Returns the first page which has the given alias configured.
+     *
+     * @return The page with the given alias.
+     */
+    Optional<Page> findByAlias(String alias);
+
 }

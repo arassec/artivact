@@ -20,6 +20,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
@@ -113,13 +114,15 @@ public class PageService extends BaseFileService {
     }
 
     /**
-     * Updates page restrictions.
+     * Updates a page's alias and restrictions.
      *
      * @param pageId       The page's ID.
+     * @param pageAlias    The page's alias to use.
      * @param restrictions The new restrictions to apply.
      */
-    public void updatePageRestrictions(String pageId, Set<String> restrictions) {
+    public void updatePageAliasAndRestrictions(String pageId, String pageAlias, Set<String> restrictions) {
         pageRepository.findById(pageId).ifPresent(page -> {
+            page.setAlias(pageAlias);
             page.getPageContent().setRestrictions(restrictions);
             pageRepository.save(page);
         });
@@ -141,12 +144,19 @@ public class PageService extends BaseFileService {
     /**
      * Loads the content of the given page.
      *
-     * @param pageId The page's ID.
-     * @param roles  The available roles.
+     * @param pageIdOrAlias The page's ID or alias.
+     * @param roles         The available roles.
      * @return The {@link PageContent} of the page.
      */
-    public PageContent loadPageContent(String pageId, Set<String> roles) {
-        Page page = pageRepository.findById(pageId).orElseThrow();
+    public PageContent loadPageContent(String pageIdOrAlias, Set<String> roles) {
+        if (!StringUtils.hasText(pageIdOrAlias)) {
+            throw new ArtivactException("Page id or alias is missing!");
+        }
+        Optional<Page> pageOptional = pageRepository.findByAlias(pageIdOrAlias);
+        if (pageOptional.isEmpty()) {
+            pageOptional = pageRepository.findById(pageIdOrAlias);
+        }
+        Page page = pageOptional.orElseThrow();
         computeEditable(page.getPageContent(), roles);
         return page.getPageContent();
     }
@@ -154,14 +164,14 @@ public class PageService extends BaseFileService {
     /**
      * Loads the content of the given page and applies translations and restrictions.
      *
-     * @param pageId The page's ID.
-     * @param roles  The available roles.
+     * @param pageIdOrAlias The page's ID or the page's alias.
+     * @param roles         The available roles.
      * @return The {@link PageContent} of the page.
      */
     @TranslateResult
     @RestrictResult
-    public PageContent loadTranslatedRestrictedPageContent(String pageId, Set<String> roles) {
-        return loadPageContent(pageId, roles);
+    public PageContent loadTranslatedRestrictedPageContent(String pageIdOrAlias, Set<String> roles) {
+        return loadPageContent(pageIdOrAlias, roles);
     }
 
     /**

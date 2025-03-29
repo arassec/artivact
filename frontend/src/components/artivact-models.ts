@@ -92,6 +92,9 @@ export interface Menu extends BaseTranslatableRestrictedObject {
   parentId: string | null;
   menuEntries: Menu[];
   targetPageId: string;
+  targetPageAlias: string;
+  hidden: boolean;
+  external: string;
 }
 
 export interface Account {
