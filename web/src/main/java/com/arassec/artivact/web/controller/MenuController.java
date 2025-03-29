@@ -1,6 +1,5 @@
 package com.arassec.artivact.web.controller;
 
-import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.model.menu.Menu;
 import com.arassec.artivact.core.repository.FileRepository;
 import com.arassec.artivact.domain.exchange.ExchangeDefinitions;
@@ -12,10 +11,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.List;

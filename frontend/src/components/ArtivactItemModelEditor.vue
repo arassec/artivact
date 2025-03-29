@@ -116,12 +116,12 @@
 // noinspection ES6UnusedImports
 import draggable from 'vuedraggable';
 import {PropType, ref, toRef} from 'vue';
-import {Asset} from 'components/artivact-models';
-import {api} from 'boot/axios';
+import {Asset} from './artivact-models';
+import {api} from '../boot/axios';
 import {useQuasar} from 'quasar';
 import {useI18n} from 'vue-i18n';
-import ArtivactDialog from 'components/ArtivactDialog.vue';
-import {useProfilesStore} from 'stores/profiles';
+import ArtivactDialog from '../components/ArtivactDialog.vue';
+import {useProfilesStore} from '../stores/profiles';
 
 const quasar = useQuasar();
 const i18n = useI18n();

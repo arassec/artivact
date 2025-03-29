@@ -1,6 +1,7 @@
 package com.arassec.artivact.web.controller;
 
 import com.arassec.artivact.core.model.item.ImageSize;
+import com.arassec.artivact.core.model.page.Page;
 import com.arassec.artivact.core.model.page.PageContent;
 import com.arassec.artivact.domain.service.PageService;
 import lombok.RequiredArgsConstructor;
@@ -32,13 +33,19 @@ public class PageController {
     private final PageService pageService;
 
     /**
-     * Returns the index page.
+     * Returns the alias or ID of the index page.
      *
-     * @return The content of the index page.
+     * @return The alias or ID of the index page.
      */
     @GetMapping()
-    public PageContent loadIndexPageContent(Authentication authentication) {
-        return pageService.loadIndexPageContent(getRoles(authentication));
+    public String loadIndexPageIdOrAlias(Authentication authentication) {
+        Page indexPage = pageService.loadIndexPage(getRoles(authentication));
+        if (indexPage == null) {
+            return "";
+        } else if (StringUtils.hasText(indexPage.getAlias())) {
+            return indexPage.getAlias();
+        }
+        return indexPage.getId();
     }
 
     /**

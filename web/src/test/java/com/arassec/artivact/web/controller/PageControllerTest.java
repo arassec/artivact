@@ -1,6 +1,7 @@
 package com.arassec.artivact.web.controller;
 
 import com.arassec.artivact.core.model.item.ImageSize;
+import com.arassec.artivact.core.model.page.Page;
 import com.arassec.artivact.core.model.page.PageContent;
 import com.arassec.artivact.domain.service.PageService;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +22,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
@@ -73,12 +75,22 @@ class PageControllerTest {
     }
 
     /**
-     * Tests loading the index page's content.
+     * Tests loading the index page's alias or ID.
      */
     @Test
-    void testLoadIndexPageContent() {
-        controller.loadIndexPageContent(authentication);
-        verify(pageService, times(1)).loadIndexPageContent(Set.of("ROLE_USER"));
+    void testLoadIndexPageIdOrAlias() {
+        assertThat(controller.loadIndexPageIdOrAlias(authentication)).isEqualTo("");
+        verify(pageService, times(1)).loadIndexPage(Set.of("ROLE_USER"));
+
+        Page indexPage = new Page();
+        indexPage.setAlias("alias");
+        indexPage.setId("id");
+        when(pageService.loadIndexPage(anySet())).thenReturn(indexPage);
+
+        assertThat(controller.loadIndexPageIdOrAlias(authentication)).isEqualTo("alias");
+
+        indexPage.setAlias(null);
+        assertThat(controller.loadIndexPageIdOrAlias(authentication)).isEqualTo("id");
     }
 
     /**

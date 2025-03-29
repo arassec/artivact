@@ -129,16 +129,16 @@ public class PageService extends BaseFileService {
     }
 
     /**
-     * Loads the content of the index page.
+     * Loads the index page if available.
      *
-     * @return The {@link PageContent} of the index page.
+     * @return The index {@link Page}.
      */
     @TranslateResult
     @RestrictResult
-    public PageContent loadIndexPageContent(Set<String> roles) {
-        PageContent pageContent = pageRepository.findIndexPage().getPageContent();
-        computeEditable(pageContent, roles);
-        return pageContent;
+    public Page loadIndexPage(Set<String> roles) {
+        Page indexPage = pageRepository.findIndexPage();
+        computeEditable(indexPage.getPageContent(), roles);
+        return indexPage;
     }
 
     /**

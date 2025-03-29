@@ -191,6 +191,12 @@ export default {
     }
   },
 
+  IndexPage: {
+    messages: {
+      noIndexPage: 'Could not load index page!'
+    }
+  },
+
   ItemDetailsPage: {
     button: {
       tooltip: {

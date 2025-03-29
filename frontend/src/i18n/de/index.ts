@@ -191,6 +191,12 @@ export default {
     }
   },
 
+  IndexPage: {
+    messages: {
+      noIndexPage: 'Konnte Hauptseite nicht laden!'
+    }
+  },
+
   ItemDetailsPage: {
     button: {
       tooltip: {

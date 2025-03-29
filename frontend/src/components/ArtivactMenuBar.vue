@@ -1037,11 +1037,6 @@ function menuImported() {
   cursor: pointer;
 }
 
-.menu-entry-link {
-  text-decoration: none;
-  color: var(--q-primary);
-}
-
 .menu-entry:hover {
   color: white;
   background: var(--q-secondary);

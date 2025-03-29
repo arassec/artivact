@@ -34,16 +34,16 @@
 </template>
 
 <script setup lang="ts">
-import { useQuasar } from 'quasar';
-import { onBeforeRouteLeave, onBeforeRouteUpdate, RouteLocationNormalized, useRoute, useRouter } from 'vue-router';
-import { api } from 'boot/axios';
-import { onMounted, ref } from 'vue';
-import ArtivactPage from 'components/ArtivactPage.vue';
-import { PageContent, Widget } from 'components/artivact-models';
-import { useBreadcrumbsStore } from 'stores/breadcrumbs';
-import { useMenuStore } from 'stores/menu';
-import { useI18n } from 'vue-i18n';
-import ArtivactDialog from 'components/ArtivactDialog.vue';
+import {useQuasar} from 'quasar';
+import {onBeforeRouteLeave, onBeforeRouteUpdate, RouteLocationNormalized, useRoute, useRouter} from 'vue-router';
+import {api} from '../boot/axios';
+import {onMounted, ref} from 'vue';
+import ArtivactPage from '../components/ArtivactPage.vue';
+import {PageContent, Widget} from '../components/artivact-models';
+import {useBreadcrumbsStore} from '../stores/breadcrumbs';
+import {useMenuStore} from '../stores/menu';
+import {useI18n} from 'vue-i18n';
+import ArtivactDialog from '../components/ArtivactDialog.vue';
 
 const quasar = useQuasar();
 const route = useRoute();
@@ -63,11 +63,10 @@ const showUnsavedChangesExistDialog = ref(false);
 function loadPage(pageId: string | string[]) {
   pageIdRef.value = Array.isArray(pageId) ? pageId[0] : pageId;
   let url = '/api/page';
-  if (pageId) {
-    url += '/' + pageId;
-  } else {
-    pageIdRef.value = 'INDEX';
+  if (!pageId) {
+    return;
   }
+  url += '/' + pageId;
   api
     .get(url)
     .then((response) => {
