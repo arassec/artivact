@@ -146,10 +146,10 @@ public class MenuService extends BaseFileService {
             }
         });
 
-        // We add pages for sub-menu entries automatically:
+        // We add pages for sub-menu entries automatically, except when they point to external pages:
         menuConfiguration.getMenus().forEach(existingMenu ->
                 existingMenu.getMenuEntries().forEach(existingMenuEntry -> {
-                    if (!StringUtils.hasText(existingMenuEntry.getTargetPageId())) {
+                    if (!StringUtils.hasText(existingMenuEntry.getTargetPageId()) && !StringUtils.hasText(existingMenuEntry.getExternal())) {
                         Page page = pageService.createPage(existingMenuEntry.getRestrictions());
                         page.setAlias(existingMenuEntry.getTargetPageAlias());
                         existingMenuEntry.setTargetPageId(page.getId());

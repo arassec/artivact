@@ -48,10 +48,11 @@ public interface PageRepository {
     Page findIndexPage();
 
     /**
-     * Returns the first page which has the given alias configured.
+     * Returns the first page which has the given alias configured, or the page that has the parameter as ID.
      *
+     * @param pageIdOrAlias The page's ID or alias.
      * @return The page with the given alias.
      */
-    Optional<Page> findByAlias(String alias);
+    Optional<Page> findByIdOrAlias(String pageIdOrAlias);
 
 }

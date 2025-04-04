@@ -56,15 +56,16 @@
         <q-breadcrumbs>
           <template
             v-for="(breadcrumb, index) in breadcrumbsStore.breadcrumbs"
-            v-bind:key="index"
-          >
+            v-bind:key="index">
             <q-breadcrumbs-el
+              v-if="breadcrumb.label && breadcrumb.target"
               :label="breadcrumb.label"
               :to="'/page/' + breadcrumb.target + (breadcrumb.anchor ? breadcrumb.anchor : '')"
-              v-if="breadcrumb.label && breadcrumb.target"
               style="text-decoration: underline"
             />
-            <q-breadcrumbs-el :label="breadcrumb.label" v-else/>
+            <q-breadcrumbs-el
+              v-else
+              :label="breadcrumb.label"/>
           </template>
         </q-breadcrumbs>
       </div>
@@ -171,22 +172,22 @@
 </template>
 
 <script setup lang="ts">
-import { useQuasar } from 'quasar';
-import { api } from 'boot/axios';
-import { useRoute, useRouter } from 'vue-router';
-import { onMounted, ref } from 'vue';
-import { useUserdataStore } from 'stores/userdata';
+import {useQuasar} from 'quasar';
+import {api} from 'boot/axios';
+import {useRoute, useRouter} from 'vue-router';
+import {onMounted, ref} from 'vue';
+import {useUserdataStore} from 'stores/userdata';
 import ArtivactContent from 'components/ArtivactContent.vue';
-import { useBreadcrumbsStore } from 'stores/breadcrumbs';
-import { translate } from 'components/artivact-utils';
+import {useBreadcrumbsStore} from 'stores/breadcrumbs';
+import {translate} from 'components/artivact-utils';
 import ArtivactPropertyCategoryViewer from 'components/ArtivactPropertyCategoryViewer.vue';
 import ArtivactOperationInProgressDialog from 'components/ArtivactOperationInProgressDialog.vue';
-import { OperationProgress } from 'components/artivact-models';
+import {OperationProgress} from 'components/artivact-models';
 import ArtivactDialog from 'components/ArtivactDialog.vue';
-import { useI18n } from 'vue-i18n';
+import {useI18n} from 'vue-i18n';
 import ArtivactItemMediaCarousel from 'components/ArtivactItemMediaCarousel.vue';
-import { useProfilesStore } from 'stores/profiles';
-import { useApplicationSettingsStore } from 'stores/application-settings';
+import {useProfilesStore} from 'stores/profiles';
+import {useApplicationSettingsStore} from 'stores/application-settings';
 
 const quasar = useQuasar();
 const route = useRoute();

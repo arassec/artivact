@@ -82,7 +82,6 @@ public class JdbcPageRepository extends BaseJdbcRepository implements PageReposi
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("java:S6204") // Widget collection needs to be modifiable...
     public Optional<Page> findById(String pageId) {
         Optional<PageEntity> pageEntityOptional = pageEntityRepository.findById(pageId);
         return pageEntityOptional.map(this::convert);
@@ -92,9 +91,11 @@ public class JdbcPageRepository extends BaseJdbcRepository implements PageReposi
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("java:S6204") // Widget collection needs to be modifiable...
-    public Optional<Page> findByAlias(String alias) {
-        Optional<PageEntity> pageEntityOptional = pageEntityRepository.findFirstByAlias(alias);
+    public Optional<Page> findByIdOrAlias(String pageIdOrAlias) {
+        Optional<PageEntity> pageEntityOptional = pageEntityRepository.findFirstByAlias(pageIdOrAlias);
+        if (pageEntityOptional.isEmpty()) {
+            pageEntityOptional = pageEntityRepository.findById(pageIdOrAlias);
+        }
         return pageEntityOptional.map(this::convert);
     }
 
