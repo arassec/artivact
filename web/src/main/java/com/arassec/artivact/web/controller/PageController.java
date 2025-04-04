@@ -51,39 +51,39 @@ public class PageController {
     /**
      * Returns the page with the given ID.
      *
-     * @param pageId The page's ID.
+     * @param pageIdOrAlias The page's ID or alias.
      * @return The page content.
      */
-    @GetMapping("/{pageId}")
-    public PageContent loadTranslatedPageContent(@PathVariable String pageId, Authentication authentication) {
-        return pageService.loadTranslatedRestrictedPageContent(pageId, getRoles(authentication));
+    @GetMapping("/{pageIdOrAlias}")
+    public PageContent loadTranslatedPageContent(@PathVariable String pageIdOrAlias, Authentication authentication) {
+        return pageService.loadTranslatedRestrictedPageContent(pageIdOrAlias, getRoles(authentication));
     }
 
     /**
      * Saves a page.
      *
-     * @param pageId      The page's ID.
-     * @param pageContent The page content to save.
+     * @param pageIdOrAlias The page's ID or alias.
+     * @param pageContent   The page content to save.
      * @return The updated page content.
      */
-    @PostMapping("/{pageId}")
-    public PageContent savePageContent(@PathVariable String pageId, @RequestBody PageContent pageContent, Authentication authentication) {
-        return pageService.savePageContent(pageId, getRoles(authentication), pageContent);
+    @PostMapping("/{pageIdOrAlias}")
+    public PageContent savePageContent(@PathVariable String pageIdOrAlias, @RequestBody PageContent pageContent, Authentication authentication) {
+        return pageService.savePageContent(pageIdOrAlias, getRoles(authentication), pageContent);
     }
 
     /**
      * Saves a file to a widget.
      *
-     * @param pageId   The page's ID the widget is on.
-     * @param widgetId The widget's ID.
-     * @param file     The file to save.
+     * @param pageIdOrAlias The page's ID or alias the widget is on.
+     * @param widgetId      The widget's ID.
+     * @param file          The file to save.
      * @return The filename of the saved file.
      */
-    @PostMapping(value = "/{pageId}/widget/{widgetId}")
-    public ResponseEntity<String> saveFile(@PathVariable String pageId,
+    @PostMapping(value = "/{pageIdOrAlias}/widget/{widgetId}")
+    public ResponseEntity<String> saveFile(@PathVariable String pageIdOrAlias,
                                            @PathVariable String widgetId,
                                            @RequestPart(value = "file") final MultipartFile file) {
-        return ResponseEntity.ok(pageService.saveFile(pageId, widgetId, file));
+        return ResponseEntity.ok(pageService.saveFile(pageIdOrAlias, widgetId, file));
     }
 
     /**

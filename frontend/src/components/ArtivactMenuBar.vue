@@ -12,7 +12,7 @@
         color="white"
         :label="translate(menu)"
         class="q-mr-md"
-        @click="gotoPage(menu.targetPageId, menu.targetPageAlias, menu.external, menu.translatedValue, null, null)"
+        @click="gotoPage(menu, null)"
       >
         <q-tooltip v-if="userdataStore.isAdmin">{{ $t('ArtivactMenuBar.tooltip.edit') }}</q-tooltip>
         <q-menu
@@ -138,7 +138,7 @@
         flat
         :color="menu.menuEntries.length == 0 && !menu.targetPageId && !menu.external ? 'negative' : 'white'"
         :label="translate(menu)"
-        @click="menu.external ? gotoPage(null, null, menu.external, null, null, null) : {}"
+        @click="menu.external ? gotoPage(menu, null) : {}"
       >
 
         <q-icon
@@ -166,16 +166,7 @@
                 clickable
                 v-close-popup
                 class="menu-entry"
-                @click="
-                  gotoPage(
-                    menuEntry.targetPageId,
-                    menuEntry.targetPageAlias,
-                    menuEntry.external,
-                    menuEntry.translatedValue,
-                    null,
-                    menu.translatedValue
-                  )
-                "
+                @click="gotoPage(menuEntry, menu)"
               >
                 <q-item-section>
                   <div class="row">
@@ -556,10 +547,10 @@
 
       <template v-slot:body>
         <q-card-section>
-          <div class="q-mb-xs" v-if="!menu.parentId">
+          <div class="q-mb-xs" v-if="!menuRef.parentId">
             {{ $t('ArtivactMenuBar.dialog.description') }}
           </div>
-          <div class="q-mb-xs" v-if="menu.parentId">
+          <div class="q-mb-xs" v-if="menuRef.parentId">
             {{ $t('ArtivactMenuBar.dialog.descriptionEntry') }}
           </div>
           <artivact-restricted-translatable-item-editor
@@ -675,7 +666,7 @@
             <q-item-section
               v-if="menu.menuEntries.length === 0 && (menu.targetPageId || menu.external)"
               @click="
-              gotoPage(menu.targetPageId, menu.targetPageAlias, menu.external, menu.translatedValue, null, null)
+              gotoPage(menu, null)
             "
             >
               <label class="menu-label">
@@ -706,7 +697,7 @@
                           :key="menuEntry.id">
                   <q-item clickable class="menu-entry"
                           v-if="(userdataStore.isUserOrAdmin || !menuEntry.hidden)"
-                          @click="gotoPage(menuEntry.targetPageId, menuEntry.targetPageAlias, menuEntry.external, menuEntry.translatedValue, null, menu.translatedValue)">
+                          @click="gotoPage(menuEntry, menu)">
                     <q-item-section>
                       <label class="menu-label">
                         {{ menuEntry.translatedValue }}
@@ -802,7 +793,7 @@ function saveMenu(menu: Menu) {
         if (!menu.id) {
           // new menu entry:
           menuToSave.menuEntries.push(menu);
-          gotoPage = true;
+          gotoPage = menu.external == null;
         } else {
           // update existing menu entry:
           menuToSave.menuEntries.forEach((existingMenuEntry) => {
@@ -959,45 +950,35 @@ function moveMenuDown(array: [Menu], index: number) {
 }
 
 function gotoPage(
-  pageId: string,
-  pageAlias: string,
-  external: string,
-  pageLabel: string,
-  parentPageId: string | null,
-  parentPageLabel: string | null
+  menuItem: Menu,
+  parentMenuItem: Menu | null
 ) {
 
-  if (external) {
-    window.open(external, '_blank');
+  if (menuItem.external) {
+    window.open(menuItem.external, '_blank');
     return;
   }
 
   breadcrumbsStore.resetBreadcrumbs();
 
-  if (parentPageId && parentPageLabel) {
+  if (parentMenuItem) {
     breadcrumbsStore.addBreadcrumb({
-      label: parentPageLabel,
-      target: parentPageId,
-      anchor: null
-    });
-  } else if (parentPageLabel) {
-    breadcrumbsStore.addBreadcrumb({
-      label: parentPageLabel,
+      label: parentMenuItem.translatedValue,
       target: null,
       anchor: null
     });
   }
 
   breadcrumbsStore.addBreadcrumb({
-    label: pageLabel,
-    target: pageId,
+    label: menuItem.translatedValue,
+    target: menuItem.targetPageAlias ? menuItem.targetPageAlias : menuItem.targetPageId,
     anchor: null
   });
 
-  if (pageAlias) {
-    router.push('/page/' + pageAlias);
+  if (menuItem.targetPageAlias) {
+    router.push('/page/' + menuItem.targetPageAlias);
   } else {
-    router.push('/page/' + pageId);
+    router.push('/page/' + menuItem.targetPageId);
   }
 }
 

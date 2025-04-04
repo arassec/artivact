@@ -101,15 +101,15 @@ public class PageService extends BaseFileService {
     /**
      * Deletes the page with the given ID.
      *
-     * @param pageId The page's ID.
+     * @param pageIdOrAlias The page's ID or alias.
      */
-    public void deletePage(String pageId) {
-        Optional<Page> pageOptional = pageRepository.deleteById(pageId);
+    public void deletePage(String pageIdOrAlias) {
+        Optional<Page> pageOptional = pageRepository.deleteById(pageIdOrAlias);
         if (pageOptional.isPresent()) {
             pageOptional.get().getPageContent().getWidgets().forEach(
                     widget -> deleteDirAndEmptyParents(fileRepository.getDirFromId(widgetFilesDir, widget.getId()))
             );
-            pageRepository.deleteById(pageId);
+            pageRepository.deleteById(pageIdOrAlias);
         }
     }
 
@@ -152,10 +152,7 @@ public class PageService extends BaseFileService {
         if (!StringUtils.hasText(pageIdOrAlias)) {
             throw new ArtivactException("Page id or alias is missing!");
         }
-        Optional<Page> pageOptional = pageRepository.findByAlias(pageIdOrAlias);
-        if (pageOptional.isEmpty()) {
-            pageOptional = pageRepository.findById(pageIdOrAlias);
-        }
+        Optional<Page> pageOptional = pageRepository.findByIdOrAlias(pageIdOrAlias);
         Page page = pageOptional.orElseThrow();
         computeEditable(page.getPageContent(), roles);
         return page.getPageContent();
@@ -177,16 +174,16 @@ public class PageService extends BaseFileService {
     /**
      * Saves a page's content.
      *
-     * @param pageId      The page's ID.
-     * @param roles       The available roles.
-     * @param pageContent The content to save.
+     * @param pageIdOrAlias The page's ID or alias.
+     * @param roles         The available roles.
+     * @param pageContent   The content to save.
      * @return The updated page content.
      */
     @GenerateIds
     @TranslateResult
     @RestrictResult
-    public PageContent savePageContent(String pageId, Set<String> roles, PageContent pageContent) {
-        Optional<Page> pageOptional = pageRepository.findById(pageId);
+    public PageContent savePageContent(String pageIdOrAlias, Set<String> roles, PageContent pageContent) {
+        Optional<Page> pageOptional = pageRepository.findByIdOrAlias(pageIdOrAlias);
 
         Page page;
         if (pageOptional.isPresent()) {
@@ -194,7 +191,7 @@ public class PageService extends BaseFileService {
         } else {
             // Importing content from a previous export:
             page = new Page();
-            page.setId(pageId);
+            page.setId(pageIdOrAlias);
             page.setVersion(0);
             page.setPageContent(pageContent);
         }
@@ -237,23 +234,6 @@ public class PageService extends BaseFileService {
     }
 
     /**
-     * Returns a list of images of a widget that are not referenced by the widget itself, but only existing in the
-     * filesystem.
-     *
-     * @param widget The widget.
-     * @return List of unreferenced images.
-     */
-    private List<String> getDanglingImages(Widget widget) {
-        if (widget instanceof FileProcessingWidget fileProcessingWidget) {
-            List<String> imagesInWidget = fileProcessingWidget.usedFiles();
-            List<String> allImagesInFolder = getFiles(fileRepository.getDirFromId(widgetFilesDir, widget.getId()), null);
-            allImagesInFolder.removeAll(imagesInWidget);
-            return allImagesInFolder;
-        }
-        return List.of();
-    }
-
-    /**
      * Saves a file for a given widget in the filesystem.
      *
      * @param pageId   The page's ID.
@@ -265,7 +245,7 @@ public class PageService extends BaseFileService {
 
         String filename = saveFile(widgetFilesDir, widgetId, file);
 
-        Page page = pageRepository.findById(pageId).orElseThrow();
+        Page page = pageRepository.findByIdOrAlias(pageId).orElseThrow();
         page.getPageContent().getWidgets().forEach(widget -> {
             if (widget.getId().equals(widgetId) && widget instanceof FileProcessingWidget fileProcessingWidget) {
                 fileProcessingWidget.processFile(filename);
@@ -288,6 +268,23 @@ public class PageService extends BaseFileService {
     public byte[] loadFile(String widgetId, String filename, ImageSize targetSize) {
         FileSystemResource file = loadFile(widgetFilesDir, widgetId, filename, targetSize);
         return fileRepository.readBytes(file.getFile().toPath());
+    }
+
+    /**
+     * Returns a list of images of a widget that are not referenced by the widget itself, but only existing in the
+     * filesystem.
+     *
+     * @param widget The widget.
+     * @return List of unreferenced images.
+     */
+    private List<String> getDanglingImages(Widget widget) {
+        if (widget instanceof FileProcessingWidget fileProcessingWidget) {
+            List<String> imagesInWidget = fileProcessingWidget.usedFiles();
+            List<String> allImagesInFolder = getFiles(fileRepository.getDirFromId(widgetFilesDir, widget.getId()), null);
+            allImagesInFolder.removeAll(imagesInWidget);
+            return allImagesInFolder;
+        }
+        return List.of();
     }
 
     /**
