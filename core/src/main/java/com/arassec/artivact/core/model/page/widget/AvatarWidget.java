@@ -1,6 +1,7 @@
 package com.arassec.artivact.core.model.page.widget;
 
 import com.arassec.artivact.core.model.TranslatableString;
+import com.arassec.artivact.core.model.page.FileProcessingOperation;
 import com.arassec.artivact.core.model.page.FileProcessingWidget;
 import com.arassec.artivact.core.model.page.Widget;
 import com.arassec.artivact.core.model.page.WidgetType;
@@ -37,8 +38,12 @@ public class AvatarWidget extends Widget implements FileProcessingWidget {
      * {@inheritDoc}
      */
     @Override
-    public void processFile(String filename) {
-        this.avatarImage = filename;
+    public void processFile(String filename, FileProcessingOperation operation) {
+        if (FileProcessingOperation.ADD.equals(operation)) {
+            this.avatarImage = filename;
+        } else if (FileProcessingOperation.REMOVE.equals(operation)) {
+            this.avatarImage = null;
+        }
     }
 
     /**

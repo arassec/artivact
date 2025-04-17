@@ -156,6 +156,24 @@ class WidgetDeserializerTest {
     }
 
     /**
+     * Tests deserializing the {@link ImageGalleryWidget}.
+     */
+    @Test
+    @SneakyThrows
+    void testDeserializeImageGalleryWidget() {
+        JsonParser jsonParserMock = mock(JsonParser.class);
+        DeserializationContext deserializationContextMock = mock(DeserializationContext.class);
+
+        when(deserializationContextMock.readValue(jsonParserMock, Map.class)).thenReturn(Map.of(
+                "type", WidgetType.IMAGE_GALLERY.toString()
+        ));
+
+        WidgetDeserializer widgetDeserializer = new WidgetDeserializer();
+        Widget widget = widgetDeserializer.deserialize(jsonParserMock, deserializationContextMock);
+        assertInstanceOf(ImageGalleryWidget.class, widget);
+    }
+
+    /**
      * Tests deserializing an unknown widget.
      */
     @Test

@@ -74,7 +74,7 @@ public class ImportService extends BaseFileService {
      * @param file The content export file to import.
      */
     public void importContent(MultipartFile file) {
-        Path importFileZip = saveFile(projectDataProvider.getProjectRoot(), file);
+        Path importFileZip = saveImportFile(projectDataProvider.getProjectRoot(), file);
         artivactImporter.importContent(importFileZip);
         fileRepository.delete(importFileZip);
     }

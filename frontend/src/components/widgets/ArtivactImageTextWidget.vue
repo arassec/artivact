@@ -213,14 +213,14 @@
 
 <script setup lang="ts">
 import {PropType, ref, toRef} from 'vue';
-import {ImageTextWidgetData} from 'components/widgets/artivact-widget-models';
-import ArtivactContent from 'components/ArtivactContent.vue';
+import {ImageTextWidgetData} from './artivact-widget-models';
+import ArtivactContent from '../ArtivactContent.vue';
 import {QUploader} from 'quasar';
-import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
-import {useLocaleStore} from 'stores/locale';
+import ArtivactRestrictedTranslatableItemEditor from '../ArtivactRestrictedTranslatableItemEditor.vue';
+import {useLocaleStore} from '../../stores/locale';
 import MarkdownIt from 'markdown-it';
-import {translate} from 'components/artivact-utils';
-import ArtivactWidgetTemplate from 'components/widgets/ArtivactWidgetTemplate.vue';
+import {translate} from '../artivact-utils';
+import ArtivactWidgetTemplate from '../widgets/ArtivactWidgetTemplate.vue';
 
 const props = defineProps({
   inEditMode: {

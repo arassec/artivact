@@ -806,6 +806,15 @@ export default {
     }
   },
 
+  ImageGalleryWidget: {
+    label: {
+      heading: 'Überschrift',
+      content: 'Inhalt',
+      images: 'Bilder',
+      fullscreenAllowed: 'Gibt an, ob die Bilder als Vollbild-Detailansicht geöffnet werden können.'
+    }
+  },
+
   ImageTextWidget: {
     label: {
       image: 'Bild',
@@ -929,6 +938,8 @@ export default {
   AVATAR_DESCRIPTION: 'Ein Portraitbild mit optionalem Untertitel und Seitentext rechts stehend.',
   SPACE: 'Leer-Raum',
   SPACE_DESCRIPTION: 'Fügt leeren Raum von konfigurierbarer Größe auf der Seite ein.',
+  IMAGE_GALLERY: 'Bilder-Gallerie',
+  IMAGE_GALLERY_DESCRIPTION: 'Eine Bilder-Gallerie, mit optionaler Überschrift und optionalem Beschreibungstext.',
 
   FALLBACK_BACKGROUND_REMOVAL_ADAPTER: 'Fallback',
   REMBG_REMOTE_BACKGROUND_REMOVAL_ADAPTER: 'rembg (Remote)',

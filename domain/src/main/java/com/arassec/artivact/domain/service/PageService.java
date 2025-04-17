@@ -4,10 +4,7 @@ import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.model.BaseRestrictedObject;
 import com.arassec.artivact.core.model.Roles;
 import com.arassec.artivact.core.model.item.ImageSize;
-import com.arassec.artivact.core.model.page.FileProcessingWidget;
-import com.arassec.artivact.core.model.page.Page;
-import com.arassec.artivact.core.model.page.PageContent;
-import com.arassec.artivact.core.model.page.Widget;
+import com.arassec.artivact.core.model.page.*;
 import com.arassec.artivact.core.repository.FileRepository;
 import com.arassec.artivact.core.repository.PageRepository;
 import com.arassec.artivact.domain.aspect.GenerateIds;
@@ -241,20 +238,50 @@ public class PageService extends BaseFileService {
      * @param file     The file to save.
      * @return The name of the saved file.
      */
-    public String saveFile(String pageId, String widgetId, MultipartFile file) {
+    public synchronized String saveFile(String pageId, String widgetId, MultipartFile file) {
 
         String filename = saveFile(widgetFilesDir, widgetId, file);
 
         Page page = pageRepository.findByIdOrAlias(pageId).orElseThrow();
         page.getPageContent().getWidgets().forEach(widget -> {
             if (widget.getId().equals(widgetId) && widget instanceof FileProcessingWidget fileProcessingWidget) {
-                fileProcessingWidget.processFile(filename);
+                fileProcessingWidget.processFile(filename, FileProcessingOperation.ADD);
             }
         });
 
         pageRepository.save(page);
 
         return filename;
+    }
+
+    /**
+     * Deletes a file for a given widget from the filesystem.
+     *
+     * @param pageId   The page's ID.
+     * @param widgetId The widget's ID.
+     * @param filename The file to delete.
+     */
+    public PageContent deleteFile(String pageId, String widgetId, String filename) {
+
+        Path filePath = getSimpleFilePath(widgetFilesDir, widgetId, filename);
+        fileRepository.delete(filePath);
+
+        // If the widget stores images, we remove scaled versions of them, too:
+        for (ImageSize imageSize : ImageSize.values()) {
+            Path scaledImage = getSimpleFilePath(widgetFilesDir, widgetId, imageSize.name() + "-" + filename);
+            fileRepository.delete(scaledImage);
+        }
+
+        Page page = pageRepository.findByIdOrAlias(pageId).orElseThrow();
+        page.getPageContent().getWidgets().forEach(widget -> {
+            if (widget.getId().equals(widgetId) && widget instanceof FileProcessingWidget fileProcessingWidget) {
+                fileProcessingWidget.processFile(filename, FileProcessingOperation.REMOVE);
+            }
+        });
+
+        pageRepository.save(page);
+
+        return page.getPageContent();
     }
 
     /**

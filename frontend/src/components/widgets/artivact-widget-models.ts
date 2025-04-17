@@ -1,4 +1,4 @@
-import {TranslatableString, Widget} from 'components/artivact-models';
+import {TranslatableString, Widget} from '../artivact-models';
 
 export interface SearchBasedWidgetData extends Widget {
 }
@@ -40,4 +40,18 @@ export interface ImageTextWidgetData extends Widget {
   image: string;
   text: TranslatableString;
   fullscreenAllowed: boolean;
+}
+
+export enum ImageGalleryWidgetTextPosition {
+  TOP = 'TOP',
+  LEFT = 'LEFT',
+  RIGHT = 'RIGHT',
+}
+
+export interface ImageGalleryWidgetData extends Widget {
+  heading: TranslatableString;
+  content: TranslatableString;
+  images: string[];
+  fullscreenAllowed: boolean;
+  textPosition: ImageGalleryWidgetTextPosition;
 }

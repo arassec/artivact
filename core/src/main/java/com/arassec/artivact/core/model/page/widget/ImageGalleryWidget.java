@@ -8,35 +8,47 @@ import com.arassec.artivact.core.model.page.WidgetType;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
- * The two-column Image-Text widget contains an image on the left side, and a text on the right.
+ * An image gallery with additional heading and text content.
  */
 @Getter
 @Setter
-public class ImageTextWidget extends Widget implements FileProcessingWidget {
+public class ImageGalleryWidget extends Widget implements FileProcessingWidget {
 
     /**
-     * The image.
+     * The heading of the widget.
      */
-    private String image;
+    private TranslatableString heading;
 
     /**
-     * The text.
+     * The text content of the widget.
      */
-    private TranslatableString text;
+    private TranslatableString content;
 
     /**
-     * Enables or disables fullscreen availability.
+     * The list of image files of this gallery.
+     */
+    private List<String> images = new LinkedList<>();
+
+    /**
+     * Enables or disables fullscreen availability for the images.
      */
     private boolean fullscreenAllowed;
 
     /**
+     * Defines where the widget's text should be positioned. Possible values supported in
+     * the frontend are "TOP", "LEFT" and "RIGHT".
+     */
+    private String textPosition;
+
+    /**
      * Creates a new instance.
      */
-    public ImageTextWidget() {
-        super(WidgetType.IMAGE_TEXT);
+    protected ImageGalleryWidget() {
+        super(WidgetType.IMAGE_GALLERY);
     }
 
     /**
@@ -45,9 +57,9 @@ public class ImageTextWidget extends Widget implements FileProcessingWidget {
     @Override
     public void processFile(String filename, FileProcessingOperation operation) {
         if (FileProcessingOperation.ADD.equals(operation)) {
-            this.image = filename;
+            images.add(filename);
         } else if (FileProcessingOperation.REMOVE.equals(operation)) {
-            this.image = null;
+            images.remove(filename);
         }
     }
 
@@ -56,10 +68,7 @@ public class ImageTextWidget extends Widget implements FileProcessingWidget {
      */
     @Override
     public List<String> usedFiles() {
-        if (image != null) {
-            return List.of(image);
-        }
-        return List.of();
+        return images;
     }
 
 }

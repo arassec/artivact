@@ -204,6 +204,25 @@
         @add-widget-below="addWidgetBelowRef = widgetData.id; showAddWidgetDialogRef = true;"
         @delete-widget="deleteWidget(index)"
       />
+
+      <artivact-image-gallery-widget
+        :id="widgetData.id"
+        :class="inEditMode ? 'widget' : ''"
+        v-if="widgetData.type === 'IMAGE_GALLERY'"
+        :widget-data="widgetData as ImageGalleryWidgetData"
+        :page-id="pageId"
+        :in-edit-mode="inEditMode"
+        :showEditor="inEditMode && pageStore.latestWidgetIndex === index"
+        :move-up-enabled="index > 0"
+        :move-down-enabled="index < pageContentRef.widgets.length - 1"
+        @move-widget-up="moveWidgetUp(pageContentRef.widgets, index)"
+        @move-widget-down="moveWidgetDown(pageContentRef.widgets, index)"
+        @add-widget-above="addWidgetAboveRef = widgetData.id; showAddWidgetDialogRef = true;"
+        @add-widget-below="addWidgetBelowRef = widgetData.id; showAddWidgetDialogRef = true;"
+        @delete-widget="deleteWidget(index)"
+        @image-added="fileAdded($event, widgetData.id)"
+        @image-deleted="fileDeleted($event, widgetData.id)"
+      />
     </template>
 
     <artivact-dialog :data-test="'add-widget-modal'" :dialog-model="showAddWidgetDialogRef"
@@ -257,10 +276,10 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, PropType, ref, toRef } from 'vue';
-import { PageContent, TranslatableString, Widget } from 'components/artivact-models';
-import { useUserdataStore } from 'stores/userdata';
-import { useQuasar } from 'quasar';
+import {onMounted, PropType, ref, toRef} from 'vue';
+import {PageContent, TranslatableString, Widget} from 'components/artivact-models';
+import {useUserdataStore} from 'stores/userdata';
+import {useQuasar} from 'quasar';
 import {
   AvatarWidgetData,
   ImageTextWidgetData,
@@ -270,9 +289,9 @@ import {
   SpaceWidgetData,
   TextWidgetData
 } from 'components/widgets/artivact-widget-models';
-import { moveDown, moveUp } from 'components/artivact-utils';
-import { api } from 'boot/axios';
-import { useI18n } from 'vue-i18n';
+import {moveDown, moveUp} from 'components/artivact-utils';
+import {api} from 'boot/axios';
+import {useI18n} from 'vue-i18n';
 import ArtivactDialog from 'components/ArtivactDialog.vue';
 import ArtivactAvatarWidget from 'components/widgets/ArtivactAvatarWidget.vue';
 import ArtivactImageTextWidget from 'components/widgets/ArtivactImageTextWidget.vue';
@@ -282,7 +301,9 @@ import ArtivactTextWidget from 'components/widgets/ArtivactTextWidget.vue';
 import ArtivactPageTitleWidget from 'components/widgets/ArtivactPageTitleWidget.vue';
 import ArtivactItemSearchWidget from 'components/widgets/ArtivactItemSearchWidget.vue';
 import ArtivactContent from 'components/ArtivactContent.vue';
-import { usePageStore } from 'stores/page';
+import {usePageStore} from 'stores/page';
+import {ImageGalleryWidgetData, ImageGalleryWidgetTextPosition} from "./widgets/artivact-widget-models";
+import ArtivactImageGalleryWidget from "./widgets/ArtivactImageGalleryWidget.vue";
 
 const props = defineProps({
   pageId: {
@@ -298,6 +319,7 @@ const props = defineProps({
 const emit = defineEmits<{
   (e: 'update-page-content', pageContent: PageContent): void;
   (e: 'file-added', widgetId: string, property: string): void;
+  (e: 'file-deleted', widgetId: string, property: string, filename: string): void;
 }>();
 
 const quasar = useQuasar();
@@ -324,6 +346,7 @@ const availableWidgetTypes = [
   'INFO_BOX',
   'AVATAR',
   'SPACE',
+  'IMAGE_GALLERY'
 ];
 
 function addWidget() {
@@ -343,6 +366,9 @@ function addWidget() {
       type: 'PAGE_TITLE',
       id: '',
       restrictions: [] as string[],
+      navigationTitle: {
+        value: ''
+      } as TranslatableString,
       title: {
         value: i18n.t('ArtivactPage.label.pageTitle'),
       } as TranslatableString,
@@ -353,6 +379,9 @@ function addWidget() {
       type: 'TEXT',
       id: '',
       restrictions: [] as string[],
+      navigationTitle: {
+        value: ''
+      } as TranslatableString,
       heading: {
         value: i18n.t('ArtivactPage.label.textTitle'),
       } as TranslatableString,
@@ -376,6 +405,9 @@ function addWidget() {
       type: 'ITEM_SEARCH',
       id: '',
       restrictions: [] as string[],
+      navigationTitle: {
+        value: ''
+      } as TranslatableString,
       heading: {
         value: i18n.t('ArtivactPage.label.text'),
       } as TranslatableString,
@@ -391,6 +423,9 @@ function addWidget() {
       type: 'INFO_BOX',
       id: '',
       restrictions: [] as string[],
+      navigationTitle: {
+        value: ''
+      } as TranslatableString,
       heading: {
         value: i18n.t('ArtivactPage.label.infoBoxTitle'),
       } as TranslatableString,
@@ -404,6 +439,9 @@ function addWidget() {
       type: 'AVATAR',
       id: '',
       restrictions: [] as string[],
+      navigationTitle: {
+        value: ''
+      } as TranslatableString,
       avatarImage: '',
       avatarSubtext: {
         value: i18n.t('ArtivactPage.label.avatarSubtext'),
@@ -416,6 +454,24 @@ function addWidget() {
       restrictions: [] as string[],
       size: 2,
     } as SpaceWidgetData);
+  } else if (selectedWidgetTypeRef.value === 'IMAGE_GALLERY') {
+    pageContentRef.value?.widgets.splice(index, 0, {
+      type: 'IMAGE_GALLERY',
+      id: '',
+      restrictions: [] as string[],
+      navigationTitle: {
+        value: ''
+      } as TranslatableString,
+      heading: {
+        value: i18n.t('ArtivactPage.label.text'),
+      } as TranslatableString,
+      content: {
+        value: i18n.t('ArtivactPage.label.text'),
+      } as TranslatableString,
+      images: [],
+      fullscreenAllowed: true,
+      textPosition: ImageGalleryWidgetTextPosition.TOP
+    } as ImageGalleryWidgetData);
   }
   showAddWidgetDialogRef.value = false;
   savePage(false);
@@ -462,6 +518,10 @@ function savePage(leaveEditMode: boolean) {
 
 function fileAdded(propertyName: string, widgetId: string) {
   emit('file-added', widgetId, propertyName);
+}
+
+function fileDeleted(parameters: string[], widgetId: string) {
+  emit('file-deleted', widgetId, parameters[0], parameters[1]);
 }
 
 onMounted(() => {

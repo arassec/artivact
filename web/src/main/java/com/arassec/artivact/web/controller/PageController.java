@@ -87,6 +87,20 @@ public class PageController {
     }
 
     /**
+     * Deletes a file from a widget.
+     *
+     * @param pageIdOrAlias The page's ID or alias the widget is on.
+     * @param widgetId      The widget's ID.
+     * @param filename      The name of the file to delete.
+     */
+    @DeleteMapping(value = "/{pageIdOrAlias}/widget/{widgetId}/{filename}")
+    public PageContent deleteFile(@PathVariable String pageIdOrAlias,
+                                  @PathVariable String widgetId,
+                                  @PathVariable String filename) {
+        return pageService.deleteFile(pageIdOrAlias, widgetId, filename);
+    }
+
+    /**
      * Loads a widget's file.
      *
      * @param widgetId  The widget's ID.

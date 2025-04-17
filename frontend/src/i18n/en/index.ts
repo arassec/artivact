@@ -806,6 +806,15 @@ export default {
     }
   },
 
+  ImageGalleryWidget: {
+    label: {
+      heading: 'Heading',
+      content: 'Content',
+      images: 'Images',
+      fullscreenAllowed: 'Configures whether the images can be opened in fullscreen detail view.',
+    }
+  },
+
   ImageTextWidget: {
     label: {
       image: 'Image',
@@ -927,6 +936,8 @@ export default {
   AVATAR_DESCRIPTION: 'A portrait image with optional subtext and description to the right.',
   SPACE: 'Space',
   SPACE_DESCRIPTION: 'Adds empty space of configurable size to the page.',
+  IMAGE_GALLERY: 'Image Gallery',
+  IMAGE_GALLERY_DESCRIPTION: 'An image gallery with optional heading and content text.',
 
   FALLBACK_BACKGROUND_REMOVAL_ADAPTER: 'Fallback',
   REMBG_REMOTE_BACKGROUND_REMOVAL_ADAPTER: 'rembg (Remote)',

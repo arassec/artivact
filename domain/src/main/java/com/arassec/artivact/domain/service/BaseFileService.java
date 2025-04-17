@@ -87,19 +87,19 @@ public abstract class BaseFileService {
     /**
      * Saves the provided import file in the project dir.
      *
-     * @param file The uploaded import file to save.
+     * @param importFile The uploaded import file to save.
      * @return Path into the project's directory structure to the import file.
      */
     @SuppressWarnings("javasecurity:S2083") // Path is not entered by user!
-    protected Path saveFile(Path root, MultipartFile file) {
-        String originalFilename = Optional.ofNullable(file.getOriginalFilename()).orElse("fallback.zip");
+    protected Path saveImportFile(Path root, MultipartFile importFile) {
+        String originalFilename = Optional.ofNullable(importFile.getOriginalFilename()).orElse("fallback.zip");
         Path importFileZip = root
                 .resolve(ProjectDataProvider.TEMP_DIR)
                 .resolve(originalFilename)
                 .toAbsolutePath();
 
         try {
-            file.transferTo(importFileZip);
+            importFile.transferTo(importFileZip);
         } catch (IOException e) {
             throw new ArtivactException("Could not save uploaded ZIP file!", e);
         }
@@ -193,7 +193,7 @@ public abstract class BaseFileService {
      * @return The path to the file.
      */
     @SuppressWarnings("javasecurity:S2083") // Path is not entered by user!
-    private Path getSimpleFilePath(Path root, String id, String filename) {
+    protected Path getSimpleFilePath(Path root, String id, String filename) {
         return root.resolve(getFileRepository().getSubDir(id, 0)).resolve(getFileRepository().getSubDir(id, 1)).resolve(id).resolve(filename);
     }
 

@@ -21,7 +21,7 @@ public enum ImageSize {
     /**
      * Size to display an image in more detail, but not full resolution.
      */
-    DETAIL(1024),
+    DETAIL(2048),
 
     /**
      * Size for page title images.

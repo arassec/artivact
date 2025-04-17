@@ -111,6 +111,9 @@ public class WidgetDeserializer extends StdDeserializer<Widget> {
             case "IMAGE_TEXT" -> {
                 return ImageTextWidget.class;
             }
+            case "IMAGE_GALLERY" -> {
+                return ImageGalleryWidget.class;
+            }
             default -> {
                 return null;
             }

@@ -375,7 +375,7 @@ public class CollectionExportService extends BaseFileService {
 
         progressMonitor = new ProgressMonitor(getClass(), "importCollection");
 
-        Path importFileZip = saveFile(projectDataProvider.getProjectRoot(), file);
+        Path importFileZip = saveImportFile(projectDataProvider.getProjectRoot(), file);
 
         executorService.submit(() -> {
             try {

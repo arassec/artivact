@@ -43,4 +43,9 @@ public enum WidgetType {
      */
     IMAGE_TEXT,
 
+    /**
+     * An image gallery.
+     */
+    IMAGE_GALLERY,
+
 }

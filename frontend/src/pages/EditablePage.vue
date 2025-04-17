@@ -6,6 +6,7 @@
     :page-content="pageContentRef"
     v-on:update-page-content="updatePageContent"
     v-on:file-added="fileAdded"
+    v-on:file-deleted="fileDeleted"
   />
 
   <artivact-dialog :dialog-model="showUnsavedChangesExistDialog" :warn="true">
@@ -105,6 +106,35 @@ function updatePageContent(pageContent: PageContent) {
 function fileAdded(widgetId: string, propertyName: string) {
   api
     .get('/api/page/' + pageIdRef.value)
+    .then((response) => {
+      let index = -1;
+      for (let i = 0; i < pageContentRef.value.widgets.length; i++) {
+        if (pageContentRef.value.widgets[i].id === widgetId) {
+          index = i;
+        }
+      }
+      response.data.widgets.forEach((widget: Widget) => {
+        if (widget.id === widgetId) {
+          // eslint-disable-next-line
+          pageContentRef.value.widgets[index][propertyName] = (widget as any)[
+            propertyName
+            ];
+        }
+      });
+    })
+    .catch(() => {
+      quasar.notify({
+        color: 'negative',
+        position: 'bottom',
+        message: i18n.t('Common.messages.loading.failed', {item: i18n.t('Common.items.page')}),
+        icon: 'report_problem',
+      });
+    });
+}
+
+function fileDeleted(widgetId: string, propertyName: string, filename: string) {
+  api
+    .delete('/api/page/' + pageIdRef.value + '/widget/' + widgetId + '/' + filename)
     .then((response) => {
       let index = -1;
       for (let i = 0; i < pageContentRef.value.widgets.length; i++) {

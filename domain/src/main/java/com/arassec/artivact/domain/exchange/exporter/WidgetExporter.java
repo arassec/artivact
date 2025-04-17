@@ -92,6 +92,11 @@ public class WidgetExporter extends BaseExporter {
                 cleanupTranslations(textWidget.getContent());
             }
             case SpaceWidget spaceWidget -> cleanupTranslations(spaceWidget.getNavigationTitle());
+            case ImageGalleryWidget imageGalleryWidget -> {
+                cleanupTranslations(imageGalleryWidget.getHeading());
+                cleanupTranslations(imageGalleryWidget.getContent());
+                imageGalleryWidget.getImages().forEach(image -> copyWidgetFile(exportContext, imageGalleryWidget, image));
+            }
             default -> throw new ArtivactException("Unknown widget type for export: " + widget.getType());
         }
     }
