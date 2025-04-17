@@ -16,8 +16,8 @@
     "build:all": "quasar build -m spa && quasar build -m electron --icon=./src-electron/icons/icon.png"
   },
   "dependencies": {
-    "@google/model-viewer": "4.0.0",
-    "three": "0.169.0",
+    "@google/model-viewer": "4.1.0",
+    "three": "0.172.0",
     "@quasar/extras": "1.16.17",
     "axios": "1.8.3",
     "markdown-it": "14.1.0",

@@ -100,7 +100,7 @@ class WidgetExporterTest {
     @Test
     void testWidgetExportCoverage() {
         // If new widgets are added, make sure to test their exportability!
-        assertThat(WidgetType.values()).hasSize(7);
+        assertThat(WidgetType.values()).hasSize(8);
     }
 
     /**
@@ -243,6 +243,34 @@ class WidgetExporterTest {
         assertDoesNotThrow(() -> exporter.exportWidget(exportContext, widget));
 
         assertThat(navigationTitle.getTranslatedValue()).isNull();
+    }
+
+    /**
+     * Test exporting a certain widget.
+     */
+    @Test
+    void testExportImageGalleryWidget() {
+        TranslatableString navigationTitle = new TranslatableString("navigation-title");
+        navigationTitle.setTranslations(Map.of("de", "navigations-titel"));
+        navigationTitle.translate(Locale.GERMAN);
+
+        ImageGalleryWidget widget = new ImageGalleryWidget();
+        widget.setId("widget-id");
+        widget.setNavigationTitle(navigationTitle);
+        widget.setImages(List.of("image1.jpg", "image2.jpg"));
+
+        Path sourceDir = projectRoot.resolve(widget.getId());
+        when(fileRepository.getDirFromId(projectRoot.resolve("widgets"), widget.getId())).thenReturn(sourceDir);
+        Path targetDir = exportContext.getExportDir().resolve(widget.getId());
+
+        assertThat(navigationTitle.getTranslatedValue()).isEqualTo("navigations-titel");
+
+        assertDoesNotThrow(() -> exporter.exportWidget(exportContext, widget));
+
+        assertThat(navigationTitle.getTranslatedValue()).isNull();
+
+        verify(fileRepository).copy(sourceDir.resolve("image1.jpg"), targetDir.resolve("image1.jpg"));
+        verify(fileRepository).copy(sourceDir.resolve("image2.jpg"), targetDir.resolve("image2.jpg"));
     }
 
     /**

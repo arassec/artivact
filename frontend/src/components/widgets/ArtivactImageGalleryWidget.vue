@@ -28,7 +28,8 @@
               transition-next="slide-left"
               animated
               arrows
-              control-color="secondary"
+              control-color="primary"
+              control-type="regular"
               :thumbnails="widgetDataRef.images.length > 1"
             >
               <q-carousel-slide

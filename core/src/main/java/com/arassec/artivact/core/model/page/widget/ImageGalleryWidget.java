@@ -47,7 +47,7 @@ public class ImageGalleryWidget extends Widget implements FileProcessingWidget {
     /**
      * Creates a new instance.
      */
-    protected ImageGalleryWidget() {
+    public ImageGalleryWidget() {
         super(WidgetType.IMAGE_GALLERY);
     }
 
