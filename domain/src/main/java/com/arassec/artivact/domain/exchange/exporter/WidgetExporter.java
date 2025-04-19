@@ -1,6 +1,5 @@
 package com.arassec.artivact.domain.exchange.exporter;
 
-import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.model.item.Item;
 import com.arassec.artivact.core.model.page.Widget;
 import com.arassec.artivact.core.model.page.widget.*;
@@ -70,10 +69,6 @@ public class WidgetExporter extends BaseExporter {
                 cleanupTranslations(avatarWidget.getAvatarSubtext());
                 copyWidgetFile(exportContext, avatarWidget, avatarWidget.getAvatarImage());
             }
-            case ImageTextWidget imageTextWidget -> {
-                cleanupTranslations(imageTextWidget.getText());
-                copyWidgetFile(exportContext, imageTextWidget, imageTextWidget.getImage());
-            }
             case InfoBoxWidget infoBoxWidget -> {
                 cleanupTranslations(infoBoxWidget.getHeading());
                 cleanupTranslations(infoBoxWidget.getContent());
@@ -91,13 +86,12 @@ public class WidgetExporter extends BaseExporter {
                 cleanupTranslations(textWidget.getHeading());
                 cleanupTranslations(textWidget.getContent());
             }
-            case SpaceWidget spaceWidget -> cleanupTranslations(spaceWidget.getNavigationTitle());
             case ImageGalleryWidget imageGalleryWidget -> {
                 cleanupTranslations(imageGalleryWidget.getHeading());
                 cleanupTranslations(imageGalleryWidget.getContent());
                 imageGalleryWidget.getImages().forEach(image -> copyWidgetFile(exportContext, imageGalleryWidget, image));
             }
-            default -> throw new ArtivactException("Unknown widget type for export: " + widget.getType());
+            default -> log.warn("Unknown widget type for export: " + widget.getType());
         }
     }
 

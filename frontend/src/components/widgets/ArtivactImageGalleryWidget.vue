@@ -16,9 +16,9 @@
             <h1 class="av-label-h1" v-if="widgetDataRef.heading">
               {{ translate(widgetDataRef.heading) }}
             </h1>
-            <div v-html="translate(widgetDataRef.content)"/>
+            <div v-html="format(translate(widgetDataRef.content))"/>
           </div>
-          <div class="q-mt-lg" :class="getCarouselClasses()"
+          <div :class="getCarouselClasses()"
                v-if="widgetDataRef.images && widgetDataRef.images.length > 0">
             <q-carousel
               v-model="slide"
@@ -89,7 +89,7 @@
 
             <div
               v-if="localeStore.selectedLocale === null"
-              v-html="widgetDataRef.content.value"
+              v-html="format(widgetDataRef.content.value)"
             />
 
             <div
@@ -97,7 +97,7 @@
               localeStore.selectedLocale !== null &&
               widgetDataRef.content.translations[localeStore.selectedLocale]
             "
-              v-html="widgetDataRef.content.translations[localeStore.selectedLocale]"
+              v-html="format(widgetDataRef.content.translations[localeStore.selectedLocale])"
             />
 
             <div
@@ -106,11 +106,11 @@
               !widgetDataRef.content.translations[localeStore.selectedLocale]
             "
               class="text-red"
-              v-html="widgetDataRef.content.value"
+              v-html="format(widgetDataRef.content.value)"
             />
           </div>
 
-          <div class="q-mt-lg" :class="getCarouselClasses()"
+          <div :class="getCarouselClasses()"
                v-if="widgetDataRef.images && widgetDataRef.images.length > 0">
             <q-carousel
               v-model="slide"
@@ -119,7 +119,6 @@
               transition-prev="slide-right"
               transition-next="slide-left"
               animated
-              thumbnails
               arrows
               control-color="secondary"
               :thumbnails="widgetDataRef.images.length > 1"
@@ -214,6 +213,7 @@ import {translate} from "../artivact-utils";
 import {useLocaleStore} from "../../stores/locale";
 import ArtivactRestrictedTranslatableItemEditor from "../ArtivactRestrictedTranslatableItemEditor.vue";
 import {QUploader, useQuasar} from "quasar";
+import MarkdownIt from "markdown-it";
 
 const props = defineProps({
   inEditMode: {
@@ -240,7 +240,7 @@ const props = defineProps({
 
 const emit = defineEmits<{
   (e: 'image-added', property: string): void;
-  (e: 'image-deleted', property: string, filename: string): void;
+  (e: 'image-deleted', parameters: string[]): void;
 }>();
 
 const quasar = useQuasar();
@@ -278,9 +278,9 @@ function getContainerClasses(): string {
 function getCarouselClasses(): string {
   if (quasar.screen.gt.sm) {
     if (widgetDataRef.value.textPosition === ImageGalleryWidgetTextPosition.LEFT) {
-      return 'col-6';
+      return 'col-6 q-pa-md q-mt-md';
     } else if (widgetDataRef.value.textPosition === ImageGalleryWidgetTextPosition.RIGHT) {
-      return 'col-6';
+      return 'col-6 q-pa-md q-mt-md';
     }
   }
   // Text-Position 'TOP' or undefined:
@@ -290,13 +290,21 @@ function getCarouselClasses(): string {
 function getContentClasses(): string {
   if (quasar.screen.gt.sm) {
     if (widgetDataRef.value.textPosition === ImageGalleryWidgetTextPosition.LEFT) {
-      return 'col-5 q-mr-md';
+      return 'col-6';
     } else if (widgetDataRef.value.textPosition === ImageGalleryWidgetTextPosition.RIGHT) {
-      return 'col-5 q-ml-md';
+      return 'col-6';
     }
   }
   // Text-Position 'TOP' or undefined:
   return 'col-grow';
+}
+
+function format(text: string) {
+  if (!text) {
+    return;
+  }
+  let md = new MarkdownIt();
+  return md.render(text);
 }
 
 </script>

@@ -11,7 +11,8 @@ import org.junit.jupiter.api.Test;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -113,46 +114,6 @@ class WidgetDeserializerTest {
         WidgetDeserializer widgetDeserializer = new WidgetDeserializer();
         Widget widget = widgetDeserializer.deserialize(jsonParserMock, deserializationContextMock);
         assertInstanceOf(AvatarWidget.class, widget);
-    }
-
-    /**
-     * Tests deserializing the {@link com.arassec.artivact.core.model.page.widget.SpaceWidget}.
-     */
-    @Test
-    @SneakyThrows
-    void testDeserializeSpaceWidget() {
-        JsonParser jsonParserMock = mock(JsonParser.class);
-        DeserializationContext deserializationContextMock = mock(DeserializationContext.class);
-
-        when(deserializationContextMock.readValue(jsonParserMock, Map.class)).thenReturn(Map.of(
-                "type", WidgetType.SPACE.toString(),
-                "size", 42
-        ));
-
-        WidgetDeserializer widgetDeserializer = new WidgetDeserializer();
-
-        Widget widget = widgetDeserializer.deserialize(jsonParserMock, deserializationContextMock);
-
-        assertInstanceOf(SpaceWidget.class, widget);
-        assertEquals(42, ((SpaceWidget) widget).getSize());
-    }
-
-    /**
-     * Tests deserializing the {@link com.arassec.artivact.core.model.page.widget.ImageTextWidget}.
-     */
-    @Test
-    @SneakyThrows
-    void testDeserializeImageTextWidget() {
-        JsonParser jsonParserMock = mock(JsonParser.class);
-        DeserializationContext deserializationContextMock = mock(DeserializationContext.class);
-
-        when(deserializationContextMock.readValue(jsonParserMock, Map.class)).thenReturn(Map.of(
-                "type", WidgetType.IMAGE_TEXT.toString()
-        ));
-
-        WidgetDeserializer widgetDeserializer = new WidgetDeserializer();
-        Widget widget = widgetDeserializer.deserialize(jsonParserMock, deserializationContextMock);
-        assertInstanceOf(ImageTextWidget.class, widget);
     }
 
     /**

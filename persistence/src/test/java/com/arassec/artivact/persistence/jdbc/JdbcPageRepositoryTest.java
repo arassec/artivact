@@ -2,7 +2,7 @@ package com.arassec.artivact.persistence.jdbc;
 
 import com.arassec.artivact.core.model.page.Page;
 import com.arassec.artivact.core.model.page.PageContent;
-import com.arassec.artivact.core.model.page.widget.SpaceWidget;
+import com.arassec.artivact.core.model.page.widget.TextWidget;
 import com.arassec.artivact.persistence.jdbc.springdata.entity.PageEntity;
 import com.arassec.artivact.persistence.jdbc.springdata.repository.PageEntityRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -144,9 +144,9 @@ class JdbcPageRepositoryTest {
         when(pageEntityRepository.findById("id")).thenReturn(Optional.of(pageEntity));
 
         PageContent pageContent = new PageContent();
-        pageContent.getWidgets().add(new SpaceWidget());
+        pageContent.getWidgets().add(new TextWidget());
         pageContent.getWidgets().add(null); // must be removed!
-        pageContent.getWidgets().add(new SpaceWidget());
+        pageContent.getWidgets().add(new TextWidget());
 
         when(objectMapper.readValue("{contentJson}", PageContent.class)).thenReturn(pageContent);
 

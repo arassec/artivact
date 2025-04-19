@@ -121,24 +121,6 @@
         @delete-widget="deleteWidget(index)"
       />
 
-      <artivact-image-text-widget
-        :id="widgetData.id"
-        :class="inEditMode ? 'widget' : ''"
-        v-if="widgetData.type === 'IMAGE_TEXT'"
-        :widget-data="widgetData as ImageTextWidgetData"
-        :in-edit-mode="inEditMode"
-        :showEditor="inEditMode && pageStore.latestWidgetIndex === index"
-        :move-up-enabled="index > 0"
-        :move-down-enabled="index < pageContentRef.widgets.length - 1"
-        @move-widget-up="moveWidgetUp(pageContentRef.widgets, index)"
-        @move-widget-down="moveWidgetDown(pageContentRef.widgets, index)"
-        @add-widget-above="addWidgetAboveRef = widgetData.id; showAddWidgetDialogRef = true;"
-        @add-widget-below="addWidgetBelowRef = widgetData.id; showAddWidgetDialogRef = true;"
-        @delete-widget="deleteWidget(index)"
-        :page-id="pageId"
-        v-on:image-added="fileAdded($event, widgetData.id)"
-      />
-
       <artivact-item-search-widget
         :id="widgetData.id"
         :class="inEditMode ? 'widget' : ''"
@@ -187,22 +169,6 @@
         @delete-widget="deleteWidget(index)"
         :page-id="pageId"
         v-on:image-added="fileAdded($event, widgetData.id)"
-      />
-
-      <artivact-space-widget
-        :id="widgetData.id"
-        :class="inEditMode ? 'widget' : ''"
-        v-if="widgetData.type === 'SPACE'"
-        :widget-data="widgetData as SpaceWidgetData"
-        :in-edit-mode="inEditMode"
-        :showEditor="inEditMode && pageStore.latestWidgetIndex === index"
-        :move-up-enabled="index > 0"
-        :move-down-enabled="index < pageContentRef.widgets.length - 1"
-        @move-widget-up="moveWidgetUp(pageContentRef.widgets, index)"
-        @move-widget-down="moveWidgetDown(pageContentRef.widgets, index)"
-        @add-widget-above="addWidgetAboveRef = widgetData.id; showAddWidgetDialogRef = true;"
-        @add-widget-below="addWidgetBelowRef = widgetData.id; showAddWidgetDialogRef = true;"
-        @delete-widget="deleteWidget(index)"
       />
 
       <artivact-image-gallery-widget
@@ -277,32 +243,29 @@
 
 <script setup lang="ts">
 import {onMounted, PropType, ref, toRef} from 'vue';
-import {PageContent, TranslatableString, Widget} from 'components/artivact-models';
-import {useUserdataStore} from 'stores/userdata';
+import {PageContent, TranslatableString, Widget} from './artivact-models';
+import {useUserdataStore} from '../stores/userdata';
 import {useQuasar} from 'quasar';
 import {
   AvatarWidgetData,
-  ImageTextWidgetData,
+  ImageGalleryWidgetData,
+  ImageGalleryWidgetTextPosition,
   InfoBoxWidgetData,
   ItemSearchWidget,
   PageTitleWidgetData,
-  SpaceWidgetData,
   TextWidgetData
-} from 'components/widgets/artivact-widget-models';
-import {moveDown, moveUp} from 'components/artivact-utils';
-import {api} from 'boot/axios';
+} from './widgets/artivact-widget-models';
+import {moveDown, moveUp} from './artivact-utils';
+import {api} from '../boot/axios';
 import {useI18n} from 'vue-i18n';
-import ArtivactDialog from 'components/ArtivactDialog.vue';
-import ArtivactAvatarWidget from 'components/widgets/ArtivactAvatarWidget.vue';
-import ArtivactImageTextWidget from 'components/widgets/ArtivactImageTextWidget.vue';
-import ArtivactInfoBoxWidget from 'components/widgets/ArtivactInfoBoxWidget.vue';
-import ArtivactSpaceWidget from 'components/widgets/ArtivactSpaceWidget.vue';
-import ArtivactTextWidget from 'components/widgets/ArtivactTextWidget.vue';
-import ArtivactPageTitleWidget from 'components/widgets/ArtivactPageTitleWidget.vue';
-import ArtivactItemSearchWidget from 'components/widgets/ArtivactItemSearchWidget.vue';
-import ArtivactContent from 'components/ArtivactContent.vue';
-import {usePageStore} from 'stores/page';
-import {ImageGalleryWidgetData, ImageGalleryWidgetTextPosition} from "./widgets/artivact-widget-models";
+import ArtivactDialog from './ArtivactDialog.vue';
+import ArtivactAvatarWidget from './widgets/ArtivactAvatarWidget.vue';
+import ArtivactInfoBoxWidget from './widgets/ArtivactInfoBoxWidget.vue';
+import ArtivactTextWidget from './widgets/ArtivactTextWidget.vue';
+import ArtivactPageTitleWidget from './widgets/ArtivactPageTitleWidget.vue';
+import ArtivactItemSearchWidget from './widgets/ArtivactItemSearchWidget.vue';
+import ArtivactContent from './ArtivactContent.vue';
+import {usePageStore} from '../stores/page';
 import ArtivactImageGalleryWidget from "./widgets/ArtivactImageGalleryWidget.vue";
 
 const props = defineProps({
@@ -341,11 +304,9 @@ const addWidgetBelowRef = ref('');
 const availableWidgetTypes = [
   'PAGE_TITLE',
   'TEXT',
-  'IMAGE_TEXT',
   'ITEM_SEARCH',
   'INFO_BOX',
   'AVATAR',
-  'SPACE',
   'IMAGE_GALLERY'
 ];
 
@@ -389,17 +350,6 @@ function addWidget() {
         value: i18n.t('ArtivactPage.label.textContent'),
       } as TranslatableString,
     } as TextWidgetData);
-  } else if (selectedWidgetTypeRef.value === 'IMAGE_TEXT') {
-    pageContentRef.value?.widgets.splice(index, 0, {
-      type: 'IMAGE_TEXT',
-      id: '',
-      restrictions: [] as string[],
-      image: '',
-      fullscreenAllowed: true,
-      text: {
-        value: i18n.t('ArtivactPage.label.text'),
-      } as TranslatableString,
-    } as ImageTextWidgetData);
   } else if (selectedWidgetTypeRef.value === 'ITEM_SEARCH') {
     pageContentRef.value?.widgets.splice(index, 0, {
       type: 'ITEM_SEARCH',
@@ -447,13 +397,6 @@ function addWidget() {
         value: i18n.t('ArtivactPage.label.avatarSubtext'),
       } as TranslatableString,
     } as AvatarWidgetData);
-  } else if (selectedWidgetTypeRef.value === 'SPACE') {
-    pageContentRef.value?.widgets.splice(index, 0, {
-      type: 'SPACE',
-      id: '',
-      restrictions: [] as string[],
-      size: 2,
-    } as SpaceWidgetData);
   } else if (selectedWidgetTypeRef.value === 'IMAGE_GALLERY') {
     pageContentRef.value?.widgets.splice(index, 0, {
       type: 'IMAGE_GALLERY',

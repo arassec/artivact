@@ -34,16 +34,6 @@ public enum WidgetType {
     AVATAR,
 
     /**
-     * Some space.
-     */
-    SPACE,
-
-    /**
-     * An image with associated text.
-     */
-    IMAGE_TEXT,
-
-    /**
      * An image gallery.
      */
     IMAGE_GALLERY,

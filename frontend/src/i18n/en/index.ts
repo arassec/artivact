@@ -815,14 +815,6 @@ export default {
     }
   },
 
-  ImageTextWidget: {
-    label: {
-      image: 'Image',
-      text: 'Text',
-      fullscreenAllowed: 'Configures whether the image can be opened in the fullscreen detail view.',
-    }
-  },
-
   InfoBoxWidget: {
     label: {
       heading: 'Heading',
@@ -848,12 +840,6 @@ export default {
     messages: {
       noSearchResults: 'No search results found!',
       searchFailed: 'Search failed!',
-    }
-  },
-
-  SpaceWidget: {
-    label: {
-      spaceUnits: 'Space Units'
     }
   },
 
@@ -926,16 +912,12 @@ export default {
   PAGE_TITLE_DESCRIPTION: 'Page title with hero image and heading.',
   TEXT: 'Text',
   TEXT_DESCRIPTION: 'Text block with optional heading. Supports Markdown for text formatting.',
-  IMAGE_TEXT: 'Image and Text',
-  IMAGE_TEXT_DESCRIPTION: 'An image next to a text block. Supports Markdown for text formatting.',
   ITEM_SEARCH: 'Item Search',
   ITEM_SEARCH_DESCRIPTION: 'Either presents the results of a predefined item search, or lets the user input search parameters and displays the results.',
   INFO_BOX: 'Info Box',
   INFO_BOX_DESCRIPTION: 'A text box with optional heading that can be colored according to their three states: INFO, WARN and ALERT.',
   AVATAR: 'Avatar',
   AVATAR_DESCRIPTION: 'A portrait image with optional subtext and description to the right.',
-  SPACE: 'Space',
-  SPACE_DESCRIPTION: 'Adds empty space of configurable size to the page.',
   IMAGE_GALLERY: 'Image Gallery',
   IMAGE_GALLERY_DESCRIPTION: 'An image gallery with optional heading and content text.',
 

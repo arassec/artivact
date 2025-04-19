@@ -1,6 +1,5 @@
 package com.arassec.artivact.domain.exchange.exporter;
 
-import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.model.TranslatableString;
 import com.arassec.artivact.core.model.exchange.ExportConfiguration;
 import com.arassec.artivact.core.model.item.Item;
@@ -28,7 +27,6 @@ import java.util.Set;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 /**
@@ -100,7 +98,7 @@ class WidgetExporterTest {
     @Test
     void testWidgetExportCoverage() {
         // If new widgets are added, make sure to test their exportability!
-        assertThat(WidgetType.values()).hasSize(8);
+        assertThat(WidgetType.values()).hasSize(6);
     }
 
     /**
@@ -111,24 +109,6 @@ class WidgetExporterTest {
         AvatarWidget widget = new AvatarWidget();
         widget.setId("widget-id");
         widget.setAvatarImage("image.jpg");
-
-        Path sourceDir = projectRoot.resolve(widget.getId());
-        when(fileRepository.getDirFromId(projectRoot.resolve("widgets"), widget.getId())).thenReturn(sourceDir);
-        Path targetDir = exportContext.getExportDir().resolve(widget.getId());
-
-        exporter.exportWidget(exportContext, widget);
-
-        verify(fileRepository).copy(sourceDir.resolve("image.jpg"), targetDir.resolve("image.jpg"));
-    }
-
-    /**
-     * Test exporting a certain widget.
-     */
-    @Test
-    void testExportImageTextWidget() {
-        ImageTextWidget widget = new ImageTextWidget();
-        widget.setId("widget-id");
-        widget.setImage("image.jpg");
 
         Path sourceDir = projectRoot.resolve(widget.getId());
         when(fileRepository.getDirFromId(projectRoot.resolve("widgets"), widget.getId())).thenReturn(sourceDir);
@@ -229,26 +209,6 @@ class WidgetExporterTest {
      * Test exporting a certain widget.
      */
     @Test
-    void testExportSpaceWidget() {
-        TranslatableString navigationTitle = new TranslatableString("navigation-title");
-        navigationTitle.setTranslations(Map.of("de", "navigations-titel"));
-        navigationTitle.translate(Locale.GERMAN);
-
-        SpaceWidget widget = new SpaceWidget();
-        widget.setId("widget-id");
-        widget.setNavigationTitle(navigationTitle);
-
-        assertThat(navigationTitle.getTranslatedValue()).isEqualTo("navigations-titel");
-
-        assertDoesNotThrow(() -> exporter.exportWidget(exportContext, widget));
-
-        assertThat(navigationTitle.getTranslatedValue()).isNull();
-    }
-
-    /**
-     * Test exporting a certain widget.
-     */
-    @Test
     void testExportImageGalleryWidget() {
         TranslatableString navigationTitle = new TranslatableString("navigation-title");
         navigationTitle.setTranslations(Map.of("de", "navigations-titel"));
@@ -279,7 +239,7 @@ class WidgetExporterTest {
     @Test
     void testExportUnknownWidget() {
         TestWidget widget = new TestWidget();
-        assertThrows(ArtivactException.class, () -> exporter.exportWidget(exportContext, widget));
+        assertDoesNotThrow(() -> exporter.exportWidget(exportContext, widget));
     }
 
     /**
@@ -291,7 +251,7 @@ class WidgetExporterTest {
          * Creates a new instance.
          */
         protected TestWidget() {
-            super(WidgetType.SPACE);
+            super(WidgetType.TEXT);
         }
     }
 

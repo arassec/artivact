@@ -105,12 +105,6 @@ public class WidgetDeserializer extends StdDeserializer<Widget> {
             case "AVATAR" -> {
                 return AvatarWidget.class;
             }
-            case "SPACE" -> {
-                return SpaceWidget.class;
-            }
-            case "IMAGE_TEXT" -> {
-                return ImageTextWidget.class;
-            }
             case "IMAGE_GALLERY" -> {
                 return ImageGalleryWidget.class;
             }

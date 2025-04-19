@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import static com.arassec.artivact.domain.exchange.ExchangeDefinitions.PAGE_EXCHANGE_FILE_SUFFIX;
@@ -64,6 +65,10 @@ public class PageImporter {
 
         try {
             PageContent pageContent = objectMapper.readValue(fileRepository.read(pageContentJson), PageContent.class);
+
+            pageContent.setWidgets(pageContent.getWidgets().stream()
+                    .filter(Objects::nonNull)
+                    .toList());
 
             pageContent.getWidgets().forEach(widget -> {
                 // Import the widget:

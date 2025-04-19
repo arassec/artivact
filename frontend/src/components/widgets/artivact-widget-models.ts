@@ -32,16 +32,6 @@ export interface AvatarWidgetData extends Widget {
   avatarSubtext: TranslatableString;
 }
 
-export interface SpaceWidgetData extends Widget {
-  size: number;
-}
-
-export interface ImageTextWidgetData extends Widget {
-  image: string;
-  text: TranslatableString;
-  fullscreenAllowed: boolean;
-}
-
 export enum ImageGalleryWidgetTextPosition {
   TOP = 'TOP',
   LEFT = 'LEFT',
