@@ -45,6 +45,16 @@ public class ImageGalleryWidget extends Widget implements FileProcessingWidget {
     private String textPosition;
 
     /**
+     * If set to {@code true}, the widget's images will be displayed as icons, i.e., smaller.
+     */
+    private boolean iconMode;
+
+    /**
+     * If set to {@code true}, the widget's border is hidden.
+     */
+    private boolean hideBorder;
+
+    /**
      * Creates a new instance.
      */
     public ImageGalleryWidget() {

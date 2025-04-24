@@ -812,6 +812,8 @@ export default {
       content: 'Content',
       images: 'Images',
       fullscreenAllowed: 'Configures whether the images can be opened in fullscreen detail view.',
+      iconMode: 'Display images as smaller icons.',
+      hideBorder: 'Hides the border around the gallery.',
     }
   },
 

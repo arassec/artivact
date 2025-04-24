@@ -44,4 +44,6 @@ export interface ImageGalleryWidgetData extends Widget {
   images: string[];
   fullscreenAllowed: boolean;
   textPosition: ImageGalleryWidgetTextPosition;
+  iconMode: boolean;
+  hideBorder: boolean;
 }

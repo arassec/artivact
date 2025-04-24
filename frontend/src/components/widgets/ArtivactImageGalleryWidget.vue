@@ -23,9 +23,10 @@
             <q-carousel
               v-model="slide"
               v-model:fullscreen="fullscreen"
-              class="shadow-2 rounded-borders"
+              :class="!widgetDataRef.hideBorder ? 'shadow-2 rounded-borders' : ''"
               transition-prev="slide-right"
               transition-next="slide-left"
+              :height="widgetDataRef.iconMode ? '200px' : ''"
               animated
               arrows
               control-color="primary"
@@ -115,9 +116,10 @@
             <q-carousel
               v-model="slide"
               v-model:fullscreen="fullscreen"
-              class="shadow-2 rounded-borders"
+              :class="!widgetDataRef.hideBorder ? 'shadow-2 rounded-borders' : ''"
               transition-prev="slide-right"
               transition-next="slide-left"
+              :height="widgetDataRef.iconMode ? '200px' : ''"
               animated
               arrows
               control-color="secondary"
@@ -192,9 +194,17 @@
               ref="imageUploader"
             >
             </q-uploader>
-            <q-checkbox v-model="widgetDataRef.fullscreenAllowed" class="q-ml-md col full-height"
-                        :label="$t('ImageGalleryWidget.label.fullscreenAllowed')">
-            </q-checkbox>
+            <div class="column">
+              <q-checkbox v-model="widgetDataRef.fullscreenAllowed" class="q-ml-md col full-height"
+                          :label="$t('ImageGalleryWidget.label.fullscreenAllowed')">
+              </q-checkbox>
+              <q-checkbox v-model="widgetDataRef.iconMode" class="q-ml-md col full-height"
+                          :label="$t('ImageGalleryWidget.label.iconMode')">
+              </q-checkbox>
+              <q-checkbox v-model="widgetDataRef.hideBorder" class="q-ml-md col full-height"
+                          :label="$t('ImageGalleryWidget.label.hideBorder')">
+              </q-checkbox>
+            </div>
           </div>
         </div>
       </artivact-content>
@@ -276,22 +286,29 @@ function getContainerClasses(): string {
 }
 
 function getCarouselClasses(): string {
+  let classes = '';
   if (quasar.screen.gt.sm) {
     if (widgetDataRef.value.textPosition === ImageGalleryWidgetTextPosition.LEFT) {
-      return 'col-6 q-pa-md q-mt-md';
+      classes = 'q-pa-md q-mt-md';
     } else if (widgetDataRef.value.textPosition === ImageGalleryWidgetTextPosition.RIGHT) {
-      return 'col-6 q-pa-md q-mt-md';
+      classes = 'q-pa-md q-mt-md';
     }
+    if (widgetDataRef.value.iconMode) {
+      classes += ' col-3';
+    } else {
+      classes += ' col-6';
+    }
+    return classes;
   }
   // Text-Position 'TOP' or undefined:
   return 'col-grow';
 }
 
 function getContentClasses(): string {
-  if (quasar.screen.gt.sm) {
-    if (widgetDataRef.value.textPosition === ImageGalleryWidgetTextPosition.LEFT) {
-      return 'col-6';
-    } else if (widgetDataRef.value.textPosition === ImageGalleryWidgetTextPosition.RIGHT) {
+  if (quasar.screen.gt.sm && widgetDataRef.value.textPosition !== ImageGalleryWidgetTextPosition.TOP) {
+    if (widgetDataRef.value.iconMode) {
+      return 'col-9';
+    } else {
       return 'col-6';
     }
   }

@@ -811,7 +811,9 @@ export default {
       heading: 'Überschrift',
       content: 'Inhalt',
       images: 'Bilder',
-      fullscreenAllowed: 'Gibt an, ob die Bilder als Vollbild-Detailansicht geöffnet werden können.'
+      fullscreenAllowed: 'Gibt an, ob die Bilder als Vollbild-Detailansicht geöffnet werden können.',
+      iconMode: 'Zeigt Bilder als kleinere Icons an.',
+      hideBorder: 'Blendet den Rahmen um die Bildergallerie aus.'
     }
   },
 
