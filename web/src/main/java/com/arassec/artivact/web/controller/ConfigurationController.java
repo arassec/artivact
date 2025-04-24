@@ -121,16 +121,19 @@ public class ConfigurationController extends BaseController {
     /**
      * Returns the application's favicon in the requested size.
      *
-     * @return The favicon as byte array.
+     * @return The favicon as a byte array.
      */
-    @GetMapping(value = "/public/favicon", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    @GetMapping(value = "/public/favicon", produces = "image/x-icon")
     public HttpEntity<byte[]> getFavicon() {
         AppearanceConfiguration appearanceConfiguration = configurationService.loadTranslatedAppearanceConfiguration();
 
         String base64EncodedFavicon = appearanceConfiguration.getEncodedFavicon();
 
         var headers = new HttpHeaders();
-        headers.setContentType(MediaType.valueOf("image/ico"));
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "favicon.ico");
+        headers.add(HttpHeaders.PRAGMA, NO_CACHE);
+        headers.add(HttpHeaders.EXPIRES, EXPIRES_IMMEDIATELY);
+        headers.setContentType(MediaType.valueOf("image/x-icon"));
 
         return new HttpEntity<>(Base64.getDecoder().decode(base64EncodedFavicon), headers);
     }

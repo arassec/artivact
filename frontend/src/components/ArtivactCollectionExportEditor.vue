@@ -104,7 +104,8 @@
               <q-card-section>
                 <div class="row">
                   <div class="col">
-                    <p v-if="!element.filePresent" class="bg-warning text-white q-pa-sm q-mb-sm">
+                    <p v-if="!element.filePresent && !element.distributionOnly"
+                       class="bg-warning text-white q-pa-sm q-mb-sm">
                       {{ $t('ArtivactCollectionExportEditor.label.exportFileMissing') }}
                     </p>
                     <h3 class="av-label-h2">
@@ -240,14 +241,14 @@
 
 <script setup lang="ts">
 import draggable from 'vuedraggable';
-import { PropType, Ref, ref, toRef } from 'vue';
-import { CollectionExport, ContentSource, SelectboxModel, TranslatableString } from 'components/artivact-models';
+import {PropType, Ref, ref, toRef} from 'vue';
+import {CollectionExport, ContentSource, SelectboxModel, TranslatableString} from 'components/artivact-models';
 import ArtivactDialog from 'components/ArtivactDialog.vue';
 import ArtivactRestrictionsEditor from 'components/ArtivactRestrictionsEditor.vue';
 import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
-import { useMenuStore } from 'stores/menu';
-import { translate } from 'components/artivact-utils';
-import { QUploader } from 'quasar';
+import {useMenuStore} from 'stores/menu';
+import {translate} from 'components/artivact-utils';
+import {QUploader} from 'quasar';
 
 const props = defineProps({
   collectionExports: {
