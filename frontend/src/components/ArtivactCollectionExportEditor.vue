@@ -104,7 +104,7 @@
               <q-card-section>
                 <div class="row">
                   <div class="col">
-                    <p v-if="!element.filePresent && !element.distributionOnly"
+                    <p v-if="!element.filePresent"
                        class="bg-warning text-white q-pa-sm q-mb-sm">
                       {{ $t('ArtivactCollectionExportEditor.label.exportFileMissing') }}
                     </p>

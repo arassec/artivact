@@ -133,13 +133,13 @@ class ConfigurationControllerTest {
     @Test
     void testGetFavicon() {
         AppearanceConfiguration appearanceConfiguration = new AppearanceConfiguration();
-        appearanceConfiguration.setEncodedFavicon(Base64.getEncoder().encodeToString("large-favicon".getBytes()));
+        appearanceConfiguration.setEncodedFavicon(Base64.getEncoder().encodeToString("test-favicon".getBytes()));
 
         when(configurationService.loadTranslatedAppearanceConfiguration()).thenReturn(appearanceConfiguration);
 
         HttpEntity<byte[]> httpEntity = controller.getFavicon();
-        assertEquals("large-favicon", new String(Objects.requireNonNull(httpEntity.getBody())));
-        assertEquals(MediaType.valueOf("image/ico"), httpEntity.getHeaders().getContentType());
+        assertEquals("test-favicon", new String(Objects.requireNonNull(httpEntity.getBody())));
+        assertEquals(MediaType.valueOf("image/x-icon"), httpEntity.getHeaders().getContentType());
     }
 
     /**

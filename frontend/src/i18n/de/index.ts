@@ -903,7 +903,8 @@ export default {
     CollectionExportService: {
       buildCollectionExport: 'Erzeuge Sammlungsexportdatei...',
       buildCollectionExportFailed: 'Sammlungsexport fehlgeschlagen!',
-      importCollection: 'Importiere Sammlung...'
+      importCollection: 'Importiere Sammlung...',
+      importContentFailed: 'Import fehlgeschlagen!'
     }
   },
 

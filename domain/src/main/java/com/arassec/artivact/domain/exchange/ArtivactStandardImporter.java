@@ -18,9 +18,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
-import static com.arassec.artivact.domain.exchange.ExchangeDefinitions.CONTENT_EXCHANGE_MAIN_DATA_FILENAME_JSON;
-import static com.arassec.artivact.domain.exchange.ExchangeDefinitions.ZIP_FILE_SUFFIX;
+import static com.arassec.artivact.domain.exchange.ExchangeDefinitions.*;
 
 /**
  * Standard {@link ArtivactImporter}.
@@ -126,8 +126,9 @@ public class ArtivactStandardImporter implements ArtivactImporter {
             }
 
             fileRepository.copy(collectionExportFile, projectDataProvider.getProjectRoot()
-                    .resolve(ProjectDataProvider.EXPORT_DIR)
-                    .resolve(exchangeMainData.getId() + ".zip"));
+                            .resolve(ProjectDataProvider.EXPORT_DIR)
+                            .resolve(exchangeMainData.getId() + COLLECTION_EXCHANGE_SUFFIX + ZIP_FILE_SUFFIX),
+                    StandardCopyOption.REPLACE_EXISTING);
 
             if (StringUtils.hasText(exchangeMainData.getCoverPictureExtension())) {
                 Path coverPictureFile = importContext.getImportDir().resolve("cover-picture." + exchangeMainData.getCoverPictureExtension());

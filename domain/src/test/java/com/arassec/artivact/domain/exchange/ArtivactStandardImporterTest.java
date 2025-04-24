@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -171,7 +172,7 @@ class ArtivactStandardImporterTest {
         verify(menuImporter).importMenu(any(ImportContext.class), eq("456-def"), eq(true));
 
         // Copy export file:
-        verify(fileRepository).copy(importFile, Path.of("root/exports/789-xyz.zip"));
+        verify(fileRepository).copy(importFile, Path.of("root/exports/789-xyz.artivact.collection.zip"), StandardCopyOption.REPLACE_EXISTING);
         // Copy export cover picture:
         verify(fileRepository).copy(coverPicture, Path.of("root/exports/789-xyz.PNG"));
 
@@ -210,7 +211,7 @@ class ArtivactStandardImporterTest {
         verify(menuImporter, times(0)).importMenu(any(ImportContext.class), eq("456-def"), eq(true));
 
         // Copy export file:
-        verify(fileRepository).copy(importFile, Path.of("root/exports/789-xyz.zip"));
+        verify(fileRepository).copy(importFile, Path.of("root/exports/789-xyz.artivact.collection.zip"), StandardCopyOption.REPLACE_EXISTING);
         // Copy export cover picture:
         verify(fileRepository).copy(coverPicture, Path.of("root/exports/789-xyz.PNG"));
 
