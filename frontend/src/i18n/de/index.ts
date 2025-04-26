@@ -539,7 +539,8 @@ export default {
       text: 'Text',
       infoBoxTitle: 'Info-Box Titel',
       infoBoxContent: 'Info-Box Inhalt',
-      avatarSubtext: 'Avatar Untertitel'
+      avatarSubtext: 'Avatar Untertitel',
+      indexPage: 'Index',
     },
     dialog: {
       heading: 'Widget-Auswahl',

@@ -50,21 +50,21 @@
           @click="inEditMode = false">
           <q-tooltip>{{ $t('Common.cancel') }}</q-tooltip>
         </q-btn>
+      </div>
+
+      <div class="absolute-top-right q-ma-md">
         <q-btn
           data-test="index-page-button"
-          round
           color="primary"
           :icon="pageContentRef.indexPage ? 'check_circle' : 'circle'"
-          class="main-nav-button"
-          @click="pageContentRef.indexPage = !pageContentRef.indexPage">
+          class="main-nav-button rounded-borders q-mr-sm"
+          @click="pageContentRef.indexPage = !pageContentRef.indexPage"
+          :label="$t('ArtivactPage.label.indexPage')">
           <q-tooltip>{{
               pageContentRef.indexPage ? $t('ArtivactPage.tooltip.indexPageYes') : $t('ArtivactPage.tooltip.indexPageNo')
             }}
           </q-tooltip>
         </q-btn>
-      </div>
-
-      <div class="absolute-top-right q-ma-md">
         <q-btn
           data-test="save-button"
           round

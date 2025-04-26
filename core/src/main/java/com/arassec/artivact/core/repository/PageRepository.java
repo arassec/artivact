@@ -41,11 +41,11 @@ public interface PageRepository {
     Optional<Page> findById(String pageId);
 
     /**
-     * Returns the first page which is configured to be the index page.
+     * Returns the ID of the first page, which is configured to be the index page.
      *
-     * @return The index page.
+     * @return The index page's ID.
      */
-    Page findIndexPage();
+    Optional<PageIdAndAlias> findIndexPageId();
 
     /**
      * Returns the first page which has the given alias configured, or the page that has the parameter as ID.

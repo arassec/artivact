@@ -1,8 +1,8 @@
 package com.arassec.artivact.web.controller;
 
 import com.arassec.artivact.core.model.item.ImageSize;
-import com.arassec.artivact.core.model.page.Page;
 import com.arassec.artivact.core.model.page.PageContent;
+import com.arassec.artivact.core.repository.PageIdAndAlias;
 import com.arassec.artivact.domain.service.PageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URLConnection;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -38,14 +39,16 @@ public class PageController {
      * @return The alias or ID of the index page.
      */
     @GetMapping()
-    public String loadIndexPageIdOrAlias(Authentication authentication) {
-        Page indexPage = pageService.loadIndexPage(getRoles(authentication));
-        if (indexPage == null) {
+    public String loadIndexPageIdOrAlias() {
+        Optional<PageIdAndAlias> pageIdAndAliasOptional = pageService.loadIndexPageIdAndAlias();
+        if (pageIdAndAliasOptional.isEmpty()) {
             return "";
-        } else if (StringUtils.hasText(indexPage.getAlias())) {
-            return indexPage.getAlias();
         }
-        return indexPage.getId();
+        PageIdAndAlias pageIdAndAlias = pageIdAndAliasOptional.get();
+        if (StringUtils.hasText(pageIdAndAlias.getAlias())) {
+            return pageIdAndAlias.getAlias();
+        }
+        return pageIdAndAlias.getId();
     }
 
     /**

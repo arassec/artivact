@@ -39,7 +39,7 @@ public class JdbcMenuRepository extends BaseJdbcRepository implements MenuReposi
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("java:S6204") // Result list of menus needs to be modifiable!
+    @SuppressWarnings("java:S6204") // The result list of menus needs to be modifiable!
     public MenuConfiguration load() {
         List<MenuEntity> sortedMenuEntities = new LinkedList<>();
         menuEntityRepository.findAll().forEach(sortedMenuEntities::add);

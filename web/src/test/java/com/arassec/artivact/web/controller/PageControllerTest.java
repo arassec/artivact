@@ -1,8 +1,8 @@
 package com.arassec.artivact.web.controller;
 
 import com.arassec.artivact.core.model.item.ImageSize;
-import com.arassec.artivact.core.model.page.Page;
 import com.arassec.artivact.core.model.page.PageContent;
+import com.arassec.artivact.core.repository.PageIdAndAlias;
 import com.arassec.artivact.domain.service.PageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -79,18 +80,34 @@ class PageControllerTest {
      */
     @Test
     void testLoadIndexPageIdOrAlias() {
-        assertThat(controller.loadIndexPageIdOrAlias(authentication)).isEqualTo("");
-        verify(pageService, times(1)).loadIndexPage(Set.of("ROLE_USER"));
+        when(pageService.loadIndexPageIdAndAlias()).thenReturn(Optional.empty());
+        assertThat(controller.loadIndexPageIdOrAlias()).isEqualTo("");
 
-        Page indexPage = new Page();
-        indexPage.setAlias("alias");
-        indexPage.setId("id");
-        when(pageService.loadIndexPage(anySet())).thenReturn(indexPage);
+        when(pageService.loadIndexPageIdAndAlias()).thenReturn(Optional.of(new PageIdAndAlias() {
+            @Override
+            public String getId() {
+                return "id";
+            }
 
-        assertThat(controller.loadIndexPageIdOrAlias(authentication)).isEqualTo("alias");
+            @Override
+            public String getAlias() {
+                return "alias";
+            }
+        }));
+        assertThat(controller.loadIndexPageIdOrAlias()).isEqualTo("alias");
 
-        indexPage.setAlias(null);
-        assertThat(controller.loadIndexPageIdOrAlias(authentication)).isEqualTo("id");
+        when(pageService.loadIndexPageIdAndAlias()).thenReturn(Optional.of(new PageIdAndAlias() {
+            @Override
+            public String getId() {
+                return "id";
+            }
+
+            @Override
+            public String getAlias() {
+                return null;
+            }
+        }));
+        assertThat(controller.loadIndexPageIdOrAlias()).isEqualTo("id");
     }
 
     /**

@@ -4,8 +4,11 @@ import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.model.BaseRestrictedObject;
 import com.arassec.artivact.core.model.Roles;
 import com.arassec.artivact.core.model.item.ImageSize;
+import com.arassec.artivact.core.model.menu.Menu;
 import com.arassec.artivact.core.model.page.*;
 import com.arassec.artivact.core.repository.FileRepository;
+import com.arassec.artivact.core.repository.MenuRepository;
+import com.arassec.artivact.core.repository.PageIdAndAlias;
 import com.arassec.artivact.core.repository.PageRepository;
 import com.arassec.artivact.domain.aspect.GenerateIds;
 import com.arassec.artivact.domain.aspect.RestrictResult;
@@ -22,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -33,9 +37,20 @@ import java.util.stream.Collectors;
 public class PageService extends BaseFileService {
 
     /**
+     * Regular expression for matching UUIDs.
+     */
+    private static final Pattern UUID_REGEX =
+            Pattern.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
+
+    /**
      * Repository for pages.
      */
     private final PageRepository pageRepository;
+
+    /**
+     * Repository for menu configurations.
+     */
+    private final MenuRepository menuRepository;
 
     /**
      * The application's {@link FileRepository}.
@@ -50,7 +65,7 @@ public class PageService extends BaseFileService {
     private final ObjectMapper objectMapper;
 
     /**
-     * Path to the widgets data directory.
+     * Path to the widget data directory.
      */
     private final Path widgetFilesDir;
 
@@ -58,15 +73,18 @@ public class PageService extends BaseFileService {
      * Creates a new instance.
      *
      * @param pageRepository      Repository for pages.
+     * @param menuRepository      Repository for menus.
      * @param fileRepository      The application's {@link FileRepository}.
      * @param objectMapper        The object mapper.
      * @param projectDataProvider Provider for project data.
      */
     public PageService(PageRepository pageRepository,
+                       MenuRepository menuRepository,
                        FileRepository fileRepository,
                        ObjectMapper objectMapper,
                        ProjectDataProvider projectDataProvider) {
         this.pageRepository = pageRepository;
+        this.menuRepository = menuRepository;
         this.fileRepository = fileRepository;
         this.objectMapper = objectMapper;
         this.widgetFilesDir = projectDataProvider.getProjectRoot().resolve(ProjectDataProvider.WIDGETS_DIR);
@@ -113,14 +131,12 @@ public class PageService extends BaseFileService {
     /**
      * Updates a page's alias and restrictions.
      *
-     * @param pageId       The page's ID.
-     * @param pageAlias    The page's alias to use.
-     * @param restrictions The new restrictions to apply.
+     * @param pageId    The page's ID.
+     * @param pageAlias The page's alias to use.
      */
-    public void updatePageAliasAndRestrictions(String pageId, String pageAlias, Set<String> restrictions) {
+    public void updatePageAlias(String pageId, String pageAlias) {
         pageRepository.findById(pageId).ifPresent(page -> {
             page.setAlias(pageAlias);
-            page.getPageContent().setRestrictions(restrictions);
             pageRepository.save(page);
         });
     }
@@ -130,12 +146,8 @@ public class PageService extends BaseFileService {
      *
      * @return The index {@link Page}.
      */
-    @TranslateResult
-    @RestrictResult
-    public Page loadIndexPage(Set<String> roles) {
-        Page indexPage = pageRepository.findIndexPage();
-        computeEditable(indexPage.getPageContent(), roles);
-        return indexPage;
+    public Optional<PageIdAndAlias> loadIndexPageIdAndAlias() {
+        return pageRepository.findIndexPageId();
     }
 
     /**
@@ -149,9 +161,13 @@ public class PageService extends BaseFileService {
         if (!StringUtils.hasText(pageIdOrAlias)) {
             throw new ArtivactException("Page id or alias is missing!");
         }
+
         Optional<Page> pageOptional = pageRepository.findByIdOrAlias(pageIdOrAlias);
-        Page page = pageOptional.orElseThrow();
+        Page page = pageOptional.orElseThrow(() -> new ArtivactException("Page not found for ID or alias: " + pageIdOrAlias));
         computeEditable(page.getPageContent(), roles);
+
+        page.getPageContent().setRestrictions(findMenuRestrictions(page.getId()));
+
         return page.getPageContent();
     }
 
@@ -182,15 +198,32 @@ public class PageService extends BaseFileService {
     public PageContent savePageContent(String pageIdOrAlias, Set<String> roles, PageContent pageContent) {
         Optional<Page> pageOptional = pageRepository.findByIdOrAlias(pageIdOrAlias);
 
+        // Workaround to circumvent concurrent page modifications. When saving a page using its ID, there might have
+        // been an alias for the page been configured using the menu configuration. To prevent this alias from being
+        // overwritten with a null value, we store the persisted alias here und set it later on.
+        String persistedPageAlias = null;
+
         Page page;
         if (pageOptional.isPresent()) {
             page = pageOptional.get();
+
+            // If the page is saved using its ID, we have to keep a persisted page alias. The alias might have been
+            // added during page editing by a menu configuration:
+            if (UUID_REGEX.matcher(pageIdOrAlias).matches()) {
+                persistedPageAlias = page.getAlias();
+            }
+
         } else {
             // Importing content from a previous export:
             page = new Page();
             page.setId(pageIdOrAlias);
             page.setVersion(0);
             page.setPageContent(pageContent);
+        }
+
+        Optional<Menu> menuOptional = findMenu(page.getId());
+        if (menuOptional.isEmpty()) {
+            throw new ArtivactException("No menu found for page: " + pageIdOrAlias);
         }
 
         PageContent existingPageContent = page.getPageContent();
@@ -223,6 +256,12 @@ public class PageService extends BaseFileService {
 
         pageContent.setId(page.getId());
         page.setPageContent(pageContent);
+
+        // Keep the alias if available:
+        if (StringUtils.hasText(persistedPageAlias)) {
+            page.setAlias(persistedPageAlias);
+        }
+
         pageRepository.save(page);
 
         computeEditable(pageContent, roles);
@@ -298,7 +337,7 @@ public class PageService extends BaseFileService {
     }
 
     /**
-     * Returns a list of images of a widget that are not referenced by the widget itself, but only existing in the
+     * Returns a list of a widget's images that are not referenced by the widget itself but only existing in the
      * filesystem.
      *
      * @param widget The widget.
@@ -339,6 +378,50 @@ public class PageService extends BaseFileService {
         boolean userRequirementMet = !userRoleRequired || roles.contains(Roles.ROLE_USER);
 
         pageContent.setEditable(adminRequirementMet && userRequirementMet);
+    }
+
+    /**
+     * Determines menu restrictions for the menu associated with the given page.
+     *
+     * @param pageId The page's ID.
+     * @return Set of restrictions from the corresponding menu.
+     */
+    private Set<String> findMenuRestrictions(String pageId) {
+        for (Menu menu : menuRepository.load().getMenus()) {
+            if (pageId.equals(menu.getTargetPageId())) {
+                return menu.getRestrictions();
+            }
+            for (Menu menuEntry : menu.getMenuEntries()) {
+                if (pageId.equals(menuEntry.getTargetPageId())) {
+                    if (!menuEntry.getRestrictions().isEmpty()) {
+                        return menuEntry.getRestrictions();
+                    } else {
+                        return menu.getRestrictions();
+                    }
+                }
+            }
+        }
+        return Set.of();
+    }
+
+    /**
+     * Finds the menu related to the given page.
+     *
+     * @param pageId The page's ID.
+     * @return The menu whose target page is the given one.
+     */
+    private Optional<Menu> findMenu(String pageId) {
+        for (Menu menu : menuRepository.load().getMenus()) {
+            if (pageId.equals(menu.getTargetPageId())) {
+                return Optional.of(menu);
+            }
+            for (Menu menuEntry : menu.getMenuEntries()) {
+                if (pageId.equals(menuEntry.getTargetPageId())) {
+                    return Optional.of(menuEntry);
+                }
+            }
+        }
+        return Optional.empty();
     }
 
 }

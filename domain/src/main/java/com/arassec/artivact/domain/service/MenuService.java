@@ -83,10 +83,10 @@ public class MenuService extends BaseFileService {
 
         menuConfiguration.getMenus().forEach(menu -> {
             if (StringUtils.hasText(menu.getTargetPageId())) {
-                pageService.updatePageAliasAndRestrictions(menu.getTargetPageId(), menu.getTargetPageAlias(), menu.getRestrictions());
+                pageService.updatePageAlias(menu.getTargetPageId(), menu.getTargetPageAlias());
             }
             menu.getMenuEntries().forEach(menuEntry ->
-                    pageService.updatePageAliasAndRestrictions(menuEntry.getTargetPageId(), menu.getTargetPageAlias(), menuEntry.getRestrictions()));
+                    pageService.updatePageAlias(menuEntry.getTargetPageId(), menu.getTargetPageAlias()));
         });
 
         return loadTranslatedRestrictedMenus();
@@ -136,13 +136,13 @@ public class MenuService extends BaseFileService {
         }
 
         if (StringUtils.hasText(menu.getTargetPageId())) {
-            pageService.updatePageAliasAndRestrictions(menu.getTargetPageId(), menu.getTargetPageAlias(), menu.getRestrictions());
+            pageService.updatePageAlias(menu.getTargetPageId(), menu.getTargetPageAlias());
         }
         menu.getMenuEntries().forEach(menuEntry -> {
             if (menuEntry.getRestrictions().isEmpty() && !menu.getRestrictions().isEmpty()) {
-                pageService.updatePageAliasAndRestrictions(menuEntry.getTargetPageId(), menuEntry.getTargetPageAlias(), menu.getRestrictions());
+                pageService.updatePageAlias(menuEntry.getTargetPageId(), menuEntry.getTargetPageAlias());
             } else {
-                pageService.updatePageAliasAndRestrictions(menuEntry.getTargetPageId(), menuEntry.getTargetPageAlias(), menuEntry.getRestrictions());
+                pageService.updatePageAlias(menuEntry.getTargetPageId(), menuEntry.getTargetPageAlias());
             }
         });
 

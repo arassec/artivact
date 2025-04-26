@@ -2,6 +2,7 @@ package com.arassec.artivact.persistence.jdbc;
 
 import com.arassec.artivact.core.model.page.Page;
 import com.arassec.artivact.core.model.page.PageContent;
+import com.arassec.artivact.core.repository.PageIdAndAlias;
 import com.arassec.artivact.core.repository.PageRepository;
 import com.arassec.artivact.persistence.jdbc.springdata.entity.PageEntity;
 import com.arassec.artivact.persistence.jdbc.springdata.repository.PageEntityRepository;
@@ -103,15 +104,8 @@ public class JdbcPageRepository extends BaseJdbcRepository implements PageReposi
      * {@inheritDoc}
      */
     @Override
-    public Page findIndexPage() {
-        Optional<PageEntity> pageEntityOptional = pageEntityRepository.findFirstByIndexPage(true);
-        Page page = new Page();
-        if (pageEntityOptional.isPresent()) {
-            return convert(pageEntityOptional.get());
-        } else {
-            page.setPageContent(new PageContent());
-        }
-        return page;
+    public Optional<PageIdAndAlias> findIndexPageId() {
+        return pageEntityRepository.findFirstIndexPageId(true);
     }
 
     /**

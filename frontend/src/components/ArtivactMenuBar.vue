@@ -14,6 +14,15 @@
         class="q-mr-md"
         @click="gotoPage(menu, null)"
       >
+
+        <q-icon
+          v-if="menu.restrictions.length > 0 && userdataStore.isUserOrAdmin"
+          name="lock"
+          size="xs"
+          color="white"
+          class="q-ml-xs"
+        />
+
         <q-tooltip v-if="userdataStore.isAdmin">{{ $t('ArtivactMenuBar.tooltip.edit') }}</q-tooltip>
         <q-menu
           :data-test="'menu-context-menu-' + menu.value"
@@ -149,6 +158,14 @@
           class="q-ml-xs"
         />
 
+        <q-icon
+          v-if="menu.restrictions.length > 0 && userdataStore.isUserOrAdmin"
+          name="lock"
+          size="xs"
+          color="white"
+          class="q-ml-xs"
+        />
+
         <q-tooltip v-if="userdataStore.isAdmin && !profilesStore.isE2eModeEnabled">
           {{ $t('ArtivactMenuBar.tooltip.edit') }}
         </q-tooltip
@@ -171,13 +188,23 @@
                 <q-item-section>
                   <div class="row">
                     <label class="menu-label">{{ translate(menuEntry) }}</label>
+
                     <q-icon
                       v-if="menuEntry.external"
                       name="open_in_new"
                       size="xs"
                       class="q-ml-xs"
                     />
+
+                    <q-icon
+                      v-if="menuEntry.restrictions.length > 0 && userdataStore.isUserOrAdmin"
+                      name="lock"
+                      size="xs"
+                      class="q-ml-xs"
+                    />
+
                     <q-space></q-space>
+
                     <q-menu
                       :data-test="'menu-entry-context-menu-' + menuEntry.value"
                       v-model="showMenuRef[menuEntry.id]"

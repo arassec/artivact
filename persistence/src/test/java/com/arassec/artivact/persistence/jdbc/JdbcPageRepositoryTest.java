@@ -3,6 +3,7 @@ package com.arassec.artivact.persistence.jdbc;
 import com.arassec.artivact.core.model.page.Page;
 import com.arassec.artivact.core.model.page.PageContent;
 import com.arassec.artivact.core.model.page.widget.TextWidget;
+import com.arassec.artivact.core.repository.PageIdAndAlias;
 import com.arassec.artivact.persistence.jdbc.springdata.entity.PageEntity;
 import com.arassec.artivact.persistence.jdbc.springdata.repository.PageEntityRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,7 +19,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 /**
@@ -163,9 +165,9 @@ class JdbcPageRepositoryTest {
      * Tests finding the index page which doesn't exist.
      */
     @Test
-    void testFindIndexPageNotExisting() {
-        Page indexPage = jdbcPageRepository.findIndexPage();
-        assertNull(indexPage.getId());
+    void testFindIndexPageIdNotExisting() {
+        Optional<PageIdAndAlias> indexPageIdOptional = jdbcPageRepository.findIndexPageId();
+        assertThat(indexPageIdOptional).isEmpty();
     }
 
     /**
@@ -173,23 +175,23 @@ class JdbcPageRepositoryTest {
      */
     @Test
     @SneakyThrows
-    void testFindIndexPage() {
-        PageEntity pageEntity = new PageEntity();
-        pageEntity.setId("id");
-        pageEntity.setVersion(23);
-        pageEntity.setContentJson("{contentJson}");
+    void testFindIndexPageId() {
+        when(pageEntityRepository.findFirstIndexPageId(true)).thenReturn(Optional.of(new PageIdAndAlias() {
+            @Override
+            public String getId() {
+                return "id";
+            }
 
-        when(pageEntityRepository.findFirstByIndexPage(true)).thenReturn(Optional.of(pageEntity));
+            @Override
+            public String getAlias() {
+                return "alias";
+            }
+        }));
 
-        PageContent pageContent = new PageContent();
-
-        when(objectMapper.readValue("{contentJson}", PageContent.class)).thenReturn(pageContent);
-
-        Page page = jdbcPageRepository.findIndexPage();
-
-        assertEquals("id", page.getId());
-        assertEquals(23, page.getVersion());
-        assertEquals(pageContent, page.getPageContent());
+        Optional<PageIdAndAlias> indexPageIdOptional = jdbcPageRepository.findIndexPageId();
+        assertThat(indexPageIdOptional).isPresent();
+        assertThat(indexPageIdOptional.get().getId()).isEqualTo("id");
+        assertThat(indexPageIdOptional.get().getAlias()).isEqualTo("alias");
     }
 
 }
