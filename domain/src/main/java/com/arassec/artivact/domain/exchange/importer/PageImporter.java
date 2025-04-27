@@ -13,6 +13,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -60,7 +61,7 @@ public class PageImporter {
      * @param importContext The import context.
      * @param pageId        The page's ID.
      */
-    public void importPage(ImportContext importContext, String pageId) {
+    public void importPage(ImportContext importContext, String pageId, String pageAlias) {
         Path pageContentJson = importContext.getImportDir().resolve(pageId + PAGE_EXCHANGE_FILE_SUFFIX);
 
         try {
@@ -95,6 +96,10 @@ public class PageImporter {
             });
 
             pageService.savePageContent(pageId, Set.of(), pageContent);
+
+            if (StringUtils.hasText(pageAlias)) {
+                pageService.updatePageAlias(pageId, pageAlias);
+            }
         } catch (JsonProcessingException e) {
             throw new ArtivactException("Could not import page!", e);
         }

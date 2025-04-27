@@ -101,12 +101,13 @@ class PageImporterTest {
         when(fileRepository.read(searchResultJson)).thenReturn("search-result-json");
         when(objectMapper.readValue(eq("search-result-json"), any(TypeReference.class))).thenReturn(List.of("item-id"));
 
-        pageImporter.importPage(importContext, "page-id");
+        pageImporter.importPage(importContext, "page-id", "page-alias");
 
         verify(fileRepository).copyDir(widgetSource, widgetTarget);
         verify(itemImporter).importItem(importContext, "item-id");
 
         verify(pageService).savePageContent("page-id", Set.of(), pageContent);
+        verify(pageService).updatePageAlias("page-id", "page-alias");
     }
 
 }

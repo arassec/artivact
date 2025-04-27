@@ -78,7 +78,7 @@ class MenuImporterTest {
 
         menuImporter.importMenu(importContext, "menu-id", true);
 
-        verify(pageImporter).importPage(importContext, "target-page-id");
+        verify(pageImporter).importPage(importContext, "target-page-id", null);
 
         verify(menuService).saveMenu(menu);
 
@@ -107,7 +107,7 @@ class MenuImporterTest {
 
         menuImporter.importMenu(importContext, "menu-id", true);
 
-        verify(pageImporter).importPage(importContext, "target-page-id");
+        verify(pageImporter).importPage(importContext, "target-page-id", null);
 
         verify(menuService).saveMenu(menu);
     }

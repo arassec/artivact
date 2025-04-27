@@ -52,20 +52,23 @@ public class MenuImporter {
         Path menuJson = importContext.getImportDir().resolve(menuId + MENU_EXCHANGE_FILE_SUFFIX);
         try {
             Menu menu = objectMapper.readValue(fileRepository.read(menuJson), Menu.class);
+
+            if (saveMenu) {
+                // When directly importing former submenus as menus, the parent is set to "null" and the (former) submenu
+                // is thus imported as a regular menu.
+                menu.setParentId(null);
+                menuService.saveMenu(menu);
+            }
+
             if (!menu.getMenuEntries().isEmpty()) {
                 menu.getMenuEntries().forEach(menuEntry -> {
                     menuEntry.setParentId(menuId);
                     importMenu(importContext, menuEntry.getId(), false);
                 });
-            } else if (StringUtils.hasText(menu.getTargetPageId())) {
-                pageImporter.importPage(importContext, menu.getTargetPageId());
             }
 
-            if (saveMenu) {
-                // When importing former sub-menus the parent is set to null and the (former) sub-menu is thus imported
-                // as regular menu.
-                menu.setParentId(null);
-                menuService.saveMenu(menu);
+            if (StringUtils.hasText(menu.getTargetPageId())) {
+                pageImporter.importPage(importContext, menu.getTargetPageId(), menu.getTargetPageAlias());
             }
 
         } catch (JsonProcessingException e) {
