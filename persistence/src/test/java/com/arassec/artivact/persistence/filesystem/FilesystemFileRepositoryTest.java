@@ -85,7 +85,7 @@ class FilesystemFileRepositoryTest {
     @Test
     @SneakyThrows
     void testUpdateProjectDirectoryServerMode() {
-        when(environment.matchesProfiles("desktop")).thenReturn(false);
+        when(environment.matchesProfiles("desktop", "e2e")).thenReturn(false);
 
         filesystemFileRepository.updateProjectDirectory(targetDir, null, null, List.of());
 
@@ -100,7 +100,7 @@ class FilesystemFileRepositoryTest {
     @Test
     @SneakyThrows
     void testUpdateProjectDirectory() {
-        when(environment.matchesProfiles("desktop")).thenReturn(true);
+        when(environment.matchesProfiles("desktop", "e2e")).thenReturn(true);
 
         filesystemFileRepository.updateProjectDirectory(targetDir,
                 targetDir.resolve("invalid"),

@@ -160,6 +160,12 @@
             </dependency>
 
             <dependency>
+                <groupId>com.microsoft.onnxruntime</groupId>
+                <artifactId>onnxruntime</artifactId>
+                <version>1.19.2</version>
+            </dependency>
+
+            <dependency>
                 <groupId>org.zeroturnaround</groupId>
                 <artifactId>zt-zip</artifactId>
                 <version>1.17</version>

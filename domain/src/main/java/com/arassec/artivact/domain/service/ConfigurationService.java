@@ -257,7 +257,7 @@ public class ConfigurationService extends BaseFileService {
 
         // Initialize default values on first creation:
         if (adapterConfiguration.getBackgroundRemovalAdapterImplementation() == null) {
-            adapterConfiguration.setBackgroundRemovalAdapterImplementation(AdapterImplementation.FALLBACK_BACKGROUND_REMOVAL_ADAPTER);
+            adapterConfiguration.setBackgroundRemovalAdapterImplementation(AdapterImplementation.DEFAULT_BACKGROUND_REMOVAL_ADAPTER);
             adapterConfiguration.setCameraAdapterImplementation(AdapterImplementation.FALLBACK_CAMERA_ADAPTER);
             adapterConfiguration.setTurntableAdapterImplementation(AdapterImplementation.FALLBACK_TURNTABLE_ADAPTER);
             adapterConfiguration.setModelCreatorImplementation(AdapterImplementation.FALLBACK_MODEL_CREATOR_ADAPTER);
@@ -266,8 +266,7 @@ public class ConfigurationService extends BaseFileService {
             adapterConfiguration.getConfigValues().put(AdapterImplementation.FALLBACK_TURNTABLE_ADAPTER, "1000");
             adapterConfiguration.getConfigValues().put(AdapterImplementation.ARTIVACT_TURNTABLE_ADAPTER, "50");
 
-            adapterConfiguration.getConfigValues().put(AdapterImplementation.FALLBACK_BACKGROUND_REMOVAL_ADAPTER, "");
-            adapterConfiguration.getConfigValues().put(AdapterImplementation.REMBG_REMOTE_BACKGROUND_REMOVAL_ADAPTER, "http://localhost:7000/api/remove");
+            adapterConfiguration.getConfigValues().put(AdapterImplementation.DEFAULT_BACKGROUND_REMOVAL_ADAPTER, "silueta.onnx#input.1#320#320#5");
 
             adapterConfiguration.getConfigValues().put(AdapterImplementation.FALLBACK_CAMERA_ADAPTER, "");
             adapterConfiguration.getConfigValues().put(AdapterImplementation.DIGI_CAM_CONTROL_CAMERA_ADAPTER, "C:/Program Files (x86)/digiCamControl/CameraControlCmd.exe");
@@ -297,8 +296,7 @@ public class ConfigurationService extends BaseFileService {
         adapterConfiguration.getAvailableTurntableAdapterImplementations().add(AdapterImplementation.FALLBACK_TURNTABLE_ADAPTER);
         adapterConfiguration.getAvailableTurntableAdapterImplementations().add(AdapterImplementation.ARTIVACT_TURNTABLE_ADAPTER);
 
-        adapterConfiguration.getAvailableBackgroundRemovalAdapterImplementations().add(AdapterImplementation.FALLBACK_BACKGROUND_REMOVAL_ADAPTER);
-        adapterConfiguration.getAvailableBackgroundRemovalAdapterImplementations().add(AdapterImplementation.REMBG_REMOTE_BACKGROUND_REMOVAL_ADAPTER);
+        adapterConfiguration.getAvailableBackgroundRemovalAdapterImplementations().add(AdapterImplementation.DEFAULT_BACKGROUND_REMOVAL_ADAPTER);
 
         adapterConfiguration.getAvailableModelCreatorAdapterImplementations().add(AdapterImplementation.FALLBACK_MODEL_CREATOR_ADAPTER);
         adapterConfiguration.getAvailableModelCreatorAdapterImplementations().add(AdapterImplementation.MESHROOM_MODEL_CREATOR_ADAPTER);
@@ -328,7 +326,7 @@ public class ConfigurationService extends BaseFileService {
      * @param adapterConfiguration The configuration to save.
      */
     public void saveAdapterConfiguration(AdapterConfiguration adapterConfiguration) {
-        // Available options are computed on load and must not be saved:
+        // Available options are computed when loading and must not be saved:
         adapterConfiguration.setAvailableBackgroundRemovalAdapterImplementations(List.of());
         adapterConfiguration.setAvailableCameraAdapterImplementations(List.of());
         adapterConfiguration.setAvailableTurntableAdapterImplementations(List.of());

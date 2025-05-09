@@ -8,7 +8,10 @@
       <template v-slot:body>
         <q-card-section>
           <q-spinner size="2em" class="q-mr-md"/>
-          {{ $t(progressMonitorRef?.key) }} <template v-if="progressMonitorRef.currentAmount">{{ ' (' + progressMonitorRef.currentAmount + '/' + progressMonitorRef.targetAmount + ')'}}</template>
+          {{ $t(progressMonitorRef?.key) }}
+          <template v-if="progressMonitorRef.targetAmount">
+            {{ ' (' + progressMonitorRef.currentAmount + '/' + progressMonitorRef.targetAmount + ')' }}
+          </template>
         </q-card-section>
       </template>
     </artivact-dialog>

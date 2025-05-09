@@ -568,10 +568,10 @@ export default {
     },
     background: {
       heading: 'Background Removal',
-      description: 'Automatic background removal of captured images is implemented using the open source tool \'rembg\' by Daniel Gatis (https://github.com/danielgatis/rembg). You can e.g. provide it with docker by running',
-      dockerCmd: 'docker run -d -p 7000:7000 --name=rembg --restart=always danielgatis/rembg s',
+      description: 'Automatic background removal of captured images is implemented using open-source neural networks for salient object detection. You can find out more in the documentation. The default configuration is:',
+      defaultConfiguration: 'silueta.onnx#input.1#320#320#5',
       label: 'Background-Removal Software to use',
-      rembg: 'rembg Webserver URL'
+      default: 'Configuration String'
     },
     creator: {
       heading: '3D Model-Creator',
@@ -873,9 +873,9 @@ export default {
       captureStart: 'Start capturing photos.',
       captureInProgress: 'Capturing photos...',
       captureFailed: 'Capturing photos failed!',
-      rembgStart: 'Start removing backgrounds from images.',
-      rembgInProgress: 'Removing backgrounds from images...',
-      rembgFailed: 'Removing backgrounds from images failed!',
+      backgroundRemovalStart: 'Start removing backgrounds from images.',
+      backgroundRemovalInProgress: 'Removing backgrounds from images...',
+      backgroundRemovalFailed: 'Removing backgrounds from images failed!',
       imageSetStart: 'Start importing images to new image-set.',
       imageSetInProgress: 'Adding images to image-set...',
       imageSetFailed: 'Error during image-set creation!',
@@ -925,8 +925,7 @@ export default {
   IMAGE_GALLERY: 'Image Gallery',
   IMAGE_GALLERY_DESCRIPTION: 'An image gallery with optional heading and content text.',
 
-  FALLBACK_BACKGROUND_REMOVAL_ADAPTER: 'Fallback',
-  REMBG_REMOTE_BACKGROUND_REMOVAL_ADAPTER: 'rembg (Remote)',
+  DEFAULT_BACKGROUND_REMOVAL_ADAPTER: 'Default',
   FALLBACK_CAMERA_ADAPTER: 'Fallback',
   DIGI_CAM_CONTROL_CAMERA_ADAPTER: 'DigiCamControl',
   DIGI_CAM_CONTROL_REMOTE_CAMERA_ADAPTER: 'DigiCamControl (Remote)',

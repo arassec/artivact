@@ -6,14 +6,9 @@ package com.arassec.artivact.core.model.configuration;
 public enum AdapterImplementation {
 
     /**
-     * Fallback for background removal.
+     * Default for background removal.
      */
-    FALLBACK_BACKGROUND_REMOVAL_ADAPTER,
-
-    /**
-     * Remote rembg background removal.
-     */
-    REMBG_REMOTE_BACKGROUND_REMOVAL_ADAPTER,
+    DEFAULT_BACKGROUND_REMOVAL_ADAPTER,
 
     /**
      * Fallback camera adapter.

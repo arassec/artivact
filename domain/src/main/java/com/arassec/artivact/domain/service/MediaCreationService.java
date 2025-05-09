@@ -133,7 +133,7 @@ public class MediaCreationService {
             return;
         }
 
-        progressMonitor = new ProgressMonitor(getClass(), "rembgStart");
+        progressMonitor = new ProgressMonitor(getClass(), "backgroundRemovalStart");
 
         executorService.submit(() -> {
             try {
@@ -157,7 +157,7 @@ public class MediaCreationService {
 
                 progressMonitor = null;
             } catch (Exception e) {
-                progressMonitor.updateProgress("rembgFailed", e);
+                progressMonitor.updateProgress("backgroundRemovalFailed", e);
                 log.error("Error during background removal!", e);
             }
         });

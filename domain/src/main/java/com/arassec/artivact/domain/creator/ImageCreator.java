@@ -119,6 +119,7 @@ public class ImageCreator extends BaseCreator {
         BackgroundRemovalAdapter backgroundRemovalAdapter = getBackgroundRemovalAdapter(adapterConfiguration);
         log.debug("Initializing background-removal adapter for photo capturing: {}", backgroundRemovalAdapter.getSupportedImplementation());
         backgroundRemovalAdapter.initialize(progressMonitor, BackgroundRemovalInitParams.builder()
+                .projectRoot(projectDataProvider.getProjectRoot())
                 .adapterConfiguration(adapterConfiguration)
                 .targetDir(getImagesDir(itemId, true))
                 .build());
@@ -184,9 +185,12 @@ public class ImageCreator extends BaseCreator {
         BackgroundRemovalAdapter backgroundRemovalAdapter = getBackgroundRemovalAdapter(adapterConfiguration);
 
         backgroundRemovalAdapter.initialize(progressMonitor, BackgroundRemovalInitParams.builder()
+                .projectRoot(projectDataProvider.getProjectRoot())
                 .adapterConfiguration(adapterConfiguration)
                 .targetDir(getImagesDir(itemId, true))
                 .build());
+
+        progressMonitor.updateProgress(0, creationImageSet.getFiles().size());
 
         backgroundRemovalAdapter.removeBackgrounds(creationImageSet.getFiles().stream()
                 .map(fileName -> getImagesDir(itemId, true).resolve(fileName))
@@ -287,11 +291,11 @@ public class ImageCreator extends BaseCreator {
     private void processNewImage(boolean removeBackgrounds, BackgroundRemovalAdapter backgroundRemovalAdapter,
                                  Path createdFile, List<Path> capturedImages) {
         String filename = createdFile.toString().toLowerCase();
-        // Check filetype and if ready for processing. Image might not be completely written by camera adapter!
+        // Check filetype and if ready for processing. The image might not be completely written by the camera adapter!
         if ((filename.endsWith(".jpg") || filename.endsWith(".jpeg")) && readyForProcessing(createdFile)) {
             log.debug("Captured image file found: {}", createdFile);
             capturedImages.add(createdFile);
-            // Check again if ready for processing, file might still be blocked by another process!
+            // Check again if ready for processing, the file might still be blocked by another process!
             if (removeBackgrounds && readyForProcessing(createdFile)) {
                 log.debug("Removing Background of captured image: {}", createdFile);
                 backgroundRemovalAdapter.removeBackground(createdFile);

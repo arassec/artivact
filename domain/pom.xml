@@ -95,6 +95,11 @@
             <artifactId>jSerialComm</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.microsoft.onnxruntime</groupId>
+            <artifactId>onnxruntime</artifactId>
+        </dependency>
+
         <!-- Testing -->
         <dependency>
             <groupId>org.springframework.security</groupId>

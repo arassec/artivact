@@ -42,7 +42,6 @@
       <q-card-section class="full-width q-pl-none q-pr-none q-pb-none">
         <div class="full-width q-ma-none">
           <q-toggle flat v-model="imageSet.modelInput" @click="toggleModelInput(index)" :disable="imageSet.images.length === 0">Model input</q-toggle>
-          <q-toggle flat v-model="imageSet.backgroundRemoved" :disable="true">Background removed</q-toggle>
           <q-separator class="q-mt-sm q-mb-sm"/>
         </div>
       </q-card-section>

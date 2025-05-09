@@ -64,6 +64,15 @@ public class ProgressMonitor {
     }
 
     /**
+     * Updates the current amount of progress.
+     *
+     * @param currentAmount The current amount of progress.
+     */
+    public void updateProgress(Integer currentAmount) {
+        this.currentAmount = currentAmount;
+    }
+
+    /**
      * Updates the progress string.
      *
      * @param labelKeySuffix The key suffix for the label to display.

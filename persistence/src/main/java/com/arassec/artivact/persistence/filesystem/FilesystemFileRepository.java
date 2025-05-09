@@ -52,7 +52,7 @@ public class FilesystemFileRepository implements FileRepository {
     @Override
     public void updateProjectDirectory(Path projectRoot, Path projectSetupDir, Path projectSetupDirFallback, List<FileModification> fileModifications) {
 
-        if (!environment.matchesProfiles("desktop")) {
+        if (!environment.matchesProfiles("desktop", "e2e")) {
             return;
         }
 

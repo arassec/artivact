@@ -38,11 +38,6 @@ public class ProjectDataProvider {
     public static final String WIDGETS_DIR = "widgets";
 
     /**
-     * Directory containing additional data (like files) from menus.
-     */
-    public static final String MENUS_DIR = "menus";
-
-    /**
      * Directory containing search-engine data.
      */
     public static final String SEARCH_INDEX_DIR = "sedata";
@@ -103,7 +98,6 @@ public class ProjectDataProvider {
         fileRepository.createDirIfRequired(projectRoot.resolve(TEMP_DIR));
         fileRepository.createDirIfRequired(projectRoot.resolve(WIDGETS_DIR));
         fileRepository.createDirIfRequired(projectRoot.resolve(SEARCH_INDEX_DIR));
-        fileRepository.createDirIfRequired(projectRoot.resolve(MENUS_DIR));
 
         fileRepository.updateProjectDirectory(projectRoot, PROJECT_SETUP_DIR, PROJECT_SETUP_DIR_FALLBACK,
                 List.of(

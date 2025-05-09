@@ -113,7 +113,7 @@
           <q-card-section>
             <div class="q-mb-md">
               {{ $t('ArtivactPeripheralsConfigurationEditor.background.description') }}
-              <pre>{{ $t('ArtivactPeripheralsConfigurationEditor.background.dockerCmd') }}</pre>
+              <pre>{{ $t('ArtivactPeripheralsConfigurationEditor.background.defaultConfiguration') }}</pre>
             </div>
             <q-select
               class="q-mb-md"
@@ -125,10 +125,10 @@
               :label="$t('ArtivactPeripheralsConfigurationEditor.background.label')"
             />
             <q-input
-              v-if="adapterConfigurationRef.backgroundRemovalAdapterImplementation.toString() === AdapterImplementation[AdapterImplementation.REMBG_REMOTE_BACKGROUND_REMOVAL_ADAPTER]"
+              v-if="adapterConfigurationRef.backgroundRemovalAdapterImplementation.toString() === AdapterImplementation[AdapterImplementation.DEFAULT_BACKGROUND_REMOVAL_ADAPTER]"
               outlined
-              :label="$t('ArtivactPeripheralsConfigurationEditor.background.rembg')"
-              v-model="adapterConfigurationRef.configValues['REMBG_REMOTE_BACKGROUND_REMOVAL_ADAPTER']"
+              :label="$t('ArtivactPeripheralsConfigurationEditor.background.default')"
+              v-model="adapterConfigurationRef.configValues['DEFAULT_BACKGROUND_REMOVAL_ADAPTER']"
             />
           </q-card-section>
         </q-card>
@@ -286,14 +286,9 @@ const availableCameraOptions: SelectboxModel[] = [
 
 const availableBackgroundRemovalOptions: SelectboxModel[] = [
   {
-    label: AdapterImplementation[AdapterImplementation.FALLBACK_BACKGROUND_REMOVAL_ADAPTER],
-    value: AdapterImplementation[AdapterImplementation.FALLBACK_BACKGROUND_REMOVAL_ADAPTER],
-    disable: isDisabled(adapterConfigurationRef.value?.availableBackgroundRemovalAdapterImplementations, AdapterImplementation.FALLBACK_BACKGROUND_REMOVAL_ADAPTER)
-  },
-  {
-    label: AdapterImplementation[AdapterImplementation.REMBG_REMOTE_BACKGROUND_REMOVAL_ADAPTER],
-    value: AdapterImplementation[AdapterImplementation.REMBG_REMOTE_BACKGROUND_REMOVAL_ADAPTER],
-    disable: isDisabled(adapterConfigurationRef.value?.availableBackgroundRemovalAdapterImplementations, AdapterImplementation.REMBG_REMOTE_BACKGROUND_REMOVAL_ADAPTER)
+    label: AdapterImplementation[AdapterImplementation.DEFAULT_BACKGROUND_REMOVAL_ADAPTER],
+    value: AdapterImplementation[AdapterImplementation.DEFAULT_BACKGROUND_REMOVAL_ADAPTER],
+    disable: isDisabled(adapterConfigurationRef.value?.availableBackgroundRemovalAdapterImplementations, AdapterImplementation.DEFAULT_BACKGROUND_REMOVAL_ADAPTER)
   }
 ];
 

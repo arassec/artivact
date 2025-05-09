@@ -567,10 +567,10 @@ export default {
     },
     background: {
       heading: 'Automatisches Freistellen',
-      description: 'Automatisches Freistellen der erzeugten Bilder wird mit dem Open-Source-Tool \'rembg\' von Daniel Gatis (https://github.com/danielgatis/rembg) realisiert. Dies kann z.B. über Docker bereitgestellt werden:',
-      dockerCmd: 'docker run -d -p 7000:7000 --name=rembg --restart=always danielgatis/rembg s',
+      description: 'Automatisches Freistellen der erzeugten Bilder wird mit Open-Source Neuronalen Netzwerken zur Erkennung von Objekten implementiert. Mehr Infos finden sich in der Dokumentation. Die Standardkonfiguration ist:',
+      defaultConfiguration: 'silueta.onnx#input.1#320#320#5',
       label: 'Software zum automatischen Freistellen',
-      rembg: 'rembg Webserver URL'
+      default: 'Konfiguration'
     },
     creator: {
       heading: '3D-Modell Erstellung',
@@ -873,9 +873,9 @@ export default {
       captureStart: 'Starte Fotoaufnahmen.',
       captureInProgress: 'Nehme Fotos auf...',
       captureFailed: 'Fotoaufnahme fehlgeschlagen!',
-      rembgStart: 'Starte freistellen der Aufnahmen.',
-      rembgInProgress: 'Stelle Aufnahmen frei...',
-      rembgFailed: 'Freistellen von Aufnahmen fehlgeschlagen!',
+      backgroundRemovalStart: 'Starte freistellen der Aufnahmen.',
+      backgroundRemovalInProgress: 'Stelle Aufnahmen frei...',
+      backgroundRemovalFailed: 'Freistellen von Aufnahmen fehlgeschlagen!',
       imageSetStart: 'Starte Import von Bildern in Bilder-Set.',
       imageSetInProgress: 'Füge Bilder zu Bilder-Set hinzu...',
       imageSetFailed: 'Fehler beim Hinzufügen von Bildern zu Bilder-Set!',
@@ -927,8 +927,7 @@ export default {
   IMAGE_GALLERY: 'Bilder-Gallerie',
   IMAGE_GALLERY_DESCRIPTION: 'Eine Bilder-Gallerie, mit optionaler Überschrift und optionalem Beschreibungstext.',
 
-  FALLBACK_BACKGROUND_REMOVAL_ADAPTER: 'Fallback',
-  REMBG_REMOTE_BACKGROUND_REMOVAL_ADAPTER: 'rembg (Remote)',
+  DEFAULT_BACKGROUND_REMOVAL_ADAPTER: 'Standard',
   FALLBACK_CAMERA_ADAPTER: 'Fallback',
   DIGI_CAM_CONTROL_CAMERA_ADAPTER: 'DigiCamControl',
   DIGI_CAM_CONTROL_REMOTE_CAMERA_ADAPTER: 'DigiCamControl (Remote)',

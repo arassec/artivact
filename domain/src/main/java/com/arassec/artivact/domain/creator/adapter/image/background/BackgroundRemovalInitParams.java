@@ -22,7 +22,7 @@ public class BackgroundRemovalInitParams extends AdapterInitParams {
     private AdapterConfiguration adapterConfiguration;
 
     /**
-     * Target dir for images with removed background.
+     * Target dir for images without a background.
      */
     private Path targetDir;
 
