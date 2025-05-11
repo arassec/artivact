@@ -5,7 +5,7 @@ import com.arassec.artivact.core.model.TranslatableString;
 import lombok.*;
 
 /**
- * Models a content export, i.e. an export designed for exchange of pages and items with other Artivact instances or apps.
+ * Models a content export i.e., an export designed for exchange of pages and items with other Artivact instances or apps.
  */
 @Data
 @Builder
@@ -25,9 +25,14 @@ public class CollectionExport extends BaseRestrictedObject {
     private TranslatableString title;
 
     /**
-     * The export's description.
+     * The export's short description.
      */
     private TranslatableString description;
+
+    /**
+     * A longer description of the export's content.
+     */
+    private TranslatableString content;
 
     /**
      * The configuration used to create this content export.
@@ -40,12 +45,12 @@ public class CollectionExport extends BaseRestrictedObject {
     private ContentSource contentSource;
 
     /**
-     * The ID of the source of the exchanged content.
+     * The source's ID of the exchanged content.
      */
     private String sourceId;
 
     /**
-     * Timestamp of the last modification of the export file.
+     * Timestamp of the export file's last modification.
      */
     private long fileLastModified;
 
@@ -65,7 +70,7 @@ public class CollectionExport extends BaseRestrictedObject {
     private String coverPictureExtension;
 
     /**
-     * Marks this collection export as not re-creatable, i.e. only the export file is available for distribution.
+     * Marks this collection export as not re-creatable i.e., only the export file is available for distribution.
      */
     private boolean distributionOnly;
 

@@ -2,6 +2,7 @@ package com.arassec.artivact.domain.service;
 
 import com.arassec.artivact.core.exception.ArtivactException;
 import com.arassec.artivact.core.misc.ProgressMonitor;
+import com.arassec.artivact.core.model.TranslatableString;
 import com.arassec.artivact.core.model.exchange.CollectionExport;
 import com.arassec.artivact.core.model.exchange.CollectionExportInfo;
 import com.arassec.artivact.core.model.item.ImageSize;
@@ -124,7 +125,7 @@ public class CollectionExportService extends BaseFileService {
     @TranslateResult
     public List<CollectionExport> loadAll() {
         List<CollectionExport> collectionExports = collectionExportRepository.findAll();
-        collectionExports.forEach(this::addExportFileInformation);
+        collectionExports.forEach(this::addAdditionalInformation);
         return collectionExports;
     }
 
@@ -137,7 +138,7 @@ public class CollectionExportService extends BaseFileService {
     @TranslateResult
     public CollectionExport load(String id) {
         CollectionExport collectionExport = collectionExportRepository.findById(id).orElseThrow();
-        addExportFileInformation(collectionExport);
+        addAdditionalInformation(collectionExport);
         return collectionExport;
     }
 
@@ -407,11 +408,12 @@ public class CollectionExportService extends BaseFileService {
     }
 
     /**
-     * Adds information about the export file to the provided collection export.
+     * Adds additional information, e.g., about the export file' size and last modification, to the provided collection
+     * export.
      *
-     * @param collectionExport The collection export to add export file information to.
+     * @param collectionExport The {@link CollectionExport} to add additional information to.
      */
-    private void addExportFileInformation(CollectionExport collectionExport) {
+    private void addAdditionalInformation(CollectionExport collectionExport) {
         Path exportFile = getExportFile(collectionExport.getId());
         if (fileRepository.exists(exportFile)) {
             collectionExport.setFilePresent(true);
@@ -419,6 +421,10 @@ public class CollectionExportService extends BaseFileService {
             collectionExport.setFileSize(fileRepository.size(exportFile));
         } else {
             collectionExport.setFilePresent(false);
+        }
+
+        if (collectionExport.getContent() == null) {
+            collectionExport.setContent(new TranslatableString(""));
         }
     }
 

@@ -392,13 +392,19 @@ export default {
     label: {
       sourceId: 'Source of collection export',
       title: 'Title',
-      description: 'Description',
+      description: 'Short Description',
+      content: 'Content',
       optimizeSize: 'Optimize export size',
       applyRestrictions: 'Exclude restricted elements',
       exportFileMissing: 'No export file exists for this configuration! You can create one by clicking on the respective button above.',
       lastModified: 'Last modification of export file: ',
       coverPicture: 'Cover Picture',
       noCoverPicture: 'No cover picture available.',
+    },
+    help: {
+      title: 'The collection export\'s title.',
+      description: 'A short (one to two sentences) description of the export\'s content.',
+      content: 'A longer description of the export\'s content.'
     },
     button: {
       create: 'Create Export Configuration'

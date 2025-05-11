@@ -239,6 +239,7 @@ export interface ExportConfiguration {
 export interface CollectionExport extends BaseRestrictedObject{
   title: TranslatableString;
   description: TranslatableString;
+  content: TranslatableString;
   exportConfiguration: ExportConfiguration;
   contentSource: ContentSource;
   sourceId: string;

@@ -191,12 +191,14 @@
             :label="$t('ArtivactCollectionExportEditor.label.sourceId')"
           />
           <q-separator class="q-mb-lg" />
+          <p>{{ $t('ArtivactCollectionExportEditor.help.title') }}</p>
           <artivact-restricted-translatable-item-editor :label="$t('ArtivactCollectionExportEditor.label.title')"
                                                         :translatable-string="collectionExportRef.title"
                                                         :data-test="'create-collection-export-title'"
                                                         :show-separator="false"
                                                         :disable="collectionExportRef.distributionOnly"
           />
+          <p>{{ $t('ArtivactCollectionExportEditor.help.description') }}</p>
           <artivact-restricted-translatable-item-editor :label="$t('ArtivactCollectionExportEditor.label.description')"
                                                         :translatable-string="collectionExportRef.description"
                                                         :data-test="'create-collection-export-description'"
@@ -204,6 +206,16 @@
                                                         :textarea="true"
                                                         :disable="collectionExportRef.distributionOnly"
           />
+          <p>{{ $t('ArtivactCollectionExportEditor.help.content') }}</p>
+          <artivact-restricted-translatable-item-editor :label="$t('ArtivactCollectionExportEditor.label.content')"
+                                                        :translatable-string="collectionExportRef.content"
+                                                        :data-test="'create-collection-export-content'"
+                                                        :show-separator="false"
+                                                        :textarea="true"
+                                                        :disable="collectionExportRef.distributionOnly"
+          />
+
+          <q-separator class="q-mb-md q-mt-lg"/>
           <div>
             <q-checkbox
               :disable="collectionExportRef.distributionOnly"

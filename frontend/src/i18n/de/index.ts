@@ -392,13 +392,19 @@ export default {
     label: {
       sourceId: 'Quelle für den Sammlungsexport',
       title: 'Titel',
-      description: 'Beschreibung',
+      description: 'Kurzbeschreibung',
+      content: 'Inhalt',
       optimizeSize: 'Exportgröße optimieren',
       applyRestrictions: 'Eingeschränkte Elemente ausschließen',
       exportFileMissing: 'Zu dieser Konfiguration existiert noch keine Exportdatei. Sie können diese über den entsprechenden Knopf in der oberen Leiste erstellen.',
       lastModified: 'Letzte Änderung an der Exportdatei: ',
       coverPicture: 'Titelbild',
       noCoverPicture: 'Kein Titelbild verfügbar.'
+    },
+    help: {
+      title: 'Der Titel des Sammlungsexports.',
+      description: 'Eine ein bis zwei Sätze umfassende, kurze Beschreibung des Sammlungsexports.',
+      content: 'Eine längere Beschreibung des Inhalts des Sammlungsexports.'
     },
     button: {
       create: 'Exportkonfiguration erstellen'
