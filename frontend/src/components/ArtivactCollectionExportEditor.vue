@@ -299,6 +299,9 @@ function configureNewExportConfiguration() {
     description: {
       value: ''
     } as TranslatableString,
+    content: {
+      value: ''
+    } as TranslatableString,
     contentSource: ContentSource.MENU,
     sourceId: '',
     exportConfiguration: {

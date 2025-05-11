@@ -22,6 +22,13 @@
           color="white"
           class="q-ml-xs"
         />
+        <q-icon
+          v-if="menu.hidden && userdataStore.isUserOrAdmin"
+          name="visibility_off"
+          size="xs"
+          color="white"
+          class="q-ml-xs"
+        />
 
         <q-tooltip v-if="userdataStore.isAdmin">{{ $t('ArtivactMenuBar.tooltip.edit') }}</q-tooltip>
         <q-menu
@@ -165,6 +172,13 @@
           color="white"
           class="q-ml-xs"
         />
+        <q-icon
+          v-if="menu.hidden && userdataStore.isUserOrAdmin"
+          name="visibility_off"
+          size="xs"
+          color="white"
+          class="q-ml-xs"
+        />
 
         <q-tooltip v-if="userdataStore.isAdmin && !profilesStore.isE2eModeEnabled">
           {{ $t('ArtivactMenuBar.tooltip.edit') }}
@@ -199,6 +213,12 @@
                     <q-icon
                       v-if="menuEntry.restrictions.length > 0 && userdataStore.isUserOrAdmin"
                       name="lock"
+                      size="xs"
+                      class="q-ml-xs"
+                    />
+                    <q-icon
+                      v-if="menu.hidden && userdataStore.isUserOrAdmin"
+                      name="visibility_off"
                       size="xs"
                       class="q-ml-xs"
                     />
