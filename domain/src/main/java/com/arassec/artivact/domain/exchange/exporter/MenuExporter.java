@@ -46,13 +46,11 @@ public class MenuExporter extends BaseExporter {
      * @param menu          The menu to export.
      */
     public void exportMenu(ExportContext exportContext, Menu menu) {
+        // Only restrict export for submenus, not the main-menu.
         if (exportContext.getExportConfiguration().isApplyRestrictions()) {
             menu.setMenuEntries(menu.getMenuEntries().isEmpty() ? null : menu.getMenuEntries().stream()
                     .filter(menuEntry -> menuEntry.getRestrictions().isEmpty())
                     .toList());
-            if (!menu.getRestrictions().isEmpty()) {
-                return;
-            }
         }
 
         cleanupTranslations(menu);
@@ -60,7 +58,7 @@ public class MenuExporter extends BaseExporter {
 
         writeJsonFile(exportContext.getExportDir().resolve(menu.getId() + MENU_EXCHANGE_FILE_SUFFIX), menu);
 
-        // Export menu entries:
+        // Export (previously filtered) menu entries:
         Optional.ofNullable(menu.getMenuEntries()).orElse(List.of())
                 .forEach(menuEntry -> exportMenu(exportContext, menuEntry));
 
