@@ -34,9 +34,14 @@ public class ExchangeMainData {
     private TranslatableString title;
 
     /**
-     * The description of the content.
+     * A short description of the content.
      */
     private TranslatableString description;
+
+    /**
+     * A more detailed content description.
+     */
+    private TranslatableString content;
 
     /**
      * The type of the exchanged data.

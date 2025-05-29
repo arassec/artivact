@@ -83,7 +83,7 @@ public class ArtivactStandardExporter implements ArtivactExporter {
 
         prepareExport(exportContext);
 
-        exportMainData(exportContext, ContentSource.MENU, menu.getId(), collectionExport.getTitle(), collectionExport.getDescription());
+        exportMainData(exportContext, ContentSource.MENU, menu.getId(), collectionExport.getTitle(), collectionExport.getDescription(), collectionExport.getContent());
 
         propertiesExporter.exportPropertiesConfiguration(exportContext, propertiesConfiguration);
         tagsExporter.exportTagsConfiguration(exportContext, tagsConfiguration);
@@ -119,7 +119,7 @@ public class ArtivactStandardExporter implements ArtivactExporter {
 
         prepareExport(exportContext);
 
-        exportMainData(exportContext, ContentSource.MENU, menu.getId(), null, null);
+        exportMainData(exportContext, ContentSource.MENU, menu.getId(), null, null, null);
 
         menuExporter.exportMenu(exportContext, menu);
 
@@ -138,7 +138,7 @@ public class ArtivactStandardExporter implements ArtivactExporter {
 
         prepareExport(exportContext);
 
-        exportMainData(exportContext, ContentSource.ITEM, item.getId(), item.getTitle(), item.getDescription());
+        exportMainData(exportContext, ContentSource.ITEM, item.getId(), item.getTitle(), item.getDescription(), null);
 
         propertiesExporter.exportPropertiesConfiguration(exportContext, propertiesConfiguration);
         tagsExporter.exportTagsConfiguration(exportContext, tagsConfiguration);
@@ -218,7 +218,12 @@ public class ArtivactStandardExporter implements ArtivactExporter {
      * @param title          The export's title.
      * @param description    The export's description.
      */
-    private void exportMainData(ExportContext exportContext, ContentSource contentSource, String exportSourceId, TranslatableString title, TranslatableString description) {
+    private void exportMainData(ExportContext exportContext,
+                                ContentSource contentSource,
+                                String exportSourceId,
+                                TranslatableString title,
+                                TranslatableString description,
+                                TranslatableString content) {
         ExchangeMainData exchangeMainData = new ExchangeMainData();
         exchangeMainData.setContentSource(contentSource);
         exchangeMainData.setSourceId(exportSourceId);
@@ -226,6 +231,8 @@ public class ArtivactStandardExporter implements ArtivactExporter {
         exchangeMainData.getTitle().setTranslatedValue(null);
         exchangeMainData.setDescription(Optional.ofNullable(description).orElse(new TranslatableString()));
         exchangeMainData.getDescription().setTranslatedValue(null);
+        exchangeMainData.setContent(Optional.ofNullable(content).orElse(new TranslatableString()));
+        exchangeMainData.getContent().setTranslatedValue(null);
         exchangeMainData.setId(exportContext.getId());
         exchangeMainData.setExportConfiguration(exportContext.getExportConfiguration());
         exchangeMainData.setCoverPictureExtension(exportContext.getCoverPictureExtension());
