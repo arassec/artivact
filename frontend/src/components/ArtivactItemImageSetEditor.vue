@@ -339,7 +339,7 @@ function showImageDetails(imageSet: ImageSet) {
 
 function capturePhotos() {
   api
-    .post('/api/item/' + props.itemId + '/media-creation/capture-photos', capturePhotosParamsRef.value)
+    .post('/api/item/' + props.itemId + '/media-creation/capture-images', capturePhotosParamsRef.value)
     .then((response) => {
       if (response) {
         showCapturePhotosModalRef.value = false;

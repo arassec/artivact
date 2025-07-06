@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Backend (H2, E2E)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <module name="artivact-server" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.arassec.artivact.server.ArtivactServerApplication" />
+    <option name="VM_PARAMETERS" value="-Dartivact.initial.password=admin -Dspring.profiles.active=e2e" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

@@ -19,19 +19,67 @@
 
         <dependency>
             <groupId>com.arassec.artivact</groupId>
-            <artifactId>domain</artifactId>
+            <artifactId>application</artifactId>
             <version>${revision}</version>
         </dependency>
 
         <dependency>
-            <groupId>com.arassec.artivact</groupId>
-            <artifactId>persistence</artifactId>
+            <groupId>com.arassec.artivact.adapters</groupId>
+            <artifactId>in-web</artifactId>
             <version>${revision}</version>
         </dependency>
 
         <dependency>
-            <groupId>com.arassec.artivact</groupId>
-            <artifactId>web</artifactId>
+            <groupId>com.arassec.artivact.adapters</groupId>
+            <artifactId>out-artivact</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.arassec.artivact.adapters</groupId>
+            <artifactId>out-camera</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.arassec.artivact.adapters</groupId>
+            <artifactId>out-database</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.arassec.artivact.adapters</groupId>
+            <artifactId>out-filesystem</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.arassec.artivact.adapters</groupId>
+            <artifactId>out-image-manipulation</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.arassec.artivact.adapters</groupId>
+            <artifactId>out-model-creator</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.arassec.artivact.adapters</groupId>
+            <artifactId>out-model-editor</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.arassec.artivact.adapters</groupId>
+            <artifactId>out-search</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.arassec.artivact.adapters</groupId>
+            <artifactId>out-turntable</artifactId>
             <version>${revision}</version>
         </dependency>
 

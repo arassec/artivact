@@ -1,0 +1,28 @@
+package com.arassec.artivact.application.port.in.menu;
+
+import com.arassec.artivact.domain.model.exchange.ExportContext;
+import com.arassec.artivact.domain.model.menu.Menu;
+
+import java.nio.file.Path;
+
+public interface ExportMenuUseCase {
+
+    /**
+     * Exports a menu without items.
+     *
+     * @param menuId The ID of the menu to export.
+     * @return Path to the export file.
+     */
+    Path exportMenu(String menuId);
+
+    Path exportMenu(Menu menu);
+
+    /**
+     * Exports a menu.
+     *
+     * @param exportContext Context of the export.
+     * @param menu          The menu to export.
+     */
+    void exportMenu(ExportContext exportContext, Menu menu);
+
+}

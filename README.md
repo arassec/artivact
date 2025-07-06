@@ -5,7 +5,7 @@
 Artivact is an open source application to create virtual items and manage them in collections.
 
 It is written in Java using [Spring Boot](https://spring.io/projects/spring-boot) and provides an
-easy-to-use web-frontend based on the Quasar framework [Quasar](https://quasar.dev/).
+easy-to-use web-frontend based on the [Quasar](https://quasar.dev/) framework.
 
 ### On the Desktop
 

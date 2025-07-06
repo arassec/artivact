@@ -1,6 +1,6 @@
 package com.arassec.artivact.starter;
 
-import com.arassec.artivact.domain.service.ItemService;
+import com.arassec.artivact.application.service.item.ManageItemService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ class ArtivactAutoConfigurationTest {
      */
     @Test
     void testContextCreation() {
-        assertNotNull(context.getBean(ItemService.class));
+        assertNotNull(context.getBean(ManageItemService.class));
     }
 
 }

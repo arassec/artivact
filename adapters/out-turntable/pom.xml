@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.arassec.artivact.adapters</groupId>
+        <artifactId>adapters</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>out-turntable</artifactId>
+    <packaging>jar</packaging>
+
+    <name>out-turntable</name>
+    <description>Turntable adapter of the artivact application.</description>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>com.arassec.artivact</groupId>
+            <artifactId>application</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fazecast</groupId>
+            <artifactId>jSerialComm</artifactId>
+        </dependency>
+
+    </dependencies>
+
+</project>

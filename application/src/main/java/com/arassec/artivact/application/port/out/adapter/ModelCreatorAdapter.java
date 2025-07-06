@@ -1,0 +1,22 @@
+package com.arassec.artivact.application.port.out.adapter;
+
+import com.arassec.artivact.domain.model.adapter.PeripheralAdapter;
+import com.arassec.artivact.domain.model.adapter.ModelCreationResult;
+
+import java.nio.file.Path;
+import java.util.List;
+
+/**
+ * Adapter definition for 3D model creation.
+ */
+public interface ModelCreatorAdapter extends PeripheralAdapter {
+
+    /**
+     * Creates a 3D model using the adapter's underlying photogrammetry tool.
+     *
+     * @param images The image-sets to use as model input.
+     * @return The result of the model creation containing the path to the created files.
+     */
+    ModelCreationResult createModel(List<Path> images);
+
+}

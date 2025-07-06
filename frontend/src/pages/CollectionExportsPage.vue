@@ -43,7 +43,7 @@
                         field-name="file"
                         :multiple="false"
                         accept=".artivact.collection.zip"
-                        url="/api/collection/export/import"
+                        url="/api/import/collection"
                         @finish="pollOperationProgress()"
             />
           </div>
@@ -53,7 +53,7 @@
                         field-name="file"
                         :multiple="false"
                         accept=".artivact.collection.zip"
-                        url="/api/collection/export/import/for-distribution"
+                        url="/api/import/collection/for-distribution"
                         @finish="pollOperationProgress()"
             />
           </div>
@@ -306,7 +306,7 @@ function pollOperationProgress() {
 
 function updateOperationProgress(reloadMenus: boolean) {
   api
-    .get('/api/collection/export/progress')
+    .get('/api/import/collection/progress')
     .then((response) => {
       if (response.data) {
         progressMonitorRef.value = response.data;

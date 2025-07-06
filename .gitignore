@@ -53,5 +53,5 @@ node
 
 ### Artivact ###
 application*.log
-web/src/main/resources/static
+adapters/in-web/src/main/resources/static
 avdata/

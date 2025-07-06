@@ -1,0 +1,347 @@
+package com.arassec.artivact.application.service.configuration;
+
+import com.arassec.artivact.application.infrastructure.aspect.GenerateIds;
+import com.arassec.artivact.application.infrastructure.aspect.RestrictResult;
+import com.arassec.artivact.application.infrastructure.aspect.TranslateResult;
+import com.arassec.artivact.application.port.in.configuration.*;
+import com.arassec.artivact.application.port.out.repository.ConfigurationRepository;
+import com.arassec.artivact.application.port.out.repository.FileRepository;
+import com.arassec.artivact.domain.exception.ArtivactException;
+import com.arassec.artivact.domain.model.appearance.ColorTheme;
+import com.arassec.artivact.domain.model.appearance.License;
+import com.arassec.artivact.domain.model.configuration.*;
+import com.arassec.artivact.domain.model.property.PropertyCategory;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Base64;
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * Service for configuration management.
+ */
+@Slf4j
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class ConfigurationService
+        implements LoadPropertiesConfigurationUseCase,
+        SavePropertiesConfigurationUseCase,
+        LoadTagsConfigurationUseCase,
+        SaveTagsConfigurationUseCase,
+        LoadExchangeConfigurationUseCase,
+        LoadAppearanceConfigurationUseCase,
+        SaveAppearanceConfigurationUseCase,
+        LoadAdapterConfigurationUseCase,
+        SaveAdapterConfigurationUseCase,
+        SaveExchangeConfigurationUseCase,
+        CheckRuntimeConfigurationUseCase {
+
+    /**
+     * Repository to configurations.
+     */
+    private final ConfigurationRepository configurationRepository;
+
+    /**
+     * Spring's environment.
+     */
+    private final Environment environment;
+
+    /**
+     * The application's {@link FileRepository}.
+     */
+    @Getter
+    private final FileRepository fileRepository;
+
+    /**
+     * The application's object mapper.
+     */
+    @Getter
+    private final ObjectMapper objectMapper;
+
+    /**
+     * Loads the current property configuration.
+     *
+     * @return The properties currently configured.
+     */
+    @Override
+    public PropertiesConfiguration loadPropertiesConfiguration() {
+        Optional<PropertiesConfiguration> configurationOptional =
+                configurationRepository.findByType(ConfigurationType.PROPERTIES, PropertiesConfiguration.class);
+        return configurationOptional.orElseGet(PropertiesConfiguration::new);
+    }
+
+    /**
+     * Saves a property configuration.
+     *
+     * @param propertiesConfiguration The configuration to save.
+     */
+    @Override
+    @GenerateIds
+    public void savePropertiesConfiguration(PropertiesConfiguration propertiesConfiguration) {
+        configurationRepository.saveConfiguration(ConfigurationType.PROPERTIES, propertiesConfiguration);
+    }
+
+    /**
+     * Loads the translated properties within their categories.
+     *
+     * @return The current properties.
+     */
+    @Override
+    @TranslateResult
+    @RestrictResult
+    public List<PropertyCategory> loadTranslatedRestrictedProperties() {
+        PropertiesConfiguration propertiesConfiguration = loadPropertiesConfiguration();
+        return propertiesConfiguration.getCategories();
+    }
+
+    /**
+     * Returns whether the application is run in desktop-mode.
+     *
+     * @return {@code true} if the application is run in desktop-mode, {@code false} otherwise.
+     */
+    @Override
+    public boolean isDesktopProfileEnabled() {
+        return environment.matchesProfiles("desktop");
+    }
+
+    /**
+     * Returns whether the application is run in E2E-mode.
+     *
+     * @return {@code true} if the application is run in E2E-mode, {@code false} otherwise.
+     */
+    @Override
+    public boolean isE2eProfileEnabled() {
+        return environment.matchesProfiles("e2e");
+    }
+
+    /**
+     * Loads the current appearance configuration of the application.
+     *
+     * @return The current appearance configuration.
+     */
+    @Override
+    @TranslateResult
+    public AppearanceConfiguration loadTranslatedAppearanceConfiguration() {
+        Optional<AppearanceConfiguration> configurationOptional =
+                configurationRepository.findByType(ConfigurationType.APPEARANCE, AppearanceConfiguration.class);
+
+        AppearanceConfiguration appearanceConfiguration = new AppearanceConfiguration();
+
+        if (configurationOptional.isPresent()) {
+            appearanceConfiguration = configurationOptional.get();
+            if (!StringUtils.hasText(appearanceConfiguration.getEncodedFavicon())) {
+                setDefaultFavicon(appearanceConfiguration);
+            }
+            if (appearanceConfiguration.getLicense() == null) {
+                appearanceConfiguration.setLicense(new License());
+            }
+        } else {
+            appearanceConfiguration.setApplicationTitle("Artivact");
+            appearanceConfiguration.setAvailableLocales("");
+            appearanceConfiguration.setLicense(new License());
+
+            ColorTheme colorTheme = new ColorTheme();
+            colorTheme.setPrimary("#6e7e85");
+            colorTheme.setSecondary("#bbbac6");
+            colorTheme.setAccent("#F5F5F5");
+            colorTheme.setDark("#364958");
+            colorTheme.setPositive("#87a330");
+            colorTheme.setNegative("#a4031f");
+            colorTheme.setInfo("#e2e2e2");
+            colorTheme.setWarning("#e6c229");
+            appearanceConfiguration.setColorTheme(colorTheme);
+
+            setDefaultFavicon(appearanceConfiguration);
+        }
+
+        return appearanceConfiguration;
+    }
+
+    /**
+     * Saves an appearance configuration.
+     *
+     * @param appearanceConfiguration The configuration to save.
+     */
+    @Override
+    public void saveAppearanceConfiguration(AppearanceConfiguration appearanceConfiguration) {
+        configurationRepository.saveConfiguration(ConfigurationType.APPEARANCE, appearanceConfiguration);
+    }
+
+    /**
+     * Loads the current tag configuration.
+     *
+     * @return The current tag configuration.
+     */
+    @Override
+    public TagsConfiguration loadTagsConfiguration() {
+        Optional<TagsConfiguration> configurationOptional =
+                configurationRepository.findByType(ConfigurationType.TAGS, TagsConfiguration.class);
+        return configurationOptional.orElseGet(TagsConfiguration::new);
+    }
+
+    /**
+     * Loads the current tag configuration, restricted and translated.
+     *
+     * @return The current tag configuration.
+     */
+    @RestrictResult
+    @TranslateResult
+    @Override
+    public TagsConfiguration loadTranslatedRestrictedTagsConfiguration() {
+        return loadTagsConfiguration();
+    }
+
+    /**
+     * Saves a tag configuration.
+     *
+     * @param tagsConfiguration The configuration to save.
+     */
+    @GenerateIds
+    @Override
+    public void saveTagsConfiguration(TagsConfiguration tagsConfiguration) {
+        configurationRepository.saveConfiguration(ConfigurationType.TAGS, tagsConfiguration);
+    }
+
+    /**
+     * Loads the current adapter configuration.
+     *
+     * @return The current adapter configuration.
+     */
+    @Override
+    public AdapterConfiguration loadAdapterConfiguration() {
+        Optional<AdapterConfiguration> configurationOptional =
+                configurationRepository.findByType(ConfigurationType.ADAPTER, AdapterConfiguration.class);
+
+        AdapterConfiguration adapterConfiguration = configurationOptional.orElseGet(AdapterConfiguration::new);
+
+        boolean windowsOs = System.getProperty("os.name").toLowerCase().contains("windows");
+
+        // Initialize default values on first creation:
+        if (adapterConfiguration.getImageManipulationAdapterImplementation() == null) {
+            adapterConfiguration.setImageManipulationAdapterImplementation(AdapterImplementation.DEFAULT_BACKGROUND_REMOVAL_ADAPTER);
+            adapterConfiguration.setCameraAdapterImplementation(AdapterImplementation.FALLBACK_CAMERA_ADAPTER);
+            adapterConfiguration.setTurntableAdapterImplementation(AdapterImplementation.FALLBACK_TURNTABLE_ADAPTER);
+            adapterConfiguration.setModelCreatorImplementation(AdapterImplementation.FALLBACK_MODEL_CREATOR_ADAPTER);
+            adapterConfiguration.setModelEditorImplementation(AdapterImplementation.FALLBACK_MODEL_EDITOR_ADAPTER);
+
+            adapterConfiguration.getConfigValues().put(AdapterImplementation.FALLBACK_TURNTABLE_ADAPTER, "1000");
+            adapterConfiguration.getConfigValues().put(AdapterImplementation.ARTIVACT_TURNTABLE_ADAPTER, "50");
+
+            adapterConfiguration.getConfigValues().put(AdapterImplementation.DEFAULT_BACKGROUND_REMOVAL_ADAPTER, "silueta.onnx#input.1#320#320#5");
+
+            adapterConfiguration.getConfigValues().put(AdapterImplementation.FALLBACK_CAMERA_ADAPTER, "");
+            adapterConfiguration.getConfigValues().put(AdapterImplementation.DIGI_CAM_CONTROL_CAMERA_ADAPTER, "C:/Program Files (x86)/digiCamControl/CameraControlCmd.exe");
+            adapterConfiguration.getConfigValues().put(AdapterImplementation.DIGI_CAM_CONTROL_REMOTE_CAMERA_ADAPTER, "http://localhost:5513/");
+            adapterConfiguration.getConfigValues().put(AdapterImplementation.GPHOTO_TWO_CAMERA_ADAPTER, "/usr/bin/gphoto2");
+
+            adapterConfiguration.getConfigValues().put(AdapterImplementation.FALLBACK_MODEL_CREATOR_ADAPTER, "");
+            adapterConfiguration.getConfigValues().put(AdapterImplementation.FALLBACK_MODEL_EDITOR_ADAPTER, "");
+
+            if (windowsOs) {
+                adapterConfiguration.getConfigValues().put(AdapterImplementation.MESHROOM_MODEL_CREATOR_ADAPTER, "C:/Users/<USER>/Tools/Meshroom/Meshroom.exe");
+                adapterConfiguration.getConfigValues().put(AdapterImplementation.METASHAPE_MODEL_CREATOR_ADAPTER, "C:/Program Files/Agisoft/Metashape/metashape.exe");
+                adapterConfiguration.getConfigValues().put(AdapterImplementation.REALITY_CAPTURE_MODEL_CREATOR_ADAPTER, "C:/Program Files/Capturing Reality/RealityCapture/RealityCapture.exe");
+
+                adapterConfiguration.getConfigValues().put(AdapterImplementation.BLENDER_MODEL_EDITOR_ADAPTER, "C:/Users/<USER>/Tools/Blender/blender.exe");
+            } else {
+                adapterConfiguration.getConfigValues().put(AdapterImplementation.MESHROOM_MODEL_CREATOR_ADAPTER, "~/tools/meshroom/Meshroom");
+                adapterConfiguration.getConfigValues().put(AdapterImplementation.METASHAPE_MODEL_CREATOR_ADAPTER, "~/tools/metashape/metashape.sh");
+
+                adapterConfiguration.getConfigValues().put(AdapterImplementation.BLENDER_MODEL_EDITOR_ADAPTER, "~/tools/blender/blender");
+            }
+        } else if (windowsOs && adapterConfiguration.getConfigValues().get(AdapterImplementation.REALITY_CAPTURE_MODEL_CREATOR_ADAPTER) == null) {
+            adapterConfiguration.getConfigValues().put(AdapterImplementation.REALITY_CAPTURE_MODEL_CREATOR_ADAPTER, "C:/Program Files/Capturing Reality/RealityCapture/RealityCapture.exe");
+        }
+
+        // Initialize available options for the current platform:
+        adapterConfiguration.getAvailableTurntableAdapterImplementations().add(AdapterImplementation.FALLBACK_TURNTABLE_ADAPTER);
+        adapterConfiguration.getAvailableTurntableAdapterImplementations().add(AdapterImplementation.ARTIVACT_TURNTABLE_ADAPTER);
+
+        adapterConfiguration.getAvailableImageManipulationAdapterImplementations().add(AdapterImplementation.DEFAULT_BACKGROUND_REMOVAL_ADAPTER);
+
+        adapterConfiguration.getAvailableModelCreatorAdapterImplementations().add(AdapterImplementation.FALLBACK_MODEL_CREATOR_ADAPTER);
+        adapterConfiguration.getAvailableModelCreatorAdapterImplementations().add(AdapterImplementation.MESHROOM_MODEL_CREATOR_ADAPTER);
+        adapterConfiguration.getAvailableModelCreatorAdapterImplementations().add(AdapterImplementation.METASHAPE_MODEL_CREATOR_ADAPTER);
+        if (windowsOs) {
+            adapterConfiguration.getAvailableModelCreatorAdapterImplementations().add(AdapterImplementation.REALITY_CAPTURE_MODEL_CREATOR_ADAPTER);
+        }
+
+        adapterConfiguration.getAvailableModelEditorAdapterImplementations().add(AdapterImplementation.FALLBACK_MODEL_EDITOR_ADAPTER);
+        adapterConfiguration.getAvailableModelEditorAdapterImplementations().add(AdapterImplementation.BLENDER_MODEL_EDITOR_ADAPTER);
+
+        adapterConfiguration.getAvailableCameraAdapterImplementations().add(AdapterImplementation.FALLBACK_CAMERA_ADAPTER);
+
+        if (windowsOs) {
+            adapterConfiguration.getAvailableCameraAdapterImplementations().add(AdapterImplementation.DIGI_CAM_CONTROL_CAMERA_ADAPTER);
+            adapterConfiguration.getAvailableCameraAdapterImplementations().add(AdapterImplementation.DIGI_CAM_CONTROL_REMOTE_CAMERA_ADAPTER);
+        } else {
+            adapterConfiguration.getAvailableCameraAdapterImplementations().add(AdapterImplementation.GPHOTO_TWO_CAMERA_ADAPTER);
+        }
+
+        return adapterConfiguration;
+    }
+
+    /**
+     * Saves an adapter configuration.
+     *
+     * @param adapterConfiguration The configuration to save.
+     */
+    @Override
+    public void saveAdapterConfiguration(AdapterConfiguration adapterConfiguration) {
+        // Available options are computed when loading and must not be saved:
+        adapterConfiguration.setAvailableImageManipulationAdapterImplementations(List.of());
+        adapterConfiguration.setAvailableCameraAdapterImplementations(List.of());
+        adapterConfiguration.setAvailableTurntableAdapterImplementations(List.of());
+        adapterConfiguration.setAvailableModelCreatorAdapterImplementations(List.of());
+        adapterConfiguration.setAvailableModelEditorAdapterImplementations(List.of());
+        configurationRepository.saveConfiguration(ConfigurationType.ADAPTER, adapterConfiguration);
+    }
+
+    /**
+     * Loads the current exchange configuration.
+     *
+     * @return The current exchange configuration.
+     */
+    @Override
+    public ExchangeConfiguration loadExchangeConfiguration() {
+        Optional<ExchangeConfiguration> configurationOptional =
+                configurationRepository.findByType(ConfigurationType.EXCHANGE, ExchangeConfiguration.class);
+        return configurationOptional.orElseGet(ExchangeConfiguration::new);
+    }
+
+    /**
+     * Saves an exchange configuration.
+     *
+     * @param exchangeConfiguration The configuration to save.
+     */
+    @Override
+    public void saveExchangeConfiguration(ExchangeConfiguration exchangeConfiguration) {
+        configurationRepository.saveConfiguration(ConfigurationType.EXCHANGE, exchangeConfiguration);
+    }
+
+    /**
+     * Sets Artivact's default favicon to the appearance configuration.
+     *
+     * @param appearanceConfiguration The configuration to update.
+     */
+    private void setDefaultFavicon(AppearanceConfiguration appearanceConfiguration) {
+        ClassPathResource classPathResource = new ClassPathResource("icons/favicon-32x32.ico", this.getClass().getClassLoader());
+        try (InputStream is = classPathResource.getInputStream()) {
+            appearanceConfiguration.setEncodedFavicon(Base64.getEncoder().encodeToString(is.readAllBytes()));
+        } catch (IOException e) {
+            throw new ArtivactException("Could not read 32x32 pixel favicon!", e);
+        }
+    }
+
+}
