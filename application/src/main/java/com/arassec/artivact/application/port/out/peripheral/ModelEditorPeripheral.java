@@ -1,4 +1,4 @@
-package com.arassec.artivact.application.port.out.adapter;
+package com.arassec.artivact.application.port.out.peripheral;
 
 import com.arassec.artivact.domain.model.adapter.PeripheralAdapter;
 import com.arassec.artivact.domain.model.item.CreationModelSet;
@@ -6,7 +6,7 @@ import com.arassec.artivact.domain.model.item.CreationModelSet;
 /**
  * Adapter definition for model editors.
  */
-public interface ModelEditorAdapter extends PeripheralAdapter {
+public interface ModelEditorPeripheral extends PeripheralAdapter {
 
     /**
      * Opens the 3D model in the adapter's underlying tool.

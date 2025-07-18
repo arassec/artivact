@@ -6,7 +6,7 @@ import ai.onnxruntime.OrtException;
 import ai.onnxruntime.OrtSession;
 import com.arassec.artivact.adapter.out.image.manipulation.onnx.OnnxBackgroundRemover;
 import com.arassec.artivact.adapter.out.image.manipulation.onnx.OnnxBackgroundRemoverParams;
-import com.arassec.artivact.application.port.out.adapter.ImageManipulationAdapter;
+import com.arassec.artivact.application.port.out.peripheral.ImageManipulationPeripheral;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.adapter.PeripheralAdapterInitParams;
 import com.arassec.artivact.domain.model.adapter.BasePeripheralAdapter;
@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Getter
 @Component
-public class DefaultImageManipulationAdapter extends BasePeripheralAdapter implements ImageManipulationAdapter {
+public class DefaultImageManipulationAdapter extends BasePeripheralAdapter implements ImageManipulationPeripheral {
 
     /**
      * An executor service to remove backgrounds multithreaded.

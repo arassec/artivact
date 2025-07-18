@@ -1,6 +1,6 @@
 package com.arassec.artivact.adapter.out.model.editor;
 
-import com.arassec.artivact.application.port.out.adapter.ModelEditorAdapter;
+import com.arassec.artivact.application.port.out.peripheral.ModelEditorPeripheral;
 import com.arassec.artivact.domain.model.adapter.BasePeripheralAdapter;
 import com.arassec.artivact.domain.model.configuration.AdapterImplementation;
 import com.arassec.artivact.domain.model.item.CreationModelSet;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Getter
 @RequiredArgsConstructor
-public class FallbackModelEditorAdapter extends BasePeripheralAdapter implements ModelEditorAdapter {
+public class FallbackModelEditorAdapter extends BasePeripheralAdapter implements ModelEditorPeripheral {
 
     /**
      * {@inheritDoc}

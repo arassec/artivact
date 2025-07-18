@@ -5,7 +5,7 @@ import com.arassec.artivact.application.port.in.item.LoadItemUseCase;
 import com.arassec.artivact.application.port.in.item.EditItemModelUseCase;
 import com.arassec.artivact.application.port.in.operation.RunBackgroundOperationUseCase;
 import com.arassec.artivact.application.port.in.UseProjectDirsUseCase;
-import com.arassec.artivact.application.port.out.adapter.ModelEditorAdapter;
+import com.arassec.artivact.application.port.out.peripheral.ModelEditorPeripheral;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.adapter.PeripheralAdapter;
 import com.arassec.artivact.domain.model.adapter.PeripheralAdapterInitParams;
@@ -46,7 +46,7 @@ public class EditItemModelService implements EditItemModelUseCase {
      */
     @Override
     public synchronized void editModel(String itemId, int modelSetIndex) {
-        runBackgroundOperationUseCase.execute(getClass(), "editModelStart", progressMonitor -> {
+        runBackgroundOperationUseCase.execute("editModel", "start", progressMonitor -> {
             Item item = loadItemUseCase.loadTranslated(itemId);
             CreationModelSet creationModelSet = item.getMediaCreationContent().getModelSets().get(modelSetIndex);
             editModel(progressMonitor, creationModelSet);
@@ -62,9 +62,9 @@ public class EditItemModelService implements EditItemModelUseCase {
     private void editModel(ProgressMonitor progressMonitor, CreationModelSet creationModel) {
         AdapterConfiguration adapterConfiguration = loadAdapterConfigurationUseCase.loadAdapterConfiguration();
 
-        ModelEditorAdapter modelEditorAdapter = peripheralAdapters.stream()
-                .filter(ModelEditorAdapter.class::isInstance)
-                .map(ModelEditorAdapter.class::cast)
+        ModelEditorPeripheral modelEditorAdapter = peripheralAdapters.stream()
+                .filter(ModelEditorPeripheral.class::isInstance)
+                .map(ModelEditorPeripheral.class::cast)
                 .filter(adapter -> adapter.supports(adapterConfiguration.getModelEditorImplementation()))
                 .findAny()
                 .orElseThrow(() -> new ArtivactException("Could not detect selected model-editor adapter!"));

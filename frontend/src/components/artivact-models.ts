@@ -168,8 +168,8 @@ export enum AdapterImplementation {
 }
 
 export interface AdapterConfiguration {
-  backgroundRemovalAdapterImplementation: AdapterImplementation;
-  availableBackgroundRemovalAdapterImplementations: AdapterImplementation[];
+  imageManipulationAdapterImplementation: AdapterImplementation;
+  availableImageManipulationAdapterImplementations: AdapterImplementation[];
   cameraAdapterImplementation: AdapterImplementation;
   availableCameraAdapterImplementations: AdapterImplementation[];
   turntableAdapterImplementation: AdapterImplementation;

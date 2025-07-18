@@ -80,6 +80,7 @@ public abstract class BaseController {
         return ResponseEntity.ok().build();
     }
 
+    // TODO: Replace "Files" with "FileRepository"!
     protected Path convertToPath(MultipartFile multipartFile) {
         String originalFilename = multipartFile.getOriginalFilename();
         String suffix = originalFilename != null && originalFilename.contains(".")

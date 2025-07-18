@@ -13,9 +13,9 @@ public class ProgressMonitor {
     private static final String LABEL_KEY_PREFIX = "Progress";
 
     /**
-     * The class providing this monitor instance.
+     * The topic of the operation.
      */
-    private final Class<?> clazz;
+    private final String topic;
 
     /**
      * The progress label to show.
@@ -44,12 +44,12 @@ public class ProgressMonitor {
     /**
      * Creates a new instance.
      *
-     * @param clazz          The class maintaining this monitor.
-     * @param labelKeySuffix The key suffix for the label to display.
+     * @param topic The topic of the operation.
+     * @param step  The current step of the operation.
      */
-    public ProgressMonitor(Class<?> clazz, String labelKeySuffix) {
-        this.clazz = clazz;
-        updateLabelKey(labelKeySuffix);
+    public ProgressMonitor(String topic, String step) {
+        this.topic = topic;
+        updateLabelKey(step);
     }
 
     /**
@@ -75,21 +75,21 @@ public class ProgressMonitor {
     /**
      * Updates the progress string.
      *
-     * @param labelKeySuffix The key suffix for the label to display.
-     * @param exception      An exception that occurred during processing.
+     * @param step      The current step of the operation.
+     * @param exception An exception that occurred during processing.
      */
-    public void updateProgress(String labelKeySuffix, Exception exception) {
-        updateLabelKey(labelKeySuffix);
+    public void updateProgress(String step, Exception exception) {
+        updateLabelKey(step);
         this.exception = exception;
     }
 
     /**
      * Updates the label key.
      *
-     * @param labelKeySuffix The key suffix for the label to display.
+     * @param step The current step of the operation.
      */
-    public void updateLabelKey(String labelKeySuffix) {
-        this.labelKey = LABEL_KEY_PREFIX + "." + clazz.getSimpleName() + "." + labelKeySuffix;
+    public void updateLabelKey(String step) {
+        this.labelKey = LABEL_KEY_PREFIX + "." + topic + "." + step;
     }
 
 }

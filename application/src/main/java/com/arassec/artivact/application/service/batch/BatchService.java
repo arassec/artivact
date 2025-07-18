@@ -1,4 +1,4 @@
-package com.arassec.artivact.application.service;
+package com.arassec.artivact.application.service.batch;
 
 import com.arassec.artivact.application.port.in.batch.StartBatchOperationUseCase;
 import com.arassec.artivact.application.port.in.item.LoadItemUseCase;
@@ -58,7 +58,7 @@ public class BatchService implements StartBatchOperationUseCase {
             return;
         }
 
-        runBackgroundOperationUseCase.execute(getClass(), "process", progressMonitor -> {
+        runBackgroundOperationUseCase.execute("batch", "process", progressMonitor -> {
             log.info("Starting batch processing of items: {}", parameters.getTask());
             batchProcessors.forEach(BatchProcessor::initialize);
 

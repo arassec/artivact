@@ -6,9 +6,9 @@ import com.arassec.artivact.application.port.in.item.LoadItemUseCase;
 import com.arassec.artivact.application.port.in.item.SaveItemUseCase;
 import com.arassec.artivact.application.port.in.operation.RunBackgroundOperationUseCase;
 import com.arassec.artivact.application.port.in.UseProjectDirsUseCase;
-import com.arassec.artivact.application.port.out.adapter.CameraAdapter;
-import com.arassec.artivact.application.port.out.adapter.ImageManipulationAdapter;
-import com.arassec.artivact.application.port.out.adapter.TurntableAdapter;
+import com.arassec.artivact.application.port.out.peripheral.CameraPeripheral;
+import com.arassec.artivact.application.port.out.peripheral.ImageManipulationPeripheral;
+import com.arassec.artivact.application.port.out.peripheral.TurntablePeripheral;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.application.service.item.util.DirectoryWatcher;
 import com.arassec.artivact.domain.exception.ArtivactException;
@@ -71,7 +71,7 @@ public class CaptureItemImagesService implements CaptureItemImagesUseCase {
      */
     @Override
     public synchronized void capture(String itemId, CaptureImagesParams captureImagesParams) {
-        runBackgroundOperationUseCase.execute(getClass(), "captureStart", progressMonitor -> {
+        runBackgroundOperationUseCase.execute("captureImages", "start", progressMonitor -> {
             List<CreationImageSet> creationImageSets = captureImages(itemId, captureImagesParams, progressMonitor);
 
             Item item = loadItemUseCase.loadTranslated(itemId);
@@ -102,20 +102,20 @@ public class CaptureItemImagesService implements CaptureItemImagesUseCase {
         boolean removeBackgrounds = captureImagesParams.isRemoveBackgrounds();
         int numPhotos = captureImagesParams.getNumPhotos();
 
-        TurntableAdapter turntableAdapter = getPeripheralAdapter(adapterConfiguration.getTurntableAdapterImplementation(), TurntableAdapter.class);
+        TurntablePeripheral turntableAdapter = getPeripheralAdapter(adapterConfiguration.getTurntableAdapterImplementation(), TurntablePeripheral.class);
         if (useTurnTable) {
             log.debug("Initializing turntable adapter for image capturing: {}", turntableAdapter.getSupportedImplementation());
             turntableAdapter.initialize(progressMonitor, PeripheralAdapterInitParams.builder().build());
         }
 
-        CameraAdapter cameraAdapter = getPeripheralAdapter(adapterConfiguration.getCameraAdapterImplementation(), CameraAdapter.class);
+        CameraPeripheral cameraAdapter = getPeripheralAdapter(adapterConfiguration.getCameraAdapterImplementation(), CameraPeripheral.class);
         log.debug("Initializing camera adapter for image capturing: {}", cameraAdapter.getSupportedImplementation());
         cameraAdapter.initialize(progressMonitor, PeripheralAdapterInitParams.builder()
                 .adapterConfiguration(adapterConfiguration)
                 .workDir(targetDir)
                 .build());
 
-        ImageManipulationAdapter imageManipulationAdapter = getPeripheralAdapter(adapterConfiguration.getImageManipulationAdapterImplementation(), ImageManipulationAdapter.class);
+        ImageManipulationPeripheral imageManipulationAdapter = getPeripheralAdapter(adapterConfiguration.getImageManipulationAdapterImplementation(), ImageManipulationPeripheral.class);
         log.debug("Initializing iamge-manipulation adapter for image capturing: {}", imageManipulationAdapter.getSupportedImplementation());
         imageManipulationAdapter.initialize(progressMonitor, PeripheralAdapterInitParams.builder()
                 .projectRoot(useProjectDirsUseCase.getProjectRoot())
@@ -130,7 +130,7 @@ public class CaptureItemImagesService implements CaptureItemImagesUseCase {
         directoryWatcher.startWatching(targetDir, numPhotos,
                 newImage -> processNewImage(removeBackgrounds, imageManipulationAdapter, newImage, capturedImages));
 
-        progressMonitor.updateLabelKey("captureInProgress");
+        progressMonitor.updateLabelKey("inProgress");
 
         // Start capturing:
         for (var i = 0; i < numPhotos; i++) {
@@ -178,7 +178,7 @@ public class CaptureItemImagesService implements CaptureItemImagesUseCase {
      *
      * @param adapterImplementation The peripheral adapter implementation to use.
      * @param clazz                 The peripheral adapter implementing class.
-     * @return The configured {@link TurntableAdapter}.
+     * @return The configured {@link TurntablePeripheral}.
      */
     private <T extends PeripheralAdapter> T getPeripheralAdapter(AdapterImplementation adapterImplementation, Class<T> clazz) {
         return peripheralAdapters.stream()
@@ -197,7 +197,7 @@ public class CaptureItemImagesService implements CaptureItemImagesUseCase {
      * @param createdFile              The newly found file.
      * @param capturedImages           Target list where newly processed images will be stored in.
      */
-    private void processNewImage(boolean removeBackgrounds, ImageManipulationAdapter imageManipulationAdapter,
+    private void processNewImage(boolean removeBackgrounds, ImageManipulationPeripheral imageManipulationAdapter,
                                  Path createdFile, List<Path> capturedImages) {
         String filename = createdFile.toString().toLowerCase();
         // Check filetype and if ready for processing. The image might not be completely written by the camera adapter!

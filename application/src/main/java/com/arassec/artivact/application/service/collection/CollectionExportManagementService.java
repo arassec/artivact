@@ -3,12 +3,14 @@ package com.arassec.artivact.application.service.collection;
 import com.arassec.artivact.application.infrastructure.aspect.GenerateIds;
 import com.arassec.artivact.application.infrastructure.aspect.RestrictResult;
 import com.arassec.artivact.application.infrastructure.aspect.TranslateResult;
-import com.arassec.artivact.application.port.in.collection.*;
 import com.arassec.artivact.application.port.in.UseProjectDirsUseCase;
+import com.arassec.artivact.application.port.in.collection.*;
+import com.arassec.artivact.application.port.in.configuration.LoadPropertiesConfigurationUseCase;
+import com.arassec.artivact.application.port.in.configuration.LoadTagsConfigurationUseCase;
+import com.arassec.artivact.application.port.in.menu.LoadMenuUseCase;
+import com.arassec.artivact.application.port.in.operation.RunBackgroundOperationUseCase;
 import com.arassec.artivact.application.port.out.repository.CollectionExportRepository;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
-import com.arassec.artivact.application.service.configuration.ConfigurationService;
-import com.arassec.artivact.application.service.menu.MenuService;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.TranslatableString;
 import com.arassec.artivact.domain.model.exchange.CollectionExport;
@@ -16,7 +18,6 @@ import com.arassec.artivact.domain.model.exchange.CollectionExportInfo;
 import com.arassec.artivact.domain.model.item.ImageSize;
 import com.arassec.artivact.domain.model.misc.DirectoryDefinitions;
 import com.arassec.artivact.domain.model.misc.ExchangeDefinitions;
-import com.arassec.artivact.domain.model.misc.ProgressMonitor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.Getter;
@@ -29,8 +30,6 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -66,15 +65,11 @@ public class CollectionExportManagementService
      */
     private final CollectionExportRepository collectionExportRepository;
 
-    /**
-     * The configuration service.
-     */
-    private final ConfigurationService configurationService;
+    private final LoadTagsConfigurationUseCase loadTagsConfigurationUseCase;
 
-    /**
-     * The menu service.
-     */
-    private final MenuService menuService;
+    private final LoadPropertiesConfigurationUseCase loadPropertiesConfigurationUseCase;
+
+    private final LoadMenuUseCase loadMenuUseCase;
 
     /**
      * The application's standard {@link ObjectMapper}.
@@ -83,18 +78,9 @@ public class CollectionExportManagementService
 
     private final ExportCollectionUseCase exportCollectionUseCase;
 
-    private final UseProjectDirsUseCase getProjectRootUseCase;
+    private final UseProjectDirsUseCase useProjectDirsUseCase;
 
-    /**
-     * The service's progress monitor for long-running tasks.
-     */
-    @Getter
-    private ProgressMonitor progressMonitor;
-
-    /**
-     * Executor service for background tasks.
-     */
-    private final ExecutorService executorService = Executors.newFixedThreadPool(1);
+    private final RunBackgroundOperationUseCase runBackgroundOperationUseCase;
 
     /**
      * Returns all collection exports available to the current user.
@@ -204,26 +190,15 @@ public class CollectionExportManagementService
     @GenerateIds
     @Override
     public synchronized void buildExportFile(String id) {
-        if (progressMonitor != null && progressMonitor.getException() == null) {
-            return;
-        }
+        runBackgroundOperationUseCase.execute("collectionExport", "export", progressMonitor -> {
+            CollectionExport collectionExport = collectionExportRepository.findById(id).orElseThrow();
+            Path exportedFile = exportCollectionUseCase.exportCollection(collectionExport,
+                    loadMenuUseCase.loadMenu(collectionExport.getSourceId()),
+                    loadPropertiesConfigurationUseCase.loadPropertiesConfiguration(),
+                    loadTagsConfigurationUseCase.loadTagsConfiguration());
+            log.info("Build export: {}", exportedFile);
 
-        progressMonitor = new ProgressMonitor(getClass(), "buildCollectionExport");
-
-        executorService.submit(() -> {
-            try {
-                CollectionExport collectionExport = collectionExportRepository.findById(id).orElseThrow();
-                Path exportedFile = exportCollectionUseCase.exportCollection(collectionExport, menuService.loadMenu(collectionExport.getSourceId()),
-                        configurationService.loadPropertiesConfiguration(), configurationService.loadTagsConfiguration());
-                log.info("Build export: {}", exportedFile);
-
-                collectionExportRepository.save(collectionExport);
-
-                progressMonitor = null;
-            } catch (Exception e) {
-                progressMonitor.updateProgress("buildCollectionExportFailed", e);
-                log.error("Error during collection export!", e);
-            }
+            collectionExportRepository.save(collectionExport);
         });
     }
 
@@ -240,7 +215,7 @@ public class CollectionExportManagementService
 
         CollectionExport collectionExport = collectionExportRepository.findById(id).orElseThrow();
 
-        Path targetDir = getProjectRootUseCase.getProjectRoot().resolve(DirectoryDefinitions.EXPORT_DIR);
+        Path targetDir = useProjectDirsUseCase.getProjectRoot().resolve(DirectoryDefinitions.EXPORT_DIR);
         fileRepository.createDirIfRequired(targetDir);
 
         Path coverPicture = targetDir.resolve(id + "." + fileExtension);
@@ -263,7 +238,7 @@ public class CollectionExportManagementService
             throw new ArtivactException("No cover picture available for collection export: " + id);
         }
 
-        Path coverPicture = getProjectRootUseCase.getProjectRoot().resolve(DirectoryDefinitions.EXPORT_DIR)
+        Path coverPicture = useProjectDirsUseCase.getProjectRoot().resolve(DirectoryDefinitions.EXPORT_DIR)
                 .resolve(id + "." + collectionExport.getCoverPictureExtension());
 
         try {
@@ -282,7 +257,7 @@ public class CollectionExportManagementService
     public void deleteCoverPicture(String id) {
         CollectionExport collectionExport = collectionExportRepository.findById(id).orElseThrow();
         if (StringUtils.hasText(collectionExport.getCoverPictureExtension())) {
-            Path coverPicture = getProjectRootUseCase.getProjectRoot().resolve(DirectoryDefinitions.EXPORT_DIR)
+            Path coverPicture = useProjectDirsUseCase.getProjectRoot().resolve(DirectoryDefinitions.EXPORT_DIR)
                     .resolve(id + "." + collectionExport.getCoverPictureExtension());
             if (fileRepository.exists(coverPicture)) {
                 fileRepository.delete(coverPicture);
@@ -319,7 +294,7 @@ public class CollectionExportManagementService
             zipOutputStream.putNextEntry(zipEntry);
             zipOutputStream.write(objectMapper.writeValueAsBytes(collectionExportInfos));
 
-            Path exportsDir = getProjectRootUseCase.getProjectRoot().resolve(DirectoryDefinitions.EXPORT_DIR);
+            Path exportsDir = useProjectDirsUseCase.getProjectRoot().resolve(DirectoryDefinitions.EXPORT_DIR);
             getFileRepository().list(exportsDir).stream()
                     .filter(path -> !path.getFileName().toString().endsWith("zip"))
                     .filter(path -> !fileRepository.isDir(path))
@@ -353,7 +328,7 @@ public class CollectionExportManagementService
      * @return Path to the export file.
      */
     private Path getExportFile(String id) {
-        return getProjectRootUseCase.getProjectRoot().resolve(DirectoryDefinitions.EXPORT_DIR)
+        return useProjectDirsUseCase.getProjectRoot().resolve(DirectoryDefinitions.EXPORT_DIR)
                 .resolve(id + COLLECTION_EXCHANGE_SUFFIX + ZIP_FILE_SUFFIX);
     }
 

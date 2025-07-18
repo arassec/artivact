@@ -6,7 +6,7 @@ import com.arassec.artivact.application.port.in.item.SaveItemUseCase;
 import com.arassec.artivact.application.port.in.item.CreateItemModelUseCase;
 import com.arassec.artivact.application.port.in.operation.RunBackgroundOperationUseCase;
 import com.arassec.artivact.application.port.in.UseProjectDirsUseCase;
-import com.arassec.artivact.application.port.out.adapter.ModelCreatorAdapter;
+import com.arassec.artivact.application.port.out.peripheral.ModelCreatorPeripheral;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.adapter.ModelCreationResult;
@@ -61,7 +61,7 @@ public class CreateItemModelService implements CreateItemModelUseCase {
      */
     @Override
     public synchronized void createModel(String itemId) {
-        runBackgroundOperationUseCase.execute(getClass(), "createModelStart", progressMonitor -> {
+        runBackgroundOperationUseCase.execute("createModel", "start", progressMonitor -> {
             Item item = loadItemUseCase.loadTranslated(itemId);
 
             List<CreationImageSet> modelInputImageSets = item.getMediaCreationContent().getImageSets().stream()
@@ -87,9 +87,9 @@ public class CreateItemModelService implements CreateItemModelUseCase {
     private Optional<CreationModelSet> createModel(String itemId, List<CreationImageSet> creationImageSets, ProgressMonitor progressMonitor) {
         AdapterConfiguration adapterConfiguration = loadAdapterConfigurationUseCase.loadAdapterConfiguration();
 
-        ModelCreatorAdapter modelCreatorAdapter = adapters.stream()
-                .filter(ModelCreatorAdapter.class::isInstance)
-                .map(ModelCreatorAdapter.class::cast)
+        ModelCreatorPeripheral modelCreatorAdapter = adapters.stream()
+                .filter(ModelCreatorPeripheral.class::isInstance)
+                .map(ModelCreatorPeripheral.class::cast)
                 .filter(adapter -> adapter.supports(adapterConfiguration.getModelCreatorImplementation()))
                 .findAny()
                 .orElseThrow(() -> new ArtivactException("Could not detect selected model-creator adapter!"));

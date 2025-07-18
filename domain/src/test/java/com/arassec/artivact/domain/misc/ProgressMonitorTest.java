@@ -16,7 +16,7 @@ class ProgressMonitorTest {
      */
     @Test
     void testUpdateProgress() {
-        ProgressMonitor progressMonitor = new ProgressMonitor(ProgressMonitorTest.class, "suffix");
+        ProgressMonitor progressMonitor = new ProgressMonitor("topic", "step");
         assertThat(progressMonitor.getTargetAmount()).isZero();
         assertThat(progressMonitor.getCurrentAmount()).isZero();
         assertThat(progressMonitor.getException()).isNull();
@@ -29,7 +29,7 @@ class ProgressMonitorTest {
         progressMonitor.updateProgress("error", new ArtivactException("test-exception"));
         assertThat(progressMonitor.getException()).isNotNull();
         assertThat(progressMonitor.getException().getMessage()).isEqualTo("test-exception");
-        assertThat(progressMonitor.getLabelKey()).isEqualTo("Progress.ProgressMonitorTest.error");
+        assertThat(progressMonitor.getLabelKey()).isEqualTo("Progress.topic.error");
     }
 
     /**
@@ -37,11 +37,11 @@ class ProgressMonitorTest {
      */
     @Test
     void testUpdateLabelKey() {
-        ProgressMonitor progressMonitor = new ProgressMonitor(ProgressMonitorTest.class, "suffix");
-        assertThat(progressMonitor.getLabelKey()).isEqualTo("Progress.ProgressMonitorTest.suffix");
+        ProgressMonitor progressMonitor = new ProgressMonitor("topic", "step");
+        assertThat(progressMonitor.getLabelKey()).isEqualTo("Progress.topic.step");
 
         progressMonitor.updateLabelKey("new-suffix");
-        assertThat(progressMonitor.getLabelKey()).isEqualTo("Progress.ProgressMonitorTest.new-suffix");
+        assertThat(progressMonitor.getLabelKey()).isEqualTo("Progress.topic.new-suffix");
     }
 
 }

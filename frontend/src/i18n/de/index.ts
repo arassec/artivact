@@ -875,43 +875,49 @@ export default {
   },
 
   Progress: {
-    MediaCreationService: {
-      captureStart: 'Starte Fotoaufnahmen.',
-      captureInProgress: 'Nehme Fotos auf...',
-      captureFailed: 'Fotoaufnahme fehlgeschlagen!',
+    manipulateImage: {
       backgroundRemovalStart: 'Starte freistellen der Aufnahmen.',
       backgroundRemovalInProgress: 'Stelle Aufnahmen frei...',
-      backgroundRemovalFailed: 'Freistellen von Aufnahmen fehlgeschlagen!',
-      imageSetStart: 'Starte Import von Bildern in Bilder-Set.',
+      failed: 'Freistellen von Aufnahmen fehlgeschlagen!',
+    },
+    captureImages: {
+      start: 'Starte Bildaufnahmen.',
+      inProgress: 'Nehme Bilder auf...',
       imageSetInProgress: 'Füge Bilder zu Bilder-Set hinzu...',
-      imageSetFailed: 'Fehler beim Hinzufügen von Bildern zu Bilder-Set!',
-      createModelStart: 'Erstelle 3D-Modell in externem Editor.',
-      createModelFailed: 'Fehler bei der Erstellung des 3D-Modells!',
-      editModelStart: 'Bearbeite 3D-Modell in externem Editor.',
-      editModelFailed: 'Fehler bei der Bearbeitung des 3D-Modells!',
-      copyImages: 'Kopiere Bilder...'
+      failed: 'Bildaufnahme fehlgeschlagen!',
     },
-    SearchService: {
+    createImageSet: {
+      start: 'Starte Import von Bildern in Bilder-Set.',
+      failed: 'Fehler beim Hinzufügen von Bildern zu Bilder-Set!',
+    },
+    createModel: {
+      start: 'Erstelle 3D-Modell in externem Editor.',
+      copyImages: 'Kopiere Bilder...',
+      failed: 'Fehler bei der Erstellung des 3D-Modells!',
+    },
+    editModel: {
+      start: 'Bearbeite 3D-Modell in externem Editor.',
+      failed: 'Fehler bei der Bearbeitung des 3D-Modells!',
+    },
+    search: {
       createIndex: 'Erstelle Suchindex...',
-      createIndexFailed: 'Fehler bei Erstellung/Aktualisierung des Suchindexes!'
+      failed: 'Fehler bei Erstellung/Aktualisierung des Suchindexes!'
     },
-    ItemService: {
+    itemUpload: {
       uploading: 'Lade Exportdatei zu entfernter Artivact-Instanz hoch.',
-      uploadFailed: 'Konnte Exportdatei nicht zu entfernter Artivact-Instanz hochladen!'
+      failed: 'Konnte Exportdatei nicht zu entfernter Artivact-Instanz hochladen!'
     },
-    ImportService: {
-      importContent: 'Importiere Daten...',
-      importContentFailed: 'Import fehlgeschlagen!'
-    },
-    BatchService: {
+    batch: {
       process: 'Stapelverarbeitung von Objekten gestartet...',
-      processingFailed: 'Stapelverarbeitung fehlgeschlagen!'
+      failed: 'Stapelverarbeitung fehlgeschlagen!'
     },
-    CollectionExportService: {
-      buildCollectionExport: 'Erzeuge Sammlungsexportdatei...',
-      buildCollectionExportFailed: 'Sammlungsexport fehlgeschlagen!',
-      importCollection: 'Importiere Sammlung...',
-      importContentFailed: 'Import fehlgeschlagen!'
+    collectionImport: {
+      import: 'Importiere Sammlung...',
+      failed: 'Import fehlgeschlagen!'
+    },
+    collectionExport: {
+      export: 'Erzeuge Sammlungsexportdatei...',
+      failed: 'Sammlungsexport fehlgeschlagen!',
     }
   },
 

@@ -5,7 +5,7 @@ import com.arassec.artivact.application.infrastructure.aspect.TranslateResult;
 import com.arassec.artivact.application.port.in.search.ManageSearchIndexUseCase;
 import com.arassec.artivact.application.port.in.search.SearchItemsUseCase;
 import com.arassec.artivact.application.port.in.operation.RunBackgroundOperationUseCase;
-import com.arassec.artivact.application.port.out.adapter.SearchAdapter;
+import com.arassec.artivact.application.port.out.gateway.SearchGateway;
 import com.arassec.artivact.application.port.out.repository.ItemRepository;
 import com.arassec.artivact.domain.model.item.Item;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,7 +35,7 @@ public class SearchService
      */
     private final ItemRepository itemRepository;
 
-    private final SearchAdapter searchAdapter;
+    private final SearchGateway searchAdapter;
 
     private final RunBackgroundOperationUseCase runBackgroundOperationUseCase;
 
@@ -50,7 +50,7 @@ public class SearchService
      */
     @Override
     public synchronized void recreateIndex() {
-        runBackgroundOperationUseCase.execute(getClass(), "createIndex", progressMonitor -> {
+        runBackgroundOperationUseCase.execute("search", "createIndex", progressMonitor -> {
             log.info("Recreating search index.");
             searchAdapter.prepareIndexing(false);
             itemRepository.findAll().forEach(item -> searchAdapter.updateIndex(item, false));

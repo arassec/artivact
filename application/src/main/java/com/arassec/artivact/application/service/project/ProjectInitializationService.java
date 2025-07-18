@@ -1,15 +1,15 @@
 package com.arassec.artivact.application.service.project;
 
 import com.arassec.artivact.application.port.in.UseProjectDirsUseCase;
-import com.arassec.artivact.application.service.configuration.ConfigurationService;
-import com.arassec.artivact.domain.model.account.Account;
-import com.arassec.artivact.domain.model.misc.DirectoryDefinitions;
-import com.arassec.artivact.domain.model.misc.FileModification;
 import com.arassec.artivact.application.port.in.account.CreateAccountUseCase;
 import com.arassec.artivact.application.port.in.account.LoadAccountUseCase;
+import com.arassec.artivact.application.port.in.configuration.CheckRuntimeConfigurationUseCase;
 import com.arassec.artivact.application.port.in.exchange.ImportContentUseCase;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.application.port.out.repository.PageRepository;
+import com.arassec.artivact.domain.model.account.Account;
+import com.arassec.artivact.domain.model.misc.DirectoryDefinitions;
+import com.arassec.artivact.domain.model.misc.FileModification;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -52,7 +52,7 @@ public class ProjectInitializationService {
      */
     private static final String WELCOME_EXPORT_PATH = "utils/Setup/welcome-page.artivact.content.zip";
 
-    private final UseProjectDirsUseCase getProjectRootUseCase;
+    private final UseProjectDirsUseCase useProjectDirsUseCase;
 
     private final LoadAccountUseCase loadAccountUseCase;
 
@@ -73,31 +73,28 @@ public class ProjectInitializationService {
      */
     private final ImportContentUseCase importContentUseCase;
 
-    /**
-     * The configuration service.
-     */
-    private final ConfigurationService configurationService;
+    private final CheckRuntimeConfigurationUseCase checkRuntimeConfigurationUseCase;
 
     /**
      * Initial administrator password. Can be set per JVM parameter for integration testing.
      */
     private final String initialPassword;
 
-    public ProjectInitializationService(UseProjectDirsUseCase getProjectRootUseCase,
+    public ProjectInitializationService(UseProjectDirsUseCase useProjectDirsUseCase,
                                         LoadAccountUseCase loadAccountUseCase,
                                         CreateAccountUseCase createAccountUseCase,
                                         PageRepository pageRepository,
                                         FileRepository fileRepository,
                                         ImportContentUseCase importContentUseCase,
-                                        ConfigurationService configurationService,
+                                        CheckRuntimeConfigurationUseCase checkRuntimeConfigurationUseCase,
                                         @Value("${artivact.initial.password:}") String initialPassword) {
-        this.getProjectRootUseCase = getProjectRootUseCase;
+        this.useProjectDirsUseCase = useProjectDirsUseCase;
         this.loadAccountUseCase = loadAccountUseCase;
         this.createAccountUseCase = createAccountUseCase;
         this.pageRepository = pageRepository;
         this.fileRepository = fileRepository;
         this.importContentUseCase = importContentUseCase;
-        this.configurationService = configurationService;
+        this.checkRuntimeConfigurationUseCase = checkRuntimeConfigurationUseCase;
         this.initialPassword = initialPassword;
     }
 
@@ -116,7 +113,7 @@ public class ProjectInitializationService {
      * Updates the project's filesystem structure.
      */
     private void initializeProjectDir() {
-        Path projectRoot = getProjectRootUseCase.getProjectRoot();
+        Path projectRoot = useProjectDirsUseCase.getProjectRoot();
 
         fileRepository.createDirIfRequired(projectRoot.resolve(DirectoryDefinitions.ITEMS_DIR));
         fileRepository.createDirIfRequired(projectRoot.resolve(DirectoryDefinitions.EXPORT_DIR));
@@ -168,8 +165,8 @@ public class ProjectInitializationService {
      */
     private void importWelcomePage() {
         if (pageRepository.findAll().isEmpty() &&
-                (configurationService.isDesktopProfileEnabled() || configurationService.isE2eProfileEnabled())) {
-            Path welcomePageExportZip = getProjectRootUseCase.getProjectRoot().resolve(WELCOME_EXPORT_PATH);
+                (checkRuntimeConfigurationUseCase.isDesktopProfileEnabled() || checkRuntimeConfigurationUseCase.isE2eProfileEnabled())) {
+            Path welcomePageExportZip = useProjectDirsUseCase.getProjectRoot().resolve(WELCOME_EXPORT_PATH);
 
             if (!fileRepository.exists(welcomePageExportZip)) {
                 welcomePageExportZip = PROJECT_SETUP_DIR_FALLBACK.resolve(WELCOME_EXPORT_PATH);

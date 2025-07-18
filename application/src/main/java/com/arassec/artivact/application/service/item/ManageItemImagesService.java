@@ -91,7 +91,7 @@ public class ManageItemImagesService implements ManageItemImagesUseCase {
      */
     @Override
     public synchronized void createImageSetFromDanglingImages(String itemId) {
-        runBackgroundOperationUseCase.execute(getClass(), "imageSetStart", progressMonitor -> {
+        runBackgroundOperationUseCase.execute("createImageSet", "start", progressMonitor -> {
             Item item = loadItemUseCase.loadTranslated(itemId);
 
             List<String> newImages = getDanglingImages(item);

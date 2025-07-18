@@ -1,6 +1,6 @@
 package com.arassec.artivact.adapter.out.turntable;
 
-import com.arassec.artivact.application.port.out.adapter.TurntableAdapter;
+import com.arassec.artivact.application.port.out.peripheral.TurntablePeripheral;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.adapter.BasePeripheralAdapter;
 import com.arassec.artivact.domain.model.adapter.PeripheralAdapterInitParams;
@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Slf4j
 @Component
 @Getter
-public class ArtivactTurntableAdapter extends BasePeripheralAdapter implements TurntableAdapter {
+public class ArtivactTurntableAdapter extends BasePeripheralAdapter implements TurntablePeripheral {
 
     /**
      * Indicates whether the turntable was found using USB or not.

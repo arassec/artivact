@@ -1,6 +1,6 @@
 package com.arassec.artivact.adapter.out.camera;
 
-import com.arassec.artivact.application.port.out.adapter.CameraAdapter;
+import com.arassec.artivact.application.port.out.peripheral.CameraPeripheral;
 import com.arassec.artivact.domain.model.adapter.BasePeripheralAdapter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.exec.CommandLine;
@@ -14,7 +14,7 @@ import java.io.IOException;
  * Base class for camera adapter implementations.
  */
 @Slf4j
-public abstract class BaseCameraAdapter extends BasePeripheralAdapter implements CameraAdapter {
+public abstract class BaseCameraAdapter extends BasePeripheralAdapter implements CameraPeripheral {
 
     /**
      * TODO: Move to helper use case?

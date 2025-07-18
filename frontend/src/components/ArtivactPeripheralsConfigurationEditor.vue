@@ -119,13 +119,13 @@
               class="q-mb-md"
               outlined
               emit-value
-              v-model="adapterConfigurationRef.backgroundRemovalAdapterImplementation"
-              :options="availableBackgroundRemovalOptions"
+              v-model="adapterConfigurationRef.imageManipulationAdapterImplementation"
+              :options="availableImageManipulationOptions"
               :option-label="opt => opt.label ? $t(opt.label) : $t(opt)"
               :label="$t('ArtivactPeripheralsConfigurationEditor.background.label')"
             />
             <q-input
-              v-if="adapterConfigurationRef.backgroundRemovalAdapterImplementation.toString() === AdapterImplementation[AdapterImplementation.DEFAULT_BACKGROUND_REMOVAL_ADAPTER]"
+              v-if="adapterConfigurationRef.imageManipulationAdapterImplementation.toString() === AdapterImplementation[AdapterImplementation.DEFAULT_BACKGROUND_REMOVAL_ADAPTER]"
               outlined
               :label="$t('ArtivactPeripheralsConfigurationEditor.background.default')"
               v-model="adapterConfigurationRef.configValues['DEFAULT_BACKGROUND_REMOVAL_ADAPTER']"
@@ -284,7 +284,7 @@ const availableCameraOptions: SelectboxModel[] = [
   }
 ];
 
-const availableBackgroundRemovalOptions: SelectboxModel[] = [
+const availableImageManipulationOptions: SelectboxModel[] = [
   {
     label: AdapterImplementation[AdapterImplementation.DEFAULT_BACKGROUND_REMOVAL_ADAPTER],
     value: AdapterImplementation[AdapterImplementation.DEFAULT_BACKGROUND_REMOVAL_ADAPTER],

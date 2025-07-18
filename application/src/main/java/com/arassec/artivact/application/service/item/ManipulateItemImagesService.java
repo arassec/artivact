@@ -6,7 +6,7 @@ import com.arassec.artivact.application.port.in.item.ManipulateItemImagesUseCase
 import com.arassec.artivact.application.port.in.item.SaveItemUseCase;
 import com.arassec.artivact.application.port.in.operation.RunBackgroundOperationUseCase;
 import com.arassec.artivact.application.port.in.UseProjectDirsUseCase;
-import com.arassec.artivact.application.port.out.adapter.ImageManipulationAdapter;
+import com.arassec.artivact.application.port.out.peripheral.ImageManipulationPeripheral;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.adapter.PeripheralAdapter;
 import com.arassec.artivact.domain.model.adapter.PeripheralAdapterInitParams;
@@ -43,7 +43,7 @@ public class ManipulateItemImagesService implements ManipulateItemImagesUseCase 
 
     @Override
     public synchronized void removeBackgrounds(String itemId, int imageSetIndex) {
-        runBackgroundOperationUseCase.execute(getClass(), "backgroundRemovalStart", progressMonitor -> {
+        runBackgroundOperationUseCase.execute("manipulateImage", "backgroundRemovalStart", progressMonitor -> {
             Item item = loadItemUseCase.loadTranslated(itemId);
 
             List<Path> imagesWithoutBackground = removeBackgrounds(itemId, item.getMediaCreationContent().getImageSets().get(imageSetIndex), progressMonitor);
@@ -74,9 +74,9 @@ public class ManipulateItemImagesService implements ManipulateItemImagesUseCase 
     private List<Path> removeBackgrounds(String itemId, CreationImageSet creationImageSet, ProgressMonitor progressMonitor) {
         AdapterConfiguration adapterConfiguration = loadAdapterConfigurationUseCase.loadAdapterConfiguration();
 
-        ImageManipulationAdapter imageManipulationAdapter = peripheralAdapters.stream()
-                .filter(ImageManipulationAdapter.class::isInstance)
-                .map(ImageManipulationAdapter.class::cast)
+        ImageManipulationPeripheral imageManipulationAdapter = peripheralAdapters.stream()
+                .filter(ImageManipulationPeripheral.class::isInstance)
+                .map(ImageManipulationPeripheral.class::cast)
                 .filter(adapter -> adapter.supports(adapterConfiguration.getImageManipulationAdapterImplementation()))
                 .findAny()
                 .orElseThrow(() -> new ArtivactException("Could not detect image-manipulation adapter!"));

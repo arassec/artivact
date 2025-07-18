@@ -1,6 +1,6 @@
 package com.arassec.artivact.adapter.out.turntable;
 
-import com.arassec.artivact.application.port.out.adapter.TurntableAdapter;
+import com.arassec.artivact.application.port.out.peripheral.TurntablePeripheral;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.adapter.BasePeripheralAdapter;
 import com.arassec.artivact.domain.model.configuration.AdapterImplementation;
@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Component
 @Getter
-public class FallbackTurntableAdapter extends BasePeripheralAdapter implements TurntableAdapter {
+public class FallbackTurntableAdapter extends BasePeripheralAdapter implements TurntablePeripheral {
 
     /**
      * {@inheritDoc}

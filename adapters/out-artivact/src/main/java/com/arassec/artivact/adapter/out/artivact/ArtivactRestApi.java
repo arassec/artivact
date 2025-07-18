@@ -1,6 +1,6 @@
 package com.arassec.artivact.adapter.out.artivact;
 
-import com.arassec.artivact.application.port.out.adapter.ArtivactApiAdapter;
+import com.arassec.artivact.application.port.out.gateway.ArtivactGateway;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.entity.mime.FileBody;
@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 @Component
-public class ArtivactRestApi implements ArtivactApiAdapter {
+public class ArtivactRestApi implements ArtivactGateway {
 
     private static final String IMPORT_ITEM_API = "api/import/item/";
 

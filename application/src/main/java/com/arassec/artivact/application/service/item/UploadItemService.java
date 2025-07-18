@@ -6,7 +6,7 @@ import com.arassec.artivact.application.port.in.item.LoadItemUseCase;
 import com.arassec.artivact.application.port.in.item.SaveItemUseCase;
 import com.arassec.artivact.application.port.in.item.UploadItemUseCase;
 import com.arassec.artivact.application.port.in.operation.RunBackgroundOperationUseCase;
-import com.arassec.artivact.application.port.out.adapter.ArtivactApiAdapter;
+import com.arassec.artivact.application.port.out.gateway.ArtivactGateway;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.configuration.ExchangeConfiguration;
@@ -35,7 +35,7 @@ public class UploadItemService implements UploadItemUseCase {
 
     private final FileRepository fileRepository;
 
-    private final ArtivactApiAdapter artivactApiAdapter;
+    private final ArtivactGateway artivactApiAdapter;
 
     /**
      * Exports the item with the given ID and uploads it to a remote application instance configured in the exchange
@@ -63,7 +63,7 @@ public class UploadItemService implements UploadItemUseCase {
         Path exportFile = exportItemUseCase.exportItem(itemId);
 
         if (asynchronous) {
-            runBackgroundOperationUseCase.execute(getClass(), "uploading", progressMonitor -> uploadItem(remoteServer, apiToken, itemId, exportFile));
+            runBackgroundOperationUseCase.execute("itemUpload", "uploading", progressMonitor -> uploadItem(remoteServer, apiToken, itemId, exportFile));
         } else {
             uploadItem(remoteServer, apiToken, itemId, exportFile);
         }

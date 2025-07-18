@@ -1,7 +1,7 @@
 package com.arassec.artivact.adapter.out.search;
 
 import com.arassec.artivact.application.port.in.UseProjectDirsUseCase;
-import com.arassec.artivact.application.port.out.adapter.SearchAdapter;
+import com.arassec.artivact.application.port.out.gateway.SearchGateway;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.item.Item;
@@ -28,7 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Component
-public class LuceneSearchAdapter implements SearchAdapter {
+public class LuceneSearchGateway implements SearchGateway {
 
     /**
      * Repository for file access.
@@ -46,7 +46,7 @@ public class LuceneSearchAdapter implements SearchAdapter {
     private IndexWriter indexWriter;
 
 
-    public LuceneSearchAdapter(FileRepository fileRepository,
+    public LuceneSearchGateway(FileRepository fileRepository,
                                UseProjectDirsUseCase getProjectRootUseCase) {
         this.fileRepository = fileRepository;
         this.searchIndexDir = getProjectRootUseCase.getProjectRoot()

@@ -1,6 +1,6 @@
 package com.arassec.artivact.adapter.out.model.editor;
 
-import com.arassec.artivact.application.port.out.adapter.ModelEditorAdapter;
+import com.arassec.artivact.application.port.out.peripheral.ModelEditorPeripheral;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.adapter.BasePeripheralAdapter;
 import com.arassec.artivact.domain.model.configuration.AdapterImplementation;
@@ -28,7 +28,7 @@ import java.util.stream.Stream;
 @Component
 @Getter
 @RequiredArgsConstructor
-public class BlenderModelEditorAdapter extends BasePeripheralAdapter implements ModelEditorAdapter {
+public class BlenderModelEditorAdapter extends BasePeripheralAdapter implements ModelEditorPeripheral {
 
     /**
      * The directory containing blender python scripts.

@@ -1,7 +1,8 @@
 package com.arassec.artivact.adapter.in.rest.controller;
 
+import com.arassec.artivact.application.port.in.configuration.ImportPropertiesConfigurationUseCase;
+import com.arassec.artivact.application.port.in.configuration.ImportTagsConfigurationUseCase;
 import com.arassec.artivact.application.port.in.exchange.ImportContentUseCase;
-import com.arassec.artivact.application.service.configuration.ConfigurationService;
 import com.arassec.artivact.domain.model.configuration.PropertiesConfiguration;
 import com.arassec.artivact.domain.model.configuration.TagsConfiguration;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,17 +33,17 @@ class ImportControllerTest {
     @InjectMocks
     private ImportController controller;
 
-    /**
-     * The application's {@link ConfigurationService}.
-     */
     @Mock
-    private ConfigurationService configurationService;
+    private ImportPropertiesConfigurationUseCase importPropertiesConfigurationUseCase;
+
+    @Mock
+    private ImportTagsConfigurationUseCase importTagsConfigurationUseCase;
 
     /**
      * The application's {@link ImportContentUseCase}.
      */
     @Mock
-    private ImportContentUseCase importCOntentUseCase;
+    private ImportContentUseCase importContentUseCase;
 
     /**
      * The object mapper for exports.
@@ -56,16 +57,13 @@ class ImportControllerTest {
     @Test
     @SneakyThrows
     void testImportPropertiesConfiguration() {
-        PropertiesConfiguration propertiesConfiguration = new PropertiesConfiguration();
-        when(objectMapper.readValue("properties-config-json", PropertiesConfiguration.class)).thenReturn(propertiesConfiguration);
-
         MultipartFile file = mock(MultipartFile.class);
         when(file.getBytes()).thenReturn("properties-config-json".getBytes());
 
         ResponseEntity<String> stringResponseEntity = controller.importPropertiesConfiguration(file);
 
         assertEquals("Properties imported.", stringResponseEntity.getBody());
-        verify(configurationService, times(1)).savePropertiesConfiguration(propertiesConfiguration);
+        verify(importPropertiesConfigurationUseCase, times(1)).importPropertiesConfiguration("properties-config-json");
     }
 
     /**
@@ -74,16 +72,13 @@ class ImportControllerTest {
     @Test
     @SneakyThrows
     void testImportTagsConfiguration() {
-        TagsConfiguration tagsConfiguration = new TagsConfiguration();
-        when(objectMapper.readValue("tags-config-json", TagsConfiguration.class)).thenReturn(tagsConfiguration);
-
         MultipartFile file = mock(MultipartFile.class);
         when(file.getBytes()).thenReturn("tags-config-json".getBytes());
 
         ResponseEntity<String> stringResponseEntity = controller.importTagsConfiguration(file);
 
         assertEquals("Tags imported.", stringResponseEntity.getBody());
-        verify(configurationService, times(1)).saveTagsConfiguration(tagsConfiguration);
+        verify(importTagsConfigurationUseCase, times(1)).importTagsConfiguration("tags-config-json");
     }
 
     /**
@@ -94,7 +89,7 @@ class ImportControllerTest {
         MultipartFile file = mock(MultipartFile.class);
         ResponseEntity<String> stringResponseEntity = controller.importMenu(file);
         assertThat(stringResponseEntity.getBody()).isEqualTo("Menu imported.");
-        verify(importCOntentUseCase).importContent(any(Path.class));
+        verify(importContentUseCase).importContent(any(Path.class));
     }
 
     /**
@@ -105,7 +100,7 @@ class ImportControllerTest {
         MultipartFile file = mock(MultipartFile.class);
         ResponseEntity<String> stringResponseEntity = controller.importItem(file);
         assertThat(stringResponseEntity.getBody()).isEqualTo("Item imported.");
-        verify(importCOntentUseCase).importContent(any(Path.class));
+        verify(importContentUseCase).importContent(any(Path.class));
     }
 
     /**
@@ -116,7 +111,7 @@ class ImportControllerTest {
         MultipartFile file = mock(MultipartFile.class);
         ResponseEntity<String> stringResponseEntity = controller.importItemWithApiToken(file, "123-abc");
         assertThat(stringResponseEntity.getBody()).isEqualTo("Item synchronized.");
-        verify(importCOntentUseCase).importContent(any(Path.class), "123-abc");
+        verify(importContentUseCase).importContent(any(Path.class), eq("123-abc"));
     }
 
 }

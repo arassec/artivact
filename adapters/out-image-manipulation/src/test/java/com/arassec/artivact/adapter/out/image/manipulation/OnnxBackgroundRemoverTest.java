@@ -48,7 +48,7 @@ public class OnnxBackgroundRemoverTest {
         sessionOptions.setInterOpNumThreads(4);
         sessionOptions.addCPU(true);
 
-        OrtSession session = environment.createSession(Path.of("../application/src/main/resources/project-setup/utils/onnx/silueta.onnx").toString(), sessionOptions);
+        OrtSession session = environment.createSession(Path.of("../../application/src/main/resources/project-setup/utils/onnx/silueta.onnx").toString(), sessionOptions);
 
         params.setEnvironment(environment);
         params.setSession(session);

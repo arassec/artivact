@@ -1,10 +1,10 @@
-package com.arassec.artivact.application.port.out.adapter;
+package com.arassec.artivact.application.port.out.gateway;
 
 import com.arassec.artivact.domain.model.item.Item;
 
 import java.util.List;
 
-public interface SearchAdapter {
+public interface SearchGateway {
 
     /**
      * Prepares indexing.

@@ -1,11 +1,11 @@
-package com.arassec.artivact.application.port.out.adapter;
+package com.arassec.artivact.application.port.out.peripheral;
 
 import com.arassec.artivact.domain.model.adapter.PeripheralAdapter;
 
 /**
  * Adapter definition for automatic turntables that rotate the item while being captured by the camera.
  */
-public interface TurntableAdapter extends PeripheralAdapter {
+public interface TurntablePeripheral extends PeripheralAdapter {
 
     /**
      * Rotates the turntable by 360° divided by the number of photos.

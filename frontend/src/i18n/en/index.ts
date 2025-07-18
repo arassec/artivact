@@ -875,43 +875,49 @@ export default {
   },
 
   Progress: {
-    MediaCreationService: {
-      captureStart: 'Start capturing photos.',
-      captureInProgress: 'Capturing photos...',
-      captureFailed: 'Capturing photos failed!',
+    manipulateImage: {
       backgroundRemovalStart: 'Start removing backgrounds from images.',
       backgroundRemovalInProgress: 'Removing backgrounds from images...',
-      backgroundRemovalFailed: 'Removing backgrounds from images failed!',
-      imageSetStart: 'Start importing images to new image-set.',
+      failed: 'Removing backgrounds from images failed!',
+    },
+    captureImages: {
+      start: 'Start capturing images.',
+      inProgress: 'Capturing images...',
       imageSetInProgress: 'Adding images to image-set...',
-      imageSetFailed: 'Error during image-set creation!',
-      createModelStart: 'Creating model in external editor.',
-      createModelFailed: 'Error during model creation!',
-      editModelStart: 'Editing model in external editor.',
-      editModelFailed: 'Error during model editing!',
-      copyImages: 'Copying images...'
+      failed: 'Capturing images failed!',
     },
-    SearchService: {
+    createImageSet: {
+      start: 'Importing images to new image-set.',
+      failed: 'Importing images failed!',
+    },
+    createModel: {
+      start: 'Creating model in external editor.',
+      copyImages: 'Copying images...',
+      failed: 'Error during model creation!'
+    },
+    editModel: {
+      start: 'Editing model in external editor.',
+      failed: 'Error during model editing!',
+    },
+    search: {
       createIndex: '(Re-)Creating search index...',
-      createIndexFailed: '(Re-)Creation of search index failed!',
+      failed: '(Re-)Creation of search index failed!',
     },
-    ItemService: {
+    itemUpload: {
       uploading: 'Uploading file to remote Artivact server.',
-      uploadFailed: 'Could not upload item file to remote server!',
+      failed: 'Could not upload item file to remote server!',
     },
-    ImportService: {
-      importContent: 'Importing content...',
-      importContentFailed: 'Import failed!'
+    batch: {
+      process: 'Batch processing...',
+      failed: 'Batch processing failed!'
     },
-    BatchService: {
-      process: 'Batch processing items...',
-      processingFailed: 'Processing items failed!'
+    collectionImport: {
+      import: 'Importing collection...',
+      failed: 'Import failed!'
     },
-    CollectionExportService: {
-      buildCollectionExport: 'Building collection export file...',
-      buildCollectionExportFailed: 'Building export file failed!',
-      importCollection: 'Importing collection...',
-      importContentFailed: 'Import failed!'
+    collectionExport: {
+      export: 'Building collection export file...',
+      failed: 'Operation failed!'
     }
   },
 

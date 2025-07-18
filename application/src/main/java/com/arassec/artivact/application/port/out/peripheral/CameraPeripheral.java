@@ -1,8 +1,8 @@
-package com.arassec.artivact.application.port.out.adapter;
+package com.arassec.artivact.application.port.out.peripheral;
 
 import com.arassec.artivact.domain.model.adapter.PeripheralAdapter;
 
-public interface CameraAdapter extends PeripheralAdapter {
+public interface CameraPeripheral extends PeripheralAdapter {
 
     /**
      * Captures an image with the camera.

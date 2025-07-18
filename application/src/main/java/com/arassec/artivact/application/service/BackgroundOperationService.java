@@ -1,4 +1,4 @@
-package com.arassec.artivact.application.service.operation;
+package com.arassec.artivact.application.service;
 
 import com.arassec.artivact.application.port.in.operation.GetBackgroundOperationProgressUseCase;
 import com.arassec.artivact.application.port.in.operation.RunBackgroundOperationUseCase;
@@ -11,6 +11,9 @@ import org.springframework.stereotype.Service;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * Service implementation of use cases related to background operations.
+ */
 @Slf4j
 @Service
 public class BackgroundOperationService implements RunBackgroundOperationUseCase, GetBackgroundOperationProgressUseCase {
@@ -33,15 +36,18 @@ public class BackgroundOperationService implements RunBackgroundOperationUseCase
         executorService.shutdownNow();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void execute(Class<?> clazz, String labelKeySuffix, BackgroundOperation backgroundOperation) {
+    public void execute(String topic, String step, BackgroundOperation backgroundOperation) {
 
         if (progressMonitor != null && progressMonitor.getException() == null) {
             log.warn("Background operation has not been executed due to unfinished operation!");
             return;
         }
 
-        progressMonitor = new ProgressMonitor(clazz, labelKeySuffix);
+        progressMonitor = new ProgressMonitor(topic, step);
 
         executorService.submit(() -> {
             try {
@@ -50,12 +56,15 @@ public class BackgroundOperationService implements RunBackgroundOperationUseCase
                 log.info("Background operation finished!");
                 progressMonitor = null;
             } catch (Exception e) {
-                progressMonitor.updateProgress("processingFailed", e);
+                progressMonitor.updateProgress("failed", e);
                 log.error("Error during background operation!", e);
             }
         });
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ProgressMonitor getProgress() {
         return progressMonitor;

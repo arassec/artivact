@@ -1,5 +1,6 @@
 package com.arassec.artivact.adapter.in.rest.security;
 
+import com.arassec.artivact.application.port.in.account.LoadAccountUseCase;
 import com.arassec.artivact.application.service.account.AccountService;
 import com.arassec.artivact.domain.model.Roles;
 import com.arassec.artivact.domain.model.account.Account;
@@ -23,10 +24,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class ArtivactUserDetailsService implements UserDetailsService {
 
-    /**
-     * The service for accounts.
-     */
-    private final AccountService accountService;
+    private final LoadAccountUseCase loadAccountUseCase;
 
     /**
      * {@inheritDoc}
@@ -34,7 +32,7 @@ public class ArtivactUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        Optional<Account> optionalAccount = accountService.loadByUsername(username);
+        Optional<Account> optionalAccount = loadAccountUseCase.loadByUsername(username);
 
         if (optionalAccount.isPresent()) {
             Account account = optionalAccount.get();

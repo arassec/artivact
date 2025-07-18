@@ -1,20 +1,22 @@
 package com.arassec.artivact.application.service.menu;
 
 
+import com.arassec.artivact.application.infrastructure.aspect.GenerateIds;
+import com.arassec.artivact.application.infrastructure.aspect.RestrictResult;
+import com.arassec.artivact.application.infrastructure.aspect.TranslateResult;
 import com.arassec.artivact.application.port.in.menu.AddPageToMenuUseCase;
 import com.arassec.artivact.application.port.in.menu.DeleteMenuUseCase;
 import com.arassec.artivact.application.port.in.menu.LoadMenuUseCase;
 import com.arassec.artivact.application.port.in.menu.SaveMenuUseCase;
-import com.arassec.artivact.application.service.page.PageService;
+import com.arassec.artivact.application.port.in.page.CreatePageUseCase;
+import com.arassec.artivact.application.port.in.page.DeletePageUseCase;
+import com.arassec.artivact.application.port.in.page.UpdatePageAliasUseCase;
+import com.arassec.artivact.application.port.out.repository.FileRepository;
+import com.arassec.artivact.application.port.out.repository.MenuRepository;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.configuration.MenuConfiguration;
 import com.arassec.artivact.domain.model.menu.Menu;
 import com.arassec.artivact.domain.model.page.Page;
-import com.arassec.artivact.application.port.out.repository.FileRepository;
-import com.arassec.artivact.application.port.out.repository.MenuRepository;
-import com.arassec.artivact.application.infrastructure.aspect.GenerateIds;
-import com.arassec.artivact.application.infrastructure.aspect.RestrictResult;
-import com.arassec.artivact.application.infrastructure.aspect.TranslateResult;
 import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -46,15 +48,16 @@ public class MenuService
     private final MenuRepository menuRepository;
 
     /**
-     * Service for page handling.
-     */
-    private final PageService pageService;
-
-    /**
      * The application's {@link FileRepository}.
      */
     @Getter
     private final FileRepository fileRepository;
+
+    private final UpdatePageAliasUseCase updatePageAliasUseCase;
+
+    private final CreatePageUseCase createPageUseCase;
+
+    private final DeletePageUseCase deletePageUseCase;
 
     /**
      * {@inheritDoc}
@@ -82,10 +85,10 @@ public class MenuService
 
         menuConfiguration.getMenus().forEach(menu -> {
             if (StringUtils.hasText(menu.getTargetPageId())) {
-                pageService.updatePageAlias(menu.getTargetPageId(), menu.getTargetPageAlias());
+                updatePageAliasUseCase.updatePageAlias(menu.getTargetPageId(), menu.getTargetPageAlias());
             }
             menu.getMenuEntries().forEach(menuEntry ->
-                    pageService.updatePageAlias(menuEntry.getTargetPageId(), menu.getTargetPageAlias()));
+                    updatePageAliasUseCase.updatePageAlias(menuEntry.getTargetPageId(), menu.getTargetPageAlias()));
         });
 
         return loadTranslatedRestrictedMenus();
@@ -133,13 +136,13 @@ public class MenuService
         }
 
         if (StringUtils.hasText(menu.getTargetPageId())) {
-            pageService.updatePageAlias(menu.getTargetPageId(), menu.getTargetPageAlias());
+            updatePageAliasUseCase.updatePageAlias(menu.getTargetPageId(), menu.getTargetPageAlias());
         }
         menu.getMenuEntries().forEach(menuEntry -> {
             if (menuEntry.getRestrictions().isEmpty() && !menu.getRestrictions().isEmpty()) {
-                pageService.updatePageAlias(menuEntry.getTargetPageId(), menuEntry.getTargetPageAlias());
+                updatePageAliasUseCase.updatePageAlias(menuEntry.getTargetPageId(), menuEntry.getTargetPageAlias());
             } else {
-                pageService.updatePageAlias(menuEntry.getTargetPageId(), menuEntry.getTargetPageAlias());
+                updatePageAliasUseCase.updatePageAlias(menuEntry.getTargetPageId(), menuEntry.getTargetPageAlias());
             }
         });
 
@@ -147,7 +150,7 @@ public class MenuService
         menuConfiguration.getMenus().forEach(existingMenu ->
                 existingMenu.getMenuEntries().forEach(existingMenuEntry -> {
                     if (!StringUtils.hasText(existingMenuEntry.getTargetPageId()) && !StringUtils.hasText(existingMenuEntry.getExternal())) {
-                        Page page = pageService.createPage(existingMenuEntry.getRestrictions());
+                        Page page = createPageUseCase.createPage(existingMenuEntry.getRestrictions());
                         page.setAlias(existingMenuEntry.getTargetPageAlias());
                         existingMenuEntry.setTargetPageId(page.getId());
                     }
@@ -195,7 +198,7 @@ public class MenuService
 
         pagesToDelete.stream()
                 .filter(Objects::nonNull)
-                .forEach(pageService::deletePage);
+                .forEach(deletePageUseCase::deletePage);
 
         // Delete sub-menus:
         menuConfiguration.getMenus()
@@ -231,7 +234,7 @@ public class MenuService
 
         menuConfiguration.getMenus().forEach(menu -> {
             if (menu.getId().equals(menuId)) {
-                Page page = pageService.createPage(menu.getRestrictions());
+                Page page = createPageUseCase.createPage(menu.getRestrictions());
                 page.setAlias(menu.getTargetPageAlias());
                 menu.setTargetPageId(page.getId());
             }

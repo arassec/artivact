@@ -74,57 +74,52 @@ public class CollectionImportService implements ImportCollectionUseCase {
      *                            content (menus, pages, items) should be imported.
      */
     private synchronized void importCollection(Path file, boolean onlyForDistribution) {
-        runBackgroundOperationUseCase.execute(getClass(), "importCollection", progressMonitor -> {
-            try {
-                Path existingCollectionExportFile = getProjectRootUseCase.getProjectRoot()
-                        .resolve(DirectoryDefinitions.EXPORT_DIR)
-                        .resolve(file.getFileName().toString());
-                if (fileRepository.exists(existingCollectionExportFile)) {
-                    fileRepository.delete(existingCollectionExportFile);
-                }
-
-                Path tempDir = getProjectRootUseCase.getProjectRoot().resolve(DirectoryDefinitions.TEMP_DIR);
-
-                ImportContext importContext = ImportContext.builder()
-                        .importDir(tempDir.resolve(file.getFileName().toString().replace(ZIP_FILE_SUFFIX, "")))
-                        .build();
-
-                fileRepository.unpack(file, importContext.getImportDir());
-
-                ExchangeMainData exchangeMainData = readExchangeMainDataJson(importContext.getImportDir().resolve(CONTENT_EXCHANGE_MAIN_DATA_FILENAME_JSON));
-
-                if (!ContentSource.MENU.equals(exchangeMainData.getContentSource())) {
-                    throw new ArtivactException("Unsupported content source: " + exchangeMainData.getContentSource());
-                }
-
-                if (!onlyForDistribution) {
-                    importPropertiesConfigurationUseCase.importPropertiesConfiguration(importContext);
-                    importTagsConfigurationUseCase.importTagsConfiguration(importContext);
-                    importMenuUseCase.importMenu(importContext, exchangeMainData.getSourceId(), true);
-                }
-
-                fileRepository.copy(file, getProjectRootUseCase.getProjectRoot()
-                                .resolve(DirectoryDefinitions.EXPORT_DIR)
-                                .resolve(exchangeMainData.getId() + COLLECTION_EXCHANGE_SUFFIX + ZIP_FILE_SUFFIX),
-                        StandardCopyOption.REPLACE_EXISTING);
-
-                if (exchangeMainData.getCoverPictureExtension() != null
-                        && !exchangeMainData.getCoverPictureExtension().trim().isEmpty()) {
-                    Path coverPictureFile = importContext.getImportDir().resolve("cover-picture." + exchangeMainData.getCoverPictureExtension());
-                    if (fileRepository.exists(coverPictureFile)) {
-                        fileRepository.copy(coverPictureFile, getProjectRootUseCase.getProjectRoot()
-                                .resolve(DirectoryDefinitions.EXPORT_DIR)
-                                .resolve(exchangeMainData.getId() + "." + exchangeMainData.getCoverPictureExtension()));
-                    }
-                }
-
-                fileRepository.delete(importContext.getImportDir());
-
-                collectionExportRepository.save(createCollectionExport(exchangeMainData, onlyForDistribution));
-            } catch (Exception e) {
-                log.error("Error during content import!", e);
-                progressMonitor.updateProgress("importContentFailed", e);
+        runBackgroundOperationUseCase.execute("collectionImport", "import", progressMonitor -> {
+            Path existingCollectionExportFile = getProjectRootUseCase.getProjectRoot()
+                    .resolve(DirectoryDefinitions.EXPORT_DIR)
+                    .resolve(file.getFileName().toString());
+            if (fileRepository.exists(existingCollectionExportFile)) {
+                fileRepository.delete(existingCollectionExportFile);
             }
+
+            Path tempDir = getProjectRootUseCase.getProjectRoot().resolve(DirectoryDefinitions.TEMP_DIR);
+
+            ImportContext importContext = ImportContext.builder()
+                    .importDir(tempDir.resolve(file.getFileName().toString().replace(ZIP_FILE_SUFFIX, "")))
+                    .build();
+
+            fileRepository.unpack(file, importContext.getImportDir());
+
+            ExchangeMainData exchangeMainData = readExchangeMainDataJson(importContext.getImportDir().resolve(CONTENT_EXCHANGE_MAIN_DATA_FILENAME_JSON));
+
+            if (!ContentSource.MENU.equals(exchangeMainData.getContentSource())) {
+                throw new ArtivactException("Unsupported content source: " + exchangeMainData.getContentSource());
+            }
+
+            if (!onlyForDistribution) {
+                importPropertiesConfigurationUseCase.importPropertiesConfiguration(importContext);
+                importTagsConfigurationUseCase.importTagsConfiguration(importContext);
+                importMenuUseCase.importMenu(importContext, exchangeMainData.getSourceId(), true);
+            }
+
+            fileRepository.copy(file, getProjectRootUseCase.getProjectRoot()
+                            .resolve(DirectoryDefinitions.EXPORT_DIR)
+                            .resolve(exchangeMainData.getId() + COLLECTION_EXCHANGE_SUFFIX + ZIP_FILE_SUFFIX),
+                    StandardCopyOption.REPLACE_EXISTING);
+
+            if (exchangeMainData.getCoverPictureExtension() != null
+                    && !exchangeMainData.getCoverPictureExtension().trim().isEmpty()) {
+                Path coverPictureFile = importContext.getImportDir().resolve("cover-picture." + exchangeMainData.getCoverPictureExtension());
+                if (fileRepository.exists(coverPictureFile)) {
+                    fileRepository.copy(coverPictureFile, getProjectRootUseCase.getProjectRoot()
+                            .resolve(DirectoryDefinitions.EXPORT_DIR)
+                            .resolve(exchangeMainData.getId() + "." + exchangeMainData.getCoverPictureExtension()));
+                }
+            }
+
+            fileRepository.delete(importContext.getImportDir());
+
+            collectionExportRepository.save(createCollectionExport(exchangeMainData, onlyForDistribution));
         });
     }
 

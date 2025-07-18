@@ -4,6 +4,6 @@ import com.arassec.artivact.domain.model.operation.BackgroundOperation;
 
 public interface RunBackgroundOperationUseCase {
 
-    void execute(Class<?> clazz, String labelKeySuffix, BackgroundOperation backgroundOperation);
+    void execute(String topic, String step, BackgroundOperation backgroundOperation);
 
 }

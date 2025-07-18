@@ -1,6 +1,6 @@
 package com.arassec.artivact.adapter.out.model.creator;
 
-import com.arassec.artivact.application.port.out.adapter.ModelCreatorAdapter;
+import com.arassec.artivact.application.port.out.peripheral.ModelCreatorPeripheral;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.adapter.BasePeripheralAdapter;
 import com.arassec.artivact.domain.model.item.CreationImageSet;
@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Base class for model-creator adapter implementations.
  */
 @Slf4j
-public abstract class BaseModelCreatorAdapter extends BasePeripheralAdapter implements ModelCreatorAdapter {
+public abstract class BaseModelCreatorAdapter extends BasePeripheralAdapter implements ModelCreatorPeripheral {
 
     /**
      * The export subdirectory where model creators should export their results in.

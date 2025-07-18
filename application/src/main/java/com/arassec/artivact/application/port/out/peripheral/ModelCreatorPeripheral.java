@@ -1,4 +1,4 @@
-package com.arassec.artivact.application.port.out.adapter;
+package com.arassec.artivact.application.port.out.peripheral;
 
 import com.arassec.artivact.domain.model.adapter.PeripheralAdapter;
 import com.arassec.artivact.domain.model.adapter.ModelCreationResult;
@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Adapter definition for 3D model creation.
  */
-public interface ModelCreatorAdapter extends PeripheralAdapter {
+public interface ModelCreatorPeripheral extends PeripheralAdapter {
 
     /**
      * Creates a 3D model using the adapter's underlying photogrammetry tool.
