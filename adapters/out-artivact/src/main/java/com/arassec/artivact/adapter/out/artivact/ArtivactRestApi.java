@@ -14,11 +14,20 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.nio.file.Path;
 
+/**
+ * Implements the {@link ArtivactGateway} via HTTP/REST.
+ */
 @Component
 public class ArtivactRestApi implements ArtivactGateway {
 
+    /**
+     * URI part of the import item API.
+     */
     private static final String IMPORT_ITEM_API = "api/import/item/";
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void importItem(String remoteServer, String apiToken, Path exportFile) {
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {

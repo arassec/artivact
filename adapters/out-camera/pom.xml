@@ -25,6 +25,12 @@
             <version>${revision}</version>
         </dependency>
 
+        <!--suppress VulnerableLibrariesLocal -->
+        <dependency>
+            <groupId>com.arassec.jptp</groupId>
+            <artifactId>jptp-main</artifactId>
+        </dependency>
+
     </dependencies>
 
 </project>

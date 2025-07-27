@@ -282,6 +282,14 @@ public interface FileRepository {
     String saveFile(Path projectRoot, String itemId, String filename, InputStream data, String subDir, String requiredFileExtension, boolean keepAssetNumber);
 
     /**
+     * Saves a new file.
+     *
+     * @param targetPath The target path for the new file.
+     * @param content    The file's content.
+     */
+    void saveFile(Path targetPath, byte[] content);
+
+    /**
      * Returns the raw filename without file extension.
      *
      * @param filename The complete name of the file.

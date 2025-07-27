@@ -4,7 +4,7 @@ import com.arassec.artivact.application.port.in.collection.ExportCollectionUseCa
 import com.arassec.artivact.application.port.in.configuration.ExportPropertiesConfigurationUseCase;
 import com.arassec.artivact.application.port.in.configuration.ExportTagsConfigurationUseCase;
 import com.arassec.artivact.application.port.in.menu.ExportMenuUseCase;
-import com.arassec.artivact.application.port.in.UseProjectDirsUseCase;
+import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.application.service.BaseExportService;
 import com.arassec.artivact.domain.model.configuration.PropertiesConfiguration;

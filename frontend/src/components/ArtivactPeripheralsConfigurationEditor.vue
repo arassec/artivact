@@ -1,5 +1,5 @@
 <template>
-  <div v-if="adapterConfigurationRef">
+  <div v-if="peripheralConfigurationRef">
     <div class="q-mb-lg">
       {{ $t('ArtivactPeripheralsConfigurationEditor.description') }}
     </div>
@@ -26,24 +26,17 @@
               class="q-mb-md"
               outlined
               emit-value
-              v-model="adapterConfigurationRef.turntableAdapterImplementation"
+              v-model="peripheralConfigurationRef.turntablePeripheralImplementation"
               :options="availableTurntableOptions"
               :option-label="opt => opt.label ? $t(opt.label) : $t(opt)"
               :label="$t('ArtivactPeripheralsConfigurationEditor.turntable.label')"
             />
             <q-input
-              v-if="adapterConfigurationRef.turntableAdapterImplementation.toString() === AdapterImplementation[AdapterImplementation.FALLBACK_TURNTABLE_ADAPTER]"
+              v-if="peripheralConfigurationRef.turntablePeripheralImplementation.toString() === PeripheralImplementation[PeripheralImplementation.DEFAULT_TURNTABLE_PERIPHERAL]"
               outlined
               type="number"
               :label="$t('ArtivactPeripheralsConfigurationEditor.turntable.delay')"
-              v-model.number="adapterConfigurationRef.configValues['FALLBACK_TURNTABLE_ADAPTER']"
-            />
-            <q-input
-              v-if="adapterConfigurationRef.turntableAdapterImplementation.toString() === AdapterImplementation[AdapterImplementation.ARTIVACT_TURNTABLE_ADAPTER]"
-              outlined
-              type="number"
-              :label="$t('ArtivactPeripheralsConfigurationEditor.turntable.delay')"
-              v-model.number="adapterConfigurationRef.configValues['ARTIVACT_TURNTABLE_ADAPTER']"
+              v-model.number="peripheralConfigurationRef.configValues['DEFAULT_TURNTABLE_PERIPHERAL']"
             />
           </q-card-section>
         </q-card>
@@ -70,28 +63,22 @@
               class="q-mb-md"
               outlined
               emit-value
-              v-model="adapterConfigurationRef.cameraAdapterImplementation"
+              v-model="peripheralConfigurationRef.cameraPeripheralImplementation"
               :options="availableCameraOptions"
               :option-label="opt => opt.label ? $t(opt.label) : $t(opt)"
               :label="$t('ArtivactPeripheralsConfigurationEditor.camera.label')"
             />
             <q-input
-              v-if="adapterConfigurationRef.cameraAdapterImplementation.toString() === AdapterImplementation[AdapterImplementation.DIGI_CAM_CONTROL_CAMERA_ADAPTER]"
+              v-if="peripheralConfigurationRef.cameraPeripheralImplementation.toString() === PeripheralImplementation[PeripheralImplementation.DIGI_CAM_CONTROL_CAMERA_PERIPHERAL]"
               outlined
               :label="$t('ArtivactPeripheralsConfigurationEditor.camera.digiCamControlExe')"
-              v-model="adapterConfigurationRef.configValues['DIGI_CAM_CONTROL_CAMERA_ADAPTER']"
+              v-model="peripheralConfigurationRef.configValues['DIGI_CAM_CONTROL_CAMERA_PERIPHERAL']"
             />
             <q-input
-              v-if="adapterConfigurationRef.cameraAdapterImplementation.toString() === AdapterImplementation[AdapterImplementation.DIGI_CAM_CONTROL_REMOTE_CAMERA_ADAPTER]"
-              outlined
-              :label="$t('ArtivactPeripheralsConfigurationEditor.camera.digiCamControlUrl')"
-              v-model="adapterConfigurationRef.configValues['DIGI_CAM_CONTROL_REMOTE_CAMERA_ADAPTER']"
-            />
-            <q-input
-              v-if="adapterConfigurationRef.cameraAdapterImplementation.toString() === AdapterImplementation[AdapterImplementation.GPHOTO_TWO_CAMERA_ADAPTER]"
+              v-if="peripheralConfigurationRef.cameraPeripheralImplementation.toString() === PeripheralImplementation[PeripheralImplementation.GPHOTO_TWO_CAMERA_PERIPHERAL]"
               outlined
               :label="$t('ArtivactPeripheralsConfigurationEditor.camera.gphotoExe')"
-              v-model="adapterConfigurationRef.configValues['GPHOTO_TWO_CAMERA_ADAPTER']"
+              v-model="peripheralConfigurationRef.configValues['GPHOTO_TWO_CAMERA_PERIPHERAL']"
             />
           </q-card-section>
         </q-card>
@@ -119,16 +106,16 @@
               class="q-mb-md"
               outlined
               emit-value
-              v-model="adapterConfigurationRef.imageManipulationAdapterImplementation"
+              v-model="peripheralConfigurationRef.imageManipulationPeripheralImplementation"
               :options="availableImageManipulationOptions"
               :option-label="opt => opt.label ? $t(opt.label) : $t(opt)"
               :label="$t('ArtivactPeripheralsConfigurationEditor.background.label')"
             />
             <q-input
-              v-if="adapterConfigurationRef.imageManipulationAdapterImplementation.toString() === AdapterImplementation[AdapterImplementation.DEFAULT_BACKGROUND_REMOVAL_ADAPTER]"
+              v-if="peripheralConfigurationRef.imageManipulationPeripheralImplementation.toString() === PeripheralImplementation[PeripheralImplementation.DEFAULT_IMAGE_MANIPULATION_PERIPHERAL]"
               outlined
               :label="$t('ArtivactPeripheralsConfigurationEditor.background.default')"
-              v-model="adapterConfigurationRef.configValues['DEFAULT_BACKGROUND_REMOVAL_ADAPTER']"
+              v-model="peripheralConfigurationRef.configValues['DEFAULT_IMAGE_MANIPULATION_PERIPHERAL']"
             />
           </q-card-section>
         </q-card>
@@ -155,28 +142,28 @@
               class="q-mb-md"
               outlined
               emit-value
-              v-model="adapterConfigurationRef.modelCreatorImplementation"
+              v-model="peripheralConfigurationRef.modelCreatorPeripheralImplementation"
               :options="availableModelCreatorOptions"
               :option-label="opt => opt.label ? $t(opt.label) : $t(opt)"
               :label="$t('ArtivactPeripheralsConfigurationEditor.creator.label')"
             />
             <q-input
-              v-if="adapterConfigurationRef.modelCreatorImplementation.toString() === AdapterImplementation[AdapterImplementation.MESHROOM_MODEL_CREATOR_ADAPTER]"
+              v-if="peripheralConfigurationRef.modelCreatorPeripheralImplementation.toString() === PeripheralImplementation[PeripheralImplementation.MESHROOM_MODEL_CREATOR_PERIPHERAL]"
               outlined
               :label="$t('ArtivactPeripheralsConfigurationEditor.creator.meshroom')"
-              v-model="adapterConfigurationRef.configValues['MESHROOM_MODEL_CREATOR_ADAPTER']"
+              v-model="peripheralConfigurationRef.configValues['MESHROOM_MODEL_CREATOR_PERIPHERAL']"
             />
             <q-input
-              v-if="adapterConfigurationRef.modelCreatorImplementation.toString() === AdapterImplementation[AdapterImplementation.METASHAPE_MODEL_CREATOR_ADAPTER]"
+              v-if="peripheralConfigurationRef.modelCreatorPeripheralImplementation.toString() === PeripheralImplementation[PeripheralImplementation.METASHAPE_MODEL_CREATOR_PERIPHERAL]"
               outlined
               :label="$t('ArtivactPeripheralsConfigurationEditor.creator.metashape')"
-              v-model="adapterConfigurationRef.configValues['METASHAPE_MODEL_CREATOR_ADAPTER']"
+              v-model="peripheralConfigurationRef.configValues['METASHAPE_MODEL_CREATOR_PERIPHERAL']"
             />
             <q-input
-              v-if="adapterConfigurationRef.modelCreatorImplementation.toString() === AdapterImplementation[AdapterImplementation.REALITY_CAPTURE_MODEL_CREATOR_ADAPTER]"
+              v-if="peripheralConfigurationRef.modelCreatorPeripheralImplementation.toString() === PeripheralImplementation[PeripheralImplementation.REALITY_SCAN_MODEL_CREATOR_PERIPHERAL]"
               outlined
-              :label="$t('ArtivactPeripheralsConfigurationEditor.creator.RealityCapture')"
-              v-model="adapterConfigurationRef.configValues['REALITY_CAPTURE_MODEL_CREATOR_ADAPTER']"
+              :label="$t('ArtivactPeripheralsConfigurationEditor.creator.RealityScan')"
+              v-model="peripheralConfigurationRef.configValues['REALITY_SCAN_MODEL_CREATOR_PERIPHERAL']"
             />
           </q-card-section>
         </q-card>
@@ -203,16 +190,16 @@
               class="q-mb-md"
               outlined
               emit-value
-              v-model="adapterConfigurationRef.modelEditorImplementation"
+              v-model="peripheralConfigurationRef.modelEditorPeripheralImplementation"
               :options="availableModelEditorOptions"
               :option-label="opt => opt.label ? $t(opt.label) : $t(opt)"
               :label="$t('ArtivactPeripheralsConfigurationEditor.editor.label')"
             />
             <q-input
-              v-if="adapterConfigurationRef.modelEditorImplementation.toString() === AdapterImplementation[AdapterImplementation.BLENDER_MODEL_EDITOR_ADAPTER]"
+              v-if="peripheralConfigurationRef.modelEditorPeripheralImplementation.toString() === PeripheralImplementation[PeripheralImplementation.BLENDER_MODEL_EDITOR_PERIPHERAL]"
               outlined
               :label="$t('ArtivactPeripheralsConfigurationEditor.editor.blender')"
-              v-model="adapterConfigurationRef.configValues['BLENDER_MODEL_EDITOR_ADAPTER']"
+              v-model="peripheralConfigurationRef.configValues['BLENDER_MODEL_EDITOR_PERIPHERAL']"
             />
           </q-card-section>
         </q-card>
@@ -223,18 +210,18 @@
 
 <script setup lang="ts">
 import {PropType, toRef} from 'vue';
-import {AdapterConfiguration, AdapterImplementation, SelectboxModel} from 'components/artivact-models';
+import {PeripheralConfiguration, PeripheralImplementation, SelectboxModel} from 'components/artivact-models';
 
 const props = defineProps({
-  adapterConfiguration: {
+  peripheralConfiguration: {
     required: true,
-    type: Object as PropType<AdapterConfiguration | null>,
+    type: Object as PropType<PeripheralConfiguration | null>,
   },
 });
 
-const adapterConfigurationRef = toRef(props, 'adapterConfiguration');
+const peripheralConfigurationRef = toRef(props, 'peripheralConfiguration');
 
-function isDisabled(availableOptions: AdapterImplementation[] | undefined, option: AdapterImplementation): boolean {
+function isDisabled(availableOptions: PeripheralImplementation[] | undefined, option: PeripheralImplementation): boolean {
   if (!availableOptions) {
     return true;
   }
@@ -250,81 +237,71 @@ function isDisabled(availableOptions: AdapterImplementation[] | undefined, optio
 
 const availableTurntableOptions: SelectboxModel[] = [
   {
-    label: AdapterImplementation[AdapterImplementation.FALLBACK_TURNTABLE_ADAPTER],
-    value: AdapterImplementation[AdapterImplementation.FALLBACK_TURNTABLE_ADAPTER],
-    disable: isDisabled(adapterConfigurationRef.value?.availableTurntableAdapterImplementations, AdapterImplementation.FALLBACK_TURNTABLE_ADAPTER)
-  },
-  {
-    label: AdapterImplementation[AdapterImplementation.ARTIVACT_TURNTABLE_ADAPTER],
-    value: AdapterImplementation[AdapterImplementation.ARTIVACT_TURNTABLE_ADAPTER],
-    disable: isDisabled(adapterConfigurationRef.value?.availableTurntableAdapterImplementations, AdapterImplementation.ARTIVACT_TURNTABLE_ADAPTER)
+    label: PeripheralImplementation[PeripheralImplementation.DEFAULT_TURNTABLE_PERIPHERAL],
+    value: PeripheralImplementation[PeripheralImplementation.DEFAULT_TURNTABLE_PERIPHERAL],
+    disable: isDisabled(peripheralConfigurationRef.value?.availableTurntablePeripheralImplementations, PeripheralImplementation.DEFAULT_TURNTABLE_PERIPHERAL)
   }
 ];
 
 const availableCameraOptions: SelectboxModel[] = [
   {
-    label: AdapterImplementation[AdapterImplementation.FALLBACK_CAMERA_ADAPTER],
-    value: AdapterImplementation[AdapterImplementation.FALLBACK_CAMERA_ADAPTER],
-    disable: isDisabled(adapterConfigurationRef.value?.availableCameraAdapterImplementations, AdapterImplementation.FALLBACK_CAMERA_ADAPTER)
+    label: PeripheralImplementation[PeripheralImplementation.DEFAULT_CAMERA_PERIPHERAL],
+    value: PeripheralImplementation[PeripheralImplementation.DEFAULT_CAMERA_PERIPHERAL],
+    disable: isDisabled(peripheralConfigurationRef.value?.availableCameraPeripheralImplementations, PeripheralImplementation.DEFAULT_CAMERA_PERIPHERAL)
   },
   {
-    label: AdapterImplementation[AdapterImplementation.DIGI_CAM_CONTROL_CAMERA_ADAPTER],
-    value: AdapterImplementation[AdapterImplementation.DIGI_CAM_CONTROL_CAMERA_ADAPTER],
-    disable: isDisabled(adapterConfigurationRef.value?.availableCameraAdapterImplementations, AdapterImplementation.DIGI_CAM_CONTROL_CAMERA_ADAPTER)
+    label: PeripheralImplementation[PeripheralImplementation.DIGI_CAM_CONTROL_CAMERA_PERIPHERAL],
+    value: PeripheralImplementation[PeripheralImplementation.DIGI_CAM_CONTROL_CAMERA_PERIPHERAL],
+    disable: isDisabled(peripheralConfigurationRef.value?.availableCameraPeripheralImplementations, PeripheralImplementation.DIGI_CAM_CONTROL_CAMERA_PERIPHERAL)
   },
   {
-    label: AdapterImplementation[AdapterImplementation.DIGI_CAM_CONTROL_REMOTE_CAMERA_ADAPTER],
-    value: AdapterImplementation[AdapterImplementation.DIGI_CAM_CONTROL_REMOTE_CAMERA_ADAPTER],
-    disable: isDisabled(adapterConfigurationRef.value?.availableCameraAdapterImplementations, AdapterImplementation.DIGI_CAM_CONTROL_REMOTE_CAMERA_ADAPTER)
-  },
-  {
-    label: AdapterImplementation[AdapterImplementation.GPHOTO_TWO_CAMERA_ADAPTER],
-    value: AdapterImplementation[AdapterImplementation.GPHOTO_TWO_CAMERA_ADAPTER],
-    disable: isDisabled(adapterConfigurationRef.value?.availableCameraAdapterImplementations, AdapterImplementation.GPHOTO_TWO_CAMERA_ADAPTER)
+    label: PeripheralImplementation[PeripheralImplementation.GPHOTO_TWO_CAMERA_PERIPHERAL],
+    value: PeripheralImplementation[PeripheralImplementation.GPHOTO_TWO_CAMERA_PERIPHERAL],
+    disable: isDisabled(peripheralConfigurationRef.value?.availableCameraPeripheralImplementations, PeripheralImplementation.GPHOTO_TWO_CAMERA_PERIPHERAL)
   }
 ];
 
 const availableImageManipulationOptions: SelectboxModel[] = [
   {
-    label: AdapterImplementation[AdapterImplementation.DEFAULT_BACKGROUND_REMOVAL_ADAPTER],
-    value: AdapterImplementation[AdapterImplementation.DEFAULT_BACKGROUND_REMOVAL_ADAPTER],
-    disable: isDisabled(adapterConfigurationRef.value?.availableBackgroundRemovalAdapterImplementations, AdapterImplementation.DEFAULT_BACKGROUND_REMOVAL_ADAPTER)
+    label: PeripheralImplementation[PeripheralImplementation.DEFAULT_IMAGE_MANIPULATION_PERIPHERAL],
+    value: PeripheralImplementation[PeripheralImplementation.DEFAULT_IMAGE_MANIPULATION_PERIPHERAL],
+    disable: isDisabled(peripheralConfigurationRef.value?.availableBackgroundRemovalPeripheralImplementations, PeripheralImplementation.DEFAULT_IMAGE_MANIPULATION_PERIPHERAL)
   }
 ];
 
 const availableModelCreatorOptions: SelectboxModel[] = [
   {
-    label: AdapterImplementation[AdapterImplementation.FALLBACK_MODEL_CREATOR_ADAPTER],
-    value: AdapterImplementation[AdapterImplementation.FALLBACK_MODEL_CREATOR_ADAPTER],
-    disable: isDisabled(adapterConfigurationRef.value?.availableModelCreatorAdapterImplementations, AdapterImplementation.FALLBACK_MODEL_CREATOR_ADAPTER)
+    label: PeripheralImplementation[PeripheralImplementation.FALLBACK_MODEL_CREATOR_PERIPHERAL],
+    value: PeripheralImplementation[PeripheralImplementation.FALLBACK_MODEL_CREATOR_PERIPHERAL],
+    disable: isDisabled(peripheralConfigurationRef.value?.availableModelCreatorPeripheralImplementations, PeripheralImplementation.FALLBACK_MODEL_CREATOR_PERIPHERAL)
   },
   {
-    label: AdapterImplementation[AdapterImplementation.MESHROOM_MODEL_CREATOR_ADAPTER],
-    value: AdapterImplementation[AdapterImplementation.MESHROOM_MODEL_CREATOR_ADAPTER],
-    disable: isDisabled(adapterConfigurationRef.value?.availableModelCreatorAdapterImplementations, AdapterImplementation.MESHROOM_MODEL_CREATOR_ADAPTER)
+    label: PeripheralImplementation[PeripheralImplementation.MESHROOM_MODEL_CREATOR_PERIPHERAL],
+    value: PeripheralImplementation[PeripheralImplementation.MESHROOM_MODEL_CREATOR_PERIPHERAL],
+    disable: isDisabled(peripheralConfigurationRef.value?.availableModelCreatorPeripheralImplementations, PeripheralImplementation.MESHROOM_MODEL_CREATOR_PERIPHERAL)
   },
   {
-    label: AdapterImplementation[AdapterImplementation.METASHAPE_MODEL_CREATOR_ADAPTER],
-    value: AdapterImplementation[AdapterImplementation.METASHAPE_MODEL_CREATOR_ADAPTER],
-    disable: isDisabled(adapterConfigurationRef.value?.availableModelCreatorAdapterImplementations, AdapterImplementation.METASHAPE_MODEL_CREATOR_ADAPTER)
+    label: PeripheralImplementation[PeripheralImplementation.METASHAPE_MODEL_CREATOR_PERIPHERAL],
+    value: PeripheralImplementation[PeripheralImplementation.METASHAPE_MODEL_CREATOR_PERIPHERAL],
+    disable: isDisabled(peripheralConfigurationRef.value?.availableModelCreatorPeripheralImplementations, PeripheralImplementation.METASHAPE_MODEL_CREATOR_PERIPHERAL)
   },
   {
-    label: AdapterImplementation[AdapterImplementation.REALITY_CAPTURE_MODEL_CREATOR_ADAPTER],
-    value: AdapterImplementation[AdapterImplementation.REALITY_CAPTURE_MODEL_CREATOR_ADAPTER],
-    disable: isDisabled(adapterConfigurationRef.value?.availableModelCreatorAdapterImplementations, AdapterImplementation.REALITY_CAPTURE_MODEL_CREATOR_ADAPTER)
+    label: PeripheralImplementation[PeripheralImplementation.REALITY_SCAN_MODEL_CREATOR_PERIPHERAL],
+    value: PeripheralImplementation[PeripheralImplementation.REALITY_SCAN_MODEL_CREATOR_PERIPHERAL],
+    disable: isDisabled(peripheralConfigurationRef.value?.availableModelCreatorPeripheralImplementations, PeripheralImplementation.REALITY_SCAN_MODEL_CREATOR_PERIPHERAL)
   }
 ];
 
 const availableModelEditorOptions: SelectboxModel[] = [
   {
-    label: AdapterImplementation[AdapterImplementation.FALLBACK_MODEL_EDITOR_ADAPTER],
-    value: AdapterImplementation[AdapterImplementation.FALLBACK_MODEL_EDITOR_ADAPTER],
-    disable: isDisabled(adapterConfigurationRef.value?.availableModelEditorAdapterImplementations, AdapterImplementation.FALLBACK_MODEL_EDITOR_ADAPTER)
+    label: PeripheralImplementation[PeripheralImplementation.FALLBACK_MODEL_EDITOR_PERIPHERAL],
+    value: PeripheralImplementation[PeripheralImplementation.FALLBACK_MODEL_EDITOR_PERIPHERAL],
+    disable: isDisabled(peripheralConfigurationRef.value?.availableModelEditorPeripheralImplementations, PeripheralImplementation.FALLBACK_MODEL_EDITOR_PERIPHERAL)
   },
   {
-    label: AdapterImplementation[AdapterImplementation.BLENDER_MODEL_EDITOR_ADAPTER],
-    value: AdapterImplementation[AdapterImplementation.BLENDER_MODEL_EDITOR_ADAPTER],
-    disable: isDisabled(adapterConfigurationRef.value?.availableModelEditorAdapterImplementations, AdapterImplementation.BLENDER_MODEL_EDITOR_ADAPTER)
+    label: PeripheralImplementation[PeripheralImplementation.BLENDER_MODEL_EDITOR_PERIPHERAL],
+    value: PeripheralImplementation[PeripheralImplementation.BLENDER_MODEL_EDITOR_PERIPHERAL],
+    disable: isDisabled(peripheralConfigurationRef.value?.availableModelEditorPeripheralImplementations, PeripheralImplementation.BLENDER_MODEL_EDITOR_PERIPHERAL)
   }
 ];
 

@@ -1,7 +1,8 @@
 package com.arassec.artivact.adapter.out.database;
 
-import com.arassec.artivact.adapter.out.database.springdata.entity.MenuEntity;
-import com.arassec.artivact.adapter.out.database.springdata.repository.MenuEntityRepository;
+import com.arassec.artivact.adapter.out.database.jdbc.JdbcMenuRepository;
+import com.arassec.artivact.adapter.out.database.jdbc.springdata.entity.MenuEntity;
+import com.arassec.artivact.adapter.out.database.jdbc.springdata.repository.MenuEntityRepository;
 import com.arassec.artivact.domain.model.configuration.MenuConfiguration;
 import com.arassec.artivact.domain.model.menu.Menu;
 import com.fasterxml.jackson.databind.ObjectMapper;

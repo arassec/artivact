@@ -73,6 +73,12 @@
 
         <dependency>
             <groupId>com.arassec.artivact.adapters</groupId>
+            <artifactId>out-os</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.arassec.artivact.adapters</groupId>
             <artifactId>out-search</artifactId>
             <version>${revision}</version>
         </dependency>

@@ -42,8 +42,8 @@ public class ConfigurationService
         LoadExchangeConfigurationUseCase,
         LoadAppearanceConfigurationUseCase,
         SaveAppearanceConfigurationUseCase,
-        LoadAdapterConfigurationUseCase,
-        SaveAdapterConfigurationUseCase,
+        LoadPeripheralConfigurationUseCase,
+        SavePeripheralConfigurationUseCase,
         SaveExchangeConfigurationUseCase,
         CheckRuntimeConfigurationUseCase {
 
@@ -70,9 +70,7 @@ public class ConfigurationService
     private final ObjectMapper objectMapper;
 
     /**
-     * Loads the current property configuration.
-     *
-     * @return The properties currently configured.
+     * {@inheritDoc}
      */
     @Override
     public PropertiesConfiguration loadPropertiesConfiguration() {
@@ -82,9 +80,7 @@ public class ConfigurationService
     }
 
     /**
-     * Saves a property configuration.
-     *
-     * @param propertiesConfiguration The configuration to save.
+     * {@inheritDoc}
      */
     @Override
     @GenerateIds
@@ -93,9 +89,7 @@ public class ConfigurationService
     }
 
     /**
-     * Loads the translated properties within their categories.
-     *
-     * @return The current properties.
+     * {@inheritDoc}
      */
     @Override
     @TranslateResult
@@ -106,9 +100,7 @@ public class ConfigurationService
     }
 
     /**
-     * Returns whether the application is run in desktop-mode.
-     *
-     * @return {@code true} if the application is run in desktop-mode, {@code false} otherwise.
+     * {@inheritDoc}
      */
     @Override
     public boolean isDesktopProfileEnabled() {
@@ -116,9 +108,7 @@ public class ConfigurationService
     }
 
     /**
-     * Returns whether the application is run in E2E-mode.
-     *
-     * @return {@code true} if the application is run in E2E-mode, {@code false} otherwise.
+     * {@inheritDoc}
      */
     @Override
     public boolean isE2eProfileEnabled() {
@@ -126,9 +116,7 @@ public class ConfigurationService
     }
 
     /**
-     * Loads the current appearance configuration of the application.
-     *
-     * @return The current appearance configuration.
+     * {@inheritDoc}
      */
     @Override
     @TranslateResult
@@ -169,9 +157,7 @@ public class ConfigurationService
     }
 
     /**
-     * Saves an appearance configuration.
-     *
-     * @param appearanceConfiguration The configuration to save.
+     * {@inheritDoc}
      */
     @Override
     public void saveAppearanceConfiguration(AppearanceConfiguration appearanceConfiguration) {
@@ -179,9 +165,7 @@ public class ConfigurationService
     }
 
     /**
-     * Loads the current tag configuration.
-     *
-     * @return The current tag configuration.
+     * {@inheritDoc}
      */
     @Override
     public TagsConfiguration loadTagsConfiguration() {
@@ -191,9 +175,7 @@ public class ConfigurationService
     }
 
     /**
-     * Loads the current tag configuration, restricted and translated.
-     *
-     * @return The current tag configuration.
+     * {@inheritDoc}
      */
     @RestrictResult
     @TranslateResult
@@ -203,9 +185,7 @@ public class ConfigurationService
     }
 
     /**
-     * Saves a tag configuration.
-     *
-     * @param tagsConfiguration The configuration to save.
+     * {@inheritDoc}
      */
     @GenerateIds
     @Override
@@ -214,104 +194,94 @@ public class ConfigurationService
     }
 
     /**
-     * Loads the current adapter configuration.
-     *
-     * @return The current adapter configuration.
+     * {@inheritDoc}
      */
     @Override
-    public AdapterConfiguration loadAdapterConfiguration() {
-        Optional<AdapterConfiguration> configurationOptional =
-                configurationRepository.findByType(ConfigurationType.ADAPTER, AdapterConfiguration.class);
+    public PeripheralConfiguration loadPeripheralConfiguration() {
+        Optional<PeripheralConfiguration> configurationOptional =
+                configurationRepository.findByType(ConfigurationType.PERIPHERAL, PeripheralConfiguration.class);
 
-        AdapterConfiguration adapterConfiguration = configurationOptional.orElseGet(AdapterConfiguration::new);
+        PeripheralConfiguration peripheralConfiguration = configurationOptional.orElseGet(PeripheralConfiguration::new);
 
         boolean windowsOs = System.getProperty("os.name").toLowerCase().contains("windows");
 
         // Initialize default values on first creation:
-        if (adapterConfiguration.getImageManipulationAdapterImplementation() == null) {
-            adapterConfiguration.setImageManipulationAdapterImplementation(AdapterImplementation.DEFAULT_BACKGROUND_REMOVAL_ADAPTER);
-            adapterConfiguration.setCameraAdapterImplementation(AdapterImplementation.FALLBACK_CAMERA_ADAPTER);
-            adapterConfiguration.setTurntableAdapterImplementation(AdapterImplementation.FALLBACK_TURNTABLE_ADAPTER);
-            adapterConfiguration.setModelCreatorImplementation(AdapterImplementation.FALLBACK_MODEL_CREATOR_ADAPTER);
-            adapterConfiguration.setModelEditorImplementation(AdapterImplementation.FALLBACK_MODEL_EDITOR_ADAPTER);
+        if (peripheralConfiguration.getImageManipulationPeripheralImplementation() == null) {
+            peripheralConfiguration.setImageManipulationPeripheralImplementation(PeripheralImplementation.DEFAULT_IMAGE_MANIPULATION_PERIPHERAL);
+            peripheralConfiguration.setCameraPeripheralImplementation(PeripheralImplementation.DEFAULT_CAMERA_PERIPHERAL);
+            peripheralConfiguration.setTurntablePeripheralImplementation(PeripheralImplementation.DEFAULT_TURNTABLE_PERIPHERAL);
+            peripheralConfiguration.setModelCreatorPeripheralImplementation(PeripheralImplementation.FALLBACK_MODEL_CREATOR_PERIPHERAL);
+            peripheralConfiguration.setModelEditorPeripheralImplementation(PeripheralImplementation.FALLBACK_MODEL_EDITOR_PERIPHERAL);
 
-            adapterConfiguration.getConfigValues().put(AdapterImplementation.FALLBACK_TURNTABLE_ADAPTER, "1000");
-            adapterConfiguration.getConfigValues().put(AdapterImplementation.ARTIVACT_TURNTABLE_ADAPTER, "50");
+            peripheralConfiguration.getConfigValues().put(PeripheralImplementation.DEFAULT_TURNTABLE_PERIPHERAL, "100");
 
-            adapterConfiguration.getConfigValues().put(AdapterImplementation.DEFAULT_BACKGROUND_REMOVAL_ADAPTER, "silueta.onnx#input.1#320#320#5");
+            peripheralConfiguration.getConfigValues().put(PeripheralImplementation.DEFAULT_IMAGE_MANIPULATION_PERIPHERAL, "silueta.onnx#input.1#320#320#5");
 
-            adapterConfiguration.getConfigValues().put(AdapterImplementation.FALLBACK_CAMERA_ADAPTER, "");
-            adapterConfiguration.getConfigValues().put(AdapterImplementation.DIGI_CAM_CONTROL_CAMERA_ADAPTER, "C:/Program Files (x86)/digiCamControl/CameraControlCmd.exe");
-            adapterConfiguration.getConfigValues().put(AdapterImplementation.DIGI_CAM_CONTROL_REMOTE_CAMERA_ADAPTER, "http://localhost:5513/");
-            adapterConfiguration.getConfigValues().put(AdapterImplementation.GPHOTO_TWO_CAMERA_ADAPTER, "/usr/bin/gphoto2");
+            peripheralConfiguration.getConfigValues().put(PeripheralImplementation.DEFAULT_CAMERA_PERIPHERAL, "");
+            peripheralConfiguration.getConfigValues().put(PeripheralImplementation.DIGI_CAM_CONTROL_CAMERA_PERIPHERAL, "C:/Program Files (x86)/digiCamControl/CameraControlCmd.exe");
+            peripheralConfiguration.getConfigValues().put(PeripheralImplementation.GPHOTO_TWO_CAMERA_PERIPHERAL, "/usr/bin/gphoto2");
 
-            adapterConfiguration.getConfigValues().put(AdapterImplementation.FALLBACK_MODEL_CREATOR_ADAPTER, "");
-            adapterConfiguration.getConfigValues().put(AdapterImplementation.FALLBACK_MODEL_EDITOR_ADAPTER, "");
+            peripheralConfiguration.getConfigValues().put(PeripheralImplementation.FALLBACK_MODEL_CREATOR_PERIPHERAL, "");
+            peripheralConfiguration.getConfigValues().put(PeripheralImplementation.FALLBACK_MODEL_EDITOR_PERIPHERAL, "");
 
             if (windowsOs) {
-                adapterConfiguration.getConfigValues().put(AdapterImplementation.MESHROOM_MODEL_CREATOR_ADAPTER, "C:/Users/<USER>/Tools/Meshroom/Meshroom.exe");
-                adapterConfiguration.getConfigValues().put(AdapterImplementation.METASHAPE_MODEL_CREATOR_ADAPTER, "C:/Program Files/Agisoft/Metashape/metashape.exe");
-                adapterConfiguration.getConfigValues().put(AdapterImplementation.REALITY_CAPTURE_MODEL_CREATOR_ADAPTER, "C:/Program Files/Capturing Reality/RealityCapture/RealityCapture.exe");
+                peripheralConfiguration.getConfigValues().put(PeripheralImplementation.MESHROOM_MODEL_CREATOR_PERIPHERAL, "C:/Users/<USER>/Tools/Meshroom/Meshroom.exe");
+                peripheralConfiguration.getConfigValues().put(PeripheralImplementation.METASHAPE_MODEL_CREATOR_PERIPHERAL, "C:/Program Files/Agisoft/Metashape/metashape.exe");
+                peripheralConfiguration.getConfigValues().put(PeripheralImplementation.REALITY_SCAN_MODEL_CREATOR_PERIPHERAL, "C:/Program Files/Capturing Reality/RealityScan/RealityScan.exe");
 
-                adapterConfiguration.getConfigValues().put(AdapterImplementation.BLENDER_MODEL_EDITOR_ADAPTER, "C:/Users/<USER>/Tools/Blender/blender.exe");
+                peripheralConfiguration.getConfigValues().put(PeripheralImplementation.BLENDER_MODEL_EDITOR_PERIPHERAL, "C:/Users/<USER>/Tools/Blender/blender.exe");
             } else {
-                adapterConfiguration.getConfigValues().put(AdapterImplementation.MESHROOM_MODEL_CREATOR_ADAPTER, "~/tools/meshroom/Meshroom");
-                adapterConfiguration.getConfigValues().put(AdapterImplementation.METASHAPE_MODEL_CREATOR_ADAPTER, "~/tools/metashape/metashape.sh");
+                peripheralConfiguration.getConfigValues().put(PeripheralImplementation.MESHROOM_MODEL_CREATOR_PERIPHERAL, "/home/<USER>/Tools/meshroom/Meshroom");
+                peripheralConfiguration.getConfigValues().put(PeripheralImplementation.METASHAPE_MODEL_CREATOR_PERIPHERAL, "/home/<USER>/Tools/metashape/metashape.sh");
 
-                adapterConfiguration.getConfigValues().put(AdapterImplementation.BLENDER_MODEL_EDITOR_ADAPTER, "~/tools/blender/blender");
+                peripheralConfiguration.getConfigValues().put(PeripheralImplementation.BLENDER_MODEL_EDITOR_PERIPHERAL, "/home/<USER>/Tools/blender/blender");
             }
-        } else if (windowsOs && adapterConfiguration.getConfigValues().get(AdapterImplementation.REALITY_CAPTURE_MODEL_CREATOR_ADAPTER) == null) {
-            adapterConfiguration.getConfigValues().put(AdapterImplementation.REALITY_CAPTURE_MODEL_CREATOR_ADAPTER, "C:/Program Files/Capturing Reality/RealityCapture/RealityCapture.exe");
+        } else if (windowsOs && peripheralConfiguration.getConfigValues().get(PeripheralImplementation.REALITY_SCAN_MODEL_CREATOR_PERIPHERAL) == null) {
+            peripheralConfiguration.getConfigValues().put(PeripheralImplementation.REALITY_SCAN_MODEL_CREATOR_PERIPHERAL, "C:/Program Files/Capturing Reality/RealityScan/RealityScan.exe");
         }
 
         // Initialize available options for the current platform:
-        adapterConfiguration.getAvailableTurntableAdapterImplementations().add(AdapterImplementation.FALLBACK_TURNTABLE_ADAPTER);
-        adapterConfiguration.getAvailableTurntableAdapterImplementations().add(AdapterImplementation.ARTIVACT_TURNTABLE_ADAPTER);
+        peripheralConfiguration.getAvailableTurntablePeripheralImplementations().add(PeripheralImplementation.DEFAULT_TURNTABLE_PERIPHERAL);
 
-        adapterConfiguration.getAvailableImageManipulationAdapterImplementations().add(AdapterImplementation.DEFAULT_BACKGROUND_REMOVAL_ADAPTER);
+        peripheralConfiguration.getAvailableImageManipulationPeripheralImplementations().add(PeripheralImplementation.DEFAULT_IMAGE_MANIPULATION_PERIPHERAL);
 
-        adapterConfiguration.getAvailableModelCreatorAdapterImplementations().add(AdapterImplementation.FALLBACK_MODEL_CREATOR_ADAPTER);
-        adapterConfiguration.getAvailableModelCreatorAdapterImplementations().add(AdapterImplementation.MESHROOM_MODEL_CREATOR_ADAPTER);
-        adapterConfiguration.getAvailableModelCreatorAdapterImplementations().add(AdapterImplementation.METASHAPE_MODEL_CREATOR_ADAPTER);
-        if (windowsOs) {
-            adapterConfiguration.getAvailableModelCreatorAdapterImplementations().add(AdapterImplementation.REALITY_CAPTURE_MODEL_CREATOR_ADAPTER);
-        }
-
-        adapterConfiguration.getAvailableModelEditorAdapterImplementations().add(AdapterImplementation.FALLBACK_MODEL_EDITOR_ADAPTER);
-        adapterConfiguration.getAvailableModelEditorAdapterImplementations().add(AdapterImplementation.BLENDER_MODEL_EDITOR_ADAPTER);
-
-        adapterConfiguration.getAvailableCameraAdapterImplementations().add(AdapterImplementation.FALLBACK_CAMERA_ADAPTER);
+        peripheralConfiguration.getAvailableCameraPeripheralImplementations().add(PeripheralImplementation.DEFAULT_CAMERA_PERIPHERAL);
 
         if (windowsOs) {
-            adapterConfiguration.getAvailableCameraAdapterImplementations().add(AdapterImplementation.DIGI_CAM_CONTROL_CAMERA_ADAPTER);
-            adapterConfiguration.getAvailableCameraAdapterImplementations().add(AdapterImplementation.DIGI_CAM_CONTROL_REMOTE_CAMERA_ADAPTER);
+            peripheralConfiguration.getAvailableCameraPeripheralImplementations().add(PeripheralImplementation.DIGI_CAM_CONTROL_CAMERA_PERIPHERAL);
         } else {
-            adapterConfiguration.getAvailableCameraAdapterImplementations().add(AdapterImplementation.GPHOTO_TWO_CAMERA_ADAPTER);
+            peripheralConfiguration.getAvailableCameraPeripheralImplementations().add(PeripheralImplementation.GPHOTO_TWO_CAMERA_PERIPHERAL);
         }
 
-        return adapterConfiguration;
+        peripheralConfiguration.getAvailableModelCreatorPeripheralImplementations().add(PeripheralImplementation.FALLBACK_MODEL_CREATOR_PERIPHERAL);
+        peripheralConfiguration.getAvailableModelCreatorPeripheralImplementations().add(PeripheralImplementation.MESHROOM_MODEL_CREATOR_PERIPHERAL);
+        peripheralConfiguration.getAvailableModelCreatorPeripheralImplementations().add(PeripheralImplementation.METASHAPE_MODEL_CREATOR_PERIPHERAL);
+        if (windowsOs) {
+            peripheralConfiguration.getAvailableModelCreatorPeripheralImplementations().add(PeripheralImplementation.REALITY_SCAN_MODEL_CREATOR_PERIPHERAL);
+        }
+
+        peripheralConfiguration.getAvailableModelEditorPeripheralImplementations().add(PeripheralImplementation.FALLBACK_MODEL_EDITOR_PERIPHERAL);
+        peripheralConfiguration.getAvailableModelEditorPeripheralImplementations().add(PeripheralImplementation.BLENDER_MODEL_EDITOR_PERIPHERAL);
+
+        return peripheralConfiguration;
     }
 
     /**
-     * Saves an adapter configuration.
-     *
-     * @param adapterConfiguration The configuration to save.
+     * {@inheritDoc}
      */
     @Override
-    public void saveAdapterConfiguration(AdapterConfiguration adapterConfiguration) {
+    public void savePeripheralConfiguration(PeripheralConfiguration peripheralConfiguration) {
         // Available options are computed when loading and must not be saved:
-        adapterConfiguration.setAvailableImageManipulationAdapterImplementations(List.of());
-        adapterConfiguration.setAvailableCameraAdapterImplementations(List.of());
-        adapterConfiguration.setAvailableTurntableAdapterImplementations(List.of());
-        adapterConfiguration.setAvailableModelCreatorAdapterImplementations(List.of());
-        adapterConfiguration.setAvailableModelEditorAdapterImplementations(List.of());
-        configurationRepository.saveConfiguration(ConfigurationType.ADAPTER, adapterConfiguration);
+        peripheralConfiguration.setAvailableImageManipulationPeripheralImplementations(List.of());
+        peripheralConfiguration.setAvailableCameraPeripheralImplementations(List.of());
+        peripheralConfiguration.setAvailableTurntablePeripheralImplementations(List.of());
+        peripheralConfiguration.setAvailableModelCreatorPeripheralImplementations(List.of());
+        peripheralConfiguration.setAvailableModelEditorPeripheralImplementations(List.of());
+        configurationRepository.saveConfiguration(ConfigurationType.PERIPHERAL, peripheralConfiguration);
     }
 
     /**
-     * Loads the current exchange configuration.
-     *
-     * @return The current exchange configuration.
+     * {@inheritDoc}
      */
     @Override
     public ExchangeConfiguration loadExchangeConfiguration() {
@@ -321,9 +291,7 @@ public class ConfigurationService
     }
 
     /**
-     * Saves an exchange configuration.
-     *
-     * @param exchangeConfiguration The configuration to save.
+     * {@inheritDoc}
      */
     @Override
     public void saveExchangeConfiguration(ExchangeConfiguration exchangeConfiguration) {

@@ -3,7 +3,7 @@ package com.arassec.artivact.application.service.item;
 import com.arassec.artivact.application.port.in.item.LoadItemUseCase;
 import com.arassec.artivact.application.port.in.item.ManageItemModelsUseCase;
 import com.arassec.artivact.application.port.in.item.SaveItemUseCase;
-import com.arassec.artivact.application.port.in.UseProjectDirsUseCase;
+import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.item.Asset;

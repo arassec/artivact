@@ -8,7 +8,7 @@ import com.arassec.artivact.application.port.in.item.*;
 import com.arassec.artivact.application.port.in.item.ManageItemImagesUseCase;
 import com.arassec.artivact.application.port.in.item.ManageItemModelsUseCase;
 import com.arassec.artivact.application.port.in.operation.GetBackgroundOperationProgressUseCase;
-import com.arassec.artivact.application.port.in.UseProjectDirsUseCase;
+import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.item.*;

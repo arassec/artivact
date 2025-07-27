@@ -1,6 +1,6 @@
 package com.arassec.artivact.adapter.out.search;
 
-import com.arassec.artivact.application.port.in.UseProjectDirsUseCase;
+import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.gateway.SearchGateway;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.exception.ArtivactException;

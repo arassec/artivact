@@ -25,7 +25,7 @@ public class ItemMediaCreationController extends BaseController {
 
     private final GetBackgroundOperationProgressUseCase getBackgroundOperationProgressUseCase;
 
-    private final CaptureItemImagesUseCase captureImagesUseCase;
+    private final CaptureItemImageUseCase captureImagesUseCase;
 
     private final ManipulateItemImagesUseCase manipulateImagesUseCase;
 

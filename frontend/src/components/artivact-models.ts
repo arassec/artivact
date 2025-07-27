@@ -151,33 +151,31 @@ export interface ApplicationSettings {
   syncAvailable: boolean
 }
 
-export enum AdapterImplementation {
-  DEFAULT_BACKGROUND_REMOVAL_ADAPTER = 'DEFAULT_BACKGROUND_REMOVAL_ADAPTER',
-  FALLBACK_CAMERA_ADAPTER='FALLBACK_CAMERA_ADAPTER',
-  DIGI_CAM_CONTROL_CAMERA_ADAPTER='DIGI_CAM_CONTROL_CAMERA_ADAPTER',
-  DIGI_CAM_CONTROL_REMOTE_CAMERA_ADAPTER='DIGI_CAM_CONTROL_REMOTE_CAMERA_ADAPTER',
-  GPHOTO_TWO_CAMERA_ADAPTER='GPHOTO_TWO_CAMERA_ADAPTER',
-  FALLBACK_TURNTABLE_ADAPTER='FALLBACK_TURNTABLE_ADAPTER',
-  ARTIVACT_TURNTABLE_ADAPTER='ARTIVACT_TURNTABLE_ADAPTER',
-  FALLBACK_MODEL_CREATOR_ADAPTER='FALLBACK_MODEL_CREATOR_ADAPTER',
-  MESHROOM_MODEL_CREATOR_ADAPTER='MESHROOM_MODEL_CREATOR_ADAPTER',
-  METASHAPE_MODEL_CREATOR_ADAPTER='METASHAPE_MODEL_CREATOR_ADAPTER',
-  REALITY_CAPTURE_MODEL_CREATOR_ADAPTER = 'REALITY_CAPTURE_MODEL_CREATOR_ADAPTER',
-  FALLBACK_MODEL_EDITOR_ADAPTER='FALLBACK_MODEL_EDITOR_ADAPTER',
-  BLENDER_MODEL_EDITOR_ADAPTER='BLENDER_MODEL_EDITOR_ADAPTER'
+export enum PeripheralImplementation {
+  DEFAULT_IMAGE_MANIPULATION_PERIPHERAL = 'DEFAULT_IMAGE_MANIPULATION_PERIPHERAL',
+  DEFAULT_CAMERA_PERIPHERAL='DEFAULT_CAMERA_PERIPHERAL',
+  DIGI_CAM_CONTROL_CAMERA_PERIPHERAL='DIGI_CAM_CONTROL_CAMERA_PERIPHERAL',
+  GPHOTO_TWO_CAMERA_PERIPHERAL='GPHOTO_TWO_CAMERA_PERIPHERAL',
+  DEFAULT_TURNTABLE_PERIPHERAL='DEFAULT_TURNTABLE_PERIPHERAL',
+  FALLBACK_MODEL_CREATOR_PERIPHERAL='FALLBACK_MODEL_CREATOR_PERIPHERAL',
+  MESHROOM_MODEL_CREATOR_PERIPHERAL='MESHROOM_MODEL_CREATOR_PERIPHERAL',
+  METASHAPE_MODEL_CREATOR_PERIPHERAL='METASHAPE_MODEL_CREATOR_PERIPHERAL',
+  REALITY_SCAN_MODEL_CREATOR_PERIPHERAL = 'REALITY_SCAN_MODEL_CREATOR_PERIPHERAL',
+  FALLBACK_MODEL_EDITOR_PERIPHERAL='FALLBACK_MODEL_EDITOR_PERIPHERAL',
+  BLENDER_MODEL_EDITOR_PERIPHERAL='BLENDER_MODEL_EDITOR_PERIPHERAL'
 }
 
-export interface AdapterConfiguration {
-  imageManipulationAdapterImplementation: AdapterImplementation;
-  availableImageManipulationAdapterImplementations: AdapterImplementation[];
-  cameraAdapterImplementation: AdapterImplementation;
-  availableCameraAdapterImplementations: AdapterImplementation[];
-  turntableAdapterImplementation: AdapterImplementation;
-  availableTurntableAdapterImplementations: AdapterImplementation[];
-  modelCreatorImplementation: AdapterImplementation;
-  availableModelCreatorAdapterImplementations: AdapterImplementation[];
-  modelEditorImplementation: AdapterImplementation;
-  availableModelEditorAdapterImplementations: AdapterImplementation[];
+export interface PeripheralConfiguration {
+  imageManipulationPeripheralImplementation: PeripheralImplementation;
+  availableImageManipulationPeripheralImplementations: PeripheralImplementation[];
+  cameraPeripheralImplementation: PeripheralImplementation;
+  availableCameraPeripheralImplementations: PeripheralImplementation[];
+  turntablePeripheralImplementation: PeripheralImplementation;
+  availableTurntablePeripheralImplementations: PeripheralImplementation[];
+  modelCreatorPeripheralImplementation: PeripheralImplementation;
+  availableModelCreatorPeripheralImplementations: PeripheralImplementation[];
+  modelEditorPeripheralImplementation: PeripheralImplementation;
+  availableModelEditorPeripheralImplementations: PeripheralImplementation[];
   configValues: Record<string, unknown>;
 }
 

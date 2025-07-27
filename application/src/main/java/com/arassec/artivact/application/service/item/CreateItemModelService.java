@@ -1,18 +1,18 @@
 package com.arassec.artivact.application.service.item;
 
-import com.arassec.artivact.application.port.in.configuration.LoadAdapterConfigurationUseCase;
+import com.arassec.artivact.application.port.in.configuration.LoadPeripheralConfigurationUseCase;
 import com.arassec.artivact.application.port.in.item.LoadItemUseCase;
 import com.arassec.artivact.application.port.in.item.SaveItemUseCase;
 import com.arassec.artivact.application.port.in.item.CreateItemModelUseCase;
 import com.arassec.artivact.application.port.in.operation.RunBackgroundOperationUseCase;
-import com.arassec.artivact.application.port.in.UseProjectDirsUseCase;
+import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.peripheral.ModelCreatorPeripheral;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.exception.ArtivactException;
-import com.arassec.artivact.domain.model.adapter.ModelCreationResult;
-import com.arassec.artivact.domain.model.adapter.PeripheralAdapter;
-import com.arassec.artivact.domain.model.adapter.PeripheralAdapterInitParams;
-import com.arassec.artivact.domain.model.configuration.AdapterConfiguration;
+import com.arassec.artivact.domain.model.peripheral.ModelCreationResult;
+import com.arassec.artivact.domain.model.peripheral.Peripheral;
+import com.arassec.artivact.domain.model.peripheral.PeripheralAdapterInitParams;
+import com.arassec.artivact.domain.model.configuration.PeripheralConfiguration;
 import com.arassec.artivact.domain.model.item.CreationImageSet;
 import com.arassec.artivact.domain.model.item.CreationModelSet;
 import com.arassec.artivact.domain.model.item.Item;
@@ -49,12 +49,12 @@ public class CreateItemModelService implements CreateItemModelUseCase {
 
     private final FileRepository fileRepository;
 
-    private final LoadAdapterConfigurationUseCase loadAdapterConfigurationUseCase;
+    private final LoadPeripheralConfigurationUseCase loadAdapterConfigurationUseCase;
 
     /**
      * List of all available adapters.
      */
-    private final List<PeripheralAdapter> adapters;
+    private final List<Peripheral> adapters;
 
     /**
      * {@inheritDoc}
@@ -85,12 +85,12 @@ public class CreateItemModelService implements CreateItemModelUseCase {
      * @param progressMonitor   The progress monitor which will be updated during model creation.
      */
     private Optional<CreationModelSet> createModel(String itemId, List<CreationImageSet> creationImageSets, ProgressMonitor progressMonitor) {
-        AdapterConfiguration adapterConfiguration = loadAdapterConfigurationUseCase.loadAdapterConfiguration();
+        PeripheralConfiguration adapterConfiguration = loadAdapterConfigurationUseCase.loadPeripheralConfiguration();
 
         ModelCreatorPeripheral modelCreatorAdapter = adapters.stream()
                 .filter(ModelCreatorPeripheral.class::isInstance)
                 .map(ModelCreatorPeripheral.class::cast)
-                .filter(adapter -> adapter.supports(adapterConfiguration.getModelCreatorImplementation()))
+                .filter(adapter -> adapter.supports(adapterConfiguration.getModelCreatorPeripheralImplementation()))
                 .findAny()
                 .orElseThrow(() -> new ArtivactException("Could not detect selected model-creator adapter!"));
 
@@ -128,7 +128,6 @@ public class CreateItemModelService implements CreateItemModelUseCase {
 
         fileRepository.createDirIfRequired(targetDir);
 
-        // TODO: Replace "Files" usage with FileRepository usage!
         try (Stream<Path> stream = fileRepository.list(sourceDir).stream()) {
             if (stream.findAny().isEmpty()) {
                 fileRepository.delete(targetDir);

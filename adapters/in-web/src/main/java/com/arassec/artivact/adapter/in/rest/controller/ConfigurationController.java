@@ -4,7 +4,7 @@ import com.arassec.artivact.adapter.in.rest.model.ApplicationSettings;
 import com.arassec.artivact.adapter.in.rest.model.Profiles;
 import com.arassec.artivact.adapter.in.rest.model.UserData;
 import com.arassec.artivact.application.port.in.configuration.*;
-import com.arassec.artivact.application.port.in.exchange.CleanupExportFilesUseCase;
+import com.arassec.artivact.application.port.in.project.CleanupExportFilesUseCase;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.Roles;
 import com.arassec.artivact.domain.model.configuration.*;
@@ -57,8 +57,8 @@ public class ConfigurationController extends BaseController {
     private final SaveAppearanceConfigurationUseCase saveAppearanceConfigurationUseCase;
     private final SaveTagsConfigurationUseCase saveTagsConfigurationUseCase;
     private final SaveExchangeConfigurationUseCase saveExchangeConfigurationUseCase;
-    private final SaveAdapterConfigurationUseCase saveAdapterConfigurationUseCase;
-    private final LoadAdapterConfigurationUseCase loadAdapterConfigurationUseCase;
+    private final SavePeripheralConfigurationUseCase saveAdapterConfigurationUseCase;
+    private final LoadPeripheralConfigurationUseCase loadAdapterConfigurationUseCase;
     private final CleanupExportFilesUseCase cleanupExportFilesUseCase;
 
     /**
@@ -285,13 +285,13 @@ public class ConfigurationController extends BaseController {
     }
 
     /**
-     * Returns the adapter/peripherals configuration.
+     * Returns the peripheral configuration.
      *
-     * @return The current adapter configuration.
+     * @return The current peripheral configuration.
      */
-    @GetMapping(value = "/adapter")
-    public AdapterConfiguration getAdapterConfiguration() {
-        return loadAdapterConfigurationUseCase.loadAdapterConfiguration();
+    @GetMapping(value = "/peripheral")
+    public PeripheralConfiguration getAdapterConfiguration() {
+        return loadAdapterConfigurationUseCase.loadPeripheralConfiguration();
     }
 
     /**
@@ -299,9 +299,9 @@ public class ConfigurationController extends BaseController {
      *
      * @param adapterConfiguration The configuration to save.
      */
-    @PostMapping(value = "/adapter")
-    public void saveAdapterConfiguration(@RequestBody AdapterConfiguration adapterConfiguration) {
-        saveAdapterConfigurationUseCase.saveAdapterConfiguration(adapterConfiguration);
+    @PostMapping(value = "/peripheral")
+    public void saveAdapterConfiguration(@RequestBody PeripheralConfiguration adapterConfiguration) {
+        saveAdapterConfigurationUseCase.savePeripheralConfiguration(adapterConfiguration);
     }
 
     /**

@@ -5,7 +5,7 @@ import com.arassec.artivact.application.port.in.configuration.ImportPropertiesCo
 import com.arassec.artivact.application.port.in.configuration.ImportTagsConfigurationUseCase;
 import com.arassec.artivact.application.port.in.menu.ImportMenuUseCase;
 import com.arassec.artivact.application.port.in.operation.RunBackgroundOperationUseCase;
-import com.arassec.artivact.application.port.in.UseProjectDirsUseCase;
+import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.repository.CollectionExportRepository;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.exception.ArtivactException;

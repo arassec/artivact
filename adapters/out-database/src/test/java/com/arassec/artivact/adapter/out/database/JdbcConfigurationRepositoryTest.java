@@ -1,7 +1,8 @@
 package com.arassec.artivact.adapter.out.database;
 
-import com.arassec.artivact.adapter.out.database.springdata.entity.ConfigurationEntity;
-import com.arassec.artivact.adapter.out.database.springdata.repository.ConfigurationEntityRepository;
+import com.arassec.artivact.adapter.out.database.jdbc.JdbcConfigurationRepository;
+import com.arassec.artivact.adapter.out.database.jdbc.springdata.entity.ConfigurationEntity;
+import com.arassec.artivact.adapter.out.database.jdbc.springdata.repository.ConfigurationEntityRepository;
 import com.arassec.artivact.domain.model.configuration.ConfigurationType;
 import com.arassec.artivact.domain.model.configuration.ExchangeConfiguration;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -539,6 +539,18 @@ public class FilesystemFileRepository implements FileRepository {
      * {@inheritDoc}
      */
     @Override
+    public void saveFile(Path targetPath, byte[] content) {
+        try {
+            Files.write(targetPath, content, StandardOpenOption.CREATE_NEW);
+        } catch (IOException e) {
+            throw new ArtivactException("Could not write file!", e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Optional<String> getFilenameWithoutExtension(String filename) {
         return Optional.ofNullable(filename)
                 .filter(f -> f.contains("."))

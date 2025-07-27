@@ -2,37 +2,37 @@
   <ArtivactContent>
     <div class="full-width">
       <h1 class="av-text-h1">{{ $t('PeripheralsConfigurationPage.heading') }}</h1>
-      <artivact-peripherals-configuration-editor :adapter-configuration="adapterConfigurationRef" v-if="adapterConfigurationRef"/>
+      <artivact-peripherals-configuration-editor :peripheral-configuration="peripheralConfigurationRef" v-if="peripheralConfigurationRef"/>
       <q-btn
         :label="$t('Common.save')"
         color="primary"
         class="q-mb-lg float-right"
-        @click="saveAdapterConfiguration()"
+        @click="savePeripheralConfiguration()"
       />
     </div>
   </ArtivactContent>
 </template>
 
 <script setup lang="ts">
-import ArtivactContent from 'components/ArtivactContent.vue';
+import ArtivactContent from '../components/ArtivactContent.vue';
 import {api} from 'boot/axios';
 import {useQuasar} from 'quasar';
 import {onMounted, ref, Ref} from 'vue';
-import {AdapterConfiguration} from 'components/artivact-models';
-import ArtivactPeripheralsConfigurationEditor from 'components/ArtivactPeripheralsConfigurationEditor.vue';
+import ArtivactPeripheralsConfigurationEditor from '../components/ArtivactPeripheralsConfigurationEditor.vue';
 import {useI18n} from 'vue-i18n';
+import {PeripheralConfiguration} from "../components/artivact-models";
 
 const quasar = useQuasar();
 const i18n = useI18n();
 
-const adapterConfigurationRef: Ref<AdapterConfiguration | null> =
+const peripheralConfigurationRef: Ref<PeripheralConfiguration | null> =
   ref(null);
 
-function loadAdapterConfiguration() {
+function loadPeripheralConfiguration() {
   api
-    .get('/api/configuration/adapter')
+    .get('/api/configuration/peripheral')
     .then((response) => {
-      adapterConfigurationRef.value = response.data;
+      peripheralConfigurationRef.value = response.data;
     })
     .catch(() => {
       quasar.notify({
@@ -44,9 +44,9 @@ function loadAdapterConfiguration() {
     });
 }
 
-function saveAdapterConfiguration() {
+function savePeripheralConfiguration() {
   api
-    .post('/api/configuration/adapter', adapterConfigurationRef.value)
+    .post('/api/configuration/peripheral', peripheralConfigurationRef.value)
     .then(() => {
       quasar.notify({
         color: 'positive',
@@ -66,7 +66,7 @@ function saveAdapterConfiguration() {
 }
 
 onMounted(() => {
-  loadAdapterConfiguration();
+  loadPeripheralConfiguration();
 });
 </script>
 

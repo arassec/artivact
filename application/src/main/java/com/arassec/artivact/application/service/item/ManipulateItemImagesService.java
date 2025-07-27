@@ -1,16 +1,16 @@
 package com.arassec.artivact.application.service.item;
 
-import com.arassec.artivact.application.port.in.configuration.LoadAdapterConfigurationUseCase;
+import com.arassec.artivact.application.port.in.configuration.LoadPeripheralConfigurationUseCase;
 import com.arassec.artivact.application.port.in.item.LoadItemUseCase;
 import com.arassec.artivact.application.port.in.item.ManipulateItemImagesUseCase;
 import com.arassec.artivact.application.port.in.item.SaveItemUseCase;
 import com.arassec.artivact.application.port.in.operation.RunBackgroundOperationUseCase;
-import com.arassec.artivact.application.port.in.UseProjectDirsUseCase;
+import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.peripheral.ImageManipulationPeripheral;
 import com.arassec.artivact.domain.exception.ArtivactException;
-import com.arassec.artivact.domain.model.adapter.PeripheralAdapter;
-import com.arassec.artivact.domain.model.adapter.PeripheralAdapterInitParams;
-import com.arassec.artivact.domain.model.configuration.AdapterConfiguration;
+import com.arassec.artivact.domain.model.peripheral.Peripheral;
+import com.arassec.artivact.domain.model.peripheral.PeripheralAdapterInitParams;
+import com.arassec.artivact.domain.model.configuration.PeripheralConfiguration;
 import com.arassec.artivact.domain.model.item.CreationImageSet;
 import com.arassec.artivact.domain.model.item.Item;
 import com.arassec.artivact.domain.model.misc.ProgressMonitor;
@@ -34,12 +34,12 @@ public class ManipulateItemImagesService implements ManipulateItemImagesUseCase 
 
     private final SaveItemUseCase saveItemUseCase;
 
-    private final LoadAdapterConfigurationUseCase loadAdapterConfigurationUseCase;
+    private final LoadPeripheralConfigurationUseCase loadAdapterConfigurationUseCase;
 
     /**
      * List of all available adapters.
      */
-    private final List<PeripheralAdapter> peripheralAdapters;
+    private final List<Peripheral> peripheralAdapters;
 
     @Override
     public synchronized void removeBackgrounds(String itemId, int imageSetIndex) {
@@ -72,12 +72,12 @@ public class ManipulateItemImagesService implements ManipulateItemImagesUseCase 
      * @return List of paths of newly created images without background.
      */
     private List<Path> removeBackgrounds(String itemId, CreationImageSet creationImageSet, ProgressMonitor progressMonitor) {
-        AdapterConfiguration adapterConfiguration = loadAdapterConfigurationUseCase.loadAdapterConfiguration();
+        PeripheralConfiguration adapterConfiguration = loadAdapterConfigurationUseCase.loadPeripheralConfiguration();
 
         ImageManipulationPeripheral imageManipulationAdapter = peripheralAdapters.stream()
                 .filter(ImageManipulationPeripheral.class::isInstance)
                 .map(ImageManipulationPeripheral.class::cast)
-                .filter(adapter -> adapter.supports(adapterConfiguration.getImageManipulationAdapterImplementation()))
+                .filter(adapter -> adapter.supports(adapterConfiguration.getImageManipulationPeripheralImplementation()))
                 .findAny()
                 .orElseThrow(() -> new ArtivactException("Could not detect image-manipulation adapter!"));
 

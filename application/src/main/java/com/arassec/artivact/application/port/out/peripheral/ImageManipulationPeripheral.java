@@ -1,11 +1,11 @@
 package com.arassec.artivact.application.port.out.peripheral;
 
-import com.arassec.artivact.domain.model.adapter.PeripheralAdapter;
+import com.arassec.artivact.domain.model.peripheral.Peripheral;
 
 import java.nio.file.Path;
 import java.util.List;
 
-public interface ImageManipulationPeripheral extends PeripheralAdapter {
+public interface ImageManipulationPeripheral extends Peripheral {
 
     /**
      * Removes the background from a single image.

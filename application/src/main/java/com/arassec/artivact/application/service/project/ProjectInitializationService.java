@@ -1,6 +1,6 @@
 package com.arassec.artivact.application.service.project;
 
-import com.arassec.artivact.application.port.in.UseProjectDirsUseCase;
+import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.in.account.CreateAccountUseCase;
 import com.arassec.artivact.application.port.in.account.LoadAccountUseCase;
 import com.arassec.artivact.application.port.in.configuration.CheckRuntimeConfigurationUseCase;

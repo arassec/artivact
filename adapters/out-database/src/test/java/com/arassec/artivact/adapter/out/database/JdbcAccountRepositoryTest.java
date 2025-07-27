@@ -1,7 +1,8 @@
 package com.arassec.artivact.adapter.out.database;
 
-import com.arassec.artivact.adapter.out.database.springdata.entity.AccountEntity;
-import com.arassec.artivact.adapter.out.database.springdata.repository.AccountEntityRepository;
+import com.arassec.artivact.adapter.out.database.jdbc.JdbcAccountRepository;
+import com.arassec.artivact.adapter.out.database.jdbc.springdata.entity.AccountEntity;
+import com.arassec.artivact.adapter.out.database.jdbc.springdata.repository.AccountEntityRepository;
 import com.arassec.artivact.domain.model.account.Account;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

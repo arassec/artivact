@@ -5,7 +5,7 @@ import ai.onnxruntime.OrtException;
 import ai.onnxruntime.OrtSession;
 import com.arassec.artivact.adapter.out.image.manipulation.onnx.OnnxBackgroundRemover;
 import com.arassec.artivact.adapter.out.image.manipulation.onnx.OnnxBackgroundRemoverParams;
-import com.arassec.artivact.domain.model.adapter.PeripheralAdapterInitParams;
+import com.arassec.artivact.domain.model.peripheral.PeripheralAdapterInitParams;
 import com.arassec.artivact.domain.model.misc.ProgressMonitor;
 import org.junit.jupiter.api.Test;
 
@@ -33,7 +33,7 @@ public class OnnxBackgroundRemoverTest {
 
         List<Path> result = new ArrayList<>();
         Path filePath = Path.of("src/test/resources/background-test.jpg");
-        ProgressMonitor progressMonitor = new ProgressMonitor(OnnxBackgroundRemoverTest.class, "test");
+        ProgressMonitor progressMonitor = new ProgressMonitor("OnnxBackgroundRemoverTest", "test");
 
         OnnxBackgroundRemoverParams params = new OnnxBackgroundRemoverParams(
                 "silueta.onnx#input.1#320#320#5",

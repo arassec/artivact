@@ -21,9 +21,9 @@ public enum ConfigurationType {
     APPEARANCE,
 
     /**
-     * Adapter configuration.
+     * Peripheral configuration.
      */
-    ADAPTER,
+    PERIPHERAL,
 
     /**
      * Exchange configuration for item syncing.

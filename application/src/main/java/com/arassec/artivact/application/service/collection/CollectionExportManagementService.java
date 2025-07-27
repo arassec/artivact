@@ -3,7 +3,7 @@ package com.arassec.artivact.application.service.collection;
 import com.arassec.artivact.application.infrastructure.aspect.GenerateIds;
 import com.arassec.artivact.application.infrastructure.aspect.RestrictResult;
 import com.arassec.artivact.application.infrastructure.aspect.TranslateResult;
-import com.arassec.artivact.application.port.in.UseProjectDirsUseCase;
+import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.in.collection.*;
 import com.arassec.artivact.application.port.in.configuration.LoadPropertiesConfigurationUseCase;
 import com.arassec.artivact.application.port.in.configuration.LoadTagsConfigurationUseCase;

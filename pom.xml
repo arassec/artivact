@@ -109,13 +109,33 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.5.0</version>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>${project.basedir}/artivact-server/avdata</directory>
+                        </fileset>
+                        <fileset>
+                            <directory>${project.basedir}/artivact-spring-boot-starter/avdata</directory>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
     <dependencyManagement>
         <dependencies>
 
-            <!-- Backend -->
+            <dependency>
+                <groupId>com.arassec.jptp</groupId>
+                <artifactId>jptp-main</artifactId>
+                <version>0.0.5</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
@@ -170,7 +190,6 @@
                 <version>1.17</version>
             </dependency>
 
-            <!-- Testing -->
             <dependency>
                 <groupId>org.wiremock</groupId>
                 <artifactId>wiremock</artifactId>

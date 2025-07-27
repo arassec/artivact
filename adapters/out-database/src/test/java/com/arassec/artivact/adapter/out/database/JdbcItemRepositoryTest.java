@@ -1,7 +1,8 @@
 package com.arassec.artivact.adapter.out.database;
 
-import com.arassec.artivact.adapter.out.database.springdata.entity.ItemEntity;
-import com.arassec.artivact.adapter.out.database.springdata.repository.ItemEntityRepository;
+import com.arassec.artivact.adapter.out.database.jdbc.JdbcItemRepository;
+import com.arassec.artivact.adapter.out.database.jdbc.springdata.entity.ItemEntity;
+import com.arassec.artivact.adapter.out.database.jdbc.springdata.repository.ItemEntityRepository;
 import com.arassec.artivact.domain.model.item.Item;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;

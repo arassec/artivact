@@ -4,7 +4,7 @@ import com.arassec.artivact.application.port.in.item.ExportItemUseCase;
 import com.arassec.artivact.application.port.in.item.ImportItemUseCase;
 import com.arassec.artivact.application.port.in.search.SearchItemsUseCase;
 import com.arassec.artivact.application.port.in.page.*;
-import com.arassec.artivact.application.port.in.UseProjectDirsUseCase;
+import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.application.service.BaseExportService;
 import com.arassec.artivact.domain.exception.ArtivactException;

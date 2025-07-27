@@ -30,13 +30,16 @@ public class MenuController extends BaseController {
 
     private final SaveMenuUseCase saveMenuUseCase;
 
+    private final DeleteMenuUseCase deleteMenuUseCase;
+
+    private final AddPageToMenuUseCase addPageToMenuUseCase;
+
+    private final ExportMenuUseCase exportMenuUseCase;
+
     /**
      * Repository for file handling.
      */
     private final FileRepository fileRepository;
-    private DeleteMenuUseCase deleteMenuUseCase;
-    private AddPageToMenuUseCase addPageToMenuUseCase;
-    private ExportMenuUseCase exportMenuUseCase;
 
     /**
      * Returns the application's menu as configured by the user.

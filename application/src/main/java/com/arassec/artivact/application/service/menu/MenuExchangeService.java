@@ -7,7 +7,7 @@ import com.arassec.artivact.application.port.in.menu.SaveMenuUseCase;
 import com.arassec.artivact.application.port.in.page.ExportPageUseCase;
 import com.arassec.artivact.application.port.in.page.ImportPageUseCase;
 import com.arassec.artivact.application.port.in.page.LoadPageContentUseCase;
-import com.arassec.artivact.application.port.in.UseProjectDirsUseCase;
+import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.application.service.BaseExportService;
 import com.arassec.artivact.domain.exception.ArtivactException;

@@ -1,15 +1,17 @@
 package com.arassec.artivact.application.port.out.peripheral;
 
-import com.arassec.artivact.domain.model.adapter.PeripheralAdapter;
+import com.arassec.artivact.domain.model.peripheral.Peripheral;
 
-public interface CameraPeripheral extends PeripheralAdapter {
+import java.nio.file.Path;
+
+public interface CameraPeripheral extends Peripheral {
 
     /**
      * Captures an image with the camera.
      *
-     * @param filename The target filename of the taken picture.
+     * @param targetFile The target file of the captured picture.
      * @return {@code true}, if capturing finished.
      */
-    boolean captureImage(String filename);
+    boolean captureImage(Path targetFile);
 
 }

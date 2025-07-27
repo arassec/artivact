@@ -27,6 +27,7 @@
         <module>out-image-manipulation</module>
         <module>out-model-creator</module>
         <module>out-model-editor</module>
+        <module>out-os</module>
         <module>out-search</module>
         <module>out-turntable</module>
     </modules>

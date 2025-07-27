@@ -4,7 +4,7 @@ import com.arassec.artivact.application.infrastructure.aspect.GenerateIds;
 import com.arassec.artivact.application.infrastructure.aspect.RestrictResult;
 import com.arassec.artivact.application.infrastructure.aspect.TranslateResult;
 import com.arassec.artivact.application.port.in.page.*;
-import com.arassec.artivact.application.port.in.UseProjectDirsUseCase;
+import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.application.port.out.repository.MenuRepository;
 import com.arassec.artivact.application.port.out.repository.PageRepository;

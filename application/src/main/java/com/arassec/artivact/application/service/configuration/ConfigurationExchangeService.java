@@ -1,7 +1,7 @@
 package com.arassec.artivact.application.service.configuration;
 
 import com.arassec.artivact.application.port.in.configuration.*;
-import com.arassec.artivact.application.port.in.UseProjectDirsUseCase;
+import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.application.service.BaseExportService;
 import com.arassec.artivact.domain.exception.ArtivactException;

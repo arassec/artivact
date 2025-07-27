@@ -7,7 +7,7 @@ import com.arassec.artivact.application.port.in.configuration.LoadTagsConfigurat
 import com.arassec.artivact.application.port.in.item.*;
 import com.arassec.artivact.application.port.in.item.ManageItemImagesUseCase;
 import com.arassec.artivact.application.port.in.item.ManageItemModelsUseCase;
-import com.arassec.artivact.application.port.in.UseProjectDirsUseCase;
+import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.application.service.BaseExportService;
 import com.arassec.artivact.domain.exception.ArtivactException;

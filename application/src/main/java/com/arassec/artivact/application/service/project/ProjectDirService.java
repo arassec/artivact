@@ -1,6 +1,6 @@
 package com.arassec.artivact.application.service.project;
 
-import com.arassec.artivact.application.port.in.UseProjectDirsUseCase;
+import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.domain.model.misc.DirectoryDefinitions;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;

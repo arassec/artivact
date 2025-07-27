@@ -1,7 +1,7 @@
 package com.arassec.artivact.application.service.project;
 
-import com.arassec.artivact.application.port.in.exchange.CleanupExportFilesUseCase;
-import com.arassec.artivact.application.port.in.UseProjectDirsUseCase;
+import com.arassec.artivact.application.port.in.project.CleanupExportFilesUseCase;
+import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.model.misc.DirectoryDefinitions;
 import com.arassec.artivact.domain.model.misc.ExchangeDefinitions;

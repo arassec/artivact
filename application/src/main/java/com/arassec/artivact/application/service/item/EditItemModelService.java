@@ -1,15 +1,15 @@
 package com.arassec.artivact.application.service.item;
 
-import com.arassec.artivact.application.port.in.configuration.LoadAdapterConfigurationUseCase;
+import com.arassec.artivact.application.port.in.configuration.LoadPeripheralConfigurationUseCase;
 import com.arassec.artivact.application.port.in.item.LoadItemUseCase;
 import com.arassec.artivact.application.port.in.item.EditItemModelUseCase;
 import com.arassec.artivact.application.port.in.operation.RunBackgroundOperationUseCase;
-import com.arassec.artivact.application.port.in.UseProjectDirsUseCase;
+import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.peripheral.ModelEditorPeripheral;
 import com.arassec.artivact.domain.exception.ArtivactException;
-import com.arassec.artivact.domain.model.adapter.PeripheralAdapter;
-import com.arassec.artivact.domain.model.adapter.PeripheralAdapterInitParams;
-import com.arassec.artivact.domain.model.configuration.AdapterConfiguration;
+import com.arassec.artivact.domain.model.peripheral.Peripheral;
+import com.arassec.artivact.domain.model.peripheral.PeripheralAdapterInitParams;
+import com.arassec.artivact.domain.model.configuration.PeripheralConfiguration;
 import com.arassec.artivact.domain.model.item.CreationModelSet;
 import com.arassec.artivact.domain.model.item.Item;
 import com.arassec.artivact.domain.model.misc.ProgressMonitor;
@@ -30,12 +30,12 @@ public class EditItemModelService implements EditItemModelUseCase {
 
     private final LoadItemUseCase loadItemUseCase;
 
-    private final LoadAdapterConfigurationUseCase loadAdapterConfigurationUseCase;
+    private final LoadPeripheralConfigurationUseCase loadAdapterConfigurationUseCase;
 
     /**
      * List of all available peripheral adapters.
      */
-    private final List<PeripheralAdapter> peripheralAdapters;
+    private final List<Peripheral> peripheralAdapters;
 
 
     /**
@@ -60,12 +60,12 @@ public class EditItemModelService implements EditItemModelUseCase {
      * @param creationModel   The model to open.
      */
     private void editModel(ProgressMonitor progressMonitor, CreationModelSet creationModel) {
-        AdapterConfiguration adapterConfiguration = loadAdapterConfigurationUseCase.loadAdapterConfiguration();
+        PeripheralConfiguration adapterConfiguration = loadAdapterConfigurationUseCase.loadPeripheralConfiguration();
 
         ModelEditorPeripheral modelEditorAdapter = peripheralAdapters.stream()
                 .filter(ModelEditorPeripheral.class::isInstance)
                 .map(ModelEditorPeripheral.class::cast)
-                .filter(adapter -> adapter.supports(adapterConfiguration.getModelEditorImplementation()))
+                .filter(adapter -> adapter.supports(adapterConfiguration.getModelEditorPeripheralImplementation()))
                 .findAny()
                 .orElseThrow(() -> new ArtivactException("Could not detect selected model-editor adapter!"));
 

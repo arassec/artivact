@@ -3,7 +3,7 @@ package com.arassec.artivact.adapter.out.image.manipulation.onnx;
 import ai.onnxruntime.OrtEnvironment;
 import ai.onnxruntime.OrtSession;
 import com.arassec.artivact.domain.exception.ArtivactException;
-import com.arassec.artivact.domain.model.adapter.PeripheralAdapterInitParams;
+import com.arassec.artivact.domain.model.peripheral.PeripheralAdapterInitParams;
 import lombok.Data;
 
 import java.nio.file.Path;
