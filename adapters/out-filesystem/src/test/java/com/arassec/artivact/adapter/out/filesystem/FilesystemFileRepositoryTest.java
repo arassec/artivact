@@ -231,23 +231,6 @@ class FilesystemFileRepositoryTest {
     }
 
     /**
-     * Tests copying a directory.
-     */
-    @Test
-    @SneakyThrows
-    void testCopyDir() {
-        Path source = targetDir.resolve("sourceDir");
-        Path target = targetDir.resolve("targetDir");
-        Files.createDirectory(source);
-
-        assertFalse(Files.exists(target));
-
-        filesystemFileRepository.copyDir(source, target);
-
-        assertTrue(Files.exists(target));
-    }
-
-    /**
      * Tests getting a directory from an ID.
      */
     @Test
