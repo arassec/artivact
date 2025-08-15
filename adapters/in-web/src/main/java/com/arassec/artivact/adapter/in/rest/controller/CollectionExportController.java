@@ -1,8 +1,6 @@
 package com.arassec.artivact.adapter.in.rest.controller;
 
-import com.arassec.artivact.adapter.in.rest.model.OperationProgress;
 import com.arassec.artivact.application.port.in.collection.*;
-import com.arassec.artivact.application.port.in.operation.GetBackgroundOperationProgressUseCase;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.exchange.CollectionExport;
 import com.arassec.artivact.domain.model.misc.ExchangeDefinitions;
@@ -43,8 +41,6 @@ public class CollectionExportController extends BaseController {
     private final LoadCollectionExportCoverPictureUseCase loadCollectionExportCoverPictureUseCase;
     private final DeleteCollectionExportCoverPictureUseCase deleteCollectionExportCoverPictureUseCase;
     private final CreateCollectionExportInfosUseCase createCollectionExportInfosUseCase;
-
-    private final GetBackgroundOperationProgressUseCase getBackgroundOperationProgressUseCase;
 
     /**
      * Returns the available collection exports.
@@ -97,12 +93,10 @@ public class CollectionExportController extends BaseController {
      * Creates a new collection export with the given parameters.
      *
      * @param id The ID of the collection export to build.
-     * @return The {@link OperationProgress} to track the progress of export creation.
      */
     @PostMapping("/{id}/build")
-    public ResponseEntity<OperationProgress> build(@PathVariable String id) {
+    public void build(@PathVariable String id) {
         buildCollectionExportFileUseCase.buildExportFile(id);
-        return getProgress();
     }
 
     /**
@@ -222,16 +216,6 @@ public class CollectionExportController extends BaseController {
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION, ATTACHMENT_PREFIX + ExchangeDefinitions.COLLECTION_EXPORT_OVERVIEWS_ZIP_FILE);
 
         return ResponseEntity.ok(streamResponseBody);
-    }
-
-    /**
-     * Returns the progress of a previously started long-running operation.
-     *
-     * @return The progress.
-     */
-    @GetMapping("/progress")
-    public ResponseEntity<OperationProgress> getProgress() {
-        return convert(getBackgroundOperationProgressUseCase.getProgress());
     }
 
 }

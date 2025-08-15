@@ -191,7 +191,11 @@ public class FilesystemFileRepository implements FileRepository {
     @Override
     public void copy(Path source, Path target, CopyOption... copyOptions) {
         try {
-            Files.copy(source, target, copyOptions);
+            if (Files.exists(source) && Files.isDirectory(source)) {
+                FileUtils.copyDirectory(source.toFile(), target.toFile());
+            } else if (Files.exists(source)) {
+                Files.copy(source, target, copyOptions);
+            }
         } catch (IOException e) {
             throw new ArtivactException(COULD_NOT_COPY_RESOURCE, e);
         }
@@ -219,20 +223,6 @@ public class FilesystemFileRepository implements FileRepository {
             return Files.copy(source, target);
         } catch (IOException e) {
             throw new ArtivactException(COULD_NOT_COPY_RESOURCE, e);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void copyDir(Path source, Path target) {
-        try {
-            if (Files.exists(source) && Files.isDirectory(source)) {
-                FileUtils.copyDirectory(source.toFile(), target.toFile());
-            }
-        } catch (IOException e) {
-            throw new ArtivactException("Could not copy directory!", e);
         }
     }
 

@@ -3,8 +3,12 @@
     <div class="full-width q-mb-lg">
       <h1 class="av-text-h1">{{ $t('BatchProcessingPage.heading') }}</h1>
 
-      <h2 class="av-text-h2">{{ $t('BatchProcessingPage.parameters.task') }}</h2>
-      <div class="full-width q-mb-md">{{ $t('BatchProcessingPage.parameters.taskDescription') }}</div>
+      <h2 class="av-text-h2">
+        {{ $t('BatchProcessingPage.parameters.task') }}
+      </h2>
+      <div class="full-width q-mb-md">
+        {{ $t('BatchProcessingPage.parameters.taskDescription') }}
+      </div>
       <q-select
         class="param-select"
         data-test="batch-processing-task-selection"
@@ -13,13 +17,23 @@
         dense
         v-model="batchProcessingParamersRef.task"
         :options="Object.values(BatchProcessingTask)"
-        :option-label="(task: BatchProcessingTask) => $t(task)">
+        :option-label="(task: BatchProcessingTask) => $t(task)"
+      >
       </q-select>
 
-      <template v-if="batchProcessingParamersRef.task !== BatchProcessingTask.DELETE_ITEM
-                        && batchProcessingParamersRef.task !== BatchProcessingTask.UPLOAD_MODIFIED_ITEM">
-        <h2 class="av-text-h2 q-mt-lg">{{ $t('BatchProcessingPage.parameters.targetId') }}</h2>
-        <div class="full-width q-mb-md">{{ $t('BatchProcessingPage.parameters.targetIdDescription') }}</div>
+      <template
+        v-if="
+          batchProcessingParamersRef.task !== BatchProcessingTask.DELETE_ITEM &&
+          batchProcessingParamersRef.task !==
+            BatchProcessingTask.UPLOAD_MODIFIED_ITEM
+        "
+      >
+        <h2 class="av-text-h2 q-mt-lg">
+          {{ $t('BatchProcessingPage.parameters.targetId') }}
+        </h2>
+        <div class="full-width q-mb-md">
+          {{ $t('BatchProcessingPage.parameters.targetIdDescription') }}
+        </div>
         <q-select
           class="param-select"
           data-test="batch-processing-tag-selection"
@@ -27,22 +41,31 @@
           dense
           v-model="selectedTagRef"
           :options="tagsConfigurationRef.tags"
-          :option-label="(tag: Tag ) => tag.translatedValue">
+          :option-label="(tag: Tag) => tag.translatedValue"
+        >
         </q-select>
       </template>
     </div>
 
-
-    <h2 class="av-text-h2">{{ $t('BatchProcessingPage.parameters.searchTerm') }}</h2>
-    <div class="full-width">{{ $t('BatchProcessingPage.parameters.searchTermDescription') }}</div>
+    <h2 class="av-text-h2">
+      {{ $t('BatchProcessingPage.parameters.searchTerm') }}
+    </h2>
+    <div class="full-width">
+      {{ $t('BatchProcessingPage.parameters.searchTermDescription') }}
+    </div>
   </ArtivactContent>
 
-  <artivact-item-search-widget v-if="batchProcessingParamersRef.task !== BatchProcessingTask.UPLOAD_MODIFIED_ITEM"
-                               :widget-data="searchWidgetDataRef"
-                               :move-down-enabled="false"
-                               :move-up-enabled="false"
-                               :in-edit-mode="false"
-                               :expert-mode="true" />
+  <artivact-item-search-widget
+    v-if="
+      batchProcessingParamersRef.task !==
+      BatchProcessingTask.UPLOAD_MODIFIED_ITEM
+    "
+    :widget-data="searchWidgetDataRef"
+    :move-down-enabled="false"
+    :move-up-enabled="false"
+    :in-edit-mode="false"
+    :expert-mode="true"
+  />
   <artivact-content v-else>
     <q-input
       outlined
@@ -57,13 +80,19 @@
     <q-separator />
 
     <div class="full-width q-mt-lg">
-      <q-btn :label="$t('BatchProcessingPage.startButton')" color="primary"
-             @click="showConfirmBatchProcessingModalRef = true" class="float-right" />
+      <q-btn
+        :label="$t('BatchProcessingPage.startButton')"
+        color="primary"
+        @click="showConfirmBatchProcessingModalRef = true"
+        class="float-right"
+      />
     </div>
 
-
     <!-- BATCH CONFIRMATION DIALOG -->
-    <artivact-dialog :dialog-model="showConfirmBatchProcessingModalRef" :warn="true">
+    <artivact-dialog
+      :dialog-model="showConfirmBatchProcessingModalRef"
+      :warn="true"
+    >
       <template v-slot:header>
         {{ $t('BatchProcessingPage.dialog.process.heading') }}
       </template>
@@ -75,7 +104,11 @@
       </template>
 
       <template v-slot:cancel>
-        <q-btn :label="$t('Common.cancel')" color="primary" @click="showConfirmBatchProcessingModalRef = false" />
+        <q-btn
+          :label="$t('Common.cancel')"
+          color="primary"
+          @click="showConfirmBatchProcessingModalRef = false"
+        />
       </template>
 
       <template v-slot:approve>
@@ -88,33 +121,34 @@
     </artivact-dialog>
 
     <!-- LONG-RUNNING OPERATION -->
-    <artivact-operation-in-progress-dialog :progress-monitor-ref="progressMonitorRef"
-                                           :dialog-model="showOperationInProgressModalRef"
-                                           @close-dialog="showOperationInProgressModalRef = false" />
-
+    <artivact-operation-in-progress-dialog
+      v-if="showOperationInProgressModalRef == true"
+      :dialog-model="showOperationInProgressModalRef"
+      @close-dialog="showOperationInProgressModalRef = false"
+      :success-message="'BatchProcessingPage.messages.process.success'"
+      :error-message="'BatchProcessingPage.messages.process.failed'"
+    />
   </ArtivactContent>
-
 </template>
 
 <script setup lang="ts">
-import ArtivactContent from 'components/ArtivactContent.vue';
-import ArtivactOperationInProgressDialog from 'components/ArtivactOperationInProgressDialog.vue';
-import ArtivactDialog from 'components/ArtivactDialog.vue';
+import ArtivactContent from '../components/ArtivactContent.vue';
+import ArtivactOperationInProgressDialog from '../components/ArtivactOperationInProgressDialog.vue';
+import ArtivactDialog from '../components/ArtivactDialog.vue';
 import { onMounted, Ref, ref } from 'vue';
 import {
   BaseTranslatableRestrictedObject,
   BatchProcessingParameters,
   BatchProcessingTask,
-  OperationProgress,
   Tag,
   TagsConfiguration,
-  TranslatableString
-} from 'components/artivact-models';
-import { api } from 'boot/axios';
+  TranslatableString,
+} from '../components/artivact-models';
+import { api } from '../boot/axios';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
-import ArtivactItemSearchWidget from 'components/widgets/ArtivactItemSearchWidget.vue';
-import { ItemSearchWidget } from 'components/widgets/artivact-widget-models';
+import ArtivactItemSearchWidget from '../components/widgets/ArtivactItemSearchWidget.vue';
+import { ItemSearchWidget } from '../components/widgets/artivact-widget-models';
 
 const quasar = useQuasar();
 const i18n = useI18n();
@@ -123,12 +157,10 @@ const batchProcessingParamersRef = ref({
   task: BatchProcessingTask.DELETE_ITEM,
   searchTerm: '',
   maxItems: 0,
-  targetId: ''
+  targetId: '',
 } as BatchProcessingParameters);
 
 const showConfirmBatchProcessingModalRef = ref(false);
-
-const progressMonitorRef = ref<OperationProgress>();
 const showOperationInProgressModalRef = ref(false);
 
 const uploadModifiedMaxResultsRef = ref(10000);
@@ -139,7 +171,7 @@ const selectedTagRef: Ref<BaseTranslatableRestrictedObject> = ref({
   translatedValue: '',
   value: '',
   restrictions: [],
-  translations: {}
+  translations: {},
 });
 
 const searchWidgetDataRef = ref({
@@ -147,17 +179,17 @@ const searchWidgetDataRef = ref({
   id: '',
   restrictions: [] as string[],
   navigationTitle: {
-    value: ''
+    value: '',
   } as TranslatableString,
   heading: {
-    value: ''
+    value: '',
   } as TranslatableString,
   content: {
-    value: ''
+    value: '',
   } as TranslatableString,
   searchTerm: '',
   pageSize: 9,
-  maxResults: 10000
+  maxResults: 10000,
 } as ItemSearchWidget);
 
 function loadTagsConfiguration() {
@@ -170,65 +202,43 @@ function loadTagsConfiguration() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.tags') }),
-        icon: 'report_problem'
+        message: i18n.t('Common.messages.loading.failed', {
+          item: i18n.t('Common.items.tags'),
+        }),
+        icon: 'report_problem',
       });
     });
 }
 
 function process() {
-  batchProcessingParamersRef.value.maxItems = searchWidgetDataRef.value.maxResults;
-  if (batchProcessingParamersRef.value.task === BatchProcessingTask.UPLOAD_MODIFIED_ITEM) {
-    batchProcessingParamersRef.value.maxItems = uploadModifiedMaxResultsRef.value;
+  batchProcessingParamersRef.value.maxItems =
+    searchWidgetDataRef.value.maxResults;
+  if (
+    batchProcessingParamersRef.value.task ===
+    BatchProcessingTask.UPLOAD_MODIFIED_ITEM
+  ) {
+    batchProcessingParamersRef.value.maxItems =
+      uploadModifiedMaxResultsRef.value;
   }
   if (searchWidgetDataRef.value.searchTerm) {
-    batchProcessingParamersRef.value.searchTerm = searchWidgetDataRef.value.searchTerm;
+    batchProcessingParamersRef.value.searchTerm =
+      searchWidgetDataRef.value.searchTerm;
   }
   if (selectedTagRef.value) {
     batchProcessingParamersRef.value.targetId = selectedTagRef.value.id;
   }
   api
     .post('/api/batch/process', batchProcessingParamersRef.value)
-    .then((response) => {
+    .then(() => {
       showConfirmBatchProcessingModalRef.value = false;
       showOperationInProgressModalRef.value = true;
-      progressMonitorRef.value = response.data;
-      updateOperationProgress();
     })
     .catch(() => {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
         message: i18n.t('BatchProcessingPage.messages.process.failed'),
-        icon: 'report_problem'
-      });
-    });
-}
-
-function updateOperationProgress() {
-  api
-    .get('/api/batch/progress')
-    .then((response) => {
-      if (response.data) {
-        progressMonitorRef.value = response.data;
-        setTimeout(() => updateOperationProgress(), 1000);
-      } else {
-        progressMonitorRef.value = undefined;
-        showOperationInProgressModalRef.value = false;
-        quasar.notify({
-          color: 'positive',
-          position: 'bottom',
-          message: i18n.t('BatchProcessingPage.messages.process.success'),
-          icon: 'check'
-        });
-      }
-    })
-    .catch(() => {
-      quasar.notify({
-        color: 'negative',
-        position: 'bottom',
-        message: i18n.t('BatchProcessingPage.messages.process.failed'),
-        icon: 'report_problem'
+        icon: 'report_problem',
       });
     });
 }
@@ -236,7 +246,6 @@ function updateOperationProgress() {
 onMounted(() => {
   loadTagsConfiguration();
 });
-
 </script>
 
 <style scoped>

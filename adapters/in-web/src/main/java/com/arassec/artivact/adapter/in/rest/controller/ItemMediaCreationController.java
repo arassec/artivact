@@ -1,8 +1,6 @@
 package com.arassec.artivact.adapter.in.rest.controller;
 
-import com.arassec.artivact.adapter.in.rest.model.OperationProgress;
 import com.arassec.artivact.application.port.in.item.*;
-import com.arassec.artivact.application.port.in.operation.GetBackgroundOperationProgressUseCase;
 import com.arassec.artivact.domain.model.item.Asset;
 import com.arassec.artivact.domain.model.media.CaptureImagesParams;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +21,6 @@ import java.util.List;
 @RequestMapping("/api/item/{itemId}/media-creation")
 public class ItemMediaCreationController extends BaseController {
 
-    private final GetBackgroundOperationProgressUseCase getBackgroundOperationProgressUseCase;
-
     private final CaptureItemImageUseCase captureImagesUseCase;
 
     private final ManipulateItemImagesUseCase manipulateImagesUseCase;
@@ -42,13 +38,11 @@ public class ItemMediaCreationController extends BaseController {
      *
      * @param itemId              The item's ID.
      * @param captureImagesparams Configuration parameters for image capturing.
-     * @return The progress.
      */
     @PostMapping("/capture-images")
-    public ResponseEntity<OperationProgress> captureImages(@PathVariable String itemId,
-                                                           @RequestBody CaptureImagesParams captureImagesparams) {
+    public void captureImages(@PathVariable String itemId,
+                              @RequestBody CaptureImagesParams captureImagesparams) {
         captureImagesUseCase.capture(itemId, captureImagesparams);
-        return getProgress(itemId);
     }
 
     /**
@@ -56,13 +50,11 @@ public class ItemMediaCreationController extends BaseController {
      *
      * @param itemId        The item's ID.
      * @param imageSetIndex The image set index.
-     * @return The progress.
      */
     @PostMapping("/remove-backgrounds")
-    public ResponseEntity<OperationProgress> removeBackgrounds(@PathVariable String itemId,
-                                                               @RequestParam int imageSetIndex) {
+    public void removeBackgrounds(@PathVariable String itemId,
+                                  @RequestParam int imageSetIndex) {
         manipulateImagesUseCase.removeBackgrounds(itemId, imageSetIndex);
-        return getProgress(itemId);
     }
 
     /**
@@ -70,24 +62,20 @@ public class ItemMediaCreationController extends BaseController {
      * in the item's images directory.
      *
      * @param itemId The item's ID.
-     * @return the progress.
      */
     @PostMapping("/create-image-set")
-    public ResponseEntity<OperationProgress> createImageSetFromDanglingImages(@PathVariable String itemId) {
+    public void createImageSetFromDanglingImages(@PathVariable String itemId) {
         manageItemImagesUseCase.createImageSetFromDanglingImages(itemId);
-        return getProgress(itemId);
     }
 
     /**
      * Starts 3D model creation for an item.
      *
      * @param itemId The item's ID.
-     * @return The progress.
      */
     @PostMapping("/create-model-set")
-    public ResponseEntity<OperationProgress> createModelSet(@PathVariable String itemId) {
+    public void createModelSet(@PathVariable String itemId) {
         createItemModelUseCase.createModel(itemId);
-        return getProgress(itemId);
     }
 
     /**
@@ -95,12 +83,10 @@ public class ItemMediaCreationController extends BaseController {
      *
      * @param itemId        The item's ID.
      * @param modelSetIndex The model-set index containing the model to edit.
-     * @return The progress.
      */
     @PostMapping("/edit-model/{modelSetIndex}")
-    public ResponseEntity<OperationProgress> openModelEditor(@PathVariable String itemId, @PathVariable int modelSetIndex) {
+    public void openModelEditor(@PathVariable String itemId, @PathVariable int modelSetIndex) {
         editItemModelUseCase.editModel(itemId, modelSetIndex);
-        return getProgress(itemId);
     }
 
     /**
@@ -200,17 +186,6 @@ public class ItemMediaCreationController extends BaseController {
     @PutMapping("/image-set/{imageSetIndex}/toggle-model-input")
     public void toggleModelInput(@PathVariable String itemId, @PathVariable int imageSetIndex) {
         manageItemModelsUseCase.toggleModelInput(itemId, imageSetIndex);
-    }
-
-    /**
-     * Returns the progress of a previously started long-running operation.
-     *
-     * @param itemId The item's ID.
-     * @return The progress.
-     */
-    @GetMapping("/progress")
-    public ResponseEntity<OperationProgress> getProgress(@PathVariable String itemId) {
-        return convert(getBackgroundOperationProgressUseCase.getProgress());
     }
 
 }

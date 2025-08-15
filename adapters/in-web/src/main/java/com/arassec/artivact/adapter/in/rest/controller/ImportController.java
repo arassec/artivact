@@ -1,11 +1,9 @@
 package com.arassec.artivact.adapter.in.rest.controller;
 
-import com.arassec.artivact.adapter.in.rest.model.OperationProgress;
 import com.arassec.artivact.application.port.in.collection.ImportCollectionUseCase;
 import com.arassec.artivact.application.port.in.configuration.ImportPropertiesConfigurationUseCase;
 import com.arassec.artivact.application.port.in.configuration.ImportTagsConfigurationUseCase;
 import com.arassec.artivact.application.port.in.exchange.ImportContentUseCase;
-import com.arassec.artivact.application.port.in.operation.GetBackgroundOperationProgressUseCase;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,8 +26,6 @@ public class ImportController extends BaseController {
     private final ImportPropertiesConfigurationUseCase importPropertiesConfigurationUseCase;
     private final ImportTagsConfigurationUseCase importTagsConfigurationUseCase;
     private final ImportContentUseCase importContentUseCase;
-
-    private final GetBackgroundOperationProgressUseCase getBackgroundOperationProgressUseCase;
 
     /**
      * Imports a properties configuration JSON file.
@@ -105,34 +101,20 @@ public class ImportController extends BaseController {
      * Imports a collection export and its content into the application.
      *
      * @param file The collection export to import.
-     * @return The import progress.
      */
     @PostMapping("/collection")
-    public ResponseEntity<OperationProgress> importCollection(@RequestPart(value = "file") final MultipartFile file) {
+    public void importCollection(@RequestPart(value = "file") final MultipartFile file) {
         importCollectionUseCase.importCollection(convertToPath(file));
-        return getProgress();
     }
 
     /**
      * Imports a collection export for distribution into the application.
      *
      * @param file The collection export to import.
-     * @return The import progress.
      */
     @PostMapping("/collection/for-distribution")
-    public ResponseEntity<OperationProgress> importCollectionForDistribution(@RequestPart(value = "file") final MultipartFile file) {
+    public void importCollectionForDistribution(@RequestPart(value = "file") final MultipartFile file) {
         importCollectionUseCase.importCollectionForDistribution(convertToPath(file));
-        return getProgress();
-    }
-
-    /**
-     * Returns the progress of a previously started long-running operation.
-     *
-     * @return The progress.
-     */
-    @GetMapping("/collection/progress")
-    public ResponseEntity<OperationProgress> getProgress() {
-        return convert(getBackgroundOperationProgressUseCase.getProgress());
     }
 
 }

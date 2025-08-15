@@ -1,10 +1,6 @@
 package com.arassec.artivact.adapter.in.rest.controller;
 
-import com.arassec.artivact.adapter.in.rest.model.OperationProgress;
-import com.arassec.artivact.domain.model.misc.ProgressMonitor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -58,26 +54,6 @@ public abstract class BaseController {
      */
     protected String createUrl(String itemId, String fileName, String fileType) {
         return "/api/item/" + itemId + "/" + fileType + "/" + fileName;
-    }
-
-    /**
-     * Converts a {@link ProgressMonitor} into a {@link OperationProgress}.
-     *
-     * @param progressMonitor The progress monitor to convert.
-     * @return An operation progress containing the monitor's data.
-     */
-    protected ResponseEntity<OperationProgress> convert(ProgressMonitor progressMonitor) {
-        if (progressMonitor != null) {
-            OperationProgress operationProgress = new OperationProgress();
-            operationProgress.setKey(progressMonitor.getLabelKey());
-            operationProgress.setCurrentAmount(progressMonitor.getCurrentAmount());
-            operationProgress.setTargetAmount(progressMonitor.getTargetAmount());
-            if (progressMonitor.getException() != null) {
-                operationProgress.setError(ExceptionUtils.getStackTrace(progressMonitor.getException()));
-            }
-            return ResponseEntity.ok(operationProgress);
-        }
-        return ResponseEntity.ok().build();
     }
 
     // TODO: Replace "Files" with "FileRepository"!

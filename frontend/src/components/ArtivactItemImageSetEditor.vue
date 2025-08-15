@@ -1,5 +1,4 @@
 <template>
-
   <q-btn
     data-test="item-creation-camera-button"
     text-color="primary"
@@ -8,7 +7,8 @@
     dense
     color="accent"
     icon="camera"
-    @click="showCapturePhotosModalRef = true">
+    @click="showCapturePhotosModalRef = true"
+  >
     <q-tooltip>{{ $t('ItemImageSetEditor.tooltip.capture') }}</q-tooltip>
   </q-btn>
   <q-btn
@@ -18,7 +18,8 @@
     dense
     color="accent"
     icon="folder"
-    @click="openImagesDir()">
+    @click="openImagesDir()"
+  >
     <q-tooltip>{{ $t('ItemImageSetEditor.tooltip.open') }}</q-tooltip>
   </q-btn>
   <q-btn
@@ -27,22 +28,42 @@
     dense
     color="accent"
     icon="upload_file"
-    @click="showUploadFilesModalRef = true">
+    @click="showUploadFilesModalRef = true"
+  >
     <q-tooltip>{{ $t('ItemImageSetEditor.tooltip.upload') }}</q-tooltip>
   </q-btn>
 
   <div class="row">
-    <q-card v-for="(imageSet, index) in creationImageSets" :key="index" class="image-set-card q-mr-md q-mt-md">
-      <q-img :src="imageSet.images[0] ? imageSet.images[0].url + '?imageSize=ITEM_CARD' : ''"
-             class="image-set-card-img">
+    <q-card
+      v-for="(imageSet, index) in creationImageSets"
+      :key="index"
+      class="image-set-card q-mr-md q-mt-md"
+    >
+      <q-img
+        :src="
+          imageSet.images[0]
+            ? imageSet.images[0].url + '?imageSize=ITEM_CARD'
+            : ''
+        "
+        class="image-set-card-img"
+      >
         <div class="absolute-bottom">
-          <div class="text-h6">{{ imageSet.images.length }} {{ imageSet.images.length == 1 ? 'Image' : 'Images' }}</div>
+          <div class="text-h6">
+            {{ imageSet.images.length }}
+            {{ imageSet.images.length == 1 ? 'Image' : 'Images' }}
+          </div>
         </div>
       </q-img>
       <q-card-section class="full-width q-pl-none q-pr-none q-pb-none">
         <div class="full-width q-ma-none">
-          <q-toggle flat v-model="imageSet.modelInput" @click="toggleModelInput(index)" :disable="imageSet.images.length === 0">Model input</q-toggle>
-          <q-separator class="q-mt-sm q-mb-sm"/>
+          <q-toggle
+            flat
+            v-model="imageSet.modelInput"
+            @click="toggleModelInput(index)"
+            :disable="imageSet.images.length === 0"
+            >Model input</q-toggle
+          >
+          <q-separator class="q-mt-sm q-mb-sm" />
         </div>
       </q-card-section>
       <q-card-actions>
@@ -54,7 +75,8 @@
           flat
           size="md"
           color="primary"
-          @click="showImageDetails(imageSet)">
+          @click="showImageDetails(imageSet)"
+        >
           <q-tooltip>{{ $t('ItemImageSetEditor.tooltip.details') }}</q-tooltip>
         </q-btn>
         <q-btn
@@ -66,10 +88,13 @@
           size="md"
           color="primary"
           @click="removeBackgrounds(index)"
-          v-if="!imageSet.backgroundRemoved">
-          <q-tooltip>{{ $t('ItemImageSetEditor.tooltip.backgrounds') }}</q-tooltip>
+          v-if="!imageSet.backgroundRemoved"
+        >
+          <q-tooltip>{{
+            $t('ItemImageSetEditor.tooltip.backgrounds')
+          }}</q-tooltip>
         </q-btn>
-        <q-space/>
+        <q-space />
         <q-btn
           icon="delete"
           round
@@ -77,7 +102,8 @@
           flat
           size="md"
           color="primary"
-          @click="showDeleteImageSetConfirm(index)">
+          @click="showDeleteImageSetConfirm(index)"
+        >
           <q-tooltip>{{ $t('ItemImageSetEditor.tooltip.delete') }}</q-tooltip>
         </q-btn>
       </q-card-actions>
@@ -124,17 +150,30 @@
     </template>
 
     <template v-slot:cancel>
-      <q-btn color="primary" :label="$t('Common.cancel')" @click="showCapturePhotosModalRef = false"/>
+      <q-btn
+        color="primary"
+        :label="$t('Common.cancel')"
+        @click="showCapturePhotosModalRef = false"
+      />
     </template>
 
     <template v-slot:approve>
-      <q-btn color="primary" :label="$t('ItemImageSetEditor.startCapturing')" icon="camera" @click="capturePhotos"/>
+      <q-btn
+        color="primary"
+        :label="$t('ItemImageSetEditor.startCapturing')"
+        icon="camera"
+        @click="capturePhotos"
+      />
     </template>
   </artivact-dialog>
 
   <!-- UPLOAD FILES -->
-  <artivact-dialog :dialog-model="showUploadFilesModalRef" :hide-buttons="true"
-                   :show-close-button="true" @close-dialog="showUploadFilesModalRef = false">
+  <artivact-dialog
+    :dialog-model="showUploadFilesModalRef"
+    :hide-buttons="true"
+    :show-close-button="true"
+    @close-dialog="showUploadFilesModalRef = false"
+  >
     <template v-slot:header>
       {{ $t('ItemImageSetEditor.dialog.upload.heading') }}
     </template>
@@ -156,12 +195,14 @@
   </artivact-dialog>
 
   <!-- IMAGE-SET DETAILS -->
-  <artivact-dialog :dialog-model="showImageSetDetailsModalRef"
-                   v-if="showImageSetDetailsModalRef && selectedImageSet"
-                   :hide-buttons="true"
-                   :show-close-button="true"
-                   :min-width="50"
-                   @close-dialog="showImageSetDetailsModalRef = false">
+  <artivact-dialog
+    :dialog-model="showImageSetDetailsModalRef"
+    v-if="showImageSetDetailsModalRef && selectedImageSet"
+    :hide-buttons="true"
+    :show-close-button="true"
+    :min-width="50"
+    @close-dialog="showImageSetDetailsModalRef = false"
+  >
     <template v-slot:header>
       {{ $t('ItemImageSetEditor.dialog.details.heading') }}
     </template>
@@ -169,8 +210,11 @@
     <template v-slot:body>
       <q-card-section>
         <div class="row q-ml-md">
-          <q-card v-for="(image, index) in imagePageRef" :key="index"
-                  class="image-set-card q-mr-md q-mb-md">
+          <q-card
+            v-for="(image, index) in imagePageRef"
+            :key="index"
+            class="image-set-card q-mr-md q-mb-md"
+          >
             <q-img :src="image.url + '?imageSize=ITEM_CARD'">
               <div class="absolute-bottom">
                 <div class="text-h6">{{ image.fileName }}</div>
@@ -186,10 +230,13 @@
                   flat
                   size="md"
                   color="primary"
-                  @click="transferImageToMedia(image)">
-                  <q-tooltip>{{ $t('ItemImageSetEditor.dialog.details.transfer') }}</q-tooltip>
+                  @click="transferImageToMedia(image)"
+                >
+                  <q-tooltip>{{
+                    $t('ItemImageSetEditor.dialog.details.transfer')
+                  }}</q-tooltip>
                 </q-btn>
-                <q-space/>
+                <q-space />
                 <q-btn
                   icon="delete"
                   round
@@ -197,8 +244,11 @@
                   flat
                   size="md"
                   color="primary"
-                  @click="deleteImageFromImageSet(image)">
-                  <q-tooltip>{{ $t('ItemImageSetEditor.dialog.details.deleteImage') }}</q-tooltip>
+                  @click="deleteImageFromImageSet(image)"
+                >
+                  <q-tooltip>{{
+                    $t('ItemImageSetEditor.dialog.details.deleteImage')
+                  }}</q-tooltip>
                 </q-btn>
               </div>
             </q-card-actions>
@@ -218,9 +268,11 @@
   </artivact-dialog>
 
   <!-- LONG-RUNNING OPERATION -->
-  <artivact-operation-in-progress-dialog :progress-monitor-ref="progressMonitorRef"
-                                         :dialog-model="showOperationInProgressModalRef"
-                                         @close-dialog="showOperationInProgressModalRef = false"/>
+  <artivact-operation-in-progress-dialog
+    v-if="showOperationInProgressModalRef == true"
+    :dialog-model="showOperationInProgressModalRef"
+    @close-dialog="showOperationInProgressModalRef = false"
+  />
 
   <!-- DELETE CONFIRMATION DIALOG -->
   <artivact-dialog :dialog-model="confirmDeleteRef" :warn="true">
@@ -235,7 +287,11 @@
     </template>
 
     <template v-slot:cancel>
-      <q-btn :label="$t('Common.cancel')" color="primary" @click="confirmDeleteRef = false"/>
+      <q-btn
+        :label="$t('Common.cancel')"
+        color="primary"
+        @click="confirmDeleteRef = false"
+      />
     </template>
 
     <template v-slot:approve>
@@ -246,18 +302,16 @@
       />
     </template>
   </artivact-dialog>
-
 </template>
 
 <script setup lang="ts">
-
-import {api} from 'boot/axios';
-import {Asset, CapturePhotosParams, ImageSet, OperationProgress} from 'components/artivact-models';
-import {useQuasar} from 'quasar';
-import {PropType, ref} from 'vue';
-import ArtivactDialog from 'components/ArtivactDialog.vue';
-import ArtivactOperationInProgressDialog from 'components/ArtivactOperationInProgressDialog.vue';
-import {useI18n} from 'vue-i18n';
+import { api } from '../boot/axios';
+import { Asset, CapturePhotosParams, ImageSet } from './artivact-models';
+import { useQuasar } from 'quasar';
+import { PropType, ref } from 'vue';
+import ArtivactDialog from '../components/ArtivactDialog.vue';
+import ArtivactOperationInProgressDialog from '../components/ArtivactOperationInProgressDialog.vue';
+import { useI18n } from 'vue-i18n';
 
 const quasar = useQuasar();
 const i18n = useI18n();
@@ -270,7 +324,7 @@ const props = defineProps({
   creationImageSets: {
     required: true,
     type: Array as PropType<Array<ImageSet>>,
-  }
+  },
 });
 
 const emit = defineEmits<{
@@ -284,7 +338,7 @@ const capturePhotosParamsRef = ref({
   numPhotos: 36,
   useTurnTable: true,
   turnTableDelay: 100,
-  removeBackgrounds: true
+  removeBackgrounds: true,
 } as CapturePhotosParams);
 
 const showImageSetDetailsModalRef = ref(false);
@@ -293,17 +347,15 @@ let selectedImageSet: ImageSet;
 const showUploadFilesModalRef = ref(false);
 const showOperationInProgressModalRef = ref(false);
 
-const progressMonitorRef = ref<OperationProgress>();
-
 const confirmDeleteRef = ref(false);
 let selectedImageSetIndex = -1;
 
 const pageData = {
   cur: 1,
   max: 0,
-  min: 0
-}
-const imagePageRef = ref([] as Asset[])
+  min: 0,
+};
+const imagePageRef = ref([] as Asset[]);
 
 let currentPage = 0;
 
@@ -316,22 +368,22 @@ function updateImagesPage(page: number) {
   if (end > selectedImageSet.images.length) {
     end = selectedImageSet.images.length;
   }
-  imagePageRef.value = []
+  imagePageRef.value = [];
   for (let i = start; i < end; i++) {
     imagePageRef.value.push(selectedImageSet.images[i]);
   }
 }
 
 function deleteImageFromImageSet(asset: Asset) {
-  selectedImageSet.images.splice(
-    selectedImageSet.images.indexOf(asset), 1);
+  selectedImageSet.images.splice(selectedImageSet.images.indexOf(asset), 1);
   updateImagesPage(-1);
   emit('delete-image');
 }
 
 function showImageDetails(imageSet: ImageSet) {
   selectedImageSet = imageSet;
-  pageData.max = (imageSet.images.length / 9) + (imageSet.images.length % 9 > 0 ? 1 : 0);
+  pageData.max =
+    imageSet.images.length / 9 + (imageSet.images.length % 9 > 0 ? 1 : 0);
   pageData.cur = 1;
   updateImagesPage(0);
   showImageSetDetailsModalRef.value = true;
@@ -339,13 +391,14 @@ function showImageDetails(imageSet: ImageSet) {
 
 function capturePhotos() {
   api
-    .post('/api/item/' + props.itemId + '/media-creation/capture-images', capturePhotosParamsRef.value)
+    .post(
+      '/api/item/' + props.itemId + '/media-creation/capture-images',
+      capturePhotosParamsRef.value,
+    )
     .then((response) => {
       if (response) {
         showCapturePhotosModalRef.value = false;
         showOperationInProgressModalRef.value = true;
-        progressMonitorRef.value = response.data;
-        updateOperationProgress();
       }
     })
     .catch(() => {
@@ -360,12 +413,15 @@ function capturePhotos() {
 
 function removeBackgrounds(imageSetIndex: number) {
   api
-    .post('/api/item/' + props.itemId + '/media-creation/remove-backgrounds?imageSetIndex=' + imageSetIndex)
+    .post(
+      '/api/item/' +
+        props.itemId +
+        '/media-creation/remove-backgrounds?imageSetIndex=' +
+        imageSetIndex,
+    )
     .then((response) => {
       if (response) {
         showOperationInProgressModalRef.value = true;
-        progressMonitorRef.value = response.data;
-        updateOperationProgress();
       }
     })
     .catch(() => {
@@ -385,8 +441,6 @@ function createImageSet() {
       if (response) {
         showUploadFilesModalRef.value = false;
         showOperationInProgressModalRef.value = true;
-        progressMonitorRef.value = response.data;
-        updateOperationProgress();
       }
     })
     .catch(() => {
@@ -444,7 +498,12 @@ function showDeleteImageSetConfirm(imageSetIndex: number) {
 function deleteImageSet() {
   confirmDeleteRef.value = false;
   api
-    .delete('/api/item/' + props.itemId + '/media-creation/image-set/' + selectedImageSetIndex)
+    .delete(
+      '/api/item/' +
+        props.itemId +
+        '/media-creation/image-set/' +
+        selectedImageSetIndex,
+    )
     .then((response) => {
       if (response) {
         emit('update-item');
@@ -468,7 +527,13 @@ function deleteImageSet() {
 
 function toggleModelInput(imageSetIndex: number) {
   api
-    .put('/api/item/' + props.itemId + '/media-creation/image-set/' + imageSetIndex + '/toggle-model-input')
+    .put(
+      '/api/item/' +
+        props.itemId +
+        '/media-creation/image-set/' +
+        imageSetIndex +
+        '/toggle-model-input',
+    )
     .then((response) => {
       if (response) {
         emit('update-item');
@@ -489,32 +554,6 @@ function toggleModelInput(imageSetIndex: number) {
       });
     });
 }
-
-function updateOperationProgress() {
-  api
-    .get('/api/item/' + props.itemId + '/media-creation/progress')
-    .then((response) => {
-      if (response.data) {
-        progressMonitorRef.value = response.data;
-        if (!progressMonitorRef.value?.error) {
-          setTimeout(() => updateOperationProgress(), 1000);
-        }
-      } else {
-        progressMonitorRef.value = undefined;
-        showOperationInProgressModalRef.value = false;
-        emit('update-item');
-      }
-    })
-    .catch(() => {
-      quasar.notify({
-        color: 'negative',
-        position: 'bottom',
-        message: i18n.t('ItemImageSetEditor.messages.operationFailed'),
-        icon: 'report_problem',
-      });
-    });
-}
-
 </script>
 
 <style scoped>
@@ -526,5 +565,4 @@ function updateOperationProgress() {
   width: 200px;
   height: 200px;
 }
-
 </style>

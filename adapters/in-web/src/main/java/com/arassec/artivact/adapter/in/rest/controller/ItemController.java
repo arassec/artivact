@@ -3,11 +3,7 @@ package com.arassec.artivact.adapter.in.rest.controller;
 import com.arassec.artivact.adapter.in.rest.model.ImageSet;
 import com.arassec.artivact.adapter.in.rest.model.ItemDetails;
 import com.arassec.artivact.adapter.in.rest.model.ModelSet;
-import com.arassec.artivact.adapter.in.rest.model.OperationProgress;
 import com.arassec.artivact.application.port.in.item.*;
-import com.arassec.artivact.application.port.in.item.ManageItemImagesUseCase;
-import com.arassec.artivact.application.port.in.item.ManageItemModelsUseCase;
-import com.arassec.artivact.application.port.in.operation.GetBackgroundOperationProgressUseCase;
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.exception.ArtivactException;
@@ -42,8 +38,6 @@ public class ItemController extends BaseController {
     private final LoadItemUseCase loadItemUseCase;
     private final ManageItemImagesUseCase manageItemImagesUseCase;
     private final ManageItemModelsUseCase manageItemModelsUseCase;
-
-    private final GetBackgroundOperationProgressUseCase getBackgroundOperationProgressUseCase;
 
     private final ExportItemUseCase exportItemUseCase;
     private final DeleteItemUseCase deleteItemUseCase;
@@ -253,22 +247,10 @@ public class ItemController extends BaseController {
      * Called from the UI to start syncing an item with a remote application instance.
      *
      * @param itemId The item's ID.
-     * @return The operation progress.
      */
     @PostMapping(value = "/{itemId}/upload")
-    public ResponseEntity<OperationProgress> uploadItemToRemoteInstance(@PathVariable String itemId) {
+    public void uploadItemToRemoteInstance(@PathVariable String itemId) {
         uploadItemUseCase.uploadItemToRemoteInstance(itemId, true);
-        return getProgress();
-    }
-
-    /**
-     * Returns the progress of a previously started long-running operation.
-     *
-     * @return The progress.
-     */
-    @GetMapping("/progress")
-    public ResponseEntity<OperationProgress> getProgress() {
-        return convert(getBackgroundOperationProgressUseCase.getProgress());
     }
 
     /**

@@ -92,14 +92,6 @@ public interface FileRepository {
     long copy(Path source, OutputStream target);
 
     /**
-     * Copies a directory from source to target.
-     *
-     * @param source The source dir.
-     * @param target The target dir.
-     */
-    void copyDir(Path source, Path target);
-
-    /**
      * Returns a path to the subdirectory folder for the given ID.
      * <p>
      * E.g. a root of '/root/path' and an ID of 'ABC123' will lead to the path '/root/path/ABC/123/ABC123'.

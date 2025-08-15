@@ -4,15 +4,25 @@
       <h1 class="av-text-h1">{{ $t('CollectionExportsPage.heading') }}</h1>
 
       <q-tabs v-model="tab">
-        <q-tab name="configuration" icon="build" :label="$t('CollectionExportsPage.tabs.configuration')">
+        <q-tab
+          name="configuration"
+          icon="build"
+          :label="$t('CollectionExportsPage.tabs.configuration')"
+        >
         </q-tab>
-        <q-tab name="import" icon="upload" :label="$t('CollectionExportsPage.tabs.import')">
+        <q-tab
+          name="import"
+          icon="upload"
+          :label="$t('CollectionExportsPage.tabs.import')"
+        >
         </q-tab>
       </q-tabs>
 
       <!-- CONFIGURATION -->
       <div v-if="tab == 'configuration'">
-        <h2 class="av-text-h2">{{ $t('CollectionExportsPage.configuration.heading') }}</h2>
+        <h2 class="av-text-h2">
+          {{ $t('CollectionExportsPage.configuration.heading') }}
+        </h2>
 
         <div class="q-mb-lg">
           {{ $t('CollectionExportsPage.configuration.description') }}
@@ -25,12 +35,15 @@
           @save-sort-order="saveSortOrder"
           @build-collection-export-file="showBuildDialog"
           @cover-picture-uploaded="loadCollectionExports"
-          @delete-cover-picture="deleteCoverPicture" />
+          @delete-cover-picture="deleteCoverPicture"
+        />
       </div>
 
       <!-- IMPORT -->
       <div v-if="tab == 'import'">
-        <h2 class="av-text-h2">{{ $t('CollectionExportsPage.import.heading') }}</h2>
+        <h2 class="av-text-h2">
+          {{ $t('CollectionExportsPage.import.heading') }}
+        </h2>
 
         <div class="q-mb-lg">
           {{ $t('CollectionExportsPage.import.description') }}
@@ -38,33 +51,40 @@
 
         <div class="row">
           <div class="col">
-            <h3 class="av-text-h3">{{ $t('CollectionExportsPage.import.completeImport') }}</h3>
-            <q-uploader :label="$t('CollectionExportsPage.import.exportFile')"
-                        field-name="file"
-                        :multiple="false"
-                        accept=".artivact.collection.zip"
-                        url="/api/import/collection"
-                        @finish="pollOperationProgress()"
+            <h3 class="av-text-h3">
+              {{ $t('CollectionExportsPage.import.completeImport') }}
+            </h3>
+            <q-uploader
+              :label="$t('CollectionExportsPage.import.exportFile')"
+              field-name="file"
+              :multiple="false"
+              accept=".artivact.collection.zip"
+              url="/api/import/collection"
+              @finish="pollOperationProgress()"
             />
           </div>
           <div class="col">
-            <h3 class="av-text-h3">{{ $t('CollectionExportsPage.import.forDistributionImport') }}</h3>
-            <q-uploader :label="$t('CollectionExportsPage.import.exportFile')"
-                        field-name="file"
-                        :multiple="false"
-                        accept=".artivact.collection.zip"
-                        url="/api/import/collection/for-distribution"
-                        @finish="pollOperationProgress()"
+            <h3 class="av-text-h3">
+              {{ $t('CollectionExportsPage.import.forDistributionImport') }}
+            </h3>
+            <q-uploader
+              :label="$t('CollectionExportsPage.import.exportFile')"
+              field-name="file"
+              :multiple="false"
+              accept=".artivact.collection.zip"
+              url="/api/import/collection/for-distribution"
+              @finish="pollOperationProgress()"
             />
           </div>
         </div>
       </div>
 
-
       <!-- LONG-RUNNING OPERATION -->
-      <artivact-operation-in-progress-dialog :progress-monitor-ref="progressMonitorRef"
-                                             :dialog-model="showOperationInProgressModalRef"
-                                             @close-dialog="showOperationInProgressModalRef = false" />
+      <artivact-operation-in-progress-dialog
+        v-if="showOperationInProgressModalRef == true"
+        :dialog-model="showOperationInProgressModalRef"
+        @close-dialog="finishOperation()"
+      />
 
       <!-- DELETE CONFIRMATION DIALOG -->
       <artivact-dialog :dialog-model="confirmDeleteRef" :warn="true">
@@ -79,7 +99,11 @@
         </template>
 
         <template v-slot:cancel>
-          <q-btn :label="$t('Common.cancel')" color="primary" @click="confirmDeleteRef = false" />
+          <q-btn
+            :label="$t('Common.cancel')"
+            color="primary"
+            @click="confirmDeleteRef = false"
+          />
         </template>
 
         <template v-slot:approve>
@@ -104,7 +128,11 @@
         </template>
 
         <template v-slot:cancel>
-          <q-btn :label="$t('Common.cancel')" color="primary" @click="confirmBuildRef = false" />
+          <q-btn
+            :label="$t('Common.cancel')"
+            color="primary"
+            @click="confirmBuildRef = false"
+          />
         </template>
 
         <template v-slot:approve>
@@ -115,22 +143,21 @@
           />
         </template>
       </artivact-dialog>
-
     </div>
   </ArtivactContent>
 </template>
 
 <script setup lang="ts">
 import { QUploader, useQuasar } from 'quasar';
-import ArtivactContent from 'components/ArtivactContent.vue';
+import ArtivactContent from '../components/ArtivactContent.vue';
 import { useI18n } from 'vue-i18n';
 import { onMounted, Ref, ref } from 'vue';
-import { CollectionExport, OperationProgress } from 'components/artivact-models';
-import { api } from 'boot/axios';
-import ArtivactCollectionExportEditor from 'components/ArtivactCollectionExportEditor.vue';
-import ArtivactOperationInProgressDialog from 'components/ArtivactOperationInProgressDialog.vue';
-import ArtivactDialog from 'components/ArtivactDialog.vue';
-import { useMenuStore } from 'stores/menu';
+import { CollectionExport } from '../components/artivact-models';
+import { api } from '../boot/axios';
+import ArtivactCollectionExportEditor from '../components/ArtivactCollectionExportEditor.vue';
+import ArtivactOperationInProgressDialog from '../components/ArtivactOperationInProgressDialog.vue';
+import ArtivactDialog from '../components/ArtivactDialog.vue';
+import { useMenuStore } from '../stores/menu';
 
 const quasar = useQuasar();
 const i18n = useI18n();
@@ -139,8 +166,8 @@ const menuStore = useMenuStore();
 
 const tab = ref('configuration');
 
-const progressMonitorRef = ref<OperationProgress>();
 const showOperationInProgressModalRef = ref(false);
+const reloadMenusRef = ref(false);
 
 const confirmDeleteRef = ref(false);
 const collectionExportToDelete: Ref<CollectionExport | null> = ref(null);
@@ -160,8 +187,10 @@ function loadCollectionExports() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.collectionExports') }),
-        icon: 'report_problem'
+        message: i18n.t('Common.messages.loading.failed', {
+          item: i18n.t('Common.items.collectionExports'),
+        }),
+        icon: 'report_problem',
       });
     });
 }
@@ -174,16 +203,20 @@ function saveCollectionExport(collectionExport: CollectionExport) {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: i18n.t('Common.messages.saving.success', { item: i18n.t('Common.items.collectionExport') }),
-        icon: 'check'
+        message: i18n.t('Common.messages.saving.success', {
+          item: i18n.t('Common.items.collectionExport'),
+        }),
+        icon: 'check',
       });
     })
     .catch(() => {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.saving.failed', { item: i18n.t('Common.items.collectionExport') }),
-        icon: 'report_problem'
+        message: i18n.t('Common.messages.saving.failed', {
+          item: i18n.t('Common.items.collectionExport'),
+        }),
+        icon: 'report_problem',
       });
     });
 }
@@ -198,13 +231,14 @@ function buildCollectionExportFile() {
     return;
   }
   api
-    .post('/api/collection/export/' + collectionExportToBuild.value.id + '/build')
+    .post(
+      '/api/collection/export/' + collectionExportToBuild.value.id + '/build',
+    )
     .then((response) => {
       if (response) {
         confirmBuildRef.value = false;
+        reloadMenusRef.value = false;
         showOperationInProgressModalRef.value = true;
-        progressMonitorRef.value = response.data;
-        updateOperationProgress(false);
       }
     })
     .catch(() => {
@@ -212,7 +246,7 @@ function buildCollectionExportFile() {
         color: 'negative',
         position: 'bottom',
         message: i18n.t('CollectionExportsPage.messages.buildExportFileFailed'),
-        icon: 'report_problem'
+        icon: 'report_problem',
       });
     });
 }
@@ -234,16 +268,20 @@ function deleteCollectionExport() {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: i18n.t('Common.messages.deleting.success', { item: i18n.t('Common.items.collectionExport') }),
-        icon: 'check'
+        message: i18n.t('Common.messages.deleting.success', {
+          item: i18n.t('Common.items.collectionExport'),
+        }),
+        icon: 'check',
       });
     })
     .catch(() => {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.deleting.failed', { item: i18n.t('Common.items.collectionExport') }),
-        icon: 'report_problem'
+        message: i18n.t('Common.messages.deleting.failed', {
+          item: i18n.t('Common.items.collectionExport'),
+        }),
+        icon: 'report_problem',
       });
     });
 }
@@ -256,16 +294,20 @@ function saveSortOrder() {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: i18n.t('Common.messages.saving.success', { item: i18n.t('Common.items.collectionExports') }),
-        icon: 'check'
+        message: i18n.t('Common.messages.saving.success', {
+          item: i18n.t('Common.items.collectionExports'),
+        }),
+        icon: 'check',
       });
     })
     .catch(() => {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.saving.failed', { item: i18n.t('Common.items.collectionExports') }),
-        icon: 'report_problem'
+        message: i18n.t('Common.messages.saving.failed', {
+          item: i18n.t('Common.items.collectionExports'),
+        }),
+        icon: 'report_problem',
       });
     });
 }
@@ -278,16 +320,20 @@ function deleteCoverPicture(collectionExport: CollectionExport) {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: i18n.t('Common.messages.saving.success', { item: i18n.t('Common.items.collectionExport') }),
-        icon: 'check'
+        message: i18n.t('Common.messages.saving.success', {
+          item: i18n.t('Common.items.collectionExport'),
+        }),
+        icon: 'check',
       });
     })
     .catch(() => {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.saving.failed', { item: i18n.t('Common.items.collectionExport') }),
-        icon: 'report_problem'
+        message: i18n.t('Common.messages.saving.failed', {
+          item: i18n.t('Common.items.collectionExport'),
+        }),
+        icon: 'report_problem',
       });
     });
 }
@@ -301,53 +347,28 @@ function refreshCollectionExports(collectionExports: CollectionExport[]) {
 
 function pollOperationProgress() {
   showOperationInProgressModalRef.value = true;
-  updateOperationProgress(true);
+  reloadMenusRef.value = true;
 }
 
-function updateOperationProgress(reloadMenus: boolean) {
-  api
-    .get('/api/import/collection/progress')
-    .then((response) => {
-      if (response.data) {
-        progressMonitorRef.value = response.data;
-        if (!progressMonitorRef.value?.error) {
-          setTimeout(() => updateOperationProgress(reloadMenus), 1000);
-        }
-      } else {
-        progressMonitorRef.value = undefined;
-        showOperationInProgressModalRef.value = false;
-        loadCollectionExports();
-        if (reloadMenus) {
-          api
-            .get('/api/menu')
-            .then((response) => {
-              menuStore.setAvailableMenus(response.data);
-            });
-          quasar.notify({
-            color: 'positive',
-            position: 'bottom',
-            message: i18n.t('CollectionExportsPage.messages.importSuccess'),
-            icon: 'check'
-          });
-        }
-      }
-    })
-    .catch(() => {
-      quasar.notify({
-        color: 'negative',
-        position: 'bottom',
-        message: i18n.t('CollectionExportsPage.messages.creationFailed'),
-        icon: 'report_problem'
-      });
+function finishOperation() {
+  showOperationInProgressModalRef.value = false;
+  loadCollectionExports();
+  if (reloadMenusRef.value == true) {
+    api.get('/api/menu').then((response) => {
+      menuStore.setAvailableMenus(response.data);
     });
+    quasar.notify({
+      color: 'positive',
+      position: 'bottom',
+      message: i18n.t('CollectionExportsPage.messages.importSuccess'),
+      icon: 'check',
+    });
+  }
 }
 
 onMounted(() => {
   loadCollectionExports();
 });
-
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

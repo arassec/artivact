@@ -22,12 +22,24 @@ import java.util.List;
 @RequestMapping("/api/account")
 public class AccountController {
 
+    /**
+     * Use case for loading accounts.
+     */
     private final LoadAccountUseCase loadAccountUseCase;
 
+    /**
+     * Use case to update accounts.
+     */
     private final UpdateAccountUseCase updateAccountUseCase;
 
+    /**
+     * Use case to create new accounts.
+     */
     private final CreateAccountUseCase createAccountUseCase;
 
+    /**
+     * Use case to delete accounts.
+     */
     private final DeleteAccountUseCase deleteAccountUseCase;
 
     /**

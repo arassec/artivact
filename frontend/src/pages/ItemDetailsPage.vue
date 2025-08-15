@@ -1,6 +1,5 @@
 <template>
   <div v-if="itemDataDetailsRef">
-
     <div class="col items-center sticky gt-md">
       <div class="absolute-top-left q-ma-md" v-if="userdataStore.authenticated">
         <q-btn
@@ -8,22 +7,34 @@
           color="primary"
           icon="delete"
           class="main-nav-button"
-          @click="confirmDeleteRef = true">
-          <q-tooltip>{{ $t('ItemDetailsPage.button.tooltip.delete') }}</q-tooltip>
+          @click="confirmDeleteRef = true"
+        >
+          <q-tooltip>{{
+            $t('ItemDetailsPage.button.tooltip.delete')
+          }}</q-tooltip>
         </q-btn>
       </div>
 
-      <div class="absolute-top-right q-ma-md" v-if="userdataStore.authenticated">
+      <div
+        class="absolute-top-right q-ma-md"
+        v-if="userdataStore.authenticated"
+      >
         <!-- DOWNLOAD BUTTON -->
-        <q-form :action="'/api/item/' + itemDataDetailsRef.id + '/export'" method="get">
+        <q-form
+          :action="'/api/item/' + itemDataDetailsRef.id + '/export'"
+          method="get"
+        >
           <q-btn
             data-test="download-button"
             round
             color="primary"
             icon="download"
             type="submit"
-            class="q-mr-sm main-nav-button">
-            <q-tooltip>{{ $t('ItemDetailsPage.button.tooltip.download') }}</q-tooltip>
+            class="q-mr-sm main-nav-button"
+          >
+            <q-tooltip>{{
+              $t('ItemDetailsPage.button.tooltip.download')
+            }}</q-tooltip>
           </q-btn>
           <!-- SYNC UP BUTTON -->
           <q-btn
@@ -32,17 +43,20 @@
             color="primary"
             icon="cloud_upload"
             class="q-mr-sm main-nav-button"
-            @click="synchronizeUp()">
-            <q-tooltip>{{ $t('ItemDetailsPage.button.tooltip.sync') }}</q-tooltip>
+            @click="synchronizeUp()"
+          >
+            <q-tooltip>{{
+              $t('ItemDetailsPage.button.tooltip.sync')
+            }}</q-tooltip>
           </q-btn>
           <!-- EDIT ITEM BUTTON -->
-          <router-link :to="'/administration/configuration/item/' + itemDataDetailsRef.id">
-            <q-btn
-              round
-              color="primary"
-              icon="edit"
-              class="main-nav-button">
-              <q-tooltip>{{ $t('ItemDetailsPage.button.tooltip.edit') }}</q-tooltip>
+          <router-link
+            :to="'/administration/configuration/item/' + itemDataDetailsRef.id"
+          >
+            <q-btn round color="primary" icon="edit" class="main-nav-button">
+              <q-tooltip>{{
+                $t('ItemDetailsPage.button.tooltip.edit')
+              }}</q-tooltip>
             </q-btn>
           </router-link>
         </q-form>
@@ -50,44 +64,45 @@
     </div>
 
     <ArtivactContent>
-
       <!-- BREADCRUMBS -->
       <div v-if="breadcrumbsStore.breadcrumbs.length > 1" class="q-mb-md">
         <q-breadcrumbs>
           <template
             v-for="(breadcrumb, index) in breadcrumbsStore.breadcrumbs"
-            v-bind:key="index">
+            v-bind:key="index"
+          >
             <q-breadcrumbs-el
               v-if="breadcrumb.label && breadcrumb.target"
               :label="breadcrumb.label"
-              :to="'/page/' + breadcrumb.target + (breadcrumb.anchor ? breadcrumb.anchor : '')"
+              :to="
+                '/page/' +
+                breadcrumb.target +
+                (breadcrumb.anchor ? breadcrumb.anchor : '')
+              "
               style="text-decoration: underline"
             />
-            <q-breadcrumbs-el
-              v-else
-              :label="breadcrumb.label"/>
+            <q-breadcrumbs-el v-else :label="breadcrumb.label" />
           </template>
         </q-breadcrumbs>
       </div>
 
       <div class="col-12">
-
-
-        <div class="col q-mt-xl lt-md"/> <!-- Space on mobile resolution -->
+        <div class="col q-mt-xl lt-md" />
+        <!-- Space on mobile resolution -->
 
         <!-- TITLE -->
         <div v-if="itemDataDetailsRef.title.translatedValue" class="q-mb-sm">
           <div class="gt-xs">
             <label class="title">{{
-                translate(itemDataDetailsRef.title)
-              }}</label>
+              translate(itemDataDetailsRef.title)
+            }}</label>
           </div>
           <div class="lt-sm">
             <label class="title-small">{{
-                translate(itemDataDetailsRef.title)
-              }}</label>
+              translate(itemDataDetailsRef.title)
+            }}</label>
           </div>
-          <q-separator/>
+          <q-separator />
         </div>
 
         <!-- TAGS -->
@@ -99,9 +114,7 @@
             :key="index"
           >
             <template v-if="tag.url && profilesStore.isServerModeEnabled">
-              <a :href="tag.url" class="tag-link">{{
-                  tag.translatedValue
-                }}</a>
+              <a :href="tag.url" class="tag-link">{{ tag.translatedValue }}</a>
             </template>
             <template v-else>
               {{ tag.translatedValue }}
@@ -110,25 +123,38 @@
         </div>
 
         <!-- DESCRIPTION -->
-        <div class="q-mb-md" v-if="itemDataDetailsRef.description.translatedValue">
+        <div
+          class="q-mb-md"
+          v-if="itemDataDetailsRef.description.translatedValue"
+        >
           <label>
             {{ itemDataDetailsRef.description.translatedValue }}
           </label>
         </div>
 
         <!-- MEDIA-CAROUSEL -->
-        <artivact-item-media-carousel :show-images="!openModelRef"
-                                      v-if=" itemDataDetailsRef.images.length > 0 ||
-            itemDataDetailsRef.models.length > 0"
-                                      :item-details="itemDataDetailsRef"
+        <artivact-item-media-carousel
+          :show-images="!openModelRef"
+          v-if="
+            itemDataDetailsRef.images.length > 0 ||
+            itemDataDetailsRef.models.length > 0
+          "
+          :item-details="itemDataDetailsRef"
         />
       </div>
 
       <!-- PROPERTIES -->
-      <div v-if="itemDataDetailsRef && propertiesDataRef" class="col-12 q-mt-lg row">
-        <div v-for="(category, index) in propertiesDataRef" :key="index" class="col-6 property-category">
+      <div
+        v-if="itemDataDetailsRef && propertiesDataRef"
+        class="col-12 q-mt-lg row"
+      >
+        <div
+          v-for="(category, index) in propertiesDataRef"
+          :key="index"
+          class="col-6 property-category"
+        >
           <artivact-property-category-viewer
-            :margin-right="(index % 2) == 0"
+            :margin-right="index % 2 == 0"
             :category="category"
             :properties="itemDataDetailsRef.properties"
           />
@@ -136,10 +162,13 @@
       </div>
 
       <!-- LONG-RUNNING OPERATION -->
-      <artivact-operation-in-progress-dialog :progress-monitor-ref="progressMonitorRef"
-                                             :dialog-model="showOperationInProgressModalRef"
-                                             @close-dialog="showOperationInProgressModalRef = false"/>
-
+      <artivact-operation-in-progress-dialog
+        v-if="showOperationInProgressModalRef == true"
+        :dialog-model="showOperationInProgressModalRef"
+        @close-dialog="showOperationInProgressModalRef = false"
+        :success-message="'ItemDetailsPage.messages.sync.success'"
+        :error-message="'ItemDetailsPage.messages.sync.failed'"
+      />
 
       <!-- DELETE CONFIRMATION -->
       <artivact-dialog :dialog-model="confirmDeleteRef" :warn="true">
@@ -154,7 +183,11 @@
         </template>
 
         <template v-slot:cancel>
-          <q-btn :label="$t('Common.cancel')" color="primary" @click="confirmDeleteRef = false"/>
+          <q-btn
+            :label="$t('Common.cancel')"
+            color="primary"
+            @click="confirmDeleteRef = false"
+          />
         </template>
 
         <template v-slot:approve>
@@ -165,29 +198,26 @@
           />
         </template>
       </artivact-dialog>
-
     </ArtivactContent>
   </div>
-
 </template>
 
 <script setup lang="ts">
-import {useQuasar} from 'quasar';
-import {api} from 'boot/axios';
-import {useRoute, useRouter} from 'vue-router';
-import {onMounted, ref} from 'vue';
-import {useUserdataStore} from 'stores/userdata';
-import ArtivactContent from 'components/ArtivactContent.vue';
-import {useBreadcrumbsStore} from 'stores/breadcrumbs';
-import {translate} from 'components/artivact-utils';
-import ArtivactPropertyCategoryViewer from 'components/ArtivactPropertyCategoryViewer.vue';
-import ArtivactOperationInProgressDialog from 'components/ArtivactOperationInProgressDialog.vue';
-import {OperationProgress} from 'components/artivact-models';
-import ArtivactDialog from 'components/ArtivactDialog.vue';
-import {useI18n} from 'vue-i18n';
-import ArtivactItemMediaCarousel from 'components/ArtivactItemMediaCarousel.vue';
-import {useProfilesStore} from 'stores/profiles';
-import {useApplicationSettingsStore} from 'stores/application-settings';
+import { useQuasar } from 'quasar';
+import { api } from '../boot/axios';
+import { useRoute, useRouter } from 'vue-router';
+import { onMounted, ref } from 'vue';
+import { useUserdataStore } from '../stores/userdata';
+import ArtivactContent from '../components/ArtivactContent.vue';
+import { useBreadcrumbsStore } from '../stores/breadcrumbs';
+import { translate } from '../components/artivact-utils';
+import ArtivactPropertyCategoryViewer from '../components/ArtivactPropertyCategoryViewer.vue';
+import ArtivactOperationInProgressDialog from '../components/ArtivactOperationInProgressDialog.vue';
+import ArtivactDialog from '../components/ArtivactDialog.vue';
+import { useI18n } from 'vue-i18n';
+import ArtivactItemMediaCarousel from '../components/ArtivactItemMediaCarousel.vue';
+import { useProfilesStore } from '../stores/profiles';
+import { useApplicationSettingsStore } from '../stores/application-settings';
 
 const quasar = useQuasar();
 const route = useRoute();
@@ -204,7 +234,6 @@ const propertiesDataRef = ref();
 
 const openModelRef = ref(false);
 
-const progressMonitorRef = ref<OperationProgress>();
 const showOperationInProgressModalRef = ref(false);
 
 const confirmDeleteRef = ref(false);
@@ -218,11 +247,13 @@ function loadData(itemId: string | string[]) {
         breadcrumbsStore.addBreadcrumb({
           label: translate(itemDataDetailsRef.value.title),
           target: null,
+          anchor: null,
         });
       } else {
         breadcrumbsStore.addBreadcrumb({
           label: itemDataDetailsRef.value.id,
           target: null,
+          anchor: null,
         });
       }
     })
@@ -230,7 +261,9 @@ function loadData(itemId: string | string[]) {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.loading.failed', {item: i18n.t('Common.items.item')}),
+        message: i18n.t('Common.messages.loading.failed', {
+          item: i18n.t('Common.items.item'),
+        }),
         icon: 'report_problem',
       });
     });
@@ -246,7 +279,9 @@ function loadPropertiesData() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.loading.failed', {item: i18n.t('Common.items.properties')}),
+        message: i18n.t('Common.messages.loading.failed', {
+          item: i18n.t('Common.items.properties'),
+        }),
         icon: 'report_problem',
       });
     });
@@ -255,38 +290,8 @@ function loadPropertiesData() {
 function synchronizeUp() {
   api
     .post('/api/item/' + itemDataDetailsRef.value.id + '/upload')
-    .then((response) => {
+    .then(() => {
       showOperationInProgressModalRef.value = true;
-      progressMonitorRef.value = response.data;
-      updateOperationProgress();
-    })
-    .catch(() => {
-      quasar.notify({
-        color: 'negative',
-        position: 'bottom',
-        message: i18n.t('ItemDetailsPage.messages.sync.failed'),
-        icon: 'report_problem',
-      });
-    });
-}
-
-function updateOperationProgress() {
-  api
-    .get('/api/item/progress')
-    .then((response) => {
-      if (response.data) {
-        progressMonitorRef.value = response.data;
-        setTimeout(() => updateOperationProgress(), 1000);
-      } else {
-        progressMonitorRef.value = undefined;
-        showOperationInProgressModalRef.value = false;
-        quasar.notify({
-          color: 'positive',
-          position: 'bottom',
-          message: i18n.t('ItemDetailsPage.messages.sync.success'),
-          icon: 'check',
-        });
-      }
     })
     .catch(() => {
       quasar.notify({
@@ -309,7 +314,9 @@ function deleteItem() {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: i18n.t('Common.messages.deleting.success', {item: i18n.t('Common.items.item')}),
+        message: i18n.t('Common.messages.deleting.success', {
+          item: i18n.t('Common.items.item'),
+        }),
         icon: 'done',
       });
     })
@@ -317,7 +324,9 @@ function deleteItem() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.deleting.failed', {item: i18n.t('Common.items.item')}),
+        message: i18n.t('Common.messages.deleting.failed', {
+          item: i18n.t('Common.items.item'),
+        }),
         icon: 'report_problem',
       });
     });
@@ -368,5 +377,4 @@ onMounted(() => {
   top: 3.5em;
   z-index: 2;
 }
-
 </style>

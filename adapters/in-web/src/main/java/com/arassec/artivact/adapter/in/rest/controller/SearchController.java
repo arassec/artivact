@@ -1,15 +1,12 @@
 package com.arassec.artivact.adapter.in.rest.controller;
 
 import com.arassec.artivact.adapter.in.rest.model.ItemCardData;
-import com.arassec.artivact.adapter.in.rest.model.OperationProgress;
 import com.arassec.artivact.adapter.in.rest.model.SearchResult;
-import com.arassec.artivact.application.port.in.operation.GetBackgroundOperationProgressUseCase;
 import com.arassec.artivact.application.port.in.search.ManageSearchIndexUseCase;
 import com.arassec.artivact.application.port.in.search.SearchItemsUseCase;
 import com.arassec.artivact.domain.model.item.Item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,27 +24,12 @@ public class SearchController extends BaseController {
 
     private final SearchItemsUseCase searchItemsUseCase;
 
-    private final GetBackgroundOperationProgressUseCase getBackgroundOperationProgressUseCase;
-
     /**
      * Re-creates the search index completely.
-     *
-     * @return The progress.
      */
     @PostMapping("/index/recreate")
-    public ResponseEntity<OperationProgress> recreateIndex() {
+    public void recreateIndex() {
         manageSearchIndexUseCase.recreateIndex();
-        return getProgress();
-    }
-
-    /**
-     * Returns the progress of a previously started long-running operation.
-     *
-     * @return The progress.
-     */
-    @GetMapping("/progress")
-    public ResponseEntity<OperationProgress> getProgress() {
-        return convert(getBackgroundOperationProgressUseCase.getProgress());
     }
 
     /**
