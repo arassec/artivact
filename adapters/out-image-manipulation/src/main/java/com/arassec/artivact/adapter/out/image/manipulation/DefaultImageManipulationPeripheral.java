@@ -8,11 +8,10 @@ import com.arassec.artivact.adapter.out.image.manipulation.onnx.OnnxBackgroundRe
 import com.arassec.artivact.adapter.out.image.manipulation.onnx.OnnxBackgroundRemoverParams;
 import com.arassec.artivact.application.port.out.peripheral.ImageManipulationPeripheral;
 import com.arassec.artivact.domain.exception.ArtivactException;
-import com.arassec.artivact.domain.model.peripheral.PeripheralAdapterInitParams;
-import com.arassec.artivact.domain.model.peripheral.BasePeripheralAdapter;
 import com.arassec.artivact.domain.model.configuration.PeripheralImplementation;
 import com.arassec.artivact.domain.model.misc.ProgressMonitor;
-import lombok.Getter;
+import com.arassec.artivact.domain.model.peripheral.BasePeripheralAdapter;
+import com.arassec.artivact.domain.model.peripheral.PeripheralAdapterInitParams;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -35,7 +34,6 @@ import java.util.concurrent.TimeUnit;
  * u2netp.onnx#input.1#320#320#5
  */
 @Slf4j
-@Getter
 @Component
 public class DefaultImageManipulationPeripheral extends BasePeripheralAdapter implements ImageManipulationPeripheral {
 

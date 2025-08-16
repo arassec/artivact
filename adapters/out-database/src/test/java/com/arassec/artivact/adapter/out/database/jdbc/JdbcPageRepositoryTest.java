@@ -1,6 +1,5 @@
-package com.arassec.artivact.adapter.out.database;
+package com.arassec.artivact.adapter.out.database.jdbc;
 
-import com.arassec.artivact.adapter.out.database.jdbc.JdbcPageRepository;
 import com.arassec.artivact.adapter.out.database.jdbc.springdata.entity.PageEntity;
 import com.arassec.artivact.adapter.out.database.jdbc.springdata.repository.PageEntityRepository;
 import com.arassec.artivact.application.port.out.repository.PageRepository;

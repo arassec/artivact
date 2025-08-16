@@ -1,10 +1,8 @@
-package com.arassec.artivact.adapter.out.image.manipulation;
+package com.arassec.artivact.adapter.out.image.manipulation.onnx;
 
 import ai.onnxruntime.OrtEnvironment;
 import ai.onnxruntime.OrtException;
 import ai.onnxruntime.OrtSession;
-import com.arassec.artivact.adapter.out.image.manipulation.onnx.OnnxBackgroundRemover;
-import com.arassec.artivact.adapter.out.image.manipulation.onnx.OnnxBackgroundRemoverParams;
 import com.arassec.artivact.domain.model.misc.ProgressMonitor;
 import com.arassec.artivact.domain.model.peripheral.PeripheralAdapterInitParams;
 import org.junit.jupiter.api.Test;

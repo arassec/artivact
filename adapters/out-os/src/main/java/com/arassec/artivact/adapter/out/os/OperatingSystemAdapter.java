@@ -52,7 +52,7 @@ public class OperatingSystemAdapter implements OsGateway {
         boolean executionSuccessful = resultHandler.getExitValue() == 0 || resultHandler.getException() == null;
 
         if (!executionSuccessful) {
-            log.error("Exception during command execution!", resultHandler.getException());
+            log.error("Problem during command execution!", resultHandler.getException());
         }
 
         log.debug("Executed command finished (success={}).", executionSuccessful);

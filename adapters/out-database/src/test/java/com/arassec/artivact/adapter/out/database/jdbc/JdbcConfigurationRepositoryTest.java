@@ -1,6 +1,5 @@
-package com.arassec.artivact.adapter.out.database;
+package com.arassec.artivact.adapter.out.database.jdbc;
 
-import com.arassec.artivact.adapter.out.database.jdbc.JdbcConfigurationRepository;
 import com.arassec.artivact.adapter.out.database.jdbc.springdata.entity.ConfigurationEntity;
 import com.arassec.artivact.adapter.out.database.jdbc.springdata.repository.ConfigurationEntityRepository;
 import com.arassec.artivact.domain.model.configuration.ConfigurationType;

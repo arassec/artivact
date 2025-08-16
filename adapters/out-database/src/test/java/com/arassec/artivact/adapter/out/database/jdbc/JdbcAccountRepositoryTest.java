@@ -1,6 +1,5 @@
-package com.arassec.artivact.adapter.out.database;
+package com.arassec.artivact.adapter.out.database.jdbc;
 
-import com.arassec.artivact.adapter.out.database.jdbc.JdbcAccountRepository;
 import com.arassec.artivact.adapter.out.database.jdbc.springdata.entity.AccountEntity;
 import com.arassec.artivact.adapter.out.database.jdbc.springdata.repository.AccountEntityRepository;
 import com.arassec.artivact.domain.model.account.Account;

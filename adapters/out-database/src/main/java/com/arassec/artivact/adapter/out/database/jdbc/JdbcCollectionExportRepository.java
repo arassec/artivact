@@ -37,6 +37,9 @@ public class JdbcCollectionExportRepository extends BaseJdbcRepository implement
     @Getter
     private final ObjectMapper objectMapper;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Optional<CollectionExport> findById(String id) {
         Optional<CollectionExportEntity> collectionExportEntityOptional = collectionExportEntityRepository.findById(id);

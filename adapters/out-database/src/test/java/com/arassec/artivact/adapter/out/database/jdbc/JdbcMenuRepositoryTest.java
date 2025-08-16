@@ -1,6 +1,5 @@
-package com.arassec.artivact.adapter.out.database;
+package com.arassec.artivact.adapter.out.database.jdbc;
 
-import com.arassec.artivact.adapter.out.database.jdbc.JdbcMenuRepository;
 import com.arassec.artivact.adapter.out.database.jdbc.springdata.entity.MenuEntity;
 import com.arassec.artivact.adapter.out.database.jdbc.springdata.repository.MenuEntityRepository;
 import com.arassec.artivact.domain.model.configuration.MenuConfiguration;
