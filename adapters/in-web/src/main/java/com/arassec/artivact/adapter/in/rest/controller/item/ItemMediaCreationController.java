@@ -1,5 +1,6 @@
-package com.arassec.artivact.adapter.in.rest.controller;
+package com.arassec.artivact.adapter.in.rest.controller.item;
 
+import com.arassec.artivact.adapter.in.rest.controller.BaseController;
 import com.arassec.artivact.application.port.in.item.*;
 import com.arassec.artivact.domain.model.item.Asset;
 import com.arassec.artivact.domain.model.media.CaptureImagesParams;

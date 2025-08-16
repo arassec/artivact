@@ -1,5 +1,6 @@
 package com.arassec.artivact.adapter.in.rest.controller;
 
+import com.arassec.artivact.adapter.in.rest.controller.account.AccountController;
 import com.arassec.artivact.application.service.account.AccountService;
 import com.arassec.artivact.domain.model.account.Account;
 import lombok.SneakyThrows;

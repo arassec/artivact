@@ -6,9 +6,15 @@ public interface UseProjectDirsUseCase {
 
     Path getProjectRoot();
 
+    Path getTempDir();
+
+    Path getExportsDir();
+
     Path getItemsDir();
 
     Path getWidgetsDir();
+
+    Path getSearchIndexDir();
 
     Path getImagesDir(String itemId);
 

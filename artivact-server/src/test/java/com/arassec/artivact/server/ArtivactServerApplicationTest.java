@@ -1,6 +1,6 @@
 package com.arassec.artivact.server;
 
-import com.arassec.artivact.application.service.configuration.ConfigurationService;
+import com.arassec.artivact.application.service.configuration.ManageConfigurationService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ public class ArtivactServerApplicationTest {
      */
     @Test
     void testContextCreation() {
-        assertNotNull(context.getBean(ConfigurationService.class));
+        assertNotNull(context.getBean(ManageConfigurationService.class));
     }
 
 }

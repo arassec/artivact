@@ -1,7 +1,8 @@
 package com.arassec.artivact.adapter.in.rest.controller;
 
+import com.arassec.artivact.adapter.in.rest.controller.page.PageController;
 import com.arassec.artivact.application.port.out.repository.PageRepository;
-import com.arassec.artivact.application.service.page.PageService;
+import com.arassec.artivact.application.service.page.ManagePageService;
 import com.arassec.artivact.domain.model.item.ImageSize;
 import com.arassec.artivact.domain.model.page.PageContent;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,7 +45,7 @@ class PageControllerTest {
      * Service mock.
      */
     @Mock
-    private PageService pageService;
+    private ManagePageService pageService;
 
     /**
      * Spring-Security Authentication mock.
@@ -81,7 +82,7 @@ class PageControllerTest {
     @Test
     void testLoadIndexPageIdOrAlias() {
         when(pageService.loadIndexPageIdAndAlias()).thenReturn(Optional.empty());
-        assertThat(controller.loadIndexPageIdOrAlias()).isEqualTo("");
+        assertThat(controller.loadIndexPageIdOrAlias()).isEmpty();
 
         when(pageService.loadIndexPageIdAndAlias()).thenReturn(Optional.of(new PageRepository.PageIdAndAlias() {
             @Override

@@ -9,7 +9,6 @@ import com.arassec.artivact.domain.model.exchange.ContentSource;
 import com.arassec.artivact.domain.model.exchange.ExchangeMainData;
 import com.arassec.artivact.domain.model.exchange.ExportConfiguration;
 import com.arassec.artivact.domain.model.exchange.ExportContext;
-import com.arassec.artivact.domain.model.misc.DirectoryDefinitions;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -86,7 +85,7 @@ public abstract class BaseExportService {
         String exportName = id + COLLECTION_EXCHANGE_SUFFIX;
         ExportContext exportContext = new ExportContext();
         exportContext.setExportConfiguration(Optional.ofNullable(exportConfiguration).orElse(new ExportConfiguration()));
-        exportContext.setProjectExportsDir(getUseProjectDirsUseCase().getProjectRoot().resolve(DirectoryDefinitions.EXPORT_DIR));
+        exportContext.setProjectExportsDir(getUseProjectDirsUseCase().getExportsDir());
         exportContext.setExportDir(exportContext.getProjectExportsDir().resolve(exportName));
         exportContext.setExportFile(exportContext.getProjectExportsDir().resolve(exportName + ZIP_FILE_SUFFIX));
         return exportContext;

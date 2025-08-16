@@ -1,7 +1,7 @@
-package com.arassec.artivact.adapter.in.rest.controller;
+package com.arassec.artivact.adapter.in.rest.controller.page;
 
-import com.arassec.artivact.application.port.in.page.ManagePageMediaUseCase;
 import com.arassec.artivact.application.port.in.page.LoadPageContentUseCase;
+import com.arassec.artivact.application.port.in.page.ManagePageMediaUseCase;
 import com.arassec.artivact.application.port.in.page.SavePageContentUseCase;
 import com.arassec.artivact.application.port.out.repository.PageRepository;
 import com.arassec.artivact.domain.model.item.ImageSize;

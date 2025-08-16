@@ -1,21 +1,20 @@
 package com.arassec.artivact.application.service.configuration;
 
-import com.arassec.artivact.application.port.in.configuration.*;
+import com.arassec.artivact.application.port.in.configuration.ExportPropertiesConfigurationUseCase;
+import com.arassec.artivact.application.port.in.configuration.ExportTagsConfigurationUseCase;
+import com.arassec.artivact.application.port.in.configuration.LoadPropertiesConfigurationUseCase;
+import com.arassec.artivact.application.port.in.configuration.LoadTagsConfigurationUseCase;
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.application.service.BaseExportService;
-import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.BaseTranslatableRestrictedObject;
 import com.arassec.artivact.domain.model.configuration.PropertiesConfiguration;
 import com.arassec.artivact.domain.model.configuration.TagsConfiguration;
 import com.arassec.artivact.domain.model.exchange.ExportConfiguration;
 import com.arassec.artivact.domain.model.exchange.ExportContext;
-import com.arassec.artivact.domain.model.exchange.ImportContext;
-import com.arassec.artivact.domain.model.misc.DirectoryDefinitions;
 import com.arassec.artivact.domain.model.property.Property;
 import com.arassec.artivact.domain.model.property.PropertyCategory;
 import com.arassec.artivact.domain.model.tag.Tag;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -32,12 +31,10 @@ import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.TAGS_EX
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ConfigurationExchangeService extends BaseExportService
-        implements ExportPropertiesConfigurationUseCase, ExportTagsConfigurationUseCase, ImportPropertiesConfigurationUseCase, ImportTagsConfigurationUseCase {
+public class ConfigurationExportService extends BaseExportService
+        implements ExportPropertiesConfigurationUseCase,
+        ExportTagsConfigurationUseCase {
 
-    /**
-     * The application's object mapper.
-     */
     @Getter
     private final ObjectMapper objectMapper;
 
@@ -48,11 +45,8 @@ public class ConfigurationExchangeService extends BaseExportService
     private final UseProjectDirsUseCase useProjectDirsUseCase;
 
     private final LoadTagsConfigurationUseCase loadTagsConfigurationUseCase;
-    private final SaveTagsConfigurationUseCase saveTagsConfigurationUseCase;
 
     private final LoadPropertiesConfigurationUseCase loadPropertiesConfigurationUseCase;
-    private final SavePropertiesConfigurationUseCase savePropertiesConfigurationUseCase;
-
 
     /**
      * Exports the current tags configuration and returns the result as String.
@@ -80,7 +74,7 @@ public class ConfigurationExchangeService extends BaseExportService
     @Override
     public Path exportPropertiesConfiguration(PropertiesConfiguration propertiesConfiguration) {
         return exportPropertiesConfiguration(ExportContext.builder()
-                .exportDir(useProjectDirsUseCase.getProjectRoot().resolve(DirectoryDefinitions.EXPORT_DIR))
+                .exportDir(useProjectDirsUseCase.getExportsDir())
                 .exportConfiguration(new ExportConfiguration())
                 .build(), propertiesConfiguration
         );
@@ -92,7 +86,7 @@ public class ConfigurationExchangeService extends BaseExportService
     @Override
     public Path exportTagsConfiguration(TagsConfiguration tagsConfiguration) {
         return exportTagsConfiguration(ExportContext.builder()
-                .exportDir(useProjectDirsUseCase.getProjectRoot().resolve(DirectoryDefinitions.EXPORT_DIR))
+                .exportDir(useProjectDirsUseCase.getExportsDir())
                 .exportConfiguration(new ExportConfiguration())
                 .build(), tagsConfiguration
         );
@@ -108,6 +102,19 @@ public class ConfigurationExchangeService extends BaseExportService
         Path exportFile = exportContext.getExportDir().resolve(TAGS_EXCHANGE_FILENAME_JSON);
         cleanupTagsConfiguration(exportContext, tagsConfiguration);
         writeJsonFile(exportFile, tagsConfiguration);
+        return exportFile;
+    }
+
+    /**
+     * Exports properties and tags configuration files.
+     *
+     * @param exportContext Export parameters.
+     */
+    @Override
+    public Path exportPropertiesConfiguration(ExportContext exportContext, PropertiesConfiguration propertiesConfiguration) {
+        Path exportFile = exportContext.getExportDir().resolve(PROPERTIES_EXCHANGE_FILENAME_JSON);
+        PropertiesConfiguration cleanedPropertiesConfiguration = cleanPropertyConfiguration(exportContext, propertiesConfiguration);
+        writeJsonFile(exportFile, cleanedPropertiesConfiguration);
         return exportFile;
     }
 
@@ -131,74 +138,6 @@ public class ConfigurationExchangeService extends BaseExportService
                     cleanedTags.add(tag);
                 });
         tagsConfiguration.setTags(cleanedTags);
-    }
-
-    /**
-     * Exports properties and tags configuration files.
-     *
-     * @param exportContext Export parameters.
-     */
-    @Override
-    public Path exportPropertiesConfiguration(ExportContext exportContext, PropertiesConfiguration propertiesConfiguration) {
-        Path exportFile = exportContext.getExportDir().resolve(PROPERTIES_EXCHANGE_FILENAME_JSON);
-        PropertiesConfiguration cleanedPropertiesConfiguration = cleanPropertyConfiguration(exportContext, propertiesConfiguration);
-        writeJsonFile(exportFile, cleanedPropertiesConfiguration);
-        return exportFile;
-    }
-
-    @Override
-    public void importPropertiesConfiguration(String propertiesConfiguration) {
-        PropertiesConfiguration propConfig;
-        try {
-            propConfig = objectMapper.readValue(propertiesConfiguration, PropertiesConfiguration.class);
-        } catch (JsonProcessingException e) {
-            throw new ArtivactException("Could not deserialize properties configuration!", e);
-        }
-        savePropertiesConfigurationUseCase.savePropertiesConfiguration(propConfig);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void importPropertiesConfiguration(ImportContext importContext) {
-        Path propertiesConfigurationJson = importContext.getImportDir().resolve(PROPERTIES_EXCHANGE_FILENAME_JSON);
-        if (fileRepository.exists(propertiesConfigurationJson)) {
-            PropertiesConfiguration propertiesConfiguration;
-            try {
-                propertiesConfiguration = objectMapper.readValue(fileRepository.read(propertiesConfigurationJson), PropertiesConfiguration.class);
-            } catch (JsonProcessingException e) {
-                throw new ArtivactException("Could not read properties configuration file", e);
-            }
-            savePropertiesConfigurationUseCase.savePropertiesConfiguration(propertiesConfiguration);
-        }
-    }
-
-    @Override
-    public void importTagsConfiguration(String tagsConfiguration) {
-        try {
-            TagsConfiguration tagsConfig = objectMapper.readValue(tagsConfiguration, TagsConfiguration.class);
-            saveTagsConfigurationUseCase.saveTagsConfiguration(tagsConfig);
-        } catch (JsonProcessingException e) {
-            throw new ArtivactException("Could not deserialize tags configuration!", e);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void importTagsConfiguration(ImportContext importContext) {
-        Path tagsConfigurationJson = importContext.getImportDir().resolve(TAGS_EXCHANGE_FILENAME_JSON);
-        if (fileRepository.exists(tagsConfigurationJson)) {
-            TagsConfiguration tagsConfiguration;
-            try {
-                tagsConfiguration = objectMapper.readValue(fileRepository.read(tagsConfigurationJson), TagsConfiguration.class);
-            } catch (JsonProcessingException e) {
-                throw new ArtivactException("Could not read tags configuration file", e);
-            }
-            saveTagsConfigurationUseCase.saveTagsConfiguration(tagsConfiguration);
-        }
     }
 
     /**

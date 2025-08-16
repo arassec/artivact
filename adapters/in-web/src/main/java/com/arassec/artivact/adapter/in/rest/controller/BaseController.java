@@ -1,11 +1,6 @@
 package com.arassec.artivact.adapter.in.rest.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 /**
  * Base for REST-Controllers with utility methods.
@@ -54,21 +49,6 @@ public abstract class BaseController {
      */
     protected String createUrl(String itemId, String fileName, String fileType) {
         return "/api/item/" + itemId + "/" + fileType + "/" + fileName;
-    }
-
-    // TODO: Replace "Files" with "FileRepository"!
-    protected Path convertToPath(MultipartFile multipartFile) {
-        String originalFilename = multipartFile.getOriginalFilename();
-        String suffix = originalFilename != null && originalFilename.contains(".")
-                ? originalFilename.substring(originalFilename.lastIndexOf("."))
-                : ".tmp";
-        try {
-            Path tempFile = Files.createTempFile("upload_", suffix);
-            multipartFile.transferTo(tempFile.toFile());
-            return tempFile;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 }

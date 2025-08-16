@@ -3,7 +3,6 @@ package com.arassec.artivact.application.service.project;
 import com.arassec.artivact.application.port.in.project.CleanupExportFilesUseCase;
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
-import com.arassec.artivact.domain.model.misc.DirectoryDefinitions;
 import com.arassec.artivact.domain.model.misc.ExchangeDefinitions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,8 +25,7 @@ public class ProjectFileService implements CleanupExportFilesUseCase {
      */
     @Override
     public void cleanupTagsConfigurationExport() {
-        fileRepository.delete(useProjectDirsUseCase.getProjectRoot()
-                .resolve(DirectoryDefinitions.EXPORT_DIR)
+        fileRepository.delete(useProjectDirsUseCase.getExportsDir()
                 .resolve(ExchangeDefinitions.TAGS_EXCHANGE_FILENAME_JSON));
     }
 
@@ -36,8 +34,7 @@ public class ProjectFileService implements CleanupExportFilesUseCase {
      */
     @Override
     public void cleanupPropertiesConfigurationExport() {
-        fileRepository.delete(useProjectDirsUseCase.getProjectRoot()
-                .resolve(DirectoryDefinitions.EXPORT_DIR)
+        fileRepository.delete(useProjectDirsUseCase.getExportsDir()
                 .resolve(ExchangeDefinitions.PROPERTIES_EXCHANGE_FILENAME_JSON));
     }
 

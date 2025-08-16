@@ -5,7 +5,6 @@ import com.arassec.artivact.application.port.out.gateway.SearchGateway;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.item.Item;
-import com.arassec.artivact.domain.model.misc.DirectoryDefinitions;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -47,10 +46,9 @@ public class LuceneSearchGateway implements SearchGateway {
 
 
     public LuceneSearchGateway(FileRepository fileRepository,
-                               UseProjectDirsUseCase getProjectRootUseCase) {
+                               UseProjectDirsUseCase useProjectDirsUseCase) {
         this.fileRepository = fileRepository;
-        this.searchIndexDir = getProjectRootUseCase.getProjectRoot()
-                .resolve(DirectoryDefinitions.SEARCH_INDEX_DIR);
+        this.searchIndexDir = useProjectDirsUseCase.getSearchIndexDir();
     }
 
     /**

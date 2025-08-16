@@ -5,8 +5,8 @@ import ai.onnxruntime.OrtException;
 import ai.onnxruntime.OrtSession;
 import com.arassec.artivact.adapter.out.image.manipulation.onnx.OnnxBackgroundRemover;
 import com.arassec.artivact.adapter.out.image.manipulation.onnx.OnnxBackgroundRemoverParams;
-import com.arassec.artivact.domain.model.peripheral.PeripheralAdapterInitParams;
 import com.arassec.artivact.domain.model.misc.ProgressMonitor;
+import com.arassec.artivact.domain.model.peripheral.PeripheralAdapterInitParams;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Tests the {@link OnnxBackgroundRemover}.
  */
-public class OnnxBackgroundRemoverTest {
+class OnnxBackgroundRemoverTest {
 
     /**
      * Tests removing the background from an image.

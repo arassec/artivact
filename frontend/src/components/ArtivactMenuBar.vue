@@ -1,12 +1,15 @@
 <template>
   <div data-test="artivact-menu-bar" class="row gt-sm">
-
     <template v-for="(menu, index) in menuStore.menus" :key="menu.id">
       <!-- SINGLE MENU WITH PAGE -->
       <!-- Only menu with defined target, no entries defined: -->
       <q-btn
         :data-test="'menu-' + menu.value"
-        v-if="menu.menuEntries.length === 0 && menu.targetPageId && (userdataStore.isUserOrAdmin || !menu.hidden)"
+        v-if="
+          menu.menuEntries.length === 0 &&
+          menu.targetPageId &&
+          (userdataStore.isUserOrAdmin || !menu.hidden)
+        "
         no-caps
         flat
         color="white"
@@ -14,7 +17,6 @@
         class="q-mr-md"
         @click="gotoPage(menu, null)"
       >
-
         <q-icon
           v-if="menu.restrictions.length > 0 && userdataStore.isUserOrAdmin"
           name="lock"
@@ -30,7 +32,9 @@
           class="q-ml-xs"
         />
 
-        <q-tooltip v-if="userdataStore.isAdmin">{{ $t('ArtivactMenuBar.tooltip.edit') }}</q-tooltip>
+        <q-tooltip v-if="userdataStore.isAdmin">{{
+          $t('ArtivactMenuBar.tooltip.edit')
+        }}</q-tooltip>
         <q-menu
           :data-test="'menu-context-menu-' + menu.value"
           v-model="showMenuRef[menu.id]"
@@ -146,17 +150,23 @@
         :data-test="'menu-' + menu.value"
         class="q-mr-md"
         v-if="
-          ((menu.menuEntries.length > 0 || menu.external)
-            || (menu.menuEntries.length == 0 && !menu.targetPageId && userdataStore.isAdmin))
-            && (userdataStore.isUserOrAdmin || !menu.hidden)
+          (menu.menuEntries.length > 0 ||
+            menu.external ||
+            (menu.menuEntries.length == 0 &&
+              !menu.targetPageId &&
+              userdataStore.isAdmin)) &&
+          (userdataStore.isUserOrAdmin || !menu.hidden)
         "
         no-caps
         flat
-        :color="menu.menuEntries.length == 0 && !menu.targetPageId && !menu.external ? 'negative' : 'white'"
+        :color="
+          menu.menuEntries.length == 0 && !menu.targetPageId && !menu.external
+            ? 'negative'
+            : 'white'
+        "
         :label="translate(menu)"
         @click="menu.external ? gotoPage(menu, null) : {}"
       >
-
         <q-icon
           v-if="menu.external"
           name="open_in_new"
@@ -180,12 +190,16 @@
           class="q-ml-xs"
         />
 
-        <q-tooltip v-if="userdataStore.isAdmin && !profilesStore.isE2eModeEnabled">
-          {{ $t('ArtivactMenuBar.tooltip.edit') }}
-        </q-tooltip
+        <q-tooltip
+          v-if="userdataStore.isAdmin && !profilesStore.isE2eModeEnabled"
         >
-        <q-menu :data-test="'menu-menu-' + menu.value"
-                anchor="bottom middle" self="top middle">
+          {{ $t('ArtivactMenuBar.tooltip.edit') }}
+        </q-tooltip>
+        <q-menu
+          :data-test="'menu-menu-' + menu.value"
+          anchor="bottom middle"
+          self="top middle"
+        >
           <q-list>
             <template
               v-for="(menuEntry, menuEntryIndex) in menu.menuEntries"
@@ -211,7 +225,10 @@
                     />
 
                     <q-icon
-                      v-if="menuEntry.restrictions.length > 0 && userdataStore.isUserOrAdmin"
+                      v-if="
+                        menuEntry.restrictions.length > 0 &&
+                        userdataStore.isUserOrAdmin
+                      "
                       name="lock"
                       size="xs"
                       class="q-ml-xs"
@@ -233,7 +250,9 @@
                     >
                       <q-list>
                         <q-item
-                          :data-test="'menu-entry-edit-button-' + menuEntry.value"
+                          :data-test="
+                            'menu-entry-edit-button-' + menuEntry.value
+                          "
                           clickable
                           v-close-popup
                           @click.capture.stop="editMenu(menuEntry)"
@@ -267,7 +286,9 @@
                                 color="primary"
                                 class="q-mr-sm"
                               />
-                              {{ $t('ArtivactMenuBar.label.deleteEntry') }}</label
+                              {{
+                                $t('ArtivactMenuBar.label.deleteEntry')
+                              }}</label
                             >
                           </q-item-section>
                         </q-item>
@@ -287,7 +308,9 @@
                                 color="primary"
                                 class="q-mr-sm"
                               />
-                              {{ $t('ArtivactMenuBar.label.exportEntry') }}</label
+                              {{
+                                $t('ArtivactMenuBar.label.exportEntry')
+                              }}</label
                             >
                           </q-item-section>
                         </q-item>
@@ -401,15 +424,15 @@
               "
             >
               <q-item-section
-              ><label class="menu-label">
-                <q-icon
-                  name="add"
-                  size="xs"
-                  color="primary"
-                  class="q-mr-sm"
-                ></q-icon>
-                {{ $t('ArtivactMenuBar.label.add') }}</label
-              >
+                ><label class="menu-label">
+                  <q-icon
+                    name="add"
+                    size="xs"
+                    color="primary"
+                    class="q-mr-sm"
+                  ></q-icon>
+                  {{ $t('ArtivactMenuBar.label.add') }}</label
+                >
               </q-item-section>
             </q-item>
             <q-item
@@ -418,18 +441,20 @@
               v-close-popup
               @click="addMenuEntry(menu)"
               class="menu-entry"
-              v-if="!menu.external && !menu.targetPageId && userdataStore.isAdmin"
+              v-if="
+                !menu.external && !menu.targetPageId && userdataStore.isAdmin
+              "
             >
               <q-item-section
-              ><label class="menu-label">
-                <q-icon
-                  name="add"
-                  size="xs"
-                  color="primary"
-                  class="q-mr-sm"
-                ></q-icon>
-                {{ $t('ArtivactMenuBar.label.addEntry') }}</label
-              >
+                ><label class="menu-label">
+                  <q-icon
+                    name="add"
+                    size="xs"
+                    color="primary"
+                    class="q-mr-sm"
+                  ></q-icon>
+                  {{ $t('ArtivactMenuBar.label.addEntry') }}</label
+                >
               </q-item-section>
             </q-item>
             <q-item
@@ -504,28 +529,27 @@
       <q-icon name="add" color="white"></q-icon>
       <q-menu>
         <q-list>
-          <q-item data-test="create-menu-button"
-                  @click="createMenu"
-                  clickable
-                  v-close-popup
-                  class="menu-entry">
+          <q-item
+            data-test="create-menu-button"
+            @click="createMenu"
+            clickable
+            v-close-popup
+            class="menu-entry"
+          >
             <q-item-section>
               <label class="menu-label">
-                <q-icon
-                  name="add"
-                  size="xs"
-                  color="primary"
-                  class="q-mr-sm"
-                />
+                <q-icon name="add" size="xs" color="primary" class="q-mr-sm" />
                 {{ $t('ArtivactMenuBar.label.createMenu') }}</label
               >
             </q-item-section>
           </q-item>
-          <q-item data-test="import-menu-button"
-                  @click="showImportMenuModal = true"
-                  clickable
-                  v-close-popup
-                  class="menu-entry">
+          <q-item
+            data-test="import-menu-button"
+            @click="showImportMenuModal = true"
+            clickable
+            v-close-popup
+            class="menu-entry"
+          >
             <q-item-section>
               <label class="menu-label">
                 <q-icon
@@ -543,7 +567,10 @@
     </q-btn>
 
     <!-- IMPORT MENU MODAL -->
-    <artivact-dialog :data-test="'import-menu-modal'" :dialog-model="showImportMenuModal">
+    <artivact-dialog
+      :data-test="'import-menu-modal'"
+      :dialog-model="showImportMenuModal"
+    >
       <template v-slot:header>
         <div class="text-h6">
           {{ $t('ArtivactMenuBar.dialog.import') }}
@@ -555,13 +582,14 @@
             {{ $t('ArtivactMenuBar.dialog.importDescription') }}
           </div>
           <div class="row">
-            <q-uploader :label="$t('ArtivactMenuBar.dialog.importFileUpload')"
-                        accept=".artivact.menu.zip"
-                        field-name="file"
-                        :no-thumbnails="true"
-                        class="col"
-                        :url="'/api/import/menu'"
-                        @uploaded="menuImported()"
+            <q-uploader
+              :label="$t('ArtivactMenuBar.dialog.importFileUpload')"
+              accept=".artivact.menu.zip"
+              field-name="file"
+              :no-thumbnails="true"
+              class="col"
+              :url="'/api/menu/import'"
+              @uploaded="menuImported()"
             />
           </div>
         </q-card-section>
@@ -576,7 +604,10 @@
     </artivact-dialog>
 
     <!-- ADD/EDIT MENU MODAL -->
-    <artivact-dialog :data-test="'add-menu-modal'" :dialog-model="showMenuModal">
+    <artivact-dialog
+      :data-test="'add-menu-modal'"
+      :dialog-model="showMenuModal"
+    >
       <template v-slot:header>
         <div class="text-h6" v-if="!menuRef.id && !menuRef.parentId">
           {{ $t('ArtivactMenuBar.dialog.add') }}
@@ -609,7 +640,9 @@
             :show-separator="false"
           />
 
-          <template v-if="!menuRef.targetPageId && menuRef.menuEntries.length == 0">
+          <template
+            v-if="!menuRef.targetPageId && menuRef.menuEntries.length == 0"
+          >
             <div class="q-mb-xs q-mt-md">
               {{ $t('ArtivactMenuBar.dialog.descriptionExternal') }}
             </div>
@@ -623,7 +656,13 @@
             />
           </template>
 
-          <template v-if="menuRef.targetPageId && (!profilesStore.isDesktopModeEnabled || profilesStore.isE2eModeEnabled)">
+          <template
+            v-if="
+              menuRef.targetPageId &&
+              (!profilesStore.isDesktopModeEnabled ||
+                profilesStore.isE2eModeEnabled)
+            "
+          >
             <div class="q-mb-xs q-mt-md">
               {{ $t('ArtivactMenuBar.dialog.descriptionTargetPageAlias') }}
             </div>
@@ -637,7 +676,13 @@
             />
           </template>
 
-          <template v-if="(menuRef.targetPageId || menuRef.menuEntries.length > 0) && (!profilesStore.isDesktopModeEnabled || profilesStore.isE2eModeEnabled)">
+          <template
+            v-if="
+              (menuRef.targetPageId || menuRef.menuEntries.length > 0) &&
+              (!profilesStore.isDesktopModeEnabled ||
+                profilesStore.isE2eModeEnabled)
+            "
+          >
             <div class="q-mb-xs q-mt-lg">
               {{ $t('ArtivactMenuBar.dialog.descriptionHidden') }}
             </div>
@@ -648,7 +693,6 @@
               :label="$t('ArtivactMenuBar.label.hidden')"
             />
           </template>
-
         </q-card-section>
       </template>
 
@@ -673,8 +717,12 @@
     <!-- DELETE MENU MODAL -->
     <artivact-dialog :dialog-model="confirmDeleteRef" :warn="true">
       <template v-slot:header>
-        <h3 class="av-text-h3" v-if="!menuRef.parentId">{{ $t('ArtivactMenuBar.dialog.delete') }}</h3>
-        <h3 class="av-text-h3" v-if="menuRef.parentId">{{ $t('ArtivactMenuBar.dialog.deleteEntry') }}</h3>
+        <h3 class="av-text-h3" v-if="!menuRef.parentId">
+          {{ $t('ArtivactMenuBar.dialog.delete') }}
+        </h3>
+        <h3 class="av-text-h3" v-if="menuRef.parentId">
+          {{ $t('ArtivactMenuBar.dialog.deleteEntry') }}
+        </h3>
       </template>
 
       <template v-slot:body>
@@ -684,19 +732,26 @@
       </template>
 
       <template v-slot:cancel>
-        <q-btn :label="$t('Common.cancel')" color="primary" @click="confirmDeleteRef = false"/>
+        <q-btn
+          :label="$t('Common.cancel')"
+          color="primary"
+          @click="confirmDeleteRef = false"
+        />
       </template>
 
       <template v-slot:approve>
         <q-btn
           data-test="delete-menu-approve-button"
-          :label="menuRef.parentId ? $t('ArtivactMenuBar.dialog.deleteApproveEntry') : $t('ArtivactMenuBar.dialog.deleteApprove')"
+          :label="
+            menuRef.parentId
+              ? $t('ArtivactMenuBar.dialog.deleteApproveEntry')
+              : $t('ArtivactMenuBar.dialog.deleteApprove')
+          "
           color="primary"
           @click="deleteMenu"
         />
       </template>
     </artivact-dialog>
-
   </div>
 
   <!-- MENUS FOR SMALL RESOLUTIONS / MOBILE RESOLUTIONS -->
@@ -705,30 +760,26 @@
       <q-list>
         <template v-for="menu in menuStore.menus" :key="menu.id">
           <q-item
-            v-if="(userdataStore.isUserOrAdmin || !menu.hidden)"
+            v-if="userdataStore.isUserOrAdmin || !menu.hidden"
             clickable
             class="menu-entry"
           >
             <!-- Only menu with defined target, no entries defined: -->
             <q-item-section
-              v-if="menu.menuEntries.length === 0 && (menu.targetPageId || menu.external)"
-              @click="
-              gotoPage(menu, null)
-            "
+              v-if="
+                menu.menuEntries.length === 0 &&
+                (menu.targetPageId || menu.external)
+              "
+              @click="gotoPage(menu, null)"
             >
               <label class="menu-label">
                 {{ menu.translatedValue }}
-                <q-icon
-                  v-if="menu.external"
-                  name="open_in_new"
-                  size="xs"
-                />
+                <q-icon v-if="menu.external" name="open_in_new" size="xs" />
               </label>
             </q-item-section>
 
             <!-- Menu with entries -->
-            <q-item-section
-              v-if="menu.menuEntries.length > 0">
+            <q-item-section v-if="menu.menuEntries.length > 0">
               <label class="menu-label">
                 {{ menu.translatedValue }}
                 <q-icon name="chevron_right" size="sm"></q-icon>
@@ -740,11 +791,16 @@
               self="top start"
             >
               <q-list clickable v-close-popup class="menu-entry">
-                <template v-for="menuEntry in menu.menuEntries"
-                          :key="menuEntry.id">
-                  <q-item clickable class="menu-entry"
-                          v-if="(userdataStore.isUserOrAdmin || !menuEntry.hidden)"
-                          @click="gotoPage(menuEntry, menu)">
+                <template
+                  v-for="menuEntry in menu.menuEntries"
+                  :key="menuEntry.id"
+                >
+                  <q-item
+                    clickable
+                    class="menu-entry"
+                    v-if="userdataStore.isUserOrAdmin || !menuEntry.hidden"
+                    @click="gotoPage(menuEntry, menu)"
+                  >
                     <q-item-section>
                       <label class="menu-label">
                         {{ menuEntry.translatedValue }}
@@ -760,31 +816,28 @@
               </q-list>
             </q-menu>
           </q-item>
-
         </template>
-
       </q-list>
     </q-menu>
   </q-btn>
-
 </template>
 
 <script setup lang="ts">
-import {useMenuStore} from '../stores/menu';
-import {api} from '../boot/axios';
-import {QUploader, useQuasar} from 'quasar';
-import {useRouter} from 'vue-router';
-import {useUserdataStore} from '../stores/userdata';
-import {ref} from 'vue';
+import { useMenuStore } from '../stores/menu';
+import { api } from '../boot/axios';
+import { QUploader, useQuasar } from 'quasar';
+import { useRouter } from 'vue-router';
+import { useUserdataStore } from '../stores/userdata';
+import { ref } from 'vue';
 import ArtivactRestrictedTranslatableItemEditor from '../components/ArtivactRestrictedTranslatableItemEditor.vue';
-import {useLocaleStore} from '../stores/locale';
-import {moveDown, moveUp, translate} from './artivact-utils';
-import {Menu} from './artivact-models';
-import {useBreadcrumbsStore} from '../stores/breadcrumbs';
+import { useLocaleStore } from '../stores/locale';
+import { moveDown, moveUp, translate } from './artivact-utils';
+import { Menu } from './artivact-models';
+import { useBreadcrumbsStore } from '../stores/breadcrumbs';
 import ArtivactDialog from '../components/ArtivactDialog.vue';
-import {useI18n} from 'vue-i18n';
-import {useProfilesStore} from '../stores/profiles';
-import {usePageStore} from '../stores/page';
+import { useI18n } from 'vue-i18n';
+import { useProfilesStore } from '../stores/profiles';
+import { usePageStore } from '../stores/page';
 
 const quasar = useQuasar();
 const router = useRouter();
@@ -819,7 +872,7 @@ function createEmptyMenuRef(): Menu {
     targetPageId: '',
     targetPageAlias: null,
     hidden: false,
-    external: null
+    external: null,
   };
 }
 
@@ -864,7 +917,7 @@ function saveMenu(menu: Menu) {
       if (gotoPage) {
         menuStore.menus.forEach((existingMenu) => {
           if (existingMenu.id === menu.parentId) {
-            existingMenu.menuEntries.forEach(existingMenuEntry => {
+            existingMenu.menuEntries.forEach((existingMenuEntry) => {
               pageStore.setNewPageCreated(true);
               router.push('/page/' + existingMenuEntry.targetPageId);
             });
@@ -875,8 +928,10 @@ function saveMenu(menu: Menu) {
         quasar.notify({
           color: 'positive',
           position: 'bottom',
-          message: i18n.t('Common.messages.saving.success', {item: i18n.t('Common.items.menu')}),
-          icon: 'check'
+          message: i18n.t('Common.messages.saving.success', {
+            item: i18n.t('Common.items.menu'),
+          }),
+          icon: 'check',
         });
       }
     })
@@ -884,8 +939,10 @@ function saveMenu(menu: Menu) {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.saving.failed', {item: i18n.t('Common.items.menu')}),
-        icon: 'report_problem'
+        message: i18n.t('Common.messages.saving.failed', {
+          item: i18n.t('Common.items.menu'),
+        }),
+        icon: 'report_problem',
       });
     });
 }
@@ -910,16 +967,20 @@ function deleteMenu() {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: i18n.t('Common.messages.deleting.success', {item: i18n.t('Common.items.menu')}),
-        icon: 'check'
+        message: i18n.t('Common.messages.deleting.success', {
+          item: i18n.t('Common.items.menu'),
+        }),
+        icon: 'check',
       });
     })
     .catch(() => {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.deleting.failed', {item: i18n.t('Common.items.menu')}),
-        icon: 'report_problem'
+        message: i18n.t('Common.messages.deleting.failed', {
+          item: i18n.t('Common.items.menu'),
+        }),
+        icon: 'report_problem',
       });
     });
 }
@@ -935,7 +996,7 @@ function addPage(menu: Menu) {
     .post('/api/menu/' + menu.id + '/page')
     .then((response) => {
       menuStore.setAvailableMenus(response.data);
-      menuStore.availableMenus.forEach(storedMenu => {
+      menuStore.availableMenus.forEach((storedMenu) => {
         if (menu.id === storedMenu.id) {
           pageStore.setNewPageCreated(true);
           router.push('/page/' + storedMenu.targetPageId);
@@ -945,8 +1006,10 @@ function addPage(menu: Menu) {
         quasar.notify({
           color: 'positive',
           position: 'bottom',
-          message: i18n.t('Common.messages.creating.success', {item: i18n.t('Common.items.page')}),
-          icon: 'check'
+          message: i18n.t('Common.messages.creating.success', {
+            item: i18n.t('Common.items.page'),
+          }),
+          icon: 'check',
         });
       }
     })
@@ -954,8 +1017,10 @@ function addPage(menu: Menu) {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.creating.failed', {item: i18n.t('Common.items.page')}),
-        icon: 'report_problem'
+        message: i18n.t('Common.messages.creating.failed', {
+          item: i18n.t('Common.items.page'),
+        }),
+        icon: 'report_problem',
       });
     });
 }
@@ -973,7 +1038,7 @@ function moveMenuUp(array: [Menu], index: number) {
         color: 'negative',
         position: 'bottom',
         message: i18n.t('ArtivactMenuBar.messages.movingFailed'),
-        icon: 'report_problem'
+        icon: 'report_problem',
       });
     });
 }
@@ -991,16 +1056,12 @@ function moveMenuDown(array: [Menu], index: number) {
         color: 'negative',
         position: 'bottom',
         message: i18n.t('ArtivactMenuBar.messages.movingFailed'),
-        icon: 'report_problem'
+        icon: 'report_problem',
       });
     });
 }
 
-function gotoPage(
-  menuItem: Menu,
-  parentMenuItem: Menu | null
-) {
-
+function gotoPage(menuItem: Menu, parentMenuItem: Menu | null) {
   if (menuItem.external) {
     window.open(menuItem.external, '_blank');
     return;
@@ -1012,14 +1073,16 @@ function gotoPage(
     breadcrumbsStore.addBreadcrumb({
       label: parentMenuItem.translatedValue,
       target: null,
-      anchor: null
+      anchor: null,
     });
   }
 
   breadcrumbsStore.addBreadcrumb({
     label: menuItem.translatedValue,
-    target: menuItem.targetPageAlias ? menuItem.targetPageAlias : menuItem.targetPageId,
-    anchor: null
+    target: menuItem.targetPageAlias
+      ? menuItem.targetPageAlias
+      : menuItem.targetPageId,
+    anchor: null,
   });
 
   if (menuItem.targetPageAlias) {
@@ -1044,20 +1107,23 @@ function menuImported() {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: i18n.t('Common.messages.creating.success', {item: i18n.t('Common.items.menus')}),
-        icon: 'check'
+        message: i18n.t('Common.messages.creating.success', {
+          item: i18n.t('Common.items.menus'),
+        }),
+        icon: 'check',
       });
     })
     .catch(() => {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.loading.failed', {item: i18n.t('Common.items.menus')}),
+        message: i18n.t('Common.messages.loading.failed', {
+          item: i18n.t('Common.items.menus'),
+        }),
         icon: 'report_problem',
       });
     });
 }
-
 </script>
 
 <style scoped>
@@ -1073,5 +1139,4 @@ function menuImported() {
 .menu-entry:hover * {
   color: white;
 }
-
 </style>

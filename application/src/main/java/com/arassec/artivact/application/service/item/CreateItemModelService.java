@@ -1,23 +1,22 @@
 package com.arassec.artivact.application.service.item;
 
 import com.arassec.artivact.application.port.in.configuration.LoadPeripheralConfigurationUseCase;
+import com.arassec.artivact.application.port.in.item.CreateItemModelUseCase;
 import com.arassec.artivact.application.port.in.item.LoadItemUseCase;
 import com.arassec.artivact.application.port.in.item.SaveItemUseCase;
-import com.arassec.artivact.application.port.in.item.CreateItemModelUseCase;
 import com.arassec.artivact.application.port.in.operation.RunBackgroundOperationUseCase;
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.peripheral.ModelCreatorPeripheral;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.exception.ArtivactException;
-import com.arassec.artivact.domain.model.peripheral.ModelCreationResult;
-import com.arassec.artivact.domain.model.peripheral.Peripheral;
-import com.arassec.artivact.domain.model.peripheral.PeripheralAdapterInitParams;
 import com.arassec.artivact.domain.model.configuration.PeripheralConfiguration;
 import com.arassec.artivact.domain.model.item.CreationImageSet;
 import com.arassec.artivact.domain.model.item.CreationModelSet;
 import com.arassec.artivact.domain.model.item.Item;
-import com.arassec.artivact.domain.model.misc.DirectoryDefinitions;
 import com.arassec.artivact.domain.model.misc.ProgressMonitor;
+import com.arassec.artivact.domain.model.peripheral.ModelCreationResult;
+import com.arassec.artivact.domain.model.peripheral.Peripheral;
+import com.arassec.artivact.domain.model.peripheral.PeripheralAdapterInitParams;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -96,7 +95,7 @@ public class CreateItemModelService implements CreateItemModelUseCase {
 
         modelCreatorAdapter.initialize(progressMonitor, PeripheralAdapterInitParams.builder()
                 .adapterConfiguration(adapterConfiguration)
-                .workDir(useProjectDirsUseCase.getProjectRoot().resolve(DirectoryDefinitions.TEMP_DIR))
+                .workDir(useProjectDirsUseCase.getTempDir())
                 .projectRoot(useProjectDirsUseCase.getProjectRoot())
                 .build());
 

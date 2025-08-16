@@ -23,7 +23,7 @@ public class ArtivactRestApi implements ArtivactGateway {
     /**
      * URI part of the import item API.
      */
-    private static final String IMPORT_ITEM_API = "api/import/item/";
+    private static final String IMPORT_ITEM_API = "api/item/import/";
 
     /**
      * {@inheritDoc}

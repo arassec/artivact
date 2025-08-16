@@ -1,5 +1,6 @@
-package com.arassec.artivact.adapter.in.rest.controller;
+package com.arassec.artivact.adapter.in.rest.controller.item;
 
+import com.arassec.artivact.adapter.in.rest.controller.BaseImportController;
 import com.arassec.artivact.adapter.in.rest.model.ImageSet;
 import com.arassec.artivact.adapter.in.rest.model.ItemDetails;
 import com.arassec.artivact.adapter.in.rest.model.ModelSet;
@@ -10,6 +11,7 @@ import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.item.*;
 import com.arassec.artivact.domain.model.misc.ExchangeDefinitions;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
@@ -31,7 +33,12 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/item")
-public class ItemController extends BaseController {
+public class ItemController extends BaseImportController {
+
+    @Getter
+    private final UseProjectDirsUseCase useProjectDirsUseCase;
+
+    private final ImportItemUseCase importItemUseCase;
 
     private final CreateItemUseCase createItemUseCase;
     private final SaveItemUseCase saveItemUseCase;
@@ -251,6 +258,36 @@ public class ItemController extends BaseController {
     @PostMapping(value = "/{itemId}/upload")
     public void uploadItemToRemoteInstance(@PathVariable String itemId) {
         uploadItemUseCase.uploadItemToRemoteInstance(itemId, true);
+    }
+
+    /**
+     * Imports an item's export ZIP file.
+     *
+     * @param file The export file to import.
+     * @return A status string.
+     */
+    @PostMapping(value = "/import")
+    public ResponseEntity<String> importItem(@RequestPart(value = "file") final MultipartFile file) {
+        Path tempFile = saveTempFile(file);
+        importItemUseCase.importItem(tempFile);
+        fileRepository.delete(tempFile);
+        return ResponseEntity.ok("Item imported.");
+    }
+
+    /**
+     * Called by another Artivact instance for remote import/sync!
+     *
+     * @param file     The item's export file to import.
+     * @param apiToken The API token of the local user account used to import the item.
+     * @return A status string.
+     */
+    @PostMapping(value = "/import/{apiToken}")
+    public ResponseEntity<String> importItemWithApiToken(@RequestPart(value = "file") final MultipartFile file,
+                                                         @PathVariable final String apiToken) {
+        Path tempFile = saveTempFile(file);
+        importItemUseCase.importItem(tempFile, apiToken);
+        fileRepository.delete(tempFile);
+        return ResponseEntity.ok("Item synchronized.");
     }
 
     /**

@@ -1,14 +1,13 @@
 package com.arassec.artivact.application.service.project;
 
-import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.in.account.CreateAccountUseCase;
 import com.arassec.artivact.application.port.in.account.LoadAccountUseCase;
 import com.arassec.artivact.application.port.in.configuration.CheckRuntimeConfigurationUseCase;
-import com.arassec.artivact.application.port.in.exchange.ImportContentUseCase;
+import com.arassec.artivact.application.port.in.menu.ImportMenuUseCase;
+import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.application.port.out.repository.PageRepository;
 import com.arassec.artivact.domain.model.account.Account;
-import com.arassec.artivact.domain.model.misc.DirectoryDefinitions;
 import com.arassec.artivact.domain.model.misc.FileModification;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
@@ -71,7 +70,7 @@ public class ProjectInitializationService {
     /**
      * Artivact importer, used to import the welcome page.
      */
-    private final ImportContentUseCase importContentUseCase;
+    private final ImportMenuUseCase importMenuUseCase;
 
     private final CheckRuntimeConfigurationUseCase checkRuntimeConfigurationUseCase;
 
@@ -85,7 +84,7 @@ public class ProjectInitializationService {
                                         CreateAccountUseCase createAccountUseCase,
                                         PageRepository pageRepository,
                                         FileRepository fileRepository,
-                                        ImportContentUseCase importContentUseCase,
+                                        ImportMenuUseCase importMenuUseCase,
                                         CheckRuntimeConfigurationUseCase checkRuntimeConfigurationUseCase,
                                         @Value("${artivact.initial.password:}") String initialPassword) {
         this.useProjectDirsUseCase = useProjectDirsUseCase;
@@ -93,7 +92,7 @@ public class ProjectInitializationService {
         this.createAccountUseCase = createAccountUseCase;
         this.pageRepository = pageRepository;
         this.fileRepository = fileRepository;
-        this.importContentUseCase = importContentUseCase;
+        this.importMenuUseCase = importMenuUseCase;
         this.checkRuntimeConfigurationUseCase = checkRuntimeConfigurationUseCase;
         this.initialPassword = initialPassword;
     }
@@ -115,11 +114,11 @@ public class ProjectInitializationService {
     private void initializeProjectDir() {
         Path projectRoot = useProjectDirsUseCase.getProjectRoot();
 
-        fileRepository.createDirIfRequired(projectRoot.resolve(DirectoryDefinitions.ITEMS_DIR));
-        fileRepository.createDirIfRequired(projectRoot.resolve(DirectoryDefinitions.EXPORT_DIR));
-        fileRepository.createDirIfRequired(projectRoot.resolve(DirectoryDefinitions.TEMP_DIR));
-        fileRepository.createDirIfRequired(projectRoot.resolve(DirectoryDefinitions.WIDGETS_DIR));
-        fileRepository.createDirIfRequired(projectRoot.resolve(DirectoryDefinitions.SEARCH_INDEX_DIR));
+        fileRepository.createDirIfRequired(useProjectDirsUseCase.getItemsDir());
+        fileRepository.createDirIfRequired(useProjectDirsUseCase.getExportsDir());
+        fileRepository.createDirIfRequired(useProjectDirsUseCase.getTempDir());
+        fileRepository.createDirIfRequired(useProjectDirsUseCase.getWidgetsDir());
+        fileRepository.createDirIfRequired(useProjectDirsUseCase.getSearchIndexDir());
 
         fileRepository.updateProjectDirectory(projectRoot, PROJECT_SETUP_DIR, PROJECT_SETUP_DIR_FALLBACK,
                 List.of(
@@ -173,7 +172,7 @@ public class ProjectInitializationService {
             }
 
             if (fileRepository.exists(welcomePageExportZip)) {
-                importContentUseCase.importContent(welcomePageExportZip);
+                importMenuUseCase.importMenu(welcomePageExportZip);
                 log.info("Welcome page imported!");
             } else {
                 log.info("Welcome page import not found!");

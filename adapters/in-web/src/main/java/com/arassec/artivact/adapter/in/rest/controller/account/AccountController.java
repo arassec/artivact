@@ -1,4 +1,4 @@
-package com.arassec.artivact.adapter.in.rest.controller;
+package com.arassec.artivact.adapter.in.rest.controller.account;
 
 import com.arassec.artivact.application.port.in.account.CreateAccountUseCase;
 import com.arassec.artivact.application.port.in.account.DeleteAccountUseCase;

@@ -35,13 +35,40 @@ public class ProjectDirService implements UseProjectDirsUseCase {
      * {@inheritDoc}
      */
     @Override
+    public Path getTempDir() {
+        return projectRoot.resolve(DirectoryDefinitions.TEMP_DIR);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Path getExportsDir() {
+        return projectRoot.resolve(DirectoryDefinitions.EXPORT_DIR);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Path getItemsDir() {
         return projectRoot.resolve(DirectoryDefinitions.ITEMS_DIR);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Path getWidgetsDir() {
         return projectRoot.resolve(DirectoryDefinitions.WIDGETS_DIR);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Path getSearchIndexDir() {
+        return projectRoot.resolve(DirectoryDefinitions.SEARCH_INDEX_DIR);
     }
 
     /**
@@ -68,7 +95,7 @@ public class ProjectDirService implements UseProjectDirsUseCase {
      * @param assetSubDir The asset subdirectory (e.g. 'images') which will be appended to the path.
      * @return The Path to the asset subdirectory.
      */
-    private Path getAssetDir(String itemId,String assetSubDir) {
+    private Path getAssetDir(String itemId, String assetSubDir) {
         var firstSubDir = getSubDir(itemId, 0);
         var secondSubDir = getSubDir(itemId, 1);
         return getItemsDir()

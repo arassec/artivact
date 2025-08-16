@@ -1,14 +1,16 @@
 <template>
   <div class="row gt-sm" data-test="artivact-settings-bar">
-
     <!-- LOCALE SELECTION -->
     <q-btn
       data-test="locale-selection-button"
       flat
       color="white"
       icon="language"
-      v-if="userdataStore.isUserOrAdmin && localeStore.locales.length > 0">
-      <q-tooltip v-if="!localeMenuOpen">{{ $t('ArtivactSettingsBar.tooltip.locales') }}</q-tooltip>
+      v-if="userdataStore.isUserOrAdmin && localeStore.locales.length > 0"
+    >
+      <q-tooltip v-if="!localeMenuOpen">{{
+        $t('ArtivactSettingsBar.tooltip.locales')
+      }}</q-tooltip>
       <q-menu
         anchor="bottom middle"
         self="top middle"
@@ -21,9 +23,12 @@
             clickable
             v-close-popup
             @click="changeLocale(null)"
-            class="menu-entry">
+            class="menu-entry"
+          >
             <q-item-section>
-              <label class="menu-label">{{ $t('ArtivactSettingsBar.default') }}</label>
+              <label class="menu-label">{{
+                $t('ArtivactSettingsBar.default')
+              }}</label>
             </q-item-section>
           </q-item>
           <template v-for="locale in localeStore.locales" :key="locale">
@@ -32,7 +37,8 @@
               clickable
               v-close-popup
               @click="changeLocale(locale)"
-              class="menu-entry">
+              class="menu-entry"
+            >
               <q-item-section>
                 <label class="menu-label">{{ locale }}</label>
               </q-item-section>
@@ -50,7 +56,9 @@
       icon="view_in_ar"
       v-if="userdataStore.isUserOrAdmin"
     >
-      <q-tooltip v-if="!itemMenuOpen">{{ $t('ArtivactSettingsBar.itemSettings') }}</q-tooltip>
+      <q-tooltip v-if="!itemMenuOpen">{{
+        $t('ArtivactSettingsBar.itemSettings')
+      }}</q-tooltip>
       <q-menu
         anchor="bottom middle"
         self="top middle"
@@ -67,22 +75,25 @@
             v-if="userdataStore.isUserOrAdmin"
           >
             <q-item-section
-            ><label class="menu-label">
-              <q-icon
-                name="add"
-                size="xs"
-                color="primary"
-                class="q-mr-sm"
-              ></q-icon>
-              {{ $t('ArtivactSettingsBar.createItem') }}</label>
+              ><label class="menu-label">
+                <q-icon
+                  name="add"
+                  size="xs"
+                  color="primary"
+                  class="q-mr-sm"
+                ></q-icon>
+                {{ $t('ArtivactSettingsBar.createItem') }}</label
+              >
             </q-item-section>
           </q-item>
-          <q-item data-test="import-item-button"
-                  @click="showImportItemModal = true"
-                  clickable
-                  v-close-popup
-                  class="menu-entry"
-                  v-if="userdataStore.isUserOrAdmin">
+          <q-item
+            data-test="import-item-button"
+            @click="showImportItemModal = true"
+            clickable
+            v-close-popup
+            class="menu-entry"
+            v-if="userdataStore.isUserOrAdmin"
+          >
             <q-item-section>
               <label class="menu-label">
                 <q-icon
@@ -104,14 +115,15 @@
             v-if="userdataStore.isAdmin"
           >
             <q-item-section
-            ><label class="menu-label">
-              <q-icon
-                name="double_arrow"
-                size="xs"
-                color="primary"
-                class="q-mr-sm"
-              ></q-icon>
-              {{ $t('ArtivactSettingsBar.batch') }}</label>
+              ><label class="menu-label">
+                <q-icon
+                  name="double_arrow"
+                  size="xs"
+                  color="primary"
+                  class="q-mr-sm"
+                ></q-icon>
+                {{ $t('ArtivactSettingsBar.batch') }}</label
+              >
             </q-item-section>
           </q-item>
         </q-list>
@@ -120,19 +132,27 @@
 
     <!-- COLLECTION EXPORTS -->
     <router-link to="/administration/collection-exports">
-    <q-btn
-      data-test="collection-exports-button"
-      flat
-      color="white"
-      icon="output"
-      v-if="userdataStore.isUserOrAdmin"
-    >
-    </q-btn>
+      <q-btn
+        data-test="collection-exports-button"
+        flat
+        color="white"
+        icon="output"
+        v-if="userdataStore.isUserOrAdmin"
+      >
+      </q-btn>
     </router-link>
 
     <!-- SYSTEM SETTINGS -->
-    <q-btn data-test="system-settings-button" flat color="white" icon="settings" v-if="userdataStore.isAdmin">
-      <q-tooltip v-if="!systemMenuOpen">{{ $t('ArtivactSettingsBar.tooltip.systemSettings') }}</q-tooltip>
+    <q-btn
+      data-test="system-settings-button"
+      flat
+      color="white"
+      icon="settings"
+      v-if="userdataStore.isAdmin"
+    >
+      <q-tooltip v-if="!systemMenuOpen">{{
+        $t('ArtivactSettingsBar.tooltip.systemSettings')
+      }}</q-tooltip>
       <q-menu
         anchor="bottom middle"
         self="top middle"
@@ -149,14 +169,15 @@
             class="menu-entry"
           >
             <q-item-section
-            ><label class="menu-label">
-              <q-icon
-                name="article"
-                size="xs"
-                color="primary"
-                class="q-mr-sm"
-              ></q-icon>
-              {{ $t('Common.items.properties') }}</label>
+              ><label class="menu-label">
+                <q-icon
+                  name="article"
+                  size="xs"
+                  color="primary"
+                  class="q-mr-sm"
+                ></q-icon>
+                {{ $t('Common.items.properties') }}</label
+              >
             </q-item-section>
           </q-item>
           <q-item
@@ -168,14 +189,15 @@
             class="menu-entry"
           >
             <q-item-section
-            ><label class="menu-label">
-              <q-icon
-                name="label"
-                size="xs"
-                color="primary"
-                class="q-mr-sm"
-              ></q-icon>
-              {{ $t('Common.items.tags') }}</label>
+              ><label class="menu-label">
+                <q-icon
+                  name="label"
+                  size="xs"
+                  color="primary"
+                  class="q-mr-sm"
+                ></q-icon>
+                {{ $t('Common.items.tags') }}</label
+              >
             </q-item-section>
           </q-item>
           <q-item
@@ -187,15 +209,15 @@
             class="menu-entry"
           >
             <q-item-section
-            ><label class="menu-label">
-              <q-icon
-                name="palette"
-                size="xs"
-                color="primary"
-                class="q-mr-sm"
-              ></q-icon>
-              {{ $t('ArtivactSettingsBar.appearance') }}</label
-            >
+              ><label class="menu-label">
+                <q-icon
+                  name="palette"
+                  size="xs"
+                  color="primary"
+                  class="q-mr-sm"
+                ></q-icon>
+                {{ $t('ArtivactSettingsBar.appearance') }}</label
+              >
             </q-item-section>
           </q-item>
           <q-item
@@ -207,14 +229,15 @@
             class="menu-entry"
           >
             <q-item-section
-            ><label class="menu-label">
-              <q-icon
-                name="electrical_services"
-                size="xs"
-                color="primary"
-                class="q-mr-sm"
-              ></q-icon>
-              {{ $t('ArtivactSettingsBar.peripherals') }}</label>
+              ><label class="menu-label">
+                <q-icon
+                  name="electrical_services"
+                  size="xs"
+                  color="primary"
+                  class="q-mr-sm"
+                ></q-icon>
+                {{ $t('ArtivactSettingsBar.peripherals') }}</label
+              >
             </q-item-section>
           </q-item>
           <q-item
@@ -226,14 +249,15 @@
             class="menu-entry"
           >
             <q-item-section
-            ><label class="menu-label">
-              <q-icon
-                name="import_export"
-                size="xs"
-                color="primary"
-                class="q-mr-sm"
-              ></q-icon>
-              {{ $t('ArtivactSettingsBar.exchange') }}</label>
+              ><label class="menu-label">
+                <q-icon
+                  name="import_export"
+                  size="xs"
+                  color="primary"
+                  class="q-mr-sm"
+                ></q-icon>
+                {{ $t('ArtivactSettingsBar.exchange') }}</label
+              >
             </q-item-section>
           </q-item>
           <q-item
@@ -245,14 +269,15 @@
             class="menu-entry"
           >
             <q-item-section
-            ><label class="menu-label">
-              <q-icon
-                name="search"
-                size="xs"
-                color="primary"
-                class="q-mr-sm"
-              ></q-icon>
-              {{ $t('ArtivactSettingsBar.search') }}</label>
+              ><label class="menu-label">
+                <q-icon
+                  name="search"
+                  size="xs"
+                  color="primary"
+                  class="q-mr-sm"
+                ></q-icon>
+                {{ $t('ArtivactSettingsBar.search') }}</label
+              >
             </q-item-section>
           </q-item>
         </q-list>
@@ -267,7 +292,9 @@
       icon="manage_accounts"
       v-if="userdataStore.authenticated && profilesStore.isServerModeEnabled"
     >
-      <q-tooltip v-if="!accountsMenuOpen">{{ $t('ArtivactSettingsBar.tooltip.account') }}</q-tooltip>
+      <q-tooltip v-if="!accountsMenuOpen">{{
+        $t('ArtivactSettingsBar.tooltip.account')
+      }}</q-tooltip>
       <q-menu
         anchor="bottom middle"
         self="top middle"
@@ -282,14 +309,15 @@
             class="menu-entry"
           >
             <q-item-section
-            ><label class="menu-label">
-              <q-icon
-                name="person"
-                size="xs"
-                color="primary"
-                class="q-mr-sm"
-              ></q-icon>
-              {{ $t('Common.items.account') }}</label>
+              ><label class="menu-label">
+                <q-icon
+                  name="person"
+                  size="xs"
+                  color="primary"
+                  class="q-mr-sm"
+                ></q-icon>
+                {{ $t('Common.items.account') }}</label
+              >
             </q-item-section>
           </q-item>
           <q-item
@@ -300,14 +328,15 @@
             class="menu-entry"
           >
             <q-item-section
-            ><label class="menu-label">
-              <q-icon
-                name="group"
-                size="xs"
-                color="primary"
-                class="q-mr-sm"
-              ></q-icon>
-              {{ $t('Common.items.accounts') }}</label>
+              ><label class="menu-label">
+                <q-icon
+                  name="group"
+                  size="xs"
+                  color="primary"
+                  class="q-mr-sm"
+                ></q-icon>
+                {{ $t('Common.items.accounts') }}</label
+              >
             </q-item-section>
           </q-item>
         </q-list>
@@ -315,15 +344,23 @@
     </q-btn>
 
     <!-- DOCUMENTATION -->
-    <a data-test="documentation-button"
-       href="/artivact/index.html" target="_blank">
+    <a
+      data-test="documentation-button"
+      href="/artivact/index.html"
+      target="_blank"
+    >
       <q-btn flat color="white" icon="help" v-if="userdataStore.authenticated">
-        <q-tooltip>{{ $t('ArtivactSettingsBar.tooltip.documentation') }}</q-tooltip>
+        <q-tooltip>{{
+          $t('ArtivactSettingsBar.tooltip.documentation')
+        }}</q-tooltip>
       </q-btn>
     </a>
 
     <!-- IMPORT ITEM MODAL -->
-    <artivact-dialog :data-test="'import-menu-modal'" :dialog-model="showImportItemModal">
+    <artivact-dialog
+      :data-test="'import-menu-modal'"
+      :dialog-model="showImportItemModal"
+    >
       <template v-slot:header>
         <div class="text-h6">
           {{ $t('ArtivactSettingsBar.dialog.import') }}
@@ -335,13 +372,14 @@
             {{ $t('ArtivactSettingsBar.dialog.importDescription') }}
           </div>
           <div class="row">
-            <q-uploader :label="$t('ArtivactSettingsBar.dialog.importFileUpload')"
-                        accept=".artivact.item.zip"
-                        field-name="file"
-                        :no-thumbnails="true"
-                        class="col"
-                        :url="'/api/import/item'"
-                        @uploaded="itemImported()"
+            <q-uploader
+              :label="$t('ArtivactSettingsBar.dialog.importFileUpload')"
+              accept=".artivact.item.zip"
+              field-name="file"
+              :no-thumbnails="true"
+              class="col"
+              :url="'/api/item/import'"
+              @uploaded="itemImported()"
             />
           </div>
         </q-card-section>
@@ -354,7 +392,6 @@
         />
       </template>
     </artivact-dialog>
-
   </div>
 
   <!-- MENUS FOR SMALLER / MOBILE RESOLUTIONS -->
@@ -382,7 +419,9 @@
                 class="menu-entry"
               >
                 <q-item-section
-                ><label class="menu-label">{{ $t('ArtivactSettingsBar.default') }}</label></q-item-section
+                  ><label class="menu-label">{{
+                    $t('ArtivactSettingsBar.default')
+                  }}</label></q-item-section
                 >
               </q-item>
               <template v-for="locale in localeStore.locales" :key="locale">
@@ -393,7 +432,7 @@
                   class="menu-entry"
                 >
                   <q-item-section
-                  ><label class="menu-label">{{
+                    ><label class="menu-label">{{
                       locale
                     }}</label></q-item-section
                   >
@@ -418,7 +457,8 @@
                 v-close-popup
                 @click="createItem"
                 class="menu-entry"
-                v-if="userdataStore.isUserOrAdmin">
+                v-if="userdataStore.isUserOrAdmin"
+              >
                 <q-item-section>
                   <label class="menu-label">
                     <q-icon
@@ -440,14 +480,15 @@
                 v-if="userdataStore.isUserOrAdmin"
               >
                 <q-item-section
-                ><label class="menu-label">
-                  <q-icon
-                    name="double_arrow"
-                    size="xs"
-                    color="primary"
-                    class="q-mr-sm"
-                  ></q-icon>
-                  {{ $t('ArtivactSettingsBar.batch') }}</label>
+                  ><label class="menu-label">
+                    <q-icon
+                      name="double_arrow"
+                      size="xs"
+                      color="primary"
+                      class="q-mr-sm"
+                    ></q-icon>
+                    {{ $t('ArtivactSettingsBar.batch') }}</label
+                  >
                 </q-item-section>
               </q-item>
             </q-list>
@@ -472,15 +513,15 @@
                 class="menu-entry"
               >
                 <q-item-section
-                ><label class="menu-label">
-                  <q-icon
-                    name="article"
-                    size="xs"
-                    color="primary"
-                    class="q-mr-sm"
-                  ></q-icon>
-                  {{ $t('Common.items.properties') }}</label
-                >
+                  ><label class="menu-label">
+                    <q-icon
+                      name="article"
+                      size="xs"
+                      color="primary"
+                      class="q-mr-sm"
+                    ></q-icon>
+                    {{ $t('Common.items.properties') }}</label
+                  >
                 </q-item-section>
               </q-item>
               <q-item
@@ -491,15 +532,15 @@
                 class="menu-entry"
               >
                 <q-item-section
-                ><label class="menu-label">
-                  <q-icon
-                    name="label"
-                    size="xs"
-                    color="primary"
-                    class="q-mr-sm"
-                  ></q-icon>
-                  {{ $t('Common.items.tags') }}</label
-                >
+                  ><label class="menu-label">
+                    <q-icon
+                      name="label"
+                      size="xs"
+                      color="primary"
+                      class="q-mr-sm"
+                    ></q-icon>
+                    {{ $t('Common.items.tags') }}</label
+                  >
                 </q-item-section>
               </q-item>
               <q-item
@@ -510,34 +551,36 @@
                 class="menu-entry"
               >
                 <q-item-section
-                ><label class="menu-label">
-                  <q-icon
-                    name="palette"
-                    size="xs"
-                    color="primary"
-                    class="q-mr-sm"
-                  ></q-icon>
-                  {{ $t('ArtivactSettingsBar.appearance') }}</label
-                >
+                  ><label class="menu-label">
+                    <q-icon
+                      name="palette"
+                      size="xs"
+                      color="primary"
+                      class="q-mr-sm"
+                    ></q-icon>
+                    {{ $t('ArtivactSettingsBar.appearance') }}</label
+                  >
                 </q-item-section>
               </q-item>
               <q-item
                 clickable
                 v-close-popup
                 @click="gotoExchangeConfigurationPage"
-                v-if="userdataStore.isAdmin && profilesStore.isDesktopModeEnabled"
+                v-if="
+                  userdataStore.isAdmin && profilesStore.isDesktopModeEnabled
+                "
                 class="menu-entry"
               >
                 <q-item-section
-                ><label class="menu-label">
-                  <q-icon
-                    name="import_export"
-                    size="xs"
-                    color="primary"
-                    class="q-mr-sm"
-                  ></q-icon>
-                  {{ $t('ArtivactSettingsBar.exchange') }}</label
-                >
+                  ><label class="menu-label">
+                    <q-icon
+                      name="import_export"
+                      size="xs"
+                      color="primary"
+                      class="q-mr-sm"
+                    ></q-icon>
+                    {{ $t('ArtivactSettingsBar.exchange') }}</label
+                  >
                 </q-item-section>
               </q-item>
             </q-list>
@@ -545,7 +588,13 @@
         </q-item>
 
         <!-- ACCOUNT SETTINGS -->
-        <q-item clickable class="menu-entry" v-if="userdataStore.authenticated && profilesStore.isServerModeEnabled">
+        <q-item
+          clickable
+          class="menu-entry"
+          v-if="
+            userdataStore.authenticated && profilesStore.isServerModeEnabled
+          "
+        >
           <q-item-section>
             <label class="menu-label">
               <q-icon name="manage_accounts" size="sm" class="q-mr-sm" />
@@ -561,15 +610,15 @@
                 class="menu-entry"
               >
                 <q-item-section
-                ><label class="menu-label">
-                  <q-icon
-                    name="person"
-                    size="xs"
-                    color="primary"
-                    class="q-mr-sm"
-                  />
-                  {{ $t('Common.items.account') }}
-                </label>
+                  ><label class="menu-label">
+                    <q-icon
+                      name="person"
+                      size="xs"
+                      color="primary"
+                      class="q-mr-sm"
+                    />
+                    {{ $t('Common.items.account') }}
+                  </label>
                 </q-item-section>
               </q-item>
               <q-item
@@ -580,15 +629,15 @@
                 class="menu-entry"
               >
                 <q-item-section
-                ><label class="menu-label">
-                  <q-icon
-                    name="group"
-                    size="xs"
-                    color="primary"
-                    class="q-mr-sm"
-                  />
-                  {{ $t('Common.items.accounts') }}
-                </label>
+                  ><label class="menu-label">
+                    <q-icon
+                      name="group"
+                      size="xs"
+                      color="primary"
+                      class="q-mr-sm"
+                    />
+                    {{ $t('Common.items.accounts') }}
+                  </label>
                 </q-item-section>
               </q-item>
             </q-list>
@@ -597,8 +646,12 @@
 
         <!-- DOCUMENTATION -->
         <a href="/artivact/index.html" target="_blank" class="nav-link">
-          <q-item clickable v-close-popup
-                  class="menu-entry" v-if="userdataStore.authenticated">
+          <q-item
+            clickable
+            v-close-popup
+            class="menu-entry"
+            v-if="userdataStore.authenticated"
+          >
             <q-item-section>
               <label class="menu-label">
                 <q-icon name="help" size="sm" class="q-mr-sm" />
@@ -607,11 +660,9 @@
             </q-item-section>
           </q-item>
         </a>
-
       </q-list>
     </q-menu>
   </q-btn>
-
 </template>
 
 <script setup lang="ts">
@@ -686,16 +737,20 @@ function createItem() {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: i18n.t('Common.messages.creating.success', { item: i18n.t('Common.items.item') }),
-        icon: 'check'
+        message: i18n.t('Common.messages.creating.success', {
+          item: i18n.t('Common.items.item'),
+        }),
+        icon: 'check',
       });
     })
     .catch(() => {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.creating.failed', { item: i18n.t('Common.items.item') }),
-        icon: 'report_problem'
+        message: i18n.t('Common.messages.creating.failed', {
+          item: i18n.t('Common.items.item'),
+        }),
+        icon: 'report_problem',
       });
     });
 }
@@ -714,8 +769,10 @@ function itemImported() {
   quasar.notify({
     color: 'positive',
     position: 'bottom',
-    message: i18n.t('Common.messages.creating.success', { item: i18n.t('Common.items.item') }),
-    icon: 'check'
+    message: i18n.t('Common.messages.creating.success', {
+      item: i18n.t('Common.items.item'),
+    }),
+    icon: 'check',
   });
 }
 </script>

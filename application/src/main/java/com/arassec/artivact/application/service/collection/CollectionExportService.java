@@ -9,9 +9,10 @@ import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.application.service.BaseExportService;
 import com.arassec.artivact.domain.model.configuration.PropertiesConfiguration;
 import com.arassec.artivact.domain.model.configuration.TagsConfiguration;
-import com.arassec.artivact.domain.model.exchange.*;
+import com.arassec.artivact.domain.model.exchange.CollectionExport;
+import com.arassec.artivact.domain.model.exchange.ContentSource;
+import com.arassec.artivact.domain.model.exchange.ExportContext;
 import com.arassec.artivact.domain.model.menu.Menu;
-import com.arassec.artivact.domain.model.misc.DirectoryDefinitions;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +25,7 @@ import java.nio.file.Path;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CollectionExportService extends BaseExportService
-        implements ExportCollectionUseCase {
+public class CollectionExportService extends BaseExportService implements ExportCollectionUseCase {
 
     /**
      * The application's file repository.
@@ -64,8 +64,7 @@ public class CollectionExportService extends BaseExportService
         exportMenuUseCase.exportMenu(exportContext, menu);
 
         if (StringUtils.hasText(collectionExport.getCoverPictureExtension())) {
-            Path coverPictureFile = useProjectDirsUseCase.getProjectRoot()
-                    .resolve(DirectoryDefinitions.EXPORT_DIR)
+            Path coverPictureFile = useProjectDirsUseCase.getExportsDir()
                     .resolve(collectionExport.getId() + "." + collectionExport.getCoverPictureExtension());
             if (fileRepository.exists(coverPictureFile)) {
                 fileRepository.copy(coverPictureFile, exportContext.getExportDir()

@@ -1,5 +1,6 @@
-package com.arassec.artivact.adapter.in.rest.controller;
+package com.arassec.artivact.adapter.in.rest.controller.batch;
 
+import com.arassec.artivact.adapter.in.rest.controller.BaseController;
 import com.arassec.artivact.application.port.in.batch.StartBatchOperationUseCase;
 import com.arassec.artivact.domain.model.batch.BatchProcessingParameters;
 import lombok.RequiredArgsConstructor;

@@ -34,7 +34,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class ConfigurationService
+public class ManageConfigurationService
         implements LoadPropertiesConfigurationUseCase,
         SavePropertiesConfigurationUseCase,
         LoadTagsConfigurationUseCase,

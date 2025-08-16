@@ -36,7 +36,7 @@ import java.util.Optional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class MenuService
+public class ManageMenuService
         implements SaveMenuUseCase,
         LoadMenuUseCase,
         DeleteMenuUseCase,
@@ -138,13 +138,9 @@ public class MenuService
         if (StringUtils.hasText(menu.getTargetPageId())) {
             updatePageAliasUseCase.updatePageAlias(menu.getTargetPageId(), menu.getTargetPageAlias());
         }
-        menu.getMenuEntries().forEach(menuEntry -> {
-            if (menuEntry.getRestrictions().isEmpty() && !menu.getRestrictions().isEmpty()) {
-                updatePageAliasUseCase.updatePageAlias(menuEntry.getTargetPageId(), menuEntry.getTargetPageAlias());
-            } else {
-                updatePageAliasUseCase.updatePageAlias(menuEntry.getTargetPageId(), menuEntry.getTargetPageAlias());
-            }
-        });
+        menu.getMenuEntries().forEach(menuEntry ->
+                updatePageAliasUseCase.updatePageAlias(menuEntry.getTargetPageId(), menuEntry.getTargetPageAlias())
+        );
 
         // We add pages for sub-menu entries automatically, except when they point to external pages:
         menuConfiguration.getMenus().forEach(existingMenu ->

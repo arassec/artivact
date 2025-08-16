@@ -1,5 +1,6 @@
-package com.arassec.artivact.adapter.in.rest.controller;
+package com.arassec.artivact.adapter.in.rest.controller.search;
 
+import com.arassec.artivact.adapter.in.rest.controller.BaseController;
 import com.arassec.artivact.adapter.in.rest.model.ItemCardData;
 import com.arassec.artivact.adapter.in.rest.model.SearchResult;
 import com.arassec.artivact.application.port.in.search.ManageSearchIndexUseCase;

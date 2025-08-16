@@ -1,10 +1,14 @@
-package com.arassec.artivact.adapter.in.rest.controller;
+package com.arassec.artivact.adapter.in.rest.controller.collection;
 
+import com.arassec.artivact.adapter.in.rest.controller.BaseImportController;
 import com.arassec.artivact.application.port.in.collection.*;
+import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
+import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.exchange.CollectionExport;
 import com.arassec.artivact.domain.model.misc.ExchangeDefinitions;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
@@ -19,6 +23,7 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 
 import java.io.IOException;
 import java.net.URLConnection;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -30,7 +35,14 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/collection/export")
-public class CollectionExportController extends BaseController {
+public class CollectionExportController extends BaseImportController {
+
+    @Getter
+    private final UseProjectDirsUseCase useProjectDirsUseCase;
+
+    private final ImportCollectionUseCase importCollectionUseCase;
+
+    private final FileRepository fileRepository;
 
     private final LoadCollectionExportUseCase loadCollectionExportUseCase;
     private final SaveCollectionExportUseCase saveCollectionExportUseCase;
@@ -216,6 +228,30 @@ public class CollectionExportController extends BaseController {
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION, ATTACHMENT_PREFIX + ExchangeDefinitions.COLLECTION_EXPORT_OVERVIEWS_ZIP_FILE);
 
         return ResponseEntity.ok(streamResponseBody);
+    }
+
+    /**
+     * Imports a collection export and its content into the application.
+     *
+     * @param file The collection export to import.
+     */
+    @PostMapping("/import")
+    public void importCollection(@RequestPart(value = "file") final MultipartFile file) {
+        Path tempFile = saveTempFile(file);
+        importCollectionUseCase.importCollection(tempFile);
+        fileRepository.delete(tempFile);
+    }
+
+    /**
+     * Imports a collection export for distribution into the application.
+     *
+     * @param file The collection export to import.
+     */
+    @PostMapping("/import/for-distribution")
+    public void importCollectionForDistribution(@RequestPart(value = "file") final MultipartFile file) {
+        Path tempFile = saveTempFile(file);
+        importCollectionUseCase.importCollectionForDistribution(tempFile);
+        fileRepository.delete(tempFile);
     }
 
 }

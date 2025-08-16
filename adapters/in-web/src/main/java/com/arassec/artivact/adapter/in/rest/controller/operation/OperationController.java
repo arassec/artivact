@@ -1,4 +1,4 @@
-package com.arassec.artivact.adapter.in.rest.controller;
+package com.arassec.artivact.adapter.in.rest.controller.operation;
 
 import com.arassec.artivact.adapter.in.rest.model.OperationProgress;
 import com.arassec.artivact.application.port.in.operation.GetBackgroundOperationProgressUseCase;

@@ -13,7 +13,6 @@ import com.arassec.artivact.domain.model.exchange.CollectionExport;
 import com.arassec.artivact.domain.model.exchange.ContentSource;
 import com.arassec.artivact.domain.model.exchange.ExchangeMainData;
 import com.arassec.artivact.domain.model.exchange.ImportContext;
-import com.arassec.artivact.domain.model.misc.DirectoryDefinitions;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -75,14 +74,13 @@ public class CollectionImportService implements ImportCollectionUseCase {
      */
     private synchronized void importCollection(Path file, boolean onlyForDistribution) {
         runBackgroundOperationUseCase.execute("collectionImport", "import", progressMonitor -> {
-            Path existingCollectionExportFile = getProjectRootUseCase.getProjectRoot()
-                    .resolve(DirectoryDefinitions.EXPORT_DIR)
+            Path existingCollectionExportFile = getProjectRootUseCase.getExportsDir()
                     .resolve(file.getFileName().toString());
             if (fileRepository.exists(existingCollectionExportFile)) {
                 fileRepository.delete(existingCollectionExportFile);
             }
 
-            Path tempDir = getProjectRootUseCase.getProjectRoot().resolve(DirectoryDefinitions.TEMP_DIR);
+            Path tempDir = getProjectRootUseCase.getTempDir();
 
             ImportContext importContext = ImportContext.builder()
                     .importDir(tempDir.resolve(file.getFileName().toString().replace(ZIP_FILE_SUFFIX, "")))
@@ -102,8 +100,7 @@ public class CollectionImportService implements ImportCollectionUseCase {
                 importMenuUseCase.importMenu(importContext, exchangeMainData.getSourceId(), true);
             }
 
-            fileRepository.copy(file, getProjectRootUseCase.getProjectRoot()
-                            .resolve(DirectoryDefinitions.EXPORT_DIR)
+            fileRepository.copy(file, getProjectRootUseCase.getExportsDir()
                             .resolve(exchangeMainData.getId() + COLLECTION_EXCHANGE_SUFFIX + ZIP_FILE_SUFFIX),
                     StandardCopyOption.REPLACE_EXISTING);
 
@@ -111,8 +108,7 @@ public class CollectionImportService implements ImportCollectionUseCase {
                     && !exchangeMainData.getCoverPictureExtension().trim().isEmpty()) {
                 Path coverPictureFile = importContext.getImportDir().resolve("cover-picture." + exchangeMainData.getCoverPictureExtension());
                 if (fileRepository.exists(coverPictureFile)) {
-                    fileRepository.copy(coverPictureFile, getProjectRootUseCase.getProjectRoot()
-                            .resolve(DirectoryDefinitions.EXPORT_DIR)
+                    fileRepository.copy(coverPictureFile, getProjectRootUseCase.getExportsDir()
                             .resolve(exchangeMainData.getId() + "." + exchangeMainData.getCoverPictureExtension()));
                 }
             }

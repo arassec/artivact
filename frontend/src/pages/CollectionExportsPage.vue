@@ -59,7 +59,7 @@
               field-name="file"
               :multiple="false"
               accept=".artivact.collection.zip"
-              url="/api/import/collection"
+              url="/api/collection/export/import"
               @finish="pollOperationProgress()"
             />
           </div>
@@ -72,7 +72,7 @@
               field-name="file"
               :multiple="false"
               accept=".artivact.collection.zip"
-              url="/api/import/collection/for-distribution"
+              url="/api/collection/export/import/for-distribution"
               @finish="pollOperationProgress()"
             />
           </div>

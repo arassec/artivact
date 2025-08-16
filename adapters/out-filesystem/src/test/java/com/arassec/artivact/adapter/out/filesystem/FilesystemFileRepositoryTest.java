@@ -73,7 +73,7 @@ class FilesystemFileRepositoryTest {
      */
     @BeforeEach
     @SneakyThrows
-    public void setUp() {
+    void setUp() {
         if (Files.exists(targetDir)) {
             FileUtils.deleteDirectory(targetDir.toFile());
         }

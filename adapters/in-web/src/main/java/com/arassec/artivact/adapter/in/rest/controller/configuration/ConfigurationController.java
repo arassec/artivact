@@ -1,16 +1,19 @@
-package com.arassec.artivact.adapter.in.rest.controller;
+package com.arassec.artivact.adapter.in.rest.controller.configuration;
 
+import com.arassec.artivact.adapter.in.rest.controller.BaseImportController;
 import com.arassec.artivact.adapter.in.rest.model.ApplicationSettings;
 import com.arassec.artivact.adapter.in.rest.model.Profiles;
 import com.arassec.artivact.adapter.in.rest.model.UserData;
 import com.arassec.artivact.application.port.in.configuration.*;
 import com.arassec.artivact.application.port.in.project.CleanupExportFilesUseCase;
+import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.Roles;
 import com.arassec.artivact.domain.model.configuration.*;
 import com.arassec.artivact.domain.model.misc.ExchangeDefinitions;
 import com.arassec.artivact.domain.model.property.PropertyCategory;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
@@ -38,7 +41,10 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/configuration")
-public class ConfigurationController extends BaseController {
+public class ConfigurationController extends BaseImportController {
+
+    @Getter
+    private final UseProjectDirsUseCase useProjectDirsUseCase;
 
     private final LoadPropertiesConfigurationUseCase loadPropertiesConfigurationUseCase;
 
@@ -60,6 +66,8 @@ public class ConfigurationController extends BaseController {
     private final SavePeripheralConfigurationUseCase saveAdapterConfigurationUseCase;
     private final LoadPeripheralConfigurationUseCase loadAdapterConfigurationUseCase;
     private final CleanupExportFilesUseCase cleanupExportFilesUseCase;
+    private final ImportPropertiesConfigurationUseCase importPropertiesConfigurationUseCase;
+    private final ImportTagsConfigurationUseCase importTagsConfigurationUseCase;
 
     /**
      * Returns the current appearance configuration.
@@ -322,6 +330,38 @@ public class ConfigurationController extends BaseController {
     @PostMapping(value = "/exchange")
     public void saveExchangeConfiguration(@RequestBody ExchangeConfiguration exchangeConfiguration) {
         saveExchangeConfigurationUseCase.saveExchangeConfiguration(exchangeConfiguration);
+    }
+
+    /**
+     * Imports a properties configuration JSON file.
+     *
+     * @param file The export file to import.
+     * @return A status string.
+     */
+    @PostMapping(value = "/import/properties")
+    public ResponseEntity<String> importPropertiesConfiguration(@RequestPart(value = "file") final MultipartFile file) {
+        try {
+            importPropertiesConfigurationUseCase.importPropertiesConfiguration(new String(file.getBytes()));
+            return ResponseEntity.ok("Properties imported.");
+        } catch (IOException e) {
+            throw new ArtivactException("Could not read properties configuration file!", e);
+        }
+    }
+
+    /**
+     * Imports a tags configuration JSON file.
+     *
+     * @param file The export file to import.
+     * @return A status string.
+     */
+    @PostMapping(value = "/import/tags")
+    public ResponseEntity<String> importTagsConfiguration(@RequestPart(value = "file") final MultipartFile file) {
+        try {
+            importTagsConfigurationUseCase.importTagsConfiguration(new String(file.getBytes()));
+            return ResponseEntity.ok("Tags imported.");
+        } catch (IOException e) {
+            throw new ArtivactException("Could not read tags configuration file!", e);
+        }
     }
 
 }

@@ -33,7 +33,7 @@ public class OnnxBackgroundRemover implements Runnable {
     /**
      * The result list containing paths to the processed image files without a background.
      */
-    private final Collection<Path> result;
+    private final Collection<Path> processedFiles;
 
     /**
      * Path to the image file to remove the background from.
@@ -51,7 +51,7 @@ public class OnnxBackgroundRemover implements Runnable {
     @Override
     public void run() {
         try {
-            result.add(removeBackgroundFromImage(params, filePath));
+            processedFiles.add(removeBackgroundFromImage(params, filePath));
         } catch (Exception e) {
             log.error("Could not remove background from image!", e);
         }
@@ -188,7 +188,7 @@ public class OnnxBackgroundRemover implements Runnable {
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                int gray = (int) (Math.max(0, Math.min(1, mask[y][x])) * 255);
+                int gray = (int) (Math.clamp(mask[y][x], 0, 1) * 255);
                 int rgb = (gray << 16) | (gray << 8) | gray;
                 img.setRGB(x, y, rgb);
             }

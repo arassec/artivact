@@ -8,17 +8,15 @@ import java.nio.file.Path;
 public interface ExportMenuUseCase {
 
     /**
-     * Exports a menu without items.
+     * Exports a menu with the associated page and referenced items.
      *
      * @param menuId The ID of the menu to export.
      * @return Path to the export file.
      */
     Path exportMenu(String menuId);
 
-    Path exportMenu(Menu menu);
-
     /**
-     * Exports a menu.
+     * Exports a menu with the associated page and referenced items.
      *
      * @param exportContext Context of the export.
      * @param menu          The menu to export.

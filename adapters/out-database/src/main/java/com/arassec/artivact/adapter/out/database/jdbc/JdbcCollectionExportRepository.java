@@ -48,6 +48,7 @@ public class JdbcCollectionExportRepository extends BaseJdbcRepository implement
      * {@inheritDoc}
      */
     @Override
+    @SuppressWarnings("java:S6204") // Result list needs to be modifiable!
     public List<CollectionExport> findAll() {
         List<CollectionExportEntity> collectionExportEntities = new LinkedList<>();
         collectionExportEntityRepository.findAll().forEach(collectionExportEntities::add);

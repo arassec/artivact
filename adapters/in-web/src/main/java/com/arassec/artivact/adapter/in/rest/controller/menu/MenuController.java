@@ -1,16 +1,20 @@
-package com.arassec.artivact.adapter.in.rest.controller;
+package com.arassec.artivact.adapter.in.rest.controller.menu;
 
+import com.arassec.artivact.adapter.in.rest.controller.BaseImportController;
 import com.arassec.artivact.application.port.in.menu.*;
+import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.model.menu.Menu;
 import com.arassec.artivact.domain.model.misc.ExchangeDefinitions;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.nio.file.Path;
@@ -24,7 +28,10 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/menu")
-public class MenuController extends BaseController {
+public class MenuController extends BaseImportController {
+
+    @Getter
+    private final UseProjectDirsUseCase useProjectDirsUseCase;
 
     private final LoadMenuUseCase loadMenuUseCase;
 
@@ -35,6 +42,8 @@ public class MenuController extends BaseController {
     private final AddPageToMenuUseCase addPageToMenuUseCase;
 
     private final ExportMenuUseCase exportMenuUseCase;
+
+    private final ImportMenuUseCase importMenuUseCase;
 
     /**
      * Repository for file handling.
@@ -118,6 +127,20 @@ public class MenuController extends BaseController {
         response.addHeader(HttpHeaders.EXPIRES, EXPIRES_IMMEDIATELY);
 
         return ResponseEntity.ok(streamResponseBody);
+    }
+
+    /**
+     * Imports a menu export ZIP file.
+     *
+     * @param file The export file to import.
+     * @return A status string.
+     */
+    @PostMapping(value = "/import")
+    public ResponseEntity<String> importMenu(@RequestPart(value = "file") final MultipartFile file) {
+        Path tempFile = saveTempFile(file);
+        importMenuUseCase.importMenu(tempFile);
+        fileRepository.delete(tempFile);
+        return ResponseEntity.ok("Menu imported.");
     }
 
 }

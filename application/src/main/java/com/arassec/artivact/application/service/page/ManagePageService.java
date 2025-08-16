@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class PageService
+public class ManagePageService
         implements LoadPageContentUseCase,
         SavePageContentUseCase,
         UpdatePageAliasUseCase,
