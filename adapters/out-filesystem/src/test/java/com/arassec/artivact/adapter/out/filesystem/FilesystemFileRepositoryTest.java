@@ -1,6 +1,7 @@
 package com.arassec.artivact.adapter.out.filesystem;
 
 import com.arassec.artivact.adapter.out.filesystem.repository.FilesystemFileRepository;
+import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.misc.FileModification;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
@@ -12,8 +13,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.env.Environment;
 import org.springframework.util.StreamUtils;
 
+import javax.imageio.ImageIO;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -44,7 +48,7 @@ class FilesystemFileRepositoryTest {
     /**
      * Image to use during tests.
      */
-    private final Path sourceImage = Path.of("src/test/resources/test-image.png");
+    private final Path sourceImage = Path.of("src/test/resources/023.png");
 
     /**
      * Directory to use during tests.
@@ -142,6 +146,18 @@ class FilesystemFileRepositoryTest {
     }
 
     /**
+     * Tests failing when creating a directory if it doesn't exist.
+     */
+    @Test
+    @SneakyThrows
+    void testCreateDirIfRequiredFail() {
+        try (MockedStatic<Files> filesMock = Mockito.mockStatic(Files.class)) {
+            filesMock.when(() -> Files.createDirectories(targetDir)).thenThrow(new IOException("test-exception"));
+            assertThrows(ArtivactException.class, () -> filesystemFileRepository.createDirIfRequired(targetDir));
+        }
+    }
+
+    /**
      * Tests deleting a file and directory.
      */
     @Test
@@ -158,6 +174,19 @@ class FilesystemFileRepositoryTest {
         Files.copy(sourceFile, file);
         filesystemFileRepository.delete(targetDir);
         assertFalse(Files.exists(file));
+    }
+
+    /**
+     * Tests deleting a non-existing file and directory.
+     */
+    @Test
+    @SneakyThrows
+    void testDeleteFail() {
+        try (MockedStatic<Files> filesMock = Mockito.mockStatic(Files.class)) {
+            filesMock.when(() -> Files.exists(targetDir)).thenReturn(true);
+            filesMock.when(() -> Files.delete(targetDir)).thenThrow(new IOException("test-exception"));
+            assertThrows(ArtivactException.class, () -> filesystemFileRepository.delete(targetDir));
+        }
     }
 
     /**
@@ -200,10 +229,28 @@ class FilesystemFileRepositoryTest {
     @Test
     void testCopyPath() {
         Path file = targetDir.resolve("filesystem-file-repository-test.txt.tpl");
-        assertFalse(Files.exists(file));
+        assertThat(Files.exists(file)).isFalse();
 
         filesystemFileRepository.copy(sourceFile, file);
-        assertTrue(Files.exists(file));
+        assertThat(Files.exists(file)).isTrue();
+
+        Path dir = targetDir.resolve("dir");
+        assertThat(Files.exists(dir)).isFalse();
+
+        filesystemFileRepository.copy(sourceDir, dir);
+        assertThat(Files.exists(dir)).isTrue();
+    }
+
+    /**
+     * Tests error handling when copying a file by path.
+     */
+    @Test
+    void testCopyPathFail() {
+        try (MockedStatic<Files> filesMock = Mockito.mockStatic(Files.class)) {
+            filesMock.when(() -> Files.exists(sourceFile)).thenReturn(true);
+            filesMock.when(() -> Files.copy(sourceFile, targetDir)).thenThrow(new IOException("test-exception"));
+            assertThrows(ArtivactException.class, () -> filesystemFileRepository.copy(sourceFile, targetDir));
+        }
     }
 
     /**
@@ -219,6 +266,18 @@ class FilesystemFileRepositoryTest {
     }
 
     /**
+     * Tests error handling when copying a file by input stream.
+     */
+    @Test
+    void testCopyInputStreamFail() {
+        InputStream sourceStream = new ByteArrayInputStream(new byte[0]);
+        try (MockedStatic<Files> filesMock = Mockito.mockStatic(Files.class)) {
+            filesMock.when(() -> Files.copy(sourceStream, targetDir)).thenThrow(new IOException("test-exception"));
+            assertThrows(ArtivactException.class, () -> filesystemFileRepository.copy(sourceStream, targetDir));
+        }
+    }
+
+    /**
      * Tests copying a file to an output stream.
      */
     @Test
@@ -227,6 +286,19 @@ class FilesystemFileRepositoryTest {
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
             filesystemFileRepository.copy(sourceFile, bos);
             assertEquals("##REPLACEMENT##", bos.toString());
+        }
+    }
+
+    /**
+     * Tests error handling when copying a file to an output stream.
+     */
+    @Test
+    @SneakyThrows
+    void testCopyToOutputStreamFail() {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try (MockedStatic<Files> filesMock = Mockito.mockStatic(Files.class)) {
+            filesMock.when(() -> Files.copy(sourceFile, bos)).thenThrow(new IOException("test-exception"));
+            assertThrows(ArtivactException.class, () -> filesystemFileRepository.copy(sourceFile, bos));
         }
     }
 
@@ -277,6 +349,20 @@ class FilesystemFileRepositoryTest {
     }
 
     /**
+     * Tests error handling when listing files and directories from a path.
+     */
+    @Test
+    @SneakyThrows
+    @SuppressWarnings("resource")
+    void testListFail() {
+        try (MockedStatic<Files> filesMock = Mockito.mockStatic(Files.class)) {
+            filesMock.when(() -> Files.exists(targetDir)).thenReturn(true);
+            filesMock.when(() -> Files.list(targetDir)).thenThrow(new IOException("test-exception"));
+            assertThrows(ArtivactException.class, () -> filesystemFileRepository.list(targetDir));
+        }
+    }
+
+    /**
      * Tests listing files and directories from a path that does not exist.
      */
     @Test
@@ -285,6 +371,17 @@ class FilesystemFileRepositoryTest {
         Path file = targetDir.resolve("non-existent-dir");
         List<Path> files = filesystemFileRepository.list(file);
         assertThat(files).isEmpty();
+    }
+
+    /**
+     * Tests listing file names, excluding images scaled by Artivact.
+     */
+    @Test
+    void testListNamesWithoutScaledImages() {
+        List<String> filenames = filesystemFileRepository.listNamesWithoutScaledImages(sourceDir);
+        assertThat(filenames.contains("ITEM_CARD-test-image.png")).isFalse();
+
+        assertThat(filesystemFileRepository.listNamesWithoutScaledImages(Path.of("invalid-non-existing-path"))).isEmpty();
     }
 
     /**
@@ -301,6 +398,18 @@ class FilesystemFileRepositoryTest {
         Instant lastModifiedFromFilesystem = Files.getLastModifiedTime(createdFile).toInstant();
 
         assertEquals(lastModifiedFromRepo, lastModifiedFromFilesystem);
+    }
+
+    /**
+     * Tests error handling when getting the time of last modification of a file.
+     */
+    @Test
+    @SneakyThrows
+    void testLastModifiedFail() {
+        try (MockedStatic<Files> filesMock = Mockito.mockStatic(Files.class)) {
+            filesMock.when(() -> Files.getLastModifiedTime(sourceFile)).thenThrow(new IOException("test-exception"));
+            assertThrows(ArtivactException.class, () -> filesystemFileRepository.lastModified(sourceFile));
+        }
     }
 
     /**
@@ -325,6 +434,19 @@ class FilesystemFileRepositoryTest {
     }
 
     /**
+     * Tests error handling when writing file contents into a byte array.
+     */
+    @Test
+    @SneakyThrows
+    void testWriteFail() {
+        byte[] bytes = new byte[0];
+        try (MockedStatic<Files> filesMock = Mockito.mockStatic(Files.class)) {
+            filesMock.when(() -> Files.write(sourceFile, bytes)).thenThrow(new IOException("test-exception"));
+            assertThrows(ArtivactException.class, () -> filesystemFileRepository.write(sourceFile, bytes));
+        }
+    }
+
+    /**
      * Tests scaling an image.
      */
     @Test
@@ -332,6 +454,17 @@ class FilesystemFileRepositoryTest {
         Path targetImage = targetDir.resolve("scaled-image-path.png");
         filesystemFileRepository.scaleImage(sourceImage, targetImage, 100);
         assertThat(Files.exists(targetImage)).isTrue();
+    }
+
+    /**
+     * Tests error handling when scaling an image.
+     */
+    @Test
+    void testScaleImageByPathFail() {
+        try (MockedStatic<ImageIO> imageIoMock = Mockito.mockStatic(ImageIO.class)) {
+            imageIoMock.when(() -> ImageIO.read(sourceFile.toFile())).thenThrow(new IOException("test-exception"));
+            assertThrows(ArtivactException.class, () -> filesystemFileRepository.scaleImage(sourceFile, null, 0));
+        }
     }
 
     /**
@@ -346,6 +479,19 @@ class FilesystemFileRepositoryTest {
     }
 
     /**
+     * Tests error handling when scaling an image by input stream.
+     */
+    @Test
+    @SneakyThrows
+    void testScaleImageByInputStreamFail() {
+        InputStream sourceStream = new ByteArrayInputStream(new byte[0]);
+        try (MockedStatic<ImageIO> imageIoMock = Mockito.mockStatic(ImageIO.class)) {
+            imageIoMock.when(() -> ImageIO.read(sourceStream)).thenThrow(new IOException("test-exception"));
+            assertThrows(ArtivactException.class, () -> filesystemFileRepository.scaleImage(sourceStream, null, null, 0));
+        }
+    }
+
+    /**
      * Tests determining the size of a path.
      */
     @Test
@@ -354,6 +500,18 @@ class FilesystemFileRepositoryTest {
         assertThat(filesystemFileRepository.size(Path.of("INVALID"))).isZero();
         assertThat(filesystemFileRepository.size(sourceFile)).isEqualTo(15);
         assertThat(filesystemFileRepository.size(sourceImage)).isEqualTo(17613);
+    }
+
+    /**
+     * Tests error handling when determining the size of a path.
+     */
+    @Test
+    void testSizeFail() {
+        try (MockedStatic<Files> filesMock = Mockito.mockStatic(Files.class)) {
+            filesMock.when(() -> Files.exists(sourceFile)).thenReturn(true);
+            filesMock.when(() -> Files.size(sourceFile)).thenThrow(new IOException("test-exception"));
+            assertThrows(ArtivactException.class, () -> filesystemFileRepository.size(sourceFile));
+        }
     }
 
     /**
@@ -387,6 +545,17 @@ class FilesystemFileRepositoryTest {
     }
 
     /**
+     * Tests error handling when reading a file as String.
+     */
+    @Test
+    void testReadFail() {
+        try (MockedStatic<Files> filesMock = Mockito.mockStatic(Files.class)) {
+            filesMock.when(() -> Files.readString(sourceFile)).thenThrow(new IOException("test-exception"));
+            assertThrows(ArtivactException.class, () -> filesystemFileRepository.read(sourceFile));
+        }
+    }
+
+    /**
      * Tests reading a file as InputStream.
      */
     @Test
@@ -397,6 +566,19 @@ class FilesystemFileRepositoryTest {
     }
 
     /**
+     * Tests error handling when reading a file as InputStream.
+     */
+    @Test
+    @SneakyThrows
+    @SuppressWarnings("resource")
+    void testReadStreamFail() {
+        try (MockedStatic<Files> filesMock = Mockito.mockStatic(Files.class)) {
+            filesMock.when(() -> Files.newInputStream(sourceFile)).thenThrow(new IOException("test-exception"));
+            assertThrows(ArtivactException.class, () -> filesystemFileRepository.readStream(sourceFile));
+        }
+    }
+
+    /**
      * Tests reading a file as byte array.
      */
     @Test
@@ -404,4 +586,84 @@ class FilesystemFileRepositoryTest {
         byte[] sourceFileContent = filesystemFileRepository.readBytes(sourceFile);
         assertThat(new String(sourceFileContent)).isEqualTo("##REPLACEMENT##");
     }
+
+    /**
+     * Tests error handling when reading a file as byte array.
+     */
+    @Test
+    void testReadBytesFail() {
+        try (MockedStatic<Files> filesMock = Mockito.mockStatic(Files.class)) {
+            filesMock.when(() -> Files.readAllBytes(sourceFile)).thenThrow(new IOException("test-exception"));
+            assertThrows(ArtivactException.class, () -> filesystemFileRepository.readBytes(sourceFile));
+        }
+    }
+
+    /**
+     * Tests getting an asset's name.
+     */
+    @Test
+    void testGetAssetName() {
+        assertThat(filesystemFileRepository.getAssetName(23, null)).isEqualTo("023");
+        assertThat(filesystemFileRepository.getAssetName(23, "")).isEqualTo("023");
+        assertThat(filesystemFileRepository.getAssetName(23, "  ")).isEqualTo("023");
+        assertThat(filesystemFileRepository.getAssetName(4, "glb")).isEqualTo("004.glb");
+        assertThat(filesystemFileRepository.getAssetName(23, "jpg")).isEqualTo("023.jpg");
+        assertThat(filesystemFileRepository.getAssetName(666, "png")).isEqualTo("666.png");
+    }
+
+    /**
+     * Tests getting the next asset number from a directory.
+     */
+    @Test
+    @SneakyThrows
+    void testGetNextAssetNumber() {
+        assertThat(filesystemFileRepository.getNextAssetNumber(Path.of("invalid-does-not-exist-path"))).isEqualTo(1);
+
+        Files.copy(sourceImage, targetDir.resolve(sourceImage.getFileName()));
+        assertThat(filesystemFileRepository.getNextAssetNumber(targetDir)).isEqualTo(24);
+    }
+
+
+    /**
+     * Tests error handling when getting the next asset number from a directory.
+     */
+    @Test
+    @SneakyThrows
+    @SuppressWarnings("resource")
+    void testGetNextAssetNumberFail() {
+        try (MockedStatic<Files> filesMock = Mockito.mockStatic(Files.class)) {
+            filesMock.when(() -> Files.exists(targetDir)).thenReturn(true);
+            filesMock.when(() -> Files.list(targetDir)).thenThrow(new IOException("test-exception"));
+            assertThrows(ArtivactException.class, () -> filesystemFileRepository.getNextAssetNumber(targetDir));
+        }
+    }
+
+    /**
+     * Tests deleting a directory and up to two levels of empty parent directories.
+     */
+    @Test
+    @SneakyThrows
+    void testDeleteDirAndEmptyParents() {
+        // Both parent directories are deleted:
+        Path dirToDelete = targetDir.resolve("one/two/three");
+        Files.createDirectories(dirToDelete);
+        filesystemFileRepository.deleteDirAndEmptyParents(dirToDelete);
+        assertThat(Files.exists(targetDir.resolve("one"))).isFalse();
+
+        // One parent dir is deleted:
+        dirToDelete = targetDir.resolve("one/two/three");
+        Files.createDirectories(dirToDelete);
+        Files.copy(sourceImage, targetDir.resolve("one").resolve(sourceImage.getFileName()));
+        filesystemFileRepository.deleteDirAndEmptyParents(dirToDelete);
+        assertThat(Files.exists(targetDir.resolve("one").resolve(sourceImage.getFileName()))).isTrue();
+        FileUtils.deleteDirectory(targetDir.resolve("one").toFile());
+
+        // No parent dir is deleted:
+        dirToDelete = targetDir.resolve("one/two/three");
+        Files.createDirectories(dirToDelete);
+        Files.copy(sourceImage, targetDir.resolve("one/two").resolve(sourceImage.getFileName()));
+        filesystemFileRepository.deleteDirAndEmptyParents(dirToDelete);
+        assertThat(Files.exists(targetDir.resolve("one/two").resolve(sourceImage.getFileName()))).isTrue();
+    }
+
 }

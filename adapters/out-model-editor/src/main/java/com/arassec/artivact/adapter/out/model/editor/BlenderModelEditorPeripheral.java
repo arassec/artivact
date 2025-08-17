@@ -2,7 +2,6 @@ package com.arassec.artivact.adapter.out.model.editor;
 
 import com.arassec.artivact.application.port.out.gateway.OsGateway;
 import com.arassec.artivact.application.port.out.peripheral.ModelEditorPeripheral;
-import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.configuration.PeripheralImplementation;
 import com.arassec.artivact.domain.model.item.CreationModelSet;
@@ -33,11 +32,6 @@ public class BlenderModelEditorPeripheral extends BasePeripheralAdapter implemen
      * The directory containing blender python scripts.
      */
     private static final String BLENDER_DIR = "utils/Blender";
-
-    /**
-     * The file repository.
-     */
-    private final FileRepository fileRepository;
 
     /**
      * Gateway to the operating system.

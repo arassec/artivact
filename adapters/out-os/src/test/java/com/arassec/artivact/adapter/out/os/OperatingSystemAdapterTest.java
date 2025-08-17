@@ -20,4 +20,13 @@ class OperatingSystemAdapterTest {
         assertDoesNotThrow(() -> operatingSystemAdapter.execute("echo", List.of("test")));
     }
 
+    /**
+     * Tests executing a non-existing command on the command line.
+     */
+    @Test
+    void testExecuteFailsafe() {
+        OperatingSystemAdapter operatingSystemAdapter = new OperatingSystemAdapter();
+        assertDoesNotThrow(() -> operatingSystemAdapter.execute("invalid-non-existing-command", List.of()));
+    }
+
 }
