@@ -1,6 +1,5 @@
-package com.arassec.artivact.adapter.in.rest.controller;
+package com.arassec.artivact.adapter.in.rest.controller.page;
 
-import com.arassec.artivact.adapter.in.rest.controller.page.PageController;
 import com.arassec.artivact.application.port.out.repository.PageRepository;
 import com.arassec.artivact.application.service.page.ManagePageService;
 import com.arassec.artivact.domain.model.item.ImageSize;

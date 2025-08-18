@@ -23,6 +23,11 @@ import java.util.List;
 public class AccountController {
 
     /**
+     * Use case to create new accounts.
+     */
+    private final CreateAccountUseCase createAccountUseCase;
+
+    /**
      * Use case for loading accounts.
      */
     private final LoadAccountUseCase loadAccountUseCase;
@@ -31,11 +36,6 @@ public class AccountController {
      * Use case to update accounts.
      */
     private final UpdateAccountUseCase updateAccountUseCase;
-
-    /**
-     * Use case to create new accounts.
-     */
-    private final CreateAccountUseCase createAccountUseCase;
 
     /**
      * Use case to delete accounts.

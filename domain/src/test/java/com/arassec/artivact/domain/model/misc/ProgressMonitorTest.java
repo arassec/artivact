@@ -1,7 +1,6 @@
-package com.arassec.artivact.domain.misc;
+package com.arassec.artivact.domain.model.misc;
 
 import com.arassec.artivact.domain.exception.ArtivactException;
-import com.arassec.artivact.domain.model.misc.ProgressMonitor;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

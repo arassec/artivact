@@ -11,12 +11,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Controller for management of long-running background operations.
+ */
 @Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/operation")
 public class OperationController {
 
+    /**
+     * Use case to get the progress of a long-running background operation.
+     */
     private final GetBackgroundOperationProgressUseCase getBackgroundOperationProgressUseCase;
 
     /**

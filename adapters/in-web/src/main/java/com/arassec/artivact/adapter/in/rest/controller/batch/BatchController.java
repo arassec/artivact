@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/batch")
 public class BatchController extends BaseController {
 
+    /**
+     * Use case to start a batch operation.
+     */
     private final StartBatchOperationUseCase startBatchOperationUseCase;
 
     /**
