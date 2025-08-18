@@ -1,7 +1,7 @@
 package com.arassec.artivact.domain.model.peripheral;
 
-import com.arassec.artivact.domain.model.misc.ProgressMonitor;
 import com.arassec.artivact.domain.model.configuration.PeripheralImplementation;
+import com.arassec.artivact.domain.model.misc.ProgressMonitor;
 
 /**
  * Defines access to a peripheral device or software.
@@ -31,7 +31,7 @@ public interface Peripheral {
      * @param progressMonitor The progress monitor which will be updated by the peripheral during processing.
      * @param initParams      General initialization parameters for the peripheral.
      */
-    void initialize(ProgressMonitor progressMonitor, PeripheralAdapterInitParams initParams);
+    void initialize(ProgressMonitor progressMonitor, PeripheralInitParams initParams);
 
     /**
      * Tears the peripheral down after processing.

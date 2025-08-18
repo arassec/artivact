@@ -18,7 +18,7 @@ import com.arassec.artivact.domain.model.item.Item;
 import com.arassec.artivact.domain.model.media.CaptureImagesParams;
 import com.arassec.artivact.domain.model.misc.ProgressMonitor;
 import com.arassec.artivact.domain.model.peripheral.Peripheral;
-import com.arassec.artivact.domain.model.peripheral.PeripheralAdapterInitParams;
+import com.arassec.artivact.domain.model.peripheral.PeripheralInitParams;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -91,20 +91,20 @@ public class CaptureItemImageService implements CaptureItemImageUseCase {
         TurntablePeripheral turntablePeripheral = getPeripheral(adapterConfiguration.getTurntablePeripheralImplementation(), TurntablePeripheral.class);
         if (useTurnTable) {
             log.debug("Initializing turntable adapter for image capturing: {}", turntablePeripheral.getSupportedImplementation());
-            turntablePeripheral.initialize(progressMonitor, PeripheralAdapterInitParams.builder().build());
+            turntablePeripheral.initialize(progressMonitor, PeripheralInitParams.builder().build());
         }
 
         CameraPeripheral cameraPeripheral = getPeripheral(adapterConfiguration.getCameraPeripheralImplementation(), CameraPeripheral.class);
         log.debug("Initializing camera adapter for image capturing: {}", cameraPeripheral.getSupportedImplementation());
-        cameraPeripheral.initialize(progressMonitor, PeripheralAdapterInitParams.builder()
-                .adapterConfiguration(adapterConfiguration)
+        cameraPeripheral.initialize(progressMonitor, PeripheralInitParams.builder()
+                .configuration(adapterConfiguration)
                 .build());
 
         ImageManipulationPeripheral imageManipulationPeripheral = getPeripheral(adapterConfiguration.getImageManipulationPeripheralImplementation(), ImageManipulationPeripheral.class);
         log.debug("Initializing iamge-manipulation adapter for image capturing: {}", imageManipulationPeripheral.getSupportedImplementation());
-        imageManipulationPeripheral.initialize(progressMonitor, PeripheralAdapterInitParams.builder()
+        imageManipulationPeripheral.initialize(progressMonitor, PeripheralInitParams.builder()
                 .projectRoot(useProjectDirsUseCase.getProjectRoot())
-                .adapterConfiguration(adapterConfiguration)
+                .configuration(adapterConfiguration)
                 .workDir(useProjectDirsUseCase.getImagesDir(itemId))
                 .build());
 

@@ -1,9 +1,6 @@
 package com.arassec.artivact.domain.model.configuration;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.EnumMap;
 import java.util.LinkedList;
@@ -17,6 +14,7 @@ import java.util.Map;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class PeripheralConfiguration {
 
     /**

@@ -26,6 +26,9 @@ import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * {@link SearchGateway} that uses Lucene with an index stored in the filesystem.
+ */
 @Component
 public class LuceneSearchGateway implements SearchGateway {
 
@@ -88,7 +91,7 @@ public class LuceneSearchGateway implements SearchGateway {
     @Override
     public void updateIndex(Item item, boolean updateIndex) {
         try {
-            Document luceneDocument = new Document();
+            final Document luceneDocument = new Document();
             StringBuilder fulltext = new StringBuilder();
 
             // Lucene doesn't like "-" in the UUIDs, so wie store the ID for search with Lucene without them:

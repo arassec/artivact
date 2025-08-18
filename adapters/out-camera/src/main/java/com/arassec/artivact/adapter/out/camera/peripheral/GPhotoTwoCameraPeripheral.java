@@ -2,7 +2,6 @@ package com.arassec.artivact.adapter.out.camera.peripheral;
 
 import com.arassec.artivact.application.port.out.gateway.OsGateway;
 import com.arassec.artivact.application.port.out.peripheral.CameraPeripheral;
-import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.model.configuration.PeripheralImplementation;
 import com.arassec.artivact.domain.model.peripheral.BasePeripheralAdapter;
 import lombok.Getter;
@@ -23,11 +22,6 @@ import java.util.List;
 public class GPhotoTwoCameraPeripheral extends BasePeripheralAdapter implements CameraPeripheral {
 
     /**
-     * The file repository.
-     */
-    private final FileRepository fileRepository;
-
-    /**
      * Gateway to the operating system.
      */
     private final OsGateway osGateway;
@@ -45,7 +39,7 @@ public class GPhotoTwoCameraPeripheral extends BasePeripheralAdapter implements 
      */
     @Override
     public boolean captureImage(Path targetFile) {
-        osGateway.execute(initParams.getAdapterConfiguration().getConfigValue(getSupportedImplementation()),
+        osGateway.execute(initParams.getConfiguration().getConfigValue(getSupportedImplementation()),
                 List.of("--filename", targetFile.toString(), "--capture-image-and-download"));
         return true;
     }

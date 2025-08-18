@@ -4,10 +4,10 @@ import com.arasse.jptp.main.ImageCaptureDevice;
 import com.arassec.artivact.application.port.out.peripheral.CameraPeripheral;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.exception.ArtivactException;
-import com.arassec.artivact.domain.model.peripheral.BasePeripheralAdapter;
-import com.arassec.artivact.domain.model.peripheral.PeripheralAdapterInitParams;
 import com.arassec.artivact.domain.model.configuration.PeripheralImplementation;
 import com.arassec.artivact.domain.model.misc.ProgressMonitor;
+import com.arassec.artivact.domain.model.peripheral.BasePeripheralAdapter;
+import com.arassec.artivact.domain.model.peripheral.PeripheralInitParams;
 import com.arassec.jptp.core.datatype.complex.DataObject;
 import com.arassec.jptp.core.datatype.complex.DeviceInfo;
 import lombok.Getter;
@@ -18,6 +18,10 @@ import org.springframework.stereotype.Component;
 import java.nio.file.Path;
 import java.util.Optional;
 
+/**
+ * Default camera peripheral implementation. Uses the "Picture Transfer Protocol (PTP)" for camera control and image
+ * capturing.
+ */
 @Slf4j
 @Component
 @Getter
@@ -46,7 +50,7 @@ public class DefaultCameraPeripheral extends BasePeripheralAdapter implements Ca
      * {@inheritDoc}
      */
     @Override
-    public void initialize(ProgressMonitor progressMonitor, PeripheralAdapterInitParams initParams) {
+    public void initialize(ProgressMonitor progressMonitor, PeripheralInitParams initParams) {
         super.initialize(progressMonitor, initParams);
 
         // Might happen when teardown() is not called because of errors!
@@ -66,15 +70,6 @@ public class DefaultCameraPeripheral extends BasePeripheralAdapter implements Ca
      * {@inheritDoc}
      */
     @Override
-    public void teardown() {
-        super.teardown();
-        imageCaptureDevice.teardown();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public boolean captureImage(Path targetFile) {
 
         Optional<DataObject> dataObject = imageCaptureDevice.captureImage();
@@ -85,6 +80,15 @@ public class DefaultCameraPeripheral extends BasePeripheralAdapter implements Ca
         }
 
         return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void teardown() {
+        super.teardown();
+        imageCaptureDevice.teardown();
     }
 
 }

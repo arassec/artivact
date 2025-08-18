@@ -8,12 +8,12 @@ import com.arassec.artivact.application.port.in.operation.RunBackgroundOperation
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.peripheral.ImageManipulationPeripheral;
 import com.arassec.artivact.domain.exception.ArtivactException;
-import com.arassec.artivact.domain.model.peripheral.Peripheral;
-import com.arassec.artivact.domain.model.peripheral.PeripheralAdapterInitParams;
 import com.arassec.artivact.domain.model.configuration.PeripheralConfiguration;
 import com.arassec.artivact.domain.model.item.CreationImageSet;
 import com.arassec.artivact.domain.model.item.Item;
 import com.arassec.artivact.domain.model.misc.ProgressMonitor;
+import com.arassec.artivact.domain.model.peripheral.Peripheral;
+import com.arassec.artivact.domain.model.peripheral.PeripheralInitParams;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -81,9 +81,9 @@ public class ManipulateItemImagesService implements ManipulateItemImagesUseCase 
                 .findAny()
                 .orElseThrow(() -> new ArtivactException("Could not detect image-manipulation adapter!"));
 
-        imageManipulationAdapter.initialize(progressMonitor, PeripheralAdapterInitParams.builder()
+        imageManipulationAdapter.initialize(progressMonitor, PeripheralInitParams.builder()
                 .projectRoot(useProjectDirsUseCase.getProjectRoot())
-                .adapterConfiguration(adapterConfiguration)
+                .configuration(adapterConfiguration)
                 .workDir(useProjectDirsUseCase.getImagesDir(itemId))
                 .build());
 

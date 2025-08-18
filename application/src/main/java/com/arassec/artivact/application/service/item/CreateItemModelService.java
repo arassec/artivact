@@ -16,7 +16,7 @@ import com.arassec.artivact.domain.model.item.Item;
 import com.arassec.artivact.domain.model.misc.ProgressMonitor;
 import com.arassec.artivact.domain.model.peripheral.ModelCreationResult;
 import com.arassec.artivact.domain.model.peripheral.Peripheral;
-import com.arassec.artivact.domain.model.peripheral.PeripheralAdapterInitParams;
+import com.arassec.artivact.domain.model.peripheral.PeripheralInitParams;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -93,8 +93,8 @@ public class CreateItemModelService implements CreateItemModelUseCase {
                 .findAny()
                 .orElseThrow(() -> new ArtivactException("Could not detect selected model-creator adapter!"));
 
-        modelCreatorAdapter.initialize(progressMonitor, PeripheralAdapterInitParams.builder()
-                .adapterConfiguration(adapterConfiguration)
+        modelCreatorAdapter.initialize(progressMonitor, PeripheralInitParams.builder()
+                .configuration(adapterConfiguration)
                 .workDir(useProjectDirsUseCase.getTempDir())
                 .projectRoot(useProjectDirsUseCase.getProjectRoot())
                 .build());

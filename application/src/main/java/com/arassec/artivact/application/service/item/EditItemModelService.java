@@ -1,18 +1,18 @@
 package com.arassec.artivact.application.service.item;
 
 import com.arassec.artivact.application.port.in.configuration.LoadPeripheralConfigurationUseCase;
-import com.arassec.artivact.application.port.in.item.LoadItemUseCase;
 import com.arassec.artivact.application.port.in.item.EditItemModelUseCase;
+import com.arassec.artivact.application.port.in.item.LoadItemUseCase;
 import com.arassec.artivact.application.port.in.operation.RunBackgroundOperationUseCase;
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.peripheral.ModelEditorPeripheral;
 import com.arassec.artivact.domain.exception.ArtivactException;
-import com.arassec.artivact.domain.model.peripheral.Peripheral;
-import com.arassec.artivact.domain.model.peripheral.PeripheralAdapterInitParams;
 import com.arassec.artivact.domain.model.configuration.PeripheralConfiguration;
 import com.arassec.artivact.domain.model.item.CreationModelSet;
 import com.arassec.artivact.domain.model.item.Item;
 import com.arassec.artivact.domain.model.misc.ProgressMonitor;
+import com.arassec.artivact.domain.model.peripheral.Peripheral;
+import com.arassec.artivact.domain.model.peripheral.PeripheralInitParams;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -69,9 +69,9 @@ public class EditItemModelService implements EditItemModelUseCase {
                 .findAny()
                 .orElseThrow(() -> new ArtivactException("Could not detect selected model-editor adapter!"));
 
-        modelEditorAdapter.initialize(progressMonitor, PeripheralAdapterInitParams.builder()
+        modelEditorAdapter.initialize(progressMonitor, PeripheralInitParams.builder()
                 .projectRoot(useProjectDirsUseCase.getProjectRoot())
-                .adapterConfiguration(adapterConfiguration)
+                .configuration(adapterConfiguration)
                 .build());
 
         modelEditorAdapter.open(creationModel);

@@ -16,7 +16,7 @@ public abstract class BasePeripheralAdapter implements Peripheral {
     /**
      * Object with optional parameters for specific adapter implementations.
      */
-    protected PeripheralAdapterInitParams initParams;
+    protected PeripheralInitParams initParams;
 
     /**
      * {@inheritDoc}
@@ -30,7 +30,7 @@ public abstract class BasePeripheralAdapter implements Peripheral {
      * {@inheritDoc}
      */
     @Override
-    public void initialize(ProgressMonitor progressMonitor, PeripheralAdapterInitParams initParams) {
+    public void initialize(ProgressMonitor progressMonitor, PeripheralInitParams initParams) {
         this.progressMonitor = progressMonitor;
         this.initParams = initParams;
     }
