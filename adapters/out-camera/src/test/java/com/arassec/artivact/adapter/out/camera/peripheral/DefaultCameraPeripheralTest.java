@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -59,19 +60,14 @@ class DefaultCameraPeripheralTest {
      */
     @Test
     void testCaptureImage() {
-        when(imageCaptureDevice.initialize()).thenReturn(true);
+        when(imageCaptureDevice.initialize(Duration.ofSeconds(15), Duration.ofSeconds(15))).thenReturn(true);
         when(imageCaptureDevice.getDeviceInfo()).thenReturn(Optional.of(mock(DeviceInfo.class)));
 
         ProgressMonitor progressMonitor = mock(ProgressMonitor.class);
         PeripheralInitParams peripheralInitParams = mock(PeripheralInitParams.class);
 
-        // Simulate already initialized device:
-        when(imageCaptureDevice.isInitialized()).thenReturn(true);
-
         // Test initialization:
         defaultCameraPeripheral.initialize(progressMonitor, peripheralInitParams);
-        // Already initialized device must be teard down before usage!
-        verify(imageCaptureDevice, times(1)).teardown();
 
         // Test image capturing:
         when(imageCaptureDevice.captureImage()).thenReturn(Optional.of(mock(DataObject.class)));
@@ -82,7 +78,7 @@ class DefaultCameraPeripheralTest {
 
         // Test teardown:
         defaultCameraPeripheral.teardown();
-        verify(imageCaptureDevice, times(2)).teardown();
+        verify(imageCaptureDevice).teardown();
     }
 
     /**

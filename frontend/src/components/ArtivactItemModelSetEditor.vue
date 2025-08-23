@@ -145,7 +145,7 @@
   <artivact-operation-in-progress-dialog
     v-if="showOperationInProgressModalRef == true"
     :dialog-model="showOperationInProgressModalRef"
-    @close-dialog="showOperationInProgressModalRef = false"
+    @close-dialog="operationFinished()"
   />
 
   <!-- DELETE CONFIRMATION DIALOG -->
@@ -366,6 +366,11 @@ function deleteModelSet() {
         icon: 'report_problem',
       });
     });
+}
+
+function operationFinished() {
+  emit('update-item');
+  showOperationInProgressModalRef.value = false;
 }
 </script>
 

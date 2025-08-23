@@ -1,6 +1,5 @@
 <template>
   <div v-if="itemDataRef && userdataStore.isUserOrAdmin">
-
     <div class="col items-center sticky gt-md">
       <div class="absolute-top-left q-ma-md">
         <q-btn
@@ -9,30 +8,53 @@
           color="primary"
           icon="close"
           class="main-nav-button"
-          @click="exitEditMode">
+          @click="exitEditMode"
+        >
           <q-tooltip>{{ $t('ItemEditPage.button.tooltip.close') }}</q-tooltip>
         </q-btn>
       </div>
     </div>
 
     <ArtivactContent>
-
       <div class="col-12">
-
-        <div class="col q-mt-xl lt-md"/> <!-- Space on mobile resolution -->
+        <div class="col q-mt-xl lt-md" />
+        <!-- Space on mobile resolution -->
 
         <div data-test="edit-item-contents" class="col items-center">
-
           <q-tabs data-test="edit-item-tabs" v-model="tabRef" class="q-mb-lg">
-            <q-tab data-test="edit-item-base-tab" name="base" icon="text_snippet" :label="$t('ItemEditPage.tab.base')"
-                   class="nav-tab" @click="saveItem(false)"/>
-            <q-tab data-test="edit-item-media-tab" name="media" icon="image" :label="$t('ItemEditPage.tab.media')"
-                   class="nav-tab" @click="saveItem(false)"/>
-            <q-tab data-test="edit-item-properties-tab" name="properties" icon="library_books"
-                   :label="$t('ItemEditPage.tab.properties')" class="nav-tab" @click="saveItem(false)"/>
-            <q-tab data-test="edit-item-creation-tab" name="creation" icon="auto_awesome"
-                   :label="$t('ItemEditPage.tab.creation')" class="nav-tab" @click="saveItem(false)"
-                   v-if="profilesStore.isDesktopModeEnabled"/>
+            <q-tab
+              data-test="edit-item-base-tab"
+              name="base"
+              icon="text_snippet"
+              :label="$t('ItemEditPage.tab.base')"
+              class="nav-tab"
+              @click="saveItem(false)"
+            />
+            <q-tab
+              data-test="edit-item-media-tab"
+              name="media"
+              icon="image"
+              :label="$t('ItemEditPage.tab.media')"
+              class="nav-tab"
+              @click="saveItem(false)"
+            />
+            <q-tab
+              data-test="edit-item-properties-tab"
+              name="properties"
+              icon="library_books"
+              :label="$t('ItemEditPage.tab.properties')"
+              class="nav-tab"
+              @click="saveItem(false)"
+            />
+            <q-tab
+              data-test="edit-item-creation-tab"
+              name="creation"
+              icon="3d_rotation"
+              :label="$t('ItemEditPage.tab.creation')"
+              class="nav-tab"
+              @click="saveItem(false)"
+              v-if="profilesStore.isDesktopModeEnabled"
+            />
           </q-tabs>
 
           <!-- BASE DATA -->
@@ -44,14 +66,23 @@
               class="q-mb-sm"
             />
 
-            <q-separator :class="tagsDataRef && tagsDataRef.tags.length > 0 ? 'q-mb-sm' : 'q-mb-lg'"/>
+            <q-separator
+              :class="
+                tagsDataRef && tagsDataRef.tags.length > 0
+                  ? 'q-mb-sm'
+                  : 'q-mb-lg'
+              "
+            />
 
             <div
               class="q-mb-sm row"
               v-if="tagsDataRef"
-              v-show="tagsDataRef.tags.length > 0">
+              v-show="tagsDataRef.tags.length > 0"
+            >
               <div class="editor-label">
-                <label class="q-mr-xs q-mt-xs vertical-middle">{{ $t('ItemEditPage.label.tags') }}</label>
+                <label class="q-mr-xs q-mt-xs vertical-middle">{{
+                  $t('ItemEditPage.label.tags')
+                }}</label>
               </div>
 
               <div>
@@ -60,7 +91,7 @@
                   color="secondary"
                   v-for="(tag, index) in itemDataRef.tags"
                   :key="index"
-                >{{ tag.translatedValue }}
+                  >{{ tag.translatedValue }}
                   <q-btn
                     rounded
                     dense
@@ -68,8 +99,11 @@
                     color="primary"
                     size="xs"
                     icon="close"
-                    @click="removeTag(tag)">
-                    <q-tooltip>{{ $t('ItemEditPage.button.tooltip.removeTag') }}</q-tooltip>
+                    @click="removeTag(tag)"
+                  >
+                    <q-tooltip>{{
+                      $t('ItemEditPage.button.tooltip.removeTag')
+                    }}</q-tooltip>
                   </q-btn>
                 </q-badge>
                 <q-btn
@@ -81,8 +115,11 @@
                   color="secondary"
                   size="xs"
                   icon="add"
-                  @click="addTag">
-                  <q-tooltip>{{ $t('ItemEditPage.button.tooltip.addTag') }}</q-tooltip>
+                  @click="addTag"
+                >
+                  <q-tooltip>{{
+                    $t('ItemEditPage.button.tooltip.addTag')
+                  }}</q-tooltip>
                 </q-btn>
               </div>
 
@@ -105,7 +142,11 @@
                 </template>
 
                 <template v-slot:cancel>
-                  <q-btn color="primary" :label="$t('Common.cancel')" @click="addTagRef = false"/>
+                  <q-btn
+                    color="primary"
+                    :label="$t('Common.cancel')"
+                    @click="addTagRef = false"
+                  />
                 </template>
 
                 <template v-slot:approve>
@@ -146,13 +187,15 @@
               <artivact-item-image-editor
                 :images="itemDataRef.images"
                 :item-id="itemDataRef.id"
-                @uploaded="loadItemMediaData(itemDataRef.id)"/>
+                @uploaded="loadItemMediaData(itemDataRef.id)"
+              />
             </div>
             <h2 class="av-text-h2">{{ $t('ItemEditPage.label.models') }}</h2>
             <artivact-item-model-editor
               :models="itemDataRef.models"
               :item-id="itemDataRef.id"
-              @uploaded="loadItemMediaData(itemDataRef.id)"/>
+              @uploaded="loadItemMediaData(itemDataRef.id)"
+            />
           </div>
 
           <!-- PROPERTIES -->
@@ -170,49 +213,58 @@
             </label>
           </div>
 
-          <!-- MEDIA-CREATION -->
-          <div v-if="profilesStore.isDesktopModeEnabled" v-show="tabRef == 'creation'">
+          <!-- 3D SCAN -->
+          <div
+            v-if="profilesStore.isDesktopModeEnabled"
+            v-show="tabRef == 'creation'"
+          >
             <h2 class="av-text-h2">{{ $t('ItemEditPage.label.images') }}</h2>
             <div class="q-mb-xl">
-              <artivact-item-image-set-editor ref="imageSetEditorRef"
-                                              :item-id="savedItemId"
-                                              :creation-image-sets="itemDataRef.creationImageSets"
-                                              @delete-image="saveItem(false)"
-                                              @update-item="loadItemData(itemDataRef.id)"/>
+              <artivact-item-image-set-editor
+                ref="imageSetEditorRef"
+                :item-id="savedItemId"
+                :creation-image-sets="itemDataRef.creationImageSets"
+                @delete-image="saveItem(false)"
+                @update-item="loadItemData(itemDataRef.id)"
+              />
             </div>
             <h2 class="av-text-h2">{{ $t('ItemEditPage.label.models') }}</h2>
-            <artivact-item-model-set-editor :item-id="savedItemId" :creation-model-sets="itemDataRef.creationModelSets"
-                                            @update-item="loadItemData(itemDataRef.id)"/>
+            <artivact-item-model-set-editor
+              :item-id="savedItemId"
+              :creation-model-sets="itemDataRef.creationModelSets"
+              @update-item="loadItemData(itemDataRef.id)"
+            />
           </div>
-
         </div>
       </div>
-
     </ArtivactContent>
-
   </div>
 </template>
 
 <script setup lang="ts">
-import {useQuasar} from 'quasar';
-import {computed, onMounted, ref} from 'vue';
-import {useRoute, useRouter} from 'vue-router';
-import {api} from '../boot/axios';
+import { useQuasar } from 'quasar';
+import { computed, onMounted, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { api } from '../boot/axios';
 import ArtivactContent from '../components/ArtivactContent.vue';
 import ArtivactRestrictionsEditor from '../components/ArtivactRestrictionsEditor.vue';
-import {useLocaleStore} from '../stores/locale';
-import {ItemDetails, Tag, TagsConfiguration} from '../components/artivact-models';
+import { useLocaleStore } from '../stores/locale';
+import {
+  ItemDetails,
+  Tag,
+  TagsConfiguration,
+} from '../components/artivact-models';
 import ArtivactPropertyCategoryEditor from '../components/ArtivactPropertyCategoryEditor.vue';
 import ArtivactRestrictedTranslatableItemEditor from '../components/ArtivactRestrictedTranslatableItemEditor.vue';
-import {useBreadcrumbsStore} from '../stores/breadcrumbs';
-import {useUserdataStore} from '../stores/userdata';
+import { useBreadcrumbsStore } from '../stores/breadcrumbs';
+import { useUserdataStore } from '../stores/userdata';
 import ArtivactDialog from '../components/ArtivactDialog.vue';
-import {useI18n} from 'vue-i18n';
+import { useI18n } from 'vue-i18n';
 import ArtivactItemModelEditor from '../components/ArtivactItemModelEditor.vue';
 import ArtivactItemImageEditor from '../components/ArtivactItemImageEditor.vue';
 import ArtivactItemImageSetEditor from '../components/ArtivactItemImageSetEditor.vue';
 import ArtivactItemModelSetEditor from '../components/ArtivactItemModelSetEditor.vue';
-import {useProfilesStore} from '../stores/profiles';
+import { useProfilesStore } from '../stores/profiles';
 
 const quasar = useQuasar();
 const route = useRoute();
@@ -235,7 +287,9 @@ const tagValueRef = ref(null);
 
 let savedItemId: string;
 
-const imageSetEditorRef = ref<InstanceType<typeof ArtivactItemImageSetEditor> | null>(null)
+const imageSetEditorRef = ref<InstanceType<
+  typeof ArtivactItemImageSetEditor
+> | null>(null);
 
 let originalItemJson: string;
 
@@ -250,8 +304,8 @@ const availableTags = computed(() => {
       }
     }
     return true;
-  })
-})
+  });
+});
 
 function addTag() {
   tagValueRef.value = null;
@@ -274,7 +328,9 @@ function loadItemData(itemId: string | string[]) {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.loading.failed', {item: i18n.t('Common.items.item')}),
+        message: i18n.t('Common.messages.loading.failed', {
+          item: i18n.t('Common.items.item'),
+        }),
         icon: 'report_problem',
       });
     });
@@ -300,7 +356,9 @@ function loadItemMediaData(itemId: string | string[]) {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.loading.failed', {item: i18n.t('Common.items.item')}),
+        message: i18n.t('Common.messages.loading.failed', {
+          item: i18n.t('Common.items.item'),
+        }),
         icon: 'report_problem',
       });
     });
@@ -316,7 +374,9 @@ function loadPropertiesData() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.loading.failed', {item: i18n.t('Common.items.properties')}),
+        message: i18n.t('Common.messages.loading.failed', {
+          item: i18n.t('Common.items.properties'),
+        }),
         icon: 'report_problem',
       });
     });
@@ -332,7 +392,9 @@ function loadTagsData() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.loading.failed', {item: i18n.t('Common.items.tags')}),
+        message: i18n.t('Common.messages.loading.failed', {
+          item: i18n.t('Common.items.tags'),
+        }),
         icon: 'report_problem',
       });
     });
@@ -341,7 +403,7 @@ function loadTagsData() {
 function removeTag(tag: Tag) {
   if (itemDataRef.value) {
     itemDataRef.value.tags = (itemDataRef.value?.tags as Tag[]).filter(
-      (item) => item !== tag
+      (item) => item !== tag,
     );
   }
 }
@@ -370,29 +432,33 @@ function saveItem(exitEditMode) {
         quasar.notify({
           color: 'positive',
           position: 'bottom',
-          message: i18n.t('Common.messages.saving.success', {item: i18n.t('Common.items.item')}),
+          message: i18n.t('Common.messages.saving.success', {
+            item: i18n.t('Common.items.item'),
+          }),
           icon: 'done',
         });
         if (exitEditMode) {
-          router.push('/item/' + item.id)
+          router.push('/item/' + item.id);
         }
       })
       .catch(() => {
         quasar.notify({
           color: 'negative',
           position: 'bottom',
-          message: i18n.t('Common.messages.saving.failed', {item: i18n.t('Common.items.item')}),
+          message: i18n.t('Common.messages.saving.failed', {
+            item: i18n.t('Common.items.item'),
+          }),
           icon: 'report_problem',
         });
       });
   } else if (exitEditMode) {
-    router.push('/item/' + itemDataRef.value.id)
+    router.push('/item/' + itemDataRef.value.id);
   }
 }
 
 function exitEditMode() {
   breadcrumbsStore.removeLastBreadcrumb();
-  saveItem(true)
+  saveItem(true);
 }
 
 onMounted(() => {
@@ -400,7 +466,6 @@ onMounted(() => {
   loadTagsData();
   loadItemData(route.params.itemId);
 });
-
 </script>
 
 <style scoped>
@@ -417,5 +482,4 @@ onMounted(() => {
   top: 3.5em;
   z-index: 2;
 }
-
 </style>

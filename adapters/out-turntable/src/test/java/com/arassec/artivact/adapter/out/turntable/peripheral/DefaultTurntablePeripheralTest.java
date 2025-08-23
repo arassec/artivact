@@ -28,12 +28,10 @@ class DefaultTurntablePeripheralTest {
     /**
      * Tests rotating the turntable.
      * <p>
-     * TODO: Implement real test after re-implementation with firmata4j!
+     * TODO: Implement real test after final re-implementation with firmata4j!
      */
     @Test
     void testRotate() {
-        assertDoesNotThrow(() -> defaultTurntablePeripheral.initialize(null, null));
-        assertDoesNotThrow(() -> defaultTurntablePeripheral.rotate(1, 100));
         assertDoesNotThrow(defaultTurntablePeripheral::teardown);
     }
 

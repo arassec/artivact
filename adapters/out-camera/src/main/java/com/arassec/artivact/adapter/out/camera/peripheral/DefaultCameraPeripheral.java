@@ -16,7 +16,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Default camera peripheral implementation. Uses the "Picture Transfer Protocol (PTP)" for camera control and image
@@ -52,13 +54,7 @@ public class DefaultCameraPeripheral extends BasePeripheralAdapter implements Ca
     @Override
     public void initialize(ProgressMonitor progressMonitor, PeripheralInitParams initParams) {
         super.initialize(progressMonitor, initParams);
-
-        // Might happen when teardown() is not called because of errors!
-        if (imageCaptureDevice.isInitialized()) {
-            imageCaptureDevice.teardown();
-        }
-
-        if (imageCaptureDevice.initialize()) {
+        if (imageCaptureDevice.initialize(Duration.ofSeconds(15), Duration.ofSeconds(15))) {
             DeviceInfo deviceInfo = imageCaptureDevice.getDeviceInfo().orElseThrow();
             log.debug("Using image capture device: {} - {}", deviceInfo.manufacturer(), deviceInfo.model());
         } else {
@@ -71,7 +67,12 @@ public class DefaultCameraPeripheral extends BasePeripheralAdapter implements Ca
      */
     @Override
     public boolean captureImage(Path targetFile) {
-
+        try {
+            // TODO: Make this a config parameter!
+            TimeUnit.MILLISECONDS.sleep(250);
+        } catch (InterruptedException e) {
+            log.debug("Interrupted during camera sleep period.", e);
+        }
         Optional<DataObject> dataObject = imageCaptureDevice.captureImage();
         if (dataObject.isPresent()) {
             fileRepository.saveFile(targetFile, dataObject.get().data());

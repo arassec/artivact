@@ -7,14 +7,15 @@ import com.arassec.artivact.domain.model.misc.ProgressMonitor;
 import com.arassec.artivact.domain.model.peripheral.BasePeripheralAdapter;
 import com.arassec.artivact.domain.model.peripheral.PeripheralInitParams;
 import com.fazecast.jSerialComm.SerialPort;
-import com.fazecast.jSerialComm.SerialPortDataListener;
-import com.fazecast.jSerialComm.SerialPortEvent;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.firmata4j.IODevice;
+import org.firmata4j.Pin;
+import org.firmata4j.firmata.FirmataDevice;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * The open source Artivact turntable.
@@ -25,19 +26,34 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class DefaultTurntablePeripheral extends BasePeripheralAdapter implements TurntablePeripheral {
 
     /**
-     * Indicates whether the turntable was found using USB or not.
+     * Arduino pins which are connected to IN1-IN4 on the ULN2003.
      */
-    private final AtomicBoolean turntableFound = new AtomicBoolean(false);
+    private static final int[] MOTOR_PINS = {8, 9, 10, 11};
 
     /**
-     * Indicates whether the rotation finished or not.
+     * Stepping sequence for 28BYJ-48.
      */
-    private final AtomicBoolean finished = new AtomicBoolean(false);
+    private static final int[][] STEP_SEQUENCE = {
+            {1, 0, 0, 0},
+            {1, 1, 0, 0},
+            {0, 1, 0, 0},
+            {0, 1, 1, 0},
+            {0, 0, 1, 0},
+            {0, 0, 1, 1},
+            {0, 0, 0, 1},
+            {1, 0, 0, 1}
+    };
 
     /**
-     * The USB serial port the turntable is attached to.
+     * The turntable connected to a USB port.
      */
-    private SerialPort liveSerialPort;
+    private IODevice ioDevice;
+
+    /**
+     * Delay after rotating the turntable. Can be used to stop item movement after rotation or to manually turn a
+     * turntable between image capturing.
+     */
+    private int turntableDelay;
 
     /**
      * {@inheritDoc}
@@ -54,64 +70,48 @@ public class DefaultTurntablePeripheral extends BasePeripheralAdapter implements
     public void initialize(ProgressMonitor progressMonitor, PeripheralInitParams initParams) {
         super.initialize(progressMonitor, initParams);
 
-        log.trace("Initialization Artivact-Turntable");
+        log.trace("Initialize default turntable");
 
-        reset();
+        String turntableDelayConfiguration = initParams.getConfiguration().getConfigValue(getSupportedImplementation());
+        try {
+            turntableDelay = Integer.parseInt(turntableDelayConfiguration);
+        } catch (NumberFormatException e) {
+            log.warn("Invalid turntable delay configuration: {}. Needs to be milliseconds. Using default of 250.", turntableDelayConfiguration);
+            turntableDelay = 250;
+        }
+
+        // Prevent problems when an exception is thrown after the turntable has been initialized.
+        try {
+            if (ioDevice != null) {
+                ioDevice.stop();
+                ioDevice = null;
+            }
+        } catch (IOException e) {
+            throw new ArtivactException("Error during turntable reset!", e);
+        }
 
         SerialPort[] serialPorts = SerialPort.getCommPorts();
 
-        for (SerialPort p : serialPorts) {
-            log.trace("Checking serial port for artivact turntable {} - {} - {}", p.getSystemPortName(),
-                    p.getDescriptivePortName(), p.getPortDescription());
+        for (SerialPort port : serialPorts) {
+            String systemPortName = port.getSystemPortName();
 
-            p.setComPortParameters(9600, 8, 1, 0); // default connection settings for Arduino
-            p.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING, 0, 0); // block until bytes can be written
+            log.trace("Checking serial port for artivact turntable {} - {} - {}", systemPortName,
+                    port.getDescriptivePortName(), port.getPortDescription());
 
-            if (p.openPort(500)) {
-                log.trace("Serial port open: {}", p.isOpen());
-
-                turntableFound.set(true);
-
-                liveSerialPort = p;
-
-                liveSerialPort.addDataListener(new SerialPortDataListener() {
-                    @Override
-                    public void serialEvent(SerialPortEvent event) {
-                        try {
-                            TimeUnit.MILLISECONDS.sleep(250);
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                            throw new ArtivactException("Interrupted during turntable interaction!", e);
-                        }
-                        var resultBuilder = new StringBuilder();
-
-                        int size = event.getSerialPort().bytesAvailable();
-
-                        log.trace("About to read {} bytes from turntable.", size);
-
-                        var buffer = new byte[size];
-                        event.getSerialPort().readBytes(buffer, size);
-                        resultBuilder.append(new String(buffer));
-
-                        String commandResult = resultBuilder.toString().trim();
-
-                        // "d" as in "done"...
-                        if (commandResult.startsWith("d")) {
-                            log.trace("Finished rotating artivact turntable.");
-                            finished.set(true);
-                        }
+            // Check if VID/PID matches Arduino Nano Every:
+            if ((port.getVendorID() == 0x2341 || port.getVendorID() == 0x2A03)
+                    && (port.getProductID() == 0x0058 || port.getProductID() == 0x0059)) {
+                try {
+                    ioDevice = new FirmataDevice("/dev/" + systemPortName);
+                    ioDevice.start();
+                    ioDevice.ensureInitializationIsDone();
+                } catch (InterruptedException | IOException e) {
+                    if (e instanceof InterruptedException) {
+                        Thread.currentThread().interrupt();
                     }
-
-                    @Override
-                    public int getListeningEvents() {
-                        return SerialPort.LISTENING_EVENT_DATA_AVAILABLE;
-                    }
-                });
+                    log.debug("Arduino device found, but not accessible with firmata4j.", e);
+                }
             }
-        }
-
-        if (!turntableFound.get()) {
-            log.info("No active turntable found on any serial port!");
         }
 
         log.trace("Turntable initialization finished.");
@@ -121,37 +121,47 @@ public class DefaultTurntablePeripheral extends BasePeripheralAdapter implements
      * {@inheritDoc}
      */
     @Override
-    public synchronized void rotate(int numPhotos, int turntableDelay) {
-
+    public synchronized void rotate(int numPhotos) {
         try {
+            if (ioDevice == null) {
+                log.warn("Turntable not initialized!");
+                if (turntableDelay > 0) {
+                    TimeUnit.MILLISECONDS.sleep(turntableDelay);
+                }
+                return;
+            }
+
+            // Set pins as output:
+            Pin[] motorPins = new Pin[MOTOR_PINS.length];
+            for (int i = 0; i < MOTOR_PINS.length; i++) {
+                motorPins[i] = ioDevice.getPin(MOTOR_PINS[i]);
+                motorPins[i].setMode(Pin.Mode.OUTPUT);
+            }
+
+            // 4096 steps are one full rotation with a 28BYJ-48 stepper motor:
+            int numSteps = (4096 / numPhotos);
+            for (int step = 0; step < numSteps; step++) {
+                int[] sequence = STEP_SEQUENCE[step % STEP_SEQUENCE.length];
+                for (int i = 0; i < motorPins.length; i++) {
+                    motorPins[i].setValue(sequence[i]);
+                }
+                Thread.sleep(2); // Some time is needed to actually set the pin value on the Arduino!
+            }
+
+            // Deactivate all pins:
+            for (Pin pin : motorPins) {
+                pin.setValue(0);
+            }
+
             if (turntableDelay > 0) {
                 TimeUnit.MILLISECONDS.sleep(turntableDelay);
             }
-        } catch (Exception e) {
-            Thread.currentThread().interrupt();
-            throw new ArtivactException("Error during turntable usage!", e);
-        }
 
-        if (!turntableFound.get()) {
-            return;
-        }
-
-        finished.set(false);
-
-        try {
-            liveSerialPort.getOutputStream().write(("t" + numPhotos + "\n").getBytes());
-            liveSerialPort.getOutputStream().flush();
-
-            while (!finished.get() && turntableFound.get()) {
-                TimeUnit.MILLISECONDS.sleep(250);
-                log.trace("Waiting for turntable to finish...");
-                log.trace("Current status: {} / {}", finished.get(), turntableFound.get());
+        } catch (InterruptedException | IOException e) {
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
             }
-
-            log.trace("Turntable finished.");
-        } catch (Exception e) {
-            Thread.currentThread().interrupt();
-            throw new ArtivactException("Error during turntable usage!", e);
+            throw new ArtivactException("Error during turntable rotation!", e);
         }
     }
 
@@ -160,21 +170,15 @@ public class DefaultTurntablePeripheral extends BasePeripheralAdapter implements
      */
     @Override
     public void teardown() {
-        super.teardown();
-        reset();
-    }
-
-    /**
-     * Resets the serial port and turntable properties.
-     */
-    private void reset() {
-        log.trace("Resetting Artivact-Turntable!");
-        if (liveSerialPort != null && !liveSerialPort.closePort()) {
-            throw new IllegalStateException("Could not close serial port to turntable!");
+        try {
+            if (ioDevice != null) {
+                ioDevice.stop();
+                ioDevice = null;
+            }
+        } catch (IOException e) {
+            throw new ArtivactException("Error during turntable reset!", e);
         }
-        liveSerialPort = null;
-        turntableFound.set(false);
-        finished.set(false);
+        super.teardown();
     }
 
 }

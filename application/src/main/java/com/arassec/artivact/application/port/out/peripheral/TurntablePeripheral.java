@@ -11,8 +11,7 @@ public interface TurntablePeripheral extends Peripheral {
      * Rotates the turntable by 360° divided by the number of photos.
      *
      * @param numPhotos The total number of photos that are taken during the session.
-     * @param delay     Delay in milliseconds before rotation.
      */
-    void rotate(int numPhotos, int delay);
+    void rotate(int numPhotos);
 
 }

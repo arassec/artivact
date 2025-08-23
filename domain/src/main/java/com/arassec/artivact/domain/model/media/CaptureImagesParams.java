@@ -25,11 +25,6 @@ public class CaptureImagesParams {
     private boolean useTurnTable;
 
     /**
-     * Delay for turntable usage in milliseconds.
-     */
-    private int turnTableDelay;
-
-    /**
      * Set to {@code true} if backgrounds should automatically be removed from captured images.
      */
     private boolean removeBackgrounds;

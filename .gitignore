@@ -55,3 +55,4 @@ node
 application*.log
 adapters/in-web/src/main/resources/static
 avdata/
+/adapters/out-image-manipulation/src/test/resources/onnx/

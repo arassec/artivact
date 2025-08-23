@@ -121,28 +121,20 @@
         <q-input
           outlined
           v-model="capturePhotosParamsRef.numPhotos"
-          class="col-5"
+          class="col-5 q-mb-sm"
           type="text"
           name="numPhotos"
           :label="$t('ItemImageSetEditor.label.numPhotos')"
         />
         <q-checkbox
           v-model="capturePhotosParamsRef.useTurnTable"
-          class="col-5"
+          class="full-width q-mb-sm"
           name="useTurntable"
           :label="$t('ItemImageSetEditor.label.turntable')"
         />
-        <q-input
-          outlined
-          v-model="capturePhotosParamsRef.turnTableDelay"
-          class="col-5"
-          type="text"
-          name="turntableDelay"
-          :label="$t('ItemImageSetEditor.label.delay')"
-        />
         <q-checkbox
           v-model="capturePhotosParamsRef.removeBackgrounds"
-          class="col-5"
+          class="full-width"
           name="removeBackgrounds"
           :label="$t('ItemImageSetEditor.label.backgrounds')"
         />
@@ -271,7 +263,7 @@
   <artivact-operation-in-progress-dialog
     v-if="showOperationInProgressModalRef == true"
     :dialog-model="showOperationInProgressModalRef"
-    @close-dialog="showOperationInProgressModalRef = false"
+    @close-dialog="operationFinished()"
   />
 
   <!-- DELETE CONFIRMATION DIALOG -->
@@ -337,7 +329,6 @@ const showCapturePhotosModalRef = ref(false);
 const capturePhotosParamsRef = ref({
   numPhotos: 36,
   useTurnTable: true,
-  turnTableDelay: 100,
   removeBackgrounds: true,
 } as CapturePhotosParams);
 
@@ -553,6 +544,11 @@ function toggleModelInput(imageSetIndex: number) {
         icon: 'report_problem',
       });
     });
+}
+
+function operationFinished() {
+  emit('update-item');
+  showOperationInProgressModalRef.value = false;
 }
 </script>
 

@@ -1,6 +1,6 @@
 <template>
   <div v-if="itemDataDetailsRef">
-    <div class="col items-center sticky gt-md">
+    <div class="col items-center sticky gt-sm">
       <div class="absolute-top-left q-ma-md" v-if="userdataStore.authenticated">
         <q-btn
           round

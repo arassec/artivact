@@ -91,7 +91,9 @@ public class CaptureItemImageService implements CaptureItemImageUseCase {
         TurntablePeripheral turntablePeripheral = getPeripheral(adapterConfiguration.getTurntablePeripheralImplementation(), TurntablePeripheral.class);
         if (useTurnTable) {
             log.debug("Initializing turntable adapter for image capturing: {}", turntablePeripheral.getSupportedImplementation());
-            turntablePeripheral.initialize(progressMonitor, PeripheralInitParams.builder().build());
+            turntablePeripheral.initialize(progressMonitor, PeripheralInitParams.builder()
+                    .configuration(adapterConfiguration)
+                    .build());
         }
 
         CameraPeripheral cameraPeripheral = getPeripheral(adapterConfiguration.getCameraPeripheralImplementation(), CameraPeripheral.class);
@@ -135,7 +137,7 @@ public class CaptureItemImageService implements CaptureItemImageUseCase {
             }
 
             if (useTurnTable) {
-                turntablePeripheral.rotate(numPhotos, captureImagesParams.getTurnTableDelay());
+                turntablePeripheral.rotate(numPhotos);
             }
         }
 

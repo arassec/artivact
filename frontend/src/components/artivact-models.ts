@@ -212,7 +212,6 @@ export interface WidgetPageContainer {
 export interface CapturePhotosParams {
   numPhotos: number;
   useTurnTable: boolean;
-  turnTableDelay: number;
   removeBackgrounds: boolean;
 }
 

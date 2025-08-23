@@ -247,7 +247,7 @@ export default {
       base: 'Basisdaten',
       media: 'Medien',
       properties: 'Eigenschaften',
-      creation: 'Gestaltung',
+      creation: 'Scan',
     },
     label: {
       tags: 'Tags:',
@@ -953,7 +953,7 @@ export default {
       failed: 'Fehler beim Hinzufügen von Bildern zu Bilder-Set!',
     },
     createModel: {
-      start: 'Erstelle 3D-Modell in externem Editor.',
+      createModelStart: 'Erstelle 3D-Modell in externem Editor.',
       copyImages: 'Kopiere Bilder...',
       failed: 'Fehler bei der Erstellung des 3D-Modells!',
     },

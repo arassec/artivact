@@ -245,7 +245,7 @@ export default {
       base: 'Base Data',
       media: 'Media',
       properties: 'Properties',
-      creation: 'Creation',
+      creation: 'Scan',
     },
     label: {
       tags: 'Tags:',
@@ -950,7 +950,7 @@ export default {
       failed: 'Importing images failed!',
     },
     createModel: {
-      start: 'Creating model in external editor.',
+      createModelStart: 'Creating model in external editor.',
       copyImages: 'Copying images...',
       failed: 'Error during model creation!',
     },

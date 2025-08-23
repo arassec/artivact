@@ -30,6 +30,11 @@
             <artifactId>jSerialComm</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.github.kurbatov</groupId>
+            <artifactId>firmata4j</artifactId>
+        </dependency>
+
     </dependencies>
 
 </project>
