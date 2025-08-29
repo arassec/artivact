@@ -36,7 +36,7 @@ jobs:
       - name: Deploy documentation to Github Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: web/target/classes/static/artivact
+          folder: adapters/in-web/target/classes/static/artivact
 
   release-desktop-windows:
     runs-on: windows-latest

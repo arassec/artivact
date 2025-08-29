@@ -60,7 +60,8 @@
                                     <overwrite>true</overwrite>
                                     <resources>
                                         <resource>
-                                            <directory>${project.basedir}/../domain/src/main/resources/project-setup
+                                            <directory>
+                                                ${project.basedir}/../application/src/main/resources/project-setup
                                             </directory>
                                             <includes>
                                                 <include>**</include>
@@ -195,7 +196,8 @@
                                     <overwrite>true</overwrite>
                                     <resources>
                                         <resource>
-                                            <directory>${project.basedir}/../domain/src/main/resources/project-setup
+                                            <directory>
+                                                ${project.basedir}/../application/src/main/resources/project-setup
                                             </directory>
                                             <includes>
                                                 <include>**</include>
