@@ -104,7 +104,7 @@ class MeshroomModelCreatorPeripheralTest {
 
         verify(osGateway).execute(eq("/path/to/meshroom-executable"), commandArgsCaptor.capture());
         assertThat(commandArgsCaptor.getValue()).hasSize(1);
-        assertThat(commandArgsCaptor.getValue().getFirst()).endsWith("projectRoot/utils/Meshroom/artivact-meshroom-workflow.mg");
+        assertThat(commandArgsCaptor.getValue().getFirst()).endsWith("artivact-meshroom-workflow.mg");
 
         assertDoesNotThrow(() -> meshroomModelCreatorPeripheral.teardown());
     }

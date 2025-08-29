@@ -91,7 +91,7 @@ class RealityScanModelCreatorPeripheralTest {
 
         ModelCreationResult modelCreationResult = realityScanModelCreatorPeripheral.createModel(List.of(imagePath));
 
-        assertThat(modelCreationResult.resultDir().toString()).endsWith(exportDir.toString());
+        assertThat(modelCreationResult.resultDir().toString()).endsWith("export");
         assertThat(modelCreationResult.comment()).isEqualTo("RealityScan");
 
         verify(fileRepository).emptyDir(workDir);
@@ -106,7 +106,7 @@ class RealityScanModelCreatorPeripheralTest {
         assertThat(commandArgs.get(0)).isEqualTo("-addFolder");
         assertThat(commandArgs.get(1)).endsWith(workDir.toString());
         assertThat(commandArgs.get(2)).isEqualTo("-save");
-        assertThat(commandArgs.get(3)).endsWith(workDir + "/MyProject.rcproj");
+        assertThat(commandArgs.get(3)).endsWith("MyProject.rcproj");
 
         assertDoesNotThrow(() -> realityScanModelCreatorPeripheral.teardown());
     }
@@ -155,8 +155,8 @@ class RealityScanModelCreatorPeripheralTest {
         assertThat(commandArgs.get(9)).isEqualTo("12345");
         assertThat(commandArgs.get(10)).isEqualTo("-calculateTexture");
         assertThat(commandArgs.get(11)).isEqualTo("-exportSelectedModel");
-        assertThat(commandArgs.get(12)).endsWith(exportDir + "/RealityScanExport.obj");
-        assertThat(commandArgs.get(13)).endsWith("utils/RealityScan/realityscan-export-settings.xml");
+        assertThat(commandArgs.get(12)).endsWith("RealityScanExport.obj");
+        assertThat(commandArgs.get(13)).endsWith("realityscan-export-settings.xml");
         assertThat(commandArgs.get(14)).isEqualTo("-quit");
     }
 
