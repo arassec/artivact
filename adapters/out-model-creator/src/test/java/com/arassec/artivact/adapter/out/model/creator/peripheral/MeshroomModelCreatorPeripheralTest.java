@@ -8,6 +8,8 @@ import com.arassec.artivact.domain.model.misc.ProgressMonitor;
 import com.arassec.artivact.domain.model.peripheral.ModelCreationResult;
 import com.arassec.artivact.domain.model.peripheral.PeripheralInitParams;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -70,6 +72,7 @@ class MeshroomModelCreatorPeripheralTest {
      * Tests creating a 3D model.
      */
     @Test
+    @EnabledOnOs(OS.LINUX)
     void testCreateModel() {
         Path workDir = Path.of("workDir");
         Path imagePath = Path.of("image.jpg");
@@ -104,7 +107,7 @@ class MeshroomModelCreatorPeripheralTest {
 
         verify(osGateway).execute(eq("/path/to/meshroom-executable"), commandArgsCaptor.capture());
         assertThat(commandArgsCaptor.getValue()).hasSize(1);
-        assertThat(commandArgsCaptor.getValue().getFirst()).endsWith("artivact-meshroom-workflow.mg");
+        assertThat(commandArgsCaptor.getValue().getFirst()).endsWith("projectRoot/utils/Meshroom/artivact-meshroom-workflow.mg");
 
         assertDoesNotThrow(() -> meshroomModelCreatorPeripheral.teardown());
     }

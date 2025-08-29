@@ -8,6 +8,8 @@ import com.arassec.artivact.domain.model.misc.ProgressMonitor;
 import com.arassec.artivact.domain.model.peripheral.ModelCreationResult;
 import com.arassec.artivact.domain.model.peripheral.PeripheralInitParams;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -70,6 +72,7 @@ class RealityScanModelCreatorPeripheralTest {
      * Tests creating a 3D model.
      */
     @Test
+    @EnabledOnOs(OS.LINUX)
     void testCreateModel() {
         Path workDir = Path.of("workDir");
         Path imagePath = Path.of("image.jpg");
@@ -106,7 +109,7 @@ class RealityScanModelCreatorPeripheralTest {
         assertThat(commandArgs.get(0)).isEqualTo("-addFolder");
         assertThat(commandArgs.get(1)).endsWith(workDir.toString());
         assertThat(commandArgs.get(2)).isEqualTo("-save");
-        assertThat(commandArgs.get(3)).endsWith("MyProject.rcproj");
+        assertThat(commandArgs.get(3)).endsWith(workDir + "/MyProject.rcproj");
 
         assertDoesNotThrow(() -> realityScanModelCreatorPeripheral.teardown());
     }
@@ -115,6 +118,7 @@ class RealityScanModelCreatorPeripheralTest {
      * Tests the headless model creation configuration.
      */
     @Test
+    @EnabledOnOs(OS.LINUX)
     void testCreateModelHeadless() {
         Path workDir = Path.of("workDir");
         Path imagePath = Path.of("image.jpg");
@@ -155,8 +159,8 @@ class RealityScanModelCreatorPeripheralTest {
         assertThat(commandArgs.get(9)).isEqualTo("12345");
         assertThat(commandArgs.get(10)).isEqualTo("-calculateTexture");
         assertThat(commandArgs.get(11)).isEqualTo("-exportSelectedModel");
-        assertThat(commandArgs.get(12)).endsWith("RealityScanExport.obj");
-        assertThat(commandArgs.get(13)).endsWith("realityscan-export-settings.xml");
+        assertThat(commandArgs.get(12)).endsWith(exportDir + "/RealityScanExport.obj");
+        assertThat(commandArgs.get(13)).endsWith("utils/RealityScan/realityscan-export-settings.xml");
         assertThat(commandArgs.get(14)).isEqualTo("-quit");
     }
 

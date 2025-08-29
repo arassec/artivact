@@ -7,6 +7,8 @@ import com.arassec.artivact.domain.model.item.CreationModelSet;
 import com.arassec.artivact.domain.model.misc.ProgressMonitor;
 import com.arassec.artivact.domain.model.peripheral.PeripheralInitParams;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -63,6 +65,7 @@ class BlenderModelEditorPeripheralTest {
      * Tests opening a model without an existing blender project.
      */
     @Test
+    @EnabledOnOs(OS.LINUX)
     void testOpenNewProject() {
         PeripheralConfiguration peripheralConfiguration = new PeripheralConfiguration();
         peripheralConfiguration.setConfigValues(Map.of(
@@ -97,6 +100,7 @@ class BlenderModelEditorPeripheralTest {
      * Tests opening a model from an existing project.
      */
     @Test
+    @EnabledOnOs(OS.LINUX)
     void testOpenExistingProject() {
         PeripheralConfiguration peripheralConfiguration = new PeripheralConfiguration();
         peripheralConfiguration.setConfigValues(Map.of(
