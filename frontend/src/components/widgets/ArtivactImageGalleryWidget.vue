@@ -7,45 +7,81 @@
     :restrictions="widgetDataRef.restrictions"
     :navigation-title="widgetDataRef.navigationTitle"
   >
-
     <!-- WIDGET CONTENT -->
     <template v-slot:widget-content>
       <artivact-content>
         <div class="full-width" :class="getContainerClasses()">
-          <div :class="getContentClasses()" data-test="image-gallery-widget-editor-heading">
+          <div
+            :class="getContentClasses()"
+            data-test="image-gallery-widget-editor-heading"
+          >
             <h1 class="av-label-h1" v-if="widgetDataRef.heading">
               {{ translate(widgetDataRef.heading) }}
             </h1>
-            <div v-html="format(translate(widgetDataRef.content))"/>
+            <div v-html="format(translate(widgetDataRef.content))" />
           </div>
-          <div :class="getCarouselClasses()"
-               v-if="widgetDataRef.images && widgetDataRef.images.length > 0">
+          <div
+            :class="getCarouselClasses()"
+            v-if="widgetDataRef.images && widgetDataRef.images.length > 0"
+          >
             <q-carousel
               v-model="slide"
               v-model:fullscreen="fullscreen"
-              :class="!widgetDataRef.hideBorder ? 'shadow-2 rounded-borders' : ''"
+              :class="
+                !widgetDataRef.hideBorder ? 'shadow-1 rounded-borders' : ''
+              "
               transition-prev="slide-right"
               transition-next="slide-left"
-              :height="widgetDataRef.iconMode ? '200px' : ''"
-              animated
-              arrows
+              :height="widgetDataRef.iconMode ? '200px' : '500px'"
+              :style="widgetDataRef.iconMode ? 'width: 200px;' : ''"
               control-color="primary"
               control-type="regular"
-              :thumbnails="widgetDataRef.images.length > 1"
+              control-text-color="white"
+              swipeable
+              animated
+              padding
+              arrows
+              :navigation="widgetDataRef.images.length > 1"
             >
               <q-carousel-slide
+                style="padding: 0"
                 v-for="filename in widgetDataRef.images"
                 draggable="false"
                 :name="filename"
-                :img-src="'/api/page/widget/' + widgetDataRef.id + '/' + filename + '?imageSize=DETAIL'"
+                dense
+                arrows
+                :class="widgetDataRef.iconMode ? 'av-icon' : ''"
               >
+                <q-img
+                  v-if="!fullscreen"
+                  class="fit"
+                  :src="
+                    '/api/page/widget/' +
+                    widgetDataRef.id +
+                    '/' +
+                    filename +
+                    '?imageSize=DETAIL'
+                  "
+                  fit="cover"
+                />
+                <q-img
+                  class="fit"
+                  v-if="fullscreen"
+                  :src="
+                    '/api/page/widget/' +
+                    widgetDataRef.id +
+                    '/' +
+                    filename +
+                    '?imageSize=DETAIL'
+                  "
+                  fit="scale-down"
+                />
                 <q-btn
                   v-if="widgetDataRef.fullscreenAllowed"
                   round
                   dense
-                  flat
-                  class="absolute-top-right fullscreen-button"
-                  color="white"
+                  class="absolute-top-right fullscreen-button q-ma-md"
+                  color="primary"
                   :icon="fullscreen ? 'fullscreen_exit' : 'fullscreen'"
                   @click="fullscreen = !fullscreen"
                 />
@@ -56,22 +92,24 @@
       </artivact-content>
     </template>
 
-
     <!-- WIDGET EDITOR PREVIEW -->
     <template v-slot:widget-editor-preview>
       <artivact-content>
         <div class="full-width" :class="getContainerClasses()">
           <div :class="getContentClasses()">
             <template v-if="widgetDataRef.heading">
-              <h1 class="av-label-h1" v-if="localeStore.selectedLocale === null">
+              <h1
+                class="av-label-h1"
+                v-if="localeStore.selectedLocale === null"
+              >
                 {{ widgetDataRef.heading.value }}
               </h1>
               <h1
                 class="av-label-h1"
                 v-if="
-                localeStore.selectedLocale !== null &&
-                widgetDataRef.heading.translations[localeStore.selectedLocale]
-              "
+                  localeStore.selectedLocale !== null &&
+                  widgetDataRef.heading.translations[localeStore.selectedLocale]
+                "
               >
                 {{
                   widgetDataRef.heading.translations[localeStore.selectedLocale]
@@ -80,9 +118,11 @@
               <h1
                 class="av-label-h1 text-red"
                 v-if="
-                localeStore.selectedLocale !== null &&
-                !widgetDataRef.heading.translations[localeStore.selectedLocale]
-              "
+                  localeStore.selectedLocale !== null &&
+                  !widgetDataRef.heading.translations[
+                    localeStore.selectedLocale
+                  ]
+                "
               >
                 {{ widgetDataRef.heading.value }}
               </h1>
@@ -95,28 +135,38 @@
 
             <div
               v-if="
-              localeStore.selectedLocale !== null &&
-              widgetDataRef.content.translations[localeStore.selectedLocale]
-            "
-              v-html="format(widgetDataRef.content.translations[localeStore.selectedLocale])"
+                localeStore.selectedLocale !== null &&
+                widgetDataRef.content.translations[localeStore.selectedLocale]
+              "
+              v-html="
+                format(
+                  widgetDataRef.content.translations[
+                    localeStore.selectedLocale
+                  ],
+                )
+              "
             />
 
             <div
               v-if="
-              localeStore.selectedLocale !== null &&
-              !widgetDataRef.content.translations[localeStore.selectedLocale]
-            "
+                localeStore.selectedLocale !== null &&
+                !widgetDataRef.content.translations[localeStore.selectedLocale]
+              "
               class="text-red"
               v-html="format(widgetDataRef.content.value)"
             />
           </div>
 
-          <div :class="getCarouselClasses()"
-               v-if="widgetDataRef.images && widgetDataRef.images.length > 0">
+          <div
+            :class="getCarouselClasses()"
+            v-if="widgetDataRef.images && widgetDataRef.images.length > 0"
+          >
             <q-carousel
               v-model="slide"
               v-model:fullscreen="fullscreen"
-              :class="!widgetDataRef.hideBorder ? 'shadow-2 rounded-borders' : ''"
+              :class="
+                !widgetDataRef.hideBorder ? 'shadow-2 rounded-borders' : ''
+              "
               transition-prev="slide-right"
               transition-next="slide-left"
               :height="widgetDataRef.iconMode ? '200px' : ''"
@@ -129,7 +179,13 @@
                 v-for="filename in widgetDataRef.images"
                 draggable="false"
                 :name="filename"
-                :img-src="'/api/page/widget/' + widgetDataRef.id + '/' + filename + '?imageSize=DETAIL'"
+                :img-src="
+                  '/api/page/widget/' +
+                  widgetDataRef.id +
+                  '/' +
+                  filename +
+                  '?imageSize=DETAIL'
+                "
               >
                 <q-btn
                   round
@@ -155,7 +211,6 @@
         </div>
       </artivact-content>
     </template>
-
 
     <!-- WIDGET EDITOR CONTENT -->
     <template v-slot:widget-editor-content>
@@ -195,35 +250,45 @@
             >
             </q-uploader>
             <div class="column">
-              <q-checkbox v-model="widgetDataRef.fullscreenAllowed" class="q-ml-md col full-height"
-                          :label="$t('ImageGalleryWidget.label.fullscreenAllowed')">
+              <q-checkbox
+                v-model="widgetDataRef.fullscreenAllowed"
+                class="q-ml-md col full-height"
+                :label="$t('ImageGalleryWidget.label.fullscreenAllowed')"
+              >
               </q-checkbox>
-              <q-checkbox v-model="widgetDataRef.iconMode" class="q-ml-md col full-height"
-                          :label="$t('ImageGalleryWidget.label.iconMode')">
+              <q-checkbox
+                v-model="widgetDataRef.iconMode"
+                class="q-ml-md col full-height"
+                :label="$t('ImageGalleryWidget.label.iconMode')"
+              >
               </q-checkbox>
-              <q-checkbox v-model="widgetDataRef.hideBorder" class="q-ml-md col full-height"
-                          :label="$t('ImageGalleryWidget.label.hideBorder')">
+              <q-checkbox
+                v-model="widgetDataRef.hideBorder"
+                class="q-ml-md col full-height"
+                :label="$t('ImageGalleryWidget.label.hideBorder')"
+              >
               </q-checkbox>
             </div>
           </div>
         </div>
       </artivact-content>
     </template>
-
   </artivact-widget-template>
-
 </template>
 
 <script setup lang="ts">
 import ArtivactWidgetTemplate from './ArtivactWidgetTemplate.vue';
-import {ImageGalleryWidgetData, ImageGalleryWidgetTextPosition} from './artivact-widget-models';
+import {
+  ImageGalleryWidgetData,
+  ImageGalleryWidgetTextPosition,
+} from './artivact-widget-models';
 import ArtivactContent from '../ArtivactContent.vue';
-import {PropType, ref, toRef} from "vue";
-import {translate} from "../artivact-utils";
-import {useLocaleStore} from "../../stores/locale";
-import ArtivactRestrictedTranslatableItemEditor from "../ArtivactRestrictedTranslatableItemEditor.vue";
-import {QUploader, useQuasar} from "quasar";
-import MarkdownIt from "markdown-it";
+import { PropType, ref, toRef } from 'vue';
+import { translate } from '../artivact-utils';
+import { useLocaleStore } from '../../stores/locale';
+import ArtivactRestrictedTranslatableItemEditor from '../ArtivactRestrictedTranslatableItemEditor.vue';
+import { QUploader, useQuasar } from 'quasar';
+import MarkdownIt from 'markdown-it';
 
 const props = defineProps({
   inEditMode: {
@@ -275,9 +340,13 @@ function deleteImage(filename: string) {
 
 function getContainerClasses(): string {
   if (quasar.screen.gt.sm) {
-    if (widgetDataRef.value.textPosition === ImageGalleryWidgetTextPosition.LEFT) {
+    if (
+      widgetDataRef.value.textPosition === ImageGalleryWidgetTextPosition.LEFT
+    ) {
       return 'row';
-    } else if (widgetDataRef.value.textPosition === ImageGalleryWidgetTextPosition.RIGHT) {
+    } else if (
+      widgetDataRef.value.textPosition === ImageGalleryWidgetTextPosition.RIGHT
+    ) {
       return 'row reverse';
     }
   }
@@ -287,11 +356,18 @@ function getContainerClasses(): string {
 
 function getCarouselClasses(): string {
   let classes = '';
+  if (widgetDataRef.value.iconMode) {
+    classes = 'row justify-center';
+  }
   if (quasar.screen.gt.sm) {
-    if (widgetDataRef.value.textPosition === ImageGalleryWidgetTextPosition.LEFT) {
-      classes = 'q-pa-md q-mt-md';
-    } else if (widgetDataRef.value.textPosition === ImageGalleryWidgetTextPosition.RIGHT) {
-      classes = 'q-pa-md q-mt-md';
+    if (
+      widgetDataRef.value.textPosition === ImageGalleryWidgetTextPosition.LEFT
+    ) {
+      classes += ' q-pa-md q-mt-md';
+    } else if (
+      widgetDataRef.value.textPosition === ImageGalleryWidgetTextPosition.RIGHT
+    ) {
+      classes += ' q-pa-md q-mt-md';
     }
     if (widgetDataRef.value.iconMode) {
       classes += ' col-3';
@@ -301,11 +377,15 @@ function getCarouselClasses(): string {
     return classes;
   }
   // Text-Position 'TOP' or undefined:
-  return 'col-grow';
+  classes += ' col-grow';
+  return classes;
 }
 
 function getContentClasses(): string {
-  if (quasar.screen.gt.sm && widgetDataRef.value.textPosition !== ImageGalleryWidgetTextPosition.TOP) {
+  if (
+    quasar.screen.gt.sm &&
+    widgetDataRef.value.textPosition !== ImageGalleryWidgetTextPosition.TOP
+  ) {
     if (widgetDataRef.value.iconMode) {
       return 'col-9';
     } else {
@@ -323,10 +403,6 @@ function format(text: string) {
   let md = new MarkdownIt();
   return md.render(text);
 }
-
 </script>
 
-
-<style scoped>
-
-</style>
+<style scoped></style>

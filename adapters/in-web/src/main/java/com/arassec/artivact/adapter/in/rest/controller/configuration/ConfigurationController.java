@@ -7,6 +7,7 @@ import com.arassec.artivact.adapter.in.rest.model.UserData;
 import com.arassec.artivact.application.port.in.configuration.*;
 import com.arassec.artivact.application.port.in.project.CleanupExportFilesUseCase;
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
+import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.Roles;
 import com.arassec.artivact.domain.model.configuration.*;
@@ -45,6 +46,9 @@ public class ConfigurationController extends BaseImportController {
 
     @Getter
     private final UseProjectDirsUseCase useProjectDirsUseCase;
+
+    @Getter
+    private final FileRepository fileRepository;
 
     private final LoadPropertiesConfigurationUseCase loadPropertiesConfigurationUseCase;
 

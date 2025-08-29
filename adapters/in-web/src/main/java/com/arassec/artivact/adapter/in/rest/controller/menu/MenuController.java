@@ -11,7 +11,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,25 +29,47 @@ import java.util.List;
 @RequestMapping("/api/menu")
 public class MenuController extends BaseImportController {
 
+    /**
+     * Use case for project directory handling.
+     */
     @Getter
     private final UseProjectDirsUseCase useProjectDirsUseCase;
-
-    private final LoadMenuUseCase loadMenuUseCase;
-
-    private final SaveMenuUseCase saveMenuUseCase;
-
-    private final DeleteMenuUseCase deleteMenuUseCase;
-
-    private final AddPageToMenuUseCase addPageToMenuUseCase;
-
-    private final ExportMenuUseCase exportMenuUseCase;
-
-    private final ImportMenuUseCase importMenuUseCase;
 
     /**
      * Repository for file handling.
      */
+    @Getter
     private final FileRepository fileRepository;
+
+    /**
+     * Use case for menu loading.
+     */
+    private final LoadMenuUseCase loadMenuUseCase;
+
+    /**
+     * Use case for menu saving.
+     */
+    private final SaveMenuUseCase saveMenuUseCase;
+
+    /**
+     * Use case for deleting menus.
+     */
+    private final DeleteMenuUseCase deleteMenuUseCase;
+
+    /**
+     * Use case to add a page to a menu.
+     */
+    private final AddPageToMenuUseCase addPageToMenuUseCase;
+
+    /**
+     * Use case to export menus.
+     */
+    private final ExportMenuUseCase exportMenuUseCase;
+
+    /**
+     * Use case to import menus.
+     */
+    private final ImportMenuUseCase importMenuUseCase;
 
     /**
      * Returns the application's menu as configured by the user.
@@ -120,7 +141,7 @@ public class MenuController extends BaseImportController {
             fileRepository.delete(menuExport);
         };
 
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setContentType(TYPE_ZIP);
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION, ATTACHMENT_PREFIX
                 + LocalDate.now() + "." + menuId + "." + ExchangeDefinitions.MENU_EXCHANGE_FILENAME_ZIP);
         response.addHeader(HttpHeaders.PRAGMA, NO_CACHE);

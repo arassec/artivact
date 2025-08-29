@@ -38,6 +38,9 @@ public class ItemController extends BaseImportController {
     @Getter
     private final UseProjectDirsUseCase useProjectDirsUseCase;
 
+    @Getter
+    private final FileRepository fileRepository;
+
     private final ImportItemUseCase importItemUseCase;
 
     private final CreateItemUseCase createItemUseCase;
@@ -51,8 +54,6 @@ public class ItemController extends BaseImportController {
     private final UploadItemUseCase uploadItemUseCase;
 
     private final UseProjectDirsUseCase getProjectRootUseCase;
-
-    private final FileRepository fileRepository;
 
     /**
      * Creates a new item.

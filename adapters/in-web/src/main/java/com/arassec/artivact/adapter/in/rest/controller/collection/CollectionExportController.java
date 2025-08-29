@@ -40,9 +40,10 @@ public class CollectionExportController extends BaseImportController {
     @Getter
     private final UseProjectDirsUseCase useProjectDirsUseCase;
 
-    private final ImportCollectionUseCase importCollectionUseCase;
-
+    @Getter
     private final FileRepository fileRepository;
+
+    private final ImportCollectionUseCase importCollectionUseCase;
 
     private final LoadCollectionExportUseCase loadCollectionExportUseCase;
     private final SaveCollectionExportUseCase saveCollectionExportUseCase;

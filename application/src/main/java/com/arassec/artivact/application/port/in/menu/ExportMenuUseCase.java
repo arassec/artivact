@@ -11,7 +11,7 @@ public interface ExportMenuUseCase {
      * Exports a menu with the associated page and referenced items.
      *
      * @param menuId The ID of the menu to export.
-     * @return Path to the export file.
+     * @return Path to the exported ZIP file.
      */
     Path exportMenu(String menuId);
 

@@ -1,16 +1,21 @@
 package com.arassec.artivact.adapter.in.rest.controller;
 
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
+import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.util.Optional;
 
 public abstract class BaseImportController extends BaseController {
 
 
     protected abstract UseProjectDirsUseCase getUseProjectDirsUseCase();
+
+    protected abstract FileRepository getFileRepository();
 
     /**
      * Converts the provided multipart-file into a local, temporary file and returns its path.
@@ -24,13 +29,11 @@ public abstract class BaseImportController extends BaseController {
                 ? originalFilename.substring(originalFilename.lastIndexOf("."))
                 : ".tmp";
 
-        Path tempFile = getUseProjectDirsUseCase().getTempDir().resolve("upload_" + suffix);
+        Path tempFile = getUseProjectDirsUseCase().getTempDir().resolve("upload_"
+                + Optional.ofNullable(originalFilename).orElse("").replace(suffix, "") + suffix);
         try {
-            if (tempFile.toFile().createNewFile()) {
-                multipartFile.transferTo(tempFile.toFile());
-                return tempFile;
-            }
-            throw new ArtivactException("Could not create empty, temporary file!");
+            getFileRepository().copy(multipartFile.getInputStream(), tempFile, StandardCopyOption.REPLACE_EXISTING);
+            return tempFile;
         } catch (IOException e) {
             throw new ArtivactException("Could not create temporary file!", e);
         }

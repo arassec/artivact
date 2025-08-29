@@ -18,7 +18,7 @@
               widgetDataRef.backgroundImage +
               '?imageSize=PAGE_TITLE'
             "
-            class="darkened-parallax-container title-image"
+            class="av-darkened-parallax-container"
           >
             <artivact-content v-if="widgetDataRef.title">
               <h1 class="page-title gt-sm">
@@ -77,7 +77,7 @@
               widgetDataRef.backgroundImage +
               '?imageSize=PAGE_TITLE'
             "
-            class="darkened-parallax-container"
+            class="av-darkened-parallax-container"
           >
             <artivact-content v-if="widgetDataRef.title">
               <h1
@@ -214,13 +214,13 @@
 </template>
 
 <script setup lang="ts">
-import {PropType, toRef} from 'vue';
-import {PageTitleWidgetData} from 'components/widgets/artivact-widget-models';
+import { PropType, toRef } from 'vue';
+import { PageTitleWidgetData } from 'components/widgets/artivact-widget-models';
 import ArtivactContent from 'components/ArtivactContent.vue';
-import {QUploader} from 'quasar';
+import { QUploader } from 'quasar';
 import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
-import {useLocaleStore} from 'stores/locale';
-import {translate} from '../artivact-utils';
+import { useLocaleStore } from 'stores/locale';
+import { translate } from '../artivact-utils';
 import ArtivactWidgetTemplate from 'components/widgets/ArtivactWidgetTemplate.vue';
 
 const props = defineProps({
@@ -255,13 +255,16 @@ const widgetDataRef = toRef(props, 'widgetData');
 <style scoped>
 .page-title {
   font-weight: bold;
+  font-size: 6rem;
+  line-height: 6.5rem;
   color: white;
   filter: none;
 }
 
 .page-title-heading-small {
-  font-size: 10vw;
   font-weight: bold;
+  font-size: 2rem;
+  line-height: 2.5rem;
   color: white;
   filter: none;
 }
@@ -269,5 +272,4 @@ const widgetDataRef = toRef(props, 'widgetData');
 .page-title-small {
   background: rgba(0, 0, 0, 0.25);
 }
-
 </style>
