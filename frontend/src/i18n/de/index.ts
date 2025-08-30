@@ -412,6 +412,18 @@ export default {
     },
   },
 
+  ArtivactButtonEditor: {
+    label: {
+      targetUrl: 'Ziel-URL',
+      iconLeft: 'Linkes icon',
+      label: 'Button Text',
+      iconRight: 'Rechtes icon',
+      size: 'Button Größe',
+      buttonColor: 'Button-Farbe',
+      textColor: 'Text-Farbe',
+    },
+  },
+
   ArtivactCollectionExportEditor: {
     dialog: {
       create: {
@@ -874,6 +886,13 @@ export default {
     },
   },
 
+  ButtonsWidget: {
+    label: {
+      columns: 'Spalten im Raster',
+      addButton: 'Button hinzufügen',
+    },
+  },
+
   ImageGalleryWidget: {
     label: {
       heading: 'Überschrift',
@@ -1008,6 +1027,9 @@ export default {
   IMAGE_GALLERY: 'Bilder-Gallerie',
   IMAGE_GALLERY_DESCRIPTION:
     'Eine Bilder-Gallerie, mit optionaler Überschrift und optionalem Beschreibungstext.',
+  BUTTONS: 'Buttons',
+  BUTTONS_DESCRIPTION:
+    'Ein Raster mit einem oder mehreren konfigurierbaren Buttons.',
 
   DEFAULT_TURNTABLE_PERIPHERAL: 'Standard',
   DEFAULT_IMAGE_MANIPULATION_PERIPHERAL: 'Standard',

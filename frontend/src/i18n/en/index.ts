@@ -407,6 +407,18 @@ export default {
     },
   },
 
+  ArtivactButtonEditor: {
+    label: {
+      targetUrl: 'Target URL',
+      iconLeft: 'Left icon',
+      label: 'Button label',
+      iconRight: 'Right icon',
+      size: 'Button size',
+      buttonColor: 'Button color',
+      textColor: 'Text color',
+    },
+  },
+
   ArtivactCollectionExportEditor: {
     dialog: {
       create: {
@@ -871,6 +883,13 @@ export default {
     },
   },
 
+  ButtonsWidget: {
+    label: {
+      columns: 'Grid columns',
+      addButton: 'Add button',
+    },
+  },
+
   ImageGalleryWidget: {
     label: {
       heading: 'Heading',
@@ -1000,6 +1019,8 @@ export default {
   IMAGE_GALLERY: 'Image Gallery',
   IMAGE_GALLERY_DESCRIPTION:
     'An image gallery with optional heading and content text.',
+  BUTTONS: 'Buttons',
+  BUTTONS_DESCRIPTION: 'A grid of one or more configurable buttons.',
 
   DEFAULT_TURNTABLE_PERIPHERAL: 'Default',
   DEFAULT_IMAGE_MANIPULATION_PERIPHERAL: 'Default',

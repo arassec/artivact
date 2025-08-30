@@ -1,21 +1,11 @@
 <template>
-
   <div v-if="pageContentRef && pageId" :class="inEditMode ? 'page' : ''">
-
     <q-menu :context-menu="true" v-if="inEditMode">
       <q-list>
-        <q-item
-          clickable
-          v-close-popup
-          @click="showAddWidgetDialogRef = true">
+        <q-item clickable v-close-popup @click="showAddWidgetDialogRef = true">
           <q-item-section>
             <label>
-              <q-icon
-                name="add"
-                size="xs"
-                color="primary"
-                class="q-mr-sm"
-              />
+              <q-icon name="add" size="xs" color="primary" class="q-mr-sm" />
               {{ $t('ArtivactPage.label.addWidget') }}</label
             >
           </q-item-section>
@@ -23,16 +13,20 @@
       </q-list>
     </q-menu>
 
-    <div class="col items-center sticky gt-md" v-if="userdataStore.isUserOrAdmin && pageId !== 'INDEX' && !inEditMode">
+    <div
+      class="col items-center sticky gt-md"
+      v-if="userdataStore.isUserOrAdmin && pageId !== 'INDEX' && !inEditMode"
+    >
       <div class="absolute-top-right q-ma-md">
-        <q-btn id="sticky-item"
-               :disable="!pageContentRef.editable"
-               data-test="edit-page-button"
-               round
-               color="primary"
-               icon="edit"
-               class="edit-page-button float-right"
-               @click="inEditMode = true"
+        <q-btn
+          id="sticky-item"
+          :disable="!pageContentRef.editable"
+          data-test="edit-page-button"
+          round
+          color="primary"
+          icon="edit"
+          class="edit-page-button float-right"
+          @click="inEditMode = true"
         >
           <q-tooltip>{{ $t('ArtivactPage.tooltip.edit') }}</q-tooltip>
         </q-btn>
@@ -47,7 +41,8 @@
           color="primary"
           icon="close"
           class="q-mr-sm main-nav-button"
-          @click="inEditMode = false">
+          @click="inEditMode = false"
+        >
           <q-tooltip>{{ $t('Common.cancel') }}</q-tooltip>
         </q-btn>
       </div>
@@ -59,9 +54,13 @@
           :icon="pageContentRef.indexPage ? 'check_circle' : 'circle'"
           class="main-nav-button rounded-borders q-mr-sm"
           @click="pageContentRef.indexPage = !pageContentRef.indexPage"
-          :label="$t('ArtivactPage.label.indexPage')">
-          <q-tooltip>{{
-              pageContentRef.indexPage ? $t('ArtivactPage.tooltip.indexPageYes') : $t('ArtivactPage.tooltip.indexPageNo')
+          :label="$t('ArtivactPage.label.indexPage')"
+        >
+          <q-tooltip
+            >{{
+              pageContentRef.indexPage
+                ? $t('ArtivactPage.tooltip.indexPageYes')
+                : $t('ArtivactPage.tooltip.indexPageNo')
             }}
           </q-tooltip>
         </q-btn>
@@ -71,13 +70,16 @@
           color="primary"
           icon="save"
           class="main-nav-button"
-          @click="savePage(false)">
+          @click="savePage(false)"
+        >
           <q-tooltip>{{ $t('Common.save') }}</q-tooltip>
         </q-btn>
       </div>
     </div>
 
-    <artivact-content v-if="pageContentRef.widgets.length == 0 && pageId === 'INDEX'">
+    <artivact-content
+      v-if="pageContentRef.widgets.length == 0 && pageId === 'INDEX'"
+    >
       <label>
         {{ $t('ArtivactPage.label.noIndexPage') }}
       </label>
@@ -98,8 +100,14 @@
         :move-down-enabled="index < pageContentRef.widgets.length - 1"
         @move-widget-up="moveWidgetUp(pageContentRef.widgets, index)"
         @move-widget-down="moveWidgetDown(pageContentRef.widgets, index)"
-        @add-widget-above="addWidgetAboveRef = widgetData.id; showAddWidgetDialogRef = true;"
-        @add-widget-below="addWidgetBelowRef = widgetData.id; showAddWidgetDialogRef = true;"
+        @add-widget-above="
+          addWidgetAboveRef = widgetData.id;
+          showAddWidgetDialogRef = true;
+        "
+        @add-widget-below="
+          addWidgetBelowRef = widgetData.id;
+          showAddWidgetDialogRef = true;
+        "
         @delete-widget="deleteWidget(index)"
         :page-id="pageId"
         v-on:image-added="fileAdded($event, widgetData.id)"
@@ -116,8 +124,14 @@
         :move-down-enabled="index < pageContentRef.widgets.length - 1"
         @move-widget-up="moveWidgetUp(pageContentRef.widgets, index)"
         @move-widget-down="moveWidgetDown(pageContentRef.widgets, index)"
-        @add-widget-above="addWidgetAboveRef = widgetData.id; showAddWidgetDialogRef = true;"
-        @add-widget-below="addWidgetBelowRef = widgetData.id; showAddWidgetDialogRef = true;"
+        @add-widget-above="
+          addWidgetAboveRef = widgetData.id;
+          showAddWidgetDialogRef = true;
+        "
+        @add-widget-below="
+          addWidgetBelowRef = widgetData.id;
+          showAddWidgetDialogRef = true;
+        "
         @delete-widget="deleteWidget(index)"
       />
 
@@ -132,8 +146,14 @@
         :move-down-enabled="index < pageContentRef.widgets.length - 1"
         @move-widget-up="moveWidgetUp(pageContentRef.widgets, index)"
         @move-widget-down="moveWidgetDown(pageContentRef.widgets, index)"
-        @add-widget-above="addWidgetAboveRef = widgetData.id; showAddWidgetDialogRef = true;"
-        @add-widget-below="addWidgetBelowRef = widgetData.id; showAddWidgetDialogRef = true;"
+        @add-widget-above="
+          addWidgetAboveRef = widgetData.id;
+          showAddWidgetDialogRef = true;
+        "
+        @add-widget-below="
+          addWidgetBelowRef = widgetData.id;
+          showAddWidgetDialogRef = true;
+        "
         @delete-widget="deleteWidget(index)"
       />
 
@@ -148,8 +168,14 @@
         :move-down-enabled="index < pageContentRef.widgets.length - 1"
         @move-widget-up="moveWidgetUp(pageContentRef.widgets, index)"
         @move-widget-down="moveWidgetDown(pageContentRef.widgets, index)"
-        @add-widget-above="addWidgetAboveRef = widgetData.id; showAddWidgetDialogRef = true;"
-        @add-widget-below="addWidgetBelowRef = widgetData.id; showAddWidgetDialogRef = true;"
+        @add-widget-above="
+          addWidgetAboveRef = widgetData.id;
+          showAddWidgetDialogRef = true;
+        "
+        @add-widget-below="
+          addWidgetBelowRef = widgetData.id;
+          showAddWidgetDialogRef = true;
+        "
         @delete-widget="deleteWidget(index)"
       />
 
@@ -164,8 +190,14 @@
         :move-down-enabled="index < pageContentRef.widgets.length - 1"
         @move-widget-up="moveWidgetUp(pageContentRef.widgets, index)"
         @move-widget-down="moveWidgetDown(pageContentRef.widgets, index)"
-        @add-widget-above="addWidgetAboveRef = widgetData.id; showAddWidgetDialogRef = true;"
-        @add-widget-below="addWidgetBelowRef = widgetData.id; showAddWidgetDialogRef = true;"
+        @add-widget-above="
+          addWidgetAboveRef = widgetData.id;
+          showAddWidgetDialogRef = true;
+        "
+        @add-widget-below="
+          addWidgetBelowRef = widgetData.id;
+          showAddWidgetDialogRef = true;
+        "
         @delete-widget="deleteWidget(index)"
         :page-id="pageId"
         v-on:image-added="fileAdded($event, widgetData.id)"
@@ -183,16 +215,47 @@
         :move-down-enabled="index < pageContentRef.widgets.length - 1"
         @move-widget-up="moveWidgetUp(pageContentRef.widgets, index)"
         @move-widget-down="moveWidgetDown(pageContentRef.widgets, index)"
-        @add-widget-above="addWidgetAboveRef = widgetData.id; showAddWidgetDialogRef = true;"
-        @add-widget-below="addWidgetBelowRef = widgetData.id; showAddWidgetDialogRef = true;"
+        @add-widget-above="
+          addWidgetAboveRef = widgetData.id;
+          showAddWidgetDialogRef = true;
+        "
+        @add-widget-below="
+          addWidgetBelowRef = widgetData.id;
+          showAddWidgetDialogRef = true;
+        "
         @delete-widget="deleteWidget(index)"
         @image-added="fileAdded($event, widgetData.id)"
         @image-deleted="fileDeleted($event, widgetData.id)"
       />
+
+      <artivact-buttons-widget
+        :id="widgetData.id"
+        :class="inEditMode ? 'widget' : ''"
+        v-if="widgetData.type === 'BUTTONS'"
+        :widget-data="widgetData as ButtonsWidgetData"
+        :in-edit-mode="inEditMode"
+        :showEditor="inEditMode && pageStore.latestWidgetIndex === index"
+        :move-up-enabled="index > 0"
+        :move-down-enabled="index < pageContentRef.widgets.length - 1"
+        @move-widget-up="moveWidgetUp(pageContentRef.widgets, index)"
+        @move-widget-down="moveWidgetDown(pageContentRef.widgets, index)"
+        @add-widget-above="
+          addWidgetAboveRef = widgetData.id;
+          showAddWidgetDialogRef = true;
+        "
+        @add-widget-below="
+          addWidgetBelowRef = widgetData.id;
+          showAddWidgetDialogRef = true;
+        "
+        @delete-widget="deleteWidget(index)"
+      />
     </template>
 
-    <artivact-dialog :data-test="'add-widget-modal'" :dialog-model="showAddWidgetDialogRef"
-                     v-if="userdataStore.isUserOrAdmin && inEditMode">
+    <artivact-dialog
+      :data-test="'add-widget-modal'"
+      :dialog-model="showAddWidgetDialogRef"
+      v-if="userdataStore.isUserOrAdmin && inEditMode"
+    >
       <template v-slot:header>
         {{ $t('ArtivactPage.dialog.heading') }}
       </template>
@@ -211,7 +274,10 @@
             :label="$t('ArtivactPage.dialog.type')"
           >
             <template v-slot:option="scope">
-              <q-item :data-test="'add-widget-selection-' + scope.opt" v-bind="scope.itemProps">
+              <q-item
+                :data-test="'add-widget-selection-' + scope.opt"
+                v-bind="scope.itemProps"
+              >
                 <q-item-section>
                   <q-item-label>{{ $t(scope.opt) }}</q-item-label>
                 </q-item-section>
@@ -233,31 +299,40 @@
       </template>
 
       <template v-slot:approve>
-        <q-btn data-test="add-widget-modal-approve" :label="$t('ArtivactPage.label.addWidget')" color="primary"
-               @click="addWidget()"/>
+        <q-btn
+          data-test="add-widget-modal-approve"
+          :label="$t('ArtivactPage.label.addWidget')"
+          color="primary"
+          @click="addWidget()"
+        />
       </template>
     </artivact-dialog>
-
   </div>
 </template>
 
 <script setup lang="ts">
-import {onMounted, PropType, ref, toRef} from 'vue';
-import {PageContent, TranslatableString, Widget} from './artivact-models';
-import {useUserdataStore} from '../stores/userdata';
-import {useQuasar} from 'quasar';
+import { onMounted, PropType, ref, toRef } from 'vue';
+import {
+  ButtonConfig,
+  PageContent,
+  TranslatableString,
+  Widget,
+} from './artivact-models';
+import { useUserdataStore } from '../stores/userdata';
+import { useQuasar } from 'quasar';
 import {
   AvatarWidgetData,
+  ButtonsWidgetData,
   ImageGalleryWidgetData,
   ImageGalleryWidgetTextPosition,
   InfoBoxWidgetData,
   ItemSearchWidget,
   PageTitleWidgetData,
-  TextWidgetData
+  TextWidgetData,
 } from './widgets/artivact-widget-models';
-import {moveDown, moveUp} from './artivact-utils';
-import {api} from '../boot/axios';
-import {useI18n} from 'vue-i18n';
+import { moveDown, moveUp } from './artivact-utils';
+import { api } from '../boot/axios';
+import { useI18n } from 'vue-i18n';
 import ArtivactDialog from './ArtivactDialog.vue';
 import ArtivactAvatarWidget from './widgets/ArtivactAvatarWidget.vue';
 import ArtivactInfoBoxWidget from './widgets/ArtivactInfoBoxWidget.vue';
@@ -265,8 +340,9 @@ import ArtivactTextWidget from './widgets/ArtivactTextWidget.vue';
 import ArtivactPageTitleWidget from './widgets/ArtivactPageTitleWidget.vue';
 import ArtivactItemSearchWidget from './widgets/ArtivactItemSearchWidget.vue';
 import ArtivactContent from './ArtivactContent.vue';
-import {usePageStore} from '../stores/page';
-import ArtivactImageGalleryWidget from "./widgets/ArtivactImageGalleryWidget.vue";
+import { usePageStore } from '../stores/page';
+import ArtivactImageGalleryWidget from './widgets/ArtivactImageGalleryWidget.vue';
+import ArtivactButtonsWidget from './widgets/ArtivactButtonsWidget.vue';
 
 const props = defineProps({
   pageId: {
@@ -282,7 +358,12 @@ const props = defineProps({
 const emit = defineEmits<{
   (e: 'update-page-content', pageContent: PageContent): void;
   (e: 'file-added', widgetId: string, property: string): void;
-  (e: 'file-deleted', widgetId: string, property: string, filename: string): void;
+  (
+    e: 'file-deleted',
+    widgetId: string,
+    property: string,
+    filename: string,
+  ): void;
 }>();
 
 const quasar = useQuasar();
@@ -307,16 +388,21 @@ const availableWidgetTypes = [
   'ITEM_SEARCH',
   'INFO_BOX',
   'AVATAR',
-  'IMAGE_GALLERY'
+  'IMAGE_GALLERY',
+  'BUTTONS',
 ];
 
 function addWidget() {
-
   let index = pageContentRef.value?.widgets.length;
   if (addWidgetAboveRef.value !== '') {
-    index = pageContentRef.value?.widgets.findIndex((element) => element.id === addWidgetAboveRef.value);
+    index = pageContentRef.value?.widgets.findIndex(
+      (element) => element.id === addWidgetAboveRef.value,
+    );
   } else if (addWidgetBelowRef.value !== '') {
-    index = pageContentRef.value?.widgets.findIndex((element) => element.id === addWidgetBelowRef.value) + 1;
+    index =
+      pageContentRef.value?.widgets.findIndex(
+        (element) => element.id === addWidgetBelowRef.value,
+      ) + 1;
   }
 
   addWidgetAboveRef.value = '';
@@ -328,7 +414,7 @@ function addWidget() {
       id: '',
       restrictions: [] as string[],
       navigationTitle: {
-        value: ''
+        value: '',
       } as TranslatableString,
       title: {
         value: i18n.t('ArtivactPage.label.pageTitle'),
@@ -341,7 +427,7 @@ function addWidget() {
       id: '',
       restrictions: [] as string[],
       navigationTitle: {
-        value: ''
+        value: '',
       } as TranslatableString,
       heading: {
         value: i18n.t('ArtivactPage.label.textTitle'),
@@ -356,7 +442,7 @@ function addWidget() {
       id: '',
       restrictions: [] as string[],
       navigationTitle: {
-        value: ''
+        value: '',
       } as TranslatableString,
       heading: {
         value: i18n.t('ArtivactPage.label.text'),
@@ -374,7 +460,7 @@ function addWidget() {
       id: '',
       restrictions: [] as string[],
       navigationTitle: {
-        value: ''
+        value: '',
       } as TranslatableString,
       heading: {
         value: i18n.t('ArtivactPage.label.infoBoxTitle'),
@@ -390,7 +476,7 @@ function addWidget() {
       id: '',
       restrictions: [] as string[],
       navigationTitle: {
-        value: ''
+        value: '',
       } as TranslatableString,
       avatarImage: '',
       avatarSubtext: {
@@ -403,7 +489,7 @@ function addWidget() {
       id: '',
       restrictions: [] as string[],
       navigationTitle: {
-        value: ''
+        value: '',
       } as TranslatableString,
       heading: {
         value: i18n.t('ArtivactPage.label.text'),
@@ -413,8 +499,31 @@ function addWidget() {
       } as TranslatableString,
       images: [],
       fullscreenAllowed: true,
-      textPosition: ImageGalleryWidgetTextPosition.TOP
+      textPosition: ImageGalleryWidgetTextPosition.TOP,
     } as ImageGalleryWidgetData);
+  } else if (selectedWidgetTypeRef.value === 'BUTTONS') {
+    pageContentRef.value?.widgets.splice(index, 0, {
+      type: 'BUTTONS',
+      id: '',
+      restrictions: [] as string[],
+      navigationTitle: {
+        value: '',
+      } as TranslatableString,
+      columns: 1,
+      buttonConfigs: [
+        {
+          targetUrl: '',
+          iconLeft: '',
+          label: {
+            value: 'Button',
+          } as TranslatableString,
+          iconRight: '',
+          size: 1,
+          buttonColor: 'primary',
+          textColor: 'white',
+        } as ButtonConfig,
+      ],
+    } as ButtonsWidgetData);
   }
   showAddWidgetDialogRef.value = false;
   savePage(false);
@@ -441,7 +550,9 @@ function savePage(leaveEditMode: boolean) {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: i18n.t('Common.messages.saving.success', {item: i18n.t('Common.items.page')}),
+        message: i18n.t('Common.messages.saving.success', {
+          item: i18n.t('Common.items.page'),
+        }),
         icon: 'check',
       });
       emit('update-page-content', response.data);
@@ -453,7 +564,9 @@ function savePage(leaveEditMode: boolean) {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.saving.failed', {item: i18n.t('Common.items.page')}),
+        message: i18n.t('Common.messages.saving.failed', {
+          item: i18n.t('Common.items.page'),
+        }),
         icon: 'report_problem',
       });
     });
@@ -470,11 +583,10 @@ function fileDeleted(parameters: string[], widgetId: string) {
 onMounted(() => {
   if (pageStore.isNewPageCreated) {
     pageStore.setNewPageCreated(false);
-    inEditMode.value = true
-    showAddWidgetDialogRef.value = true
+    inEditMode.value = true;
+    showAddWidgetDialogRef.value = true;
   }
 });
-
 </script>
 
 <style scoped>
@@ -493,7 +605,7 @@ onMounted(() => {
 }
 
 .widget:hover {
-  background-color: #EAEAEA;
+  background-color: #eaeaea;
 }
 
 .page {
@@ -505,5 +617,4 @@ onMounted(() => {
 .page:hover {
   cursor: pointer;
 }
-
 </style>

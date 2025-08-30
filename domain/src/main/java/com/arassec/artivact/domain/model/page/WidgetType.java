@@ -38,4 +38,9 @@ public enum WidgetType {
      */
     IMAGE_GALLERY,
 
+    /**
+     * A grid with one or more configurable buttons.
+     */
+    BUTTONS
+
 }

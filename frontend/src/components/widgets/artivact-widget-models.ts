@@ -1,7 +1,6 @@
-import {TranslatableString, Widget} from '../artivact-models';
+import { ButtonConfig, TranslatableString, Widget } from '../artivact-models';
 
-export interface SearchBasedWidgetData extends Widget {
-}
+export interface SearchBasedWidgetData extends Widget {}
 
 export interface PageTitleWidgetData extends Widget {
   title: TranslatableString;
@@ -46,4 +45,9 @@ export interface ImageGalleryWidgetData extends Widget {
   textPosition: ImageGalleryWidgetTextPosition;
   iconMode: boolean;
   hideBorder: boolean;
+}
+
+export interface ButtonsWidgetData extends Widget {
+  columns: number;
+  buttonConfigs: ButtonConfig[];
 }

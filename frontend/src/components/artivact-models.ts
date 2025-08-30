@@ -260,3 +260,13 @@ export interface BatchProcessingParameters {
   maxItems: number;
   targetId: string;
 }
+
+export interface ButtonConfig {
+  targetUrl: string;
+  iconLeft: string;
+  label: TranslatableString;
+  iconRight: string;
+  size: number;
+  buttonColor: string;
+  textColor: string;
+}

@@ -37,22 +37,66 @@ import java.util.Optional;
 @RequestMapping("/api/collection/export")
 public class CollectionExportController extends BaseImportController {
 
+    /**
+     * Use case for project directory handling.
+     */
     @Getter
     private final UseProjectDirsUseCase useProjectDirsUseCase;
 
+    /**
+     * Repository for file access.
+     */
     @Getter
     private final FileRepository fileRepository;
 
+    /**
+     * Use case to import collections.
+     */
     private final ImportCollectionUseCase importCollectionUseCase;
 
+    /**
+     * Use case to load a collection export.
+     */
     private final LoadCollectionExportUseCase loadCollectionExportUseCase;
+
+    /**
+     * Use case to save collection exports.
+     */
     private final SaveCollectionExportUseCase saveCollectionExportUseCase;
+
+    /**
+     * Use case to delete collection exports.
+     */
     private final DeleteCollectionExportUseCase deleteCollectionExportUseCase;
+
+    /**
+     * Use case to build a collection export file.
+     */
     private final BuildCollectionExportFileUseCase buildCollectionExportFileUseCase;
+
+    /**
+     * Use case to read infos from a collection export file.
+     */
     private final ReadCollectionExportFileUseCase readCollectionExportFileUseCase;
+
+    /**
+     * Use case to save a cover picture of a collection export.
+     */
     private final SaveCollectionExportCoverPictureUseCase saveCollectionExportCoverPictureUseCase;
+
+    /**
+     * Use case to load a collection export's cover picture.
+     */
     private final LoadCollectionExportCoverPictureUseCase loadCollectionExportCoverPictureUseCase;
+
+    /**
+     * Use case do delete a collection export's cover picture.
+     */
     private final DeleteCollectionExportCoverPictureUseCase deleteCollectionExportCoverPictureUseCase;
+
+    /**
+     * Use case to create collection export infos.
+     */
     private final CreateCollectionExportInfosUseCase createCollectionExportInfosUseCase;
 
     /**
