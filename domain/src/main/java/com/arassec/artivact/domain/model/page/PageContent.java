@@ -15,11 +15,6 @@ import java.util.List;
 public class PageContent extends BaseRestrictedObject {
 
     /**
-     * If {@code true}, this page is considered to be the index page.
-     */
-    private Boolean indexPage;
-
-    /**
      * Widgets of the page.
      */
     private List<Widget> widgets = new LinkedList<>();

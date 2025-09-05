@@ -2,7 +2,6 @@ package com.arassec.artivact.adapter.out.database.jdbc;
 
 import com.arassec.artivact.adapter.out.database.jdbc.springdata.entity.PageEntity;
 import com.arassec.artivact.adapter.out.database.jdbc.springdata.repository.PageEntityRepository;
-import com.arassec.artivact.application.port.out.repository.PageRepository;
 import com.arassec.artivact.domain.model.page.Page;
 import com.arassec.artivact.domain.model.page.PageContent;
 import com.arassec.artivact.domain.model.page.widget.TextWidget;
@@ -80,7 +79,6 @@ class JdbcPageRepositoryTest {
         Page page = new Page();
         page.setId("id");
         page.setPageContent(new PageContent());
-        page.getPageContent().setIndexPage(true);
 
         when(objectMapper.writeValueAsString(any(PageContent.class))).thenReturn("{contentJson}");
 
@@ -91,7 +89,6 @@ class JdbcPageRepositoryTest {
         jdbcPageRepository.save(page);
 
         assertEquals("{contentJson}", pageEntity.getContentJson());
-        assertTrue(pageEntity.isIndexPage());
     }
 
     /**
@@ -159,39 +156,6 @@ class JdbcPageRepositoryTest {
         Page page = pageOptional.get();
         assertEquals("id", page.getId());
         assertEquals(2, page.getPageContent().getWidgets().size());
-    }
-
-    /**
-     * Tests finding the index page which doesn't exist.
-     */
-    @Test
-    void testFindIndexPageIdNotExisting() {
-        Optional<PageRepository.PageIdAndAlias> indexPageIdOptional = jdbcPageRepository.findIndexPageId();
-        assertThat(indexPageIdOptional).isEmpty();
-    }
-
-    /**
-     * Tests finding the index page.
-     */
-    @Test
-    @SneakyThrows
-    void testFindIndexPageId() {
-        when(pageEntityRepository.findFirstIndexPageId(true)).thenReturn(Optional.of(new PageRepository.PageIdAndAlias() {
-            @Override
-            public String getId() {
-                return "id";
-            }
-
-            @Override
-            public String getAlias() {
-                return "alias";
-            }
-        }));
-
-        Optional<PageRepository.PageIdAndAlias> indexPageIdOptional = jdbcPageRepository.findIndexPageId();
-        assertThat(indexPageIdOptional).isPresent();
-        assertThat(indexPageIdOptional.get().getId()).isEqualTo("id");
-        assertThat(indexPageIdOptional.get().getAlias()).isEqualTo("alias");
     }
 
 }

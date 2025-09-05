@@ -22,13 +22,55 @@
         <q-card class="q-mb-lg">
           <q-card-section>
             <div class="q-mb-md">
-              {{ $t('ArtivactAppearanceConfigurationEditor.list.title.description') }}
+              {{
+                $t(
+                  'ArtivactAppearanceConfigurationEditor.list.title.description',
+                )
+              }}
             </div>
             <q-input
               outlined
-              :label="$t('ArtivactAppearanceConfigurationEditor.list.title.label')"
+              :label="
+                $t('ArtivactAppearanceConfigurationEditor.list.title.label')
+              "
               v-model="appearanceConfigurationRef.applicationTitle"
             ></q-input>
+          </q-card-section>
+        </q-card>
+      </q-expansion-item>
+      <q-expansion-item
+        data-test="appearance-config-index-page"
+        group="appearanceConfig"
+        header-class="bg-primary text-white"
+        class="list-entry"
+        expand-separator
+        expand-icon-class="text-white"
+      >
+        <template v-slot:header>
+          <q-item-section class="list-entry-label">
+            {{
+              $t('ArtivactAppearanceConfigurationEditor.list.indexPage.heading')
+            }}
+          </q-item-section>
+        </template>
+        <q-card class="q-mb-lg">
+          <q-card-section>
+            <div class="q-mb-md">
+              {{
+                $t(
+                  'ArtivactAppearanceConfigurationEditor.list.indexPage.description',
+                )
+              }}
+            </div>
+            <q-select
+              outlined
+              emit-value
+              v-model="appearanceConfigurationRef.indexPageId"
+              :options="indexPageOptionsRef"
+              :label="
+                $t('ArtivactAppearanceConfigurationEditor.list.indexPage.label')
+              "
+            />
           </q-card-section>
         </q-card>
       </q-expansion-item>
@@ -43,18 +85,26 @@
       >
         <template v-slot:header>
           <q-item-section class="list-entry-label">
-            {{ $t('ArtivactAppearanceConfigurationEditor.list.locales.heading') }}
+            {{
+              $t('ArtivactAppearanceConfigurationEditor.list.locales.heading')
+            }}
           </q-item-section>
         </template>
         <q-card class="q-mb-lg">
           <q-card-section>
             <div class="q-mb-md">
-              {{ $t('ArtivactAppearanceConfigurationEditor.list.locales.description') }}
+              {{
+                $t(
+                  'ArtivactAppearanceConfigurationEditor.list.locales.description',
+                )
+              }}
             </div>
             <q-input
               data-test="appearance-config-locales-input"
               outlined
-              :label="$t('ArtivactAppearanceConfigurationEditor.list.locales.label')"
+              :label="
+                $t('ArtivactAppearanceConfigurationEditor.list.locales.label')
+              "
               v-model="appearanceConfigurationRef.availableLocales"
             ></q-input>
           </q-card-section>
@@ -72,22 +122,36 @@
       >
         <template v-slot:header>
           <q-item-section class="list-entry-label">
-            {{ $t('ArtivactAppearanceConfigurationEditor.list.applicationLocale.heading') }}
+            {{
+              $t(
+                'ArtivactAppearanceConfigurationEditor.list.applicationLocale.heading',
+              )
+            }}
           </q-item-section>
         </template>
         <q-card class="q-mb-lg">
           <q-card-section>
             <div class="q-mb-md">
-              {{ $t('ArtivactAppearanceConfigurationEditor.list.applicationLocale.description') }}
+              {{
+                $t(
+                  'ArtivactAppearanceConfigurationEditor.list.applicationLocale.description',
+                )
+              }}
             </div>
             <q-select
               data-test="appearance-config-language-selection"
               outlined
               emit-value
               v-model="appearanceConfigurationRef.applicationLocale"
-              :options="availableApplicationLocaleOptions">
+              :options="availableApplicationLocaleOptions"
+            >
               <template v-slot:option="scope">
-                <q-item :data-test="'appearance-config-language-selection-' + scope.opt.value" v-bind="scope.itemProps">
+                <q-item
+                  :data-test="
+                    'appearance-config-language-selection-' + scope.opt.value
+                  "
+                  v-bind="scope.itemProps"
+                >
                   <q-item-section>
                     <q-item-label>{{ scope.opt.label }}</q-item-label>
                   </q-item-section>
@@ -108,13 +172,19 @@
       >
         <template v-slot:header>
           <q-item-section class="list-entry-label">
-            {{ $t('ArtivactAppearanceConfigurationEditor.list.colors.heading') }}
+            {{
+              $t('ArtivactAppearanceConfigurationEditor.list.colors.heading')
+            }}
           </q-item-section>
         </template>
         <q-card class="q-mb-lg">
           <q-card-section>
             <div class="q-mb-md">
-              {{ $t('ArtivactAppearanceConfigurationEditor.list.colors.description') }}
+              {{
+                $t(
+                  'ArtivactAppearanceConfigurationEditor.list.colors.description',
+                )
+              }}
             </div>
 
             <artivact-theme-color-editor
@@ -196,15 +266,29 @@
       >
         <template v-slot:header>
           <q-item-section class="list-entry-label">
-            {{ $t('ArtivactAppearanceConfigurationEditor.list.favicon.heading') }}
+            {{
+              $t('ArtivactAppearanceConfigurationEditor.list.favicon.heading')
+            }}
           </q-item-section>
         </template>
         <q-card class="q-mb-lg">
           <q-card-section>
             <div class="q-mb-md">
-              {{ $t('ArtivactAppearanceConfigurationEditor.list.favicon.descriptionPrefix') }}
-              <strong>{{ $t('ArtivactAppearanceConfigurationEditor.list.favicon.description') }}</strong>
-              {{ $t('ArtivactAppearanceConfigurationEditor.list.favicon.descriptionSuffix') }}
+              {{
+                $t(
+                  'ArtivactAppearanceConfigurationEditor.list.favicon.descriptionPrefix',
+                )
+              }}
+              <strong>{{
+                $t(
+                  'ArtivactAppearanceConfigurationEditor.list.favicon.description',
+                )
+              }}</strong>
+              {{
+                $t(
+                  'ArtivactAppearanceConfigurationEditor.list.favicon.descriptionSuffix',
+                )
+              }}
             </div>
             <div class="row">
               <q-uploader
@@ -236,65 +320,111 @@
       >
         <template v-slot:header>
           <q-item-section class="list-entry-label">
-            {{ $t('ArtivactAppearanceConfigurationEditor.list.license.heading') }}
+            {{
+              $t('ArtivactAppearanceConfigurationEditor.list.license.heading')
+            }}
           </q-item-section>
         </template>
 
         <q-card class="q-mb-lg">
           <q-card-section>
             <div>
-              {{ $t('ArtivactAppearanceConfigurationEditor.list.license.description') }}
-              <br class="q-mb-sm"/>
-              {{ $t('ArtivactAppearanceConfigurationEditor.list.license.descriptionSuffix') }}
+              {{
+                $t(
+                  'ArtivactAppearanceConfigurationEditor.list.license.description',
+                )
+              }}
+              <br class="q-mb-sm" />
+              {{
+                $t(
+                  'ArtivactAppearanceConfigurationEditor.list.license.descriptionSuffix',
+                )
+              }}
             </div>
           </q-card-section>
 
           <q-card-section>
-            <label>{{ $t('ArtivactAppearanceConfigurationEditor.list.license.card.prefixDescription') }}</label>
+            <label>{{
+              $t(
+                'ArtivactAppearanceConfigurationEditor.list.license.card.prefixDescription',
+              )
+            }}</label>
             <artivact-restricted-translatable-item-editor
               :locales="localeStore.locales"
               :translatable-string="appearanceConfigurationRef.license.prefix"
-              :label="$t('ArtivactAppearanceConfigurationEditor.list.license.card.prefixLabel')"
+              :label="
+                $t(
+                  'ArtivactAppearanceConfigurationEditor.list.license.card.prefixLabel',
+                )
+              "
               :show-separator="false"
             />
-            <label>{{ $t('ArtivactAppearanceConfigurationEditor.list.license.card.licenseDescription') }}</label>
+            <label>{{
+              $t(
+                'ArtivactAppearanceConfigurationEditor.list.license.card.licenseDescription',
+              )
+            }}</label>
             <artivact-restricted-translatable-item-editor
               :locales="localeStore.locales"
-              :translatable-string="appearanceConfigurationRef.license.licenseLabel"
-              :label="$t('ArtivactAppearanceConfigurationEditor.list.license.card.licenseLabel')"
+              :translatable-string="
+                appearanceConfigurationRef.license.licenseLabel
+              "
+              :label="
+                $t(
+                  'ArtivactAppearanceConfigurationEditor.list.license.card.licenseLabel',
+                )
+              "
               :show-separator="false"
             />
-            <label>{{ $t('ArtivactAppearanceConfigurationEditor.list.license.card.suffixDescription') }}</label>
+            <label>{{
+              $t(
+                'ArtivactAppearanceConfigurationEditor.list.license.card.suffixDescription',
+              )
+            }}</label>
             <artivact-restricted-translatable-item-editor
               :locales="localeStore.locales"
               :translatable-string="appearanceConfigurationRef.license.suffix"
-              :label="$t('ArtivactAppearanceConfigurationEditor.list.license.card.suffixLabel')"
+              :label="
+                $t(
+                  'ArtivactAppearanceConfigurationEditor.list.license.card.suffixLabel',
+                )
+              "
               :show-separator="false"
             />
-            <label>{{ $t('ArtivactAppearanceConfigurationEditor.list.license.card.urlDescription') }}</label>
+            <label>{{
+              $t(
+                'ArtivactAppearanceConfigurationEditor.list.license.card.urlDescription',
+              )
+            }}</label>
             <q-input
               outlined
               v-model="appearanceConfigurationRef.license.licenseUrl"
-              :label="$t('ArtivactAppearanceConfigurationEditor.list.license.card.urlLabel')"
+              :label="
+                $t(
+                  'ArtivactAppearanceConfigurationEditor.list.license.card.urlLabel',
+                )
+              "
             />
           </q-card-section>
-
         </q-card>
       </q-expansion-item>
     </q-list>
-
   </div>
 </template>
 
 <script setup lang="ts">
-import { PropType, toRef } from 'vue';
-import { AppearanceConfiguration, SelectboxModel } from 'components/artivact-models';
+import { onMounted, PropType, ref, Ref, toRef } from 'vue';
+import {
+  AppearanceConfiguration,
+  SelectboxModel,
+} from 'components/artivact-models';
 import ArtivactThemeColorEditor from 'components/ArtivactThemeColorEditor.vue';
 import { QUploader, useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { useProfilesStore } from 'stores/profiles';
 import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
 import { useLocaleStore } from 'stores/locale';
+import { api } from 'boot/axios';
 
 const props = defineProps({
   appearanceConfiguration: {
@@ -312,22 +442,30 @@ const profilesStore = useProfilesStore();
 
 const appearanceConfigurationRef = toRef(props, 'appearanceConfiguration');
 
+const indexPageOptionsRef: Ref<SelectboxModel[]> = ref([] as SelectboxModel[]);
+
 const availableApplicationLocaleOptions: SelectboxModel[] = [
   {
-    label: i18n.t('ArtivactAppearanceConfigurationEditor.list.applicationLocale.system'),
+    label: i18n.t(
+      'ArtivactAppearanceConfigurationEditor.list.applicationLocale.system',
+    ),
     value: '',
-    disable: false
+    disable: false,
   },
   {
-    label: i18n.t('ArtivactAppearanceConfigurationEditor.list.applicationLocale.en'),
+    label: i18n.t(
+      'ArtivactAppearanceConfigurationEditor.list.applicationLocale.en',
+    ),
     value: 'en',
-    disable: false
+    disable: false,
   },
   {
-    label: i18n.t('ArtivactAppearanceConfigurationEditor.list.applicationLocale.de'),
+    label: i18n.t(
+      'ArtivactAppearanceConfigurationEditor.list.applicationLocale.de',
+    ),
     value: 'de',
-    disable: false
-  }
+    disable: false,
+  },
 ];
 
 function uploadComplete() {
@@ -338,6 +476,37 @@ function uploadComplete() {
     icon: 'check',
   });
 }
+
+function createIndexPageOptions() {
+  indexPageOptionsRef.value = [] as SelectboxModel[];
+  api
+    .get('/api/page/id')
+    .then((response) => {
+      response.data.forEach((pageIdAndAlias) => {
+        indexPageOptionsRef.value.push({
+          label: pageIdAndAlias.alias
+            ? pageIdAndAlias.alias
+            : pageIdAndAlias.id,
+          value: pageIdAndAlias.id,
+          disable: false,
+        });
+      });
+    })
+    .catch(() => {
+      quasar.notify({
+        color: 'negative',
+        position: 'bottom',
+        message: i18n.t('Common.messages.loading.failed', {
+          item: i18n.t('Common.items.pages'),
+        }),
+        icon: 'report_problem',
+      });
+    });
+}
+
+onMounted(() => {
+  createIndexPageOptions();
+});
 </script>
 
 <style scoped>

@@ -5,12 +5,15 @@ import com.arassec.artivact.application.infrastructure.aspect.RestrictResult;
 import com.arassec.artivact.application.infrastructure.aspect.TranslateResult;
 import com.arassec.artivact.application.port.in.page.*;
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
+import com.arassec.artivact.application.port.out.repository.ConfigurationRepository;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.application.port.out.repository.MenuRepository;
 import com.arassec.artivact.application.port.out.repository.PageRepository;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.BaseRestrictedObject;
 import com.arassec.artivact.domain.model.Roles;
+import com.arassec.artivact.domain.model.configuration.AppearanceConfiguration;
+import com.arassec.artivact.domain.model.configuration.ConfigurationType;
 import com.arassec.artivact.domain.model.item.ImageSize;
 import com.arassec.artivact.domain.model.menu.Menu;
 import com.arassec.artivact.domain.model.page.*;
@@ -63,6 +66,11 @@ public class ManagePageService
     private final MenuRepository menuRepository;
 
     /**
+     * Repository for configurations.
+     */
+    private final ConfigurationRepository configurationRepository;
+
+    /**
      * The application's {@link FileRepository}.
      */
     @Getter
@@ -74,6 +82,9 @@ public class ManagePageService
     @Getter
     private final ObjectMapper objectMapper;
 
+    /**
+     * Use case for project directory handling.
+     */
     private final UseProjectDirsUseCase useProjectDirsUseCase;
 
     /**
@@ -111,7 +122,7 @@ public class ManagePageService
         if (pageOptional.isPresent()) {
             pageOptional.get().getPageContent().getWidgets().forEach(widget
                     -> fileRepository.deleteDirAndEmptyParents(
-                            fileRepository.getDirFromId(useProjectDirsUseCase.getWidgetsDir(), widget.getId()))
+                    fileRepository.getDirFromId(useProjectDirsUseCase.getWidgetsDir(), widget.getId()))
             );
             pageRepository.deleteById(pageIdOrAlias);
         }
@@ -137,8 +148,30 @@ public class ManagePageService
      * @return The index {@link Page}.
      */
     @Override
-    public Optional<PageRepository.PageIdAndAlias> loadIndexPageIdAndAlias() {
-        return pageRepository.findIndexPageId();
+    public Optional<PageIdAndAlias> loadIndexPageIdAndAlias() {
+        AppearanceConfiguration appearanceConfiguration = configurationRepository
+                .findByType(ConfigurationType.APPEARANCE, AppearanceConfiguration.class).orElseThrow();
+
+        String indexPageId = appearanceConfiguration.getIndexPageId();
+
+        if (!StringUtils.hasText(indexPageId)) {
+            return Optional.empty();
+        }
+
+        Optional<Page> optionalPage = pageRepository.findById(indexPageId);
+
+        return optionalPage.map(page -> new PageIdAndAlias(indexPageId, page.getAlias()));
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<PageIdAndAlias> loadPageIds() {
+        return pageRepository.findAll().stream()
+                .map(page -> new PageIdAndAlias(page.getId(), page.getAlias()))
+                .toList();
     }
 
     /**

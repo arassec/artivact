@@ -3,9 +3,9 @@ package com.arassec.artivact.adapter.in.rest.controller.page;
 import com.arassec.artivact.application.port.in.page.LoadPageContentUseCase;
 import com.arassec.artivact.application.port.in.page.ManagePageMediaUseCase;
 import com.arassec.artivact.application.port.in.page.SavePageContentUseCase;
-import com.arassec.artivact.application.port.out.repository.PageRepository;
 import com.arassec.artivact.domain.model.item.ImageSize;
 import com.arassec.artivact.domain.model.page.PageContent;
+import com.arassec.artivact.domain.model.page.PageIdAndAlias;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URLConnection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -36,6 +37,11 @@ public class PageController {
 
     private final ManagePageMediaUseCase managePageMediaUseCase;
 
+    @GetMapping("/id")
+    public List<PageIdAndAlias> getPageIds() {
+        return loadPageContentUseCase.loadPageIds();
+    }
+
     /**
      * Returns the alias or ID of the index page.
      *
@@ -43,11 +49,11 @@ public class PageController {
      */
     @GetMapping()
     public String loadIndexPageIdOrAlias() {
-        Optional<PageRepository.PageIdAndAlias> pageIdAndAliasOptional = loadPageContentUseCase.loadIndexPageIdAndAlias();
+        Optional<PageIdAndAlias> pageIdAndAliasOptional = loadPageContentUseCase.loadIndexPageIdAndAlias();
         if (pageIdAndAliasOptional.isEmpty()) {
             return "";
         }
-        PageRepository.PageIdAndAlias pageIdAndAlias = pageIdAndAliasOptional.get();
+        PageIdAndAlias pageIdAndAlias = pageIdAndAliasOptional.get();
         if (StringUtils.hasText(pageIdAndAlias.getAlias())) {
             return pageIdAndAlias.getAlias();
         }

@@ -44,4 +44,9 @@ public class AppearanceConfiguration {
      */
     private License license;
 
+    /**
+     * The ID of the index page.
+     */
+    private String indexPageId;
+
 }

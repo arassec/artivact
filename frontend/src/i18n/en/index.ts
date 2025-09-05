@@ -354,6 +354,12 @@ export default {
         description: 'The title is displayed in the browser tab on every page.',
         label: 'Application Title',
       },
+      indexPage: {
+        heading: 'Index Page',
+        description:
+          'The index page is loaded as default by the application if no specific page is opened by the user.',
+        label: 'Index Page',
+      },
       locales: {
         heading: 'Supported Locales',
         description:
@@ -590,8 +596,6 @@ export default {
       edit: 'Edit page',
       cancel: 'Leave Edit Mode',
       add: 'Add Widget',
-      indexPageYes: 'This IS the index page',
-      indexPageNo: 'This is NOT the index page',
     },
     label: {
       noIndexPage:
@@ -605,7 +609,6 @@ export default {
       infoBoxTitle: 'Info-Box Title',
       infoBoxContent: 'Info-Box Content',
       avatarSubtext: 'Avatar Subtext',
-      indexPage: 'Index',
     },
     dialog: {
       addWidget: {

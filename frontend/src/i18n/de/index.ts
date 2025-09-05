@@ -593,8 +593,6 @@ export default {
       edit: 'Seite bearbeiten',
       cancel: 'Bearbeitungsmodus verlassen',
       add: 'Widget hinzufügen',
-      indexPageYes: 'Dies IST die Hauptseite',
-      indexPageNo: 'Dies ist NICHT die Hauptseite',
     },
     label: {
       noIndexPage:
@@ -608,7 +606,6 @@ export default {
       infoBoxTitle: 'Info-Box Titel',
       infoBoxContent: 'Info-Box Inhalt',
       avatarSubtext: 'Avatar Untertitel',
-      indexPage: 'Index',
     },
     dialog: {
       addWidget: {

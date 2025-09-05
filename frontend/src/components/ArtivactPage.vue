@@ -39,22 +39,6 @@
 
       <div class="absolute-top-right q-ma-md">
         <q-btn
-          data-test="index-page-button"
-          color="primary"
-          :icon="pageContentRef.indexPage ? 'check_circle' : 'circle'"
-          class="main-nav-button rounded-borders q-mr-sm"
-          @click="pageContentRef.indexPage = !pageContentRef.indexPage"
-          :label="$t('ArtivactPage.label.indexPage')"
-        >
-          <q-tooltip
-            >{{
-              pageContentRef.indexPage
-                ? $t('ArtivactPage.tooltip.indexPageYes')
-                : $t('ArtivactPage.tooltip.indexPageNo')
-            }}
-          </q-tooltip>
-        </q-btn>
-        <q-btn
           data-test="save-button"
           round
           color="primary"
@@ -66,14 +50,6 @@
         </q-btn>
       </div>
     </div>
-
-    <artivact-content
-      v-if="pageContentRef.widgets.length == 0 && pageId === 'INDEX'"
-    >
-      <label>
-        {{ $t('ArtivactPage.label.noIndexPage') }}
-      </label>
-    </artivact-content>
 
     <Draggable
       v-model="pageContentRef.widgets"
@@ -310,7 +286,6 @@ import ArtivactInfoBoxWidget from './widgets/ArtivactInfoBoxWidget.vue';
 import ArtivactTextWidget from './widgets/ArtivactTextWidget.vue';
 import ArtivactPageTitleWidget from './widgets/ArtivactPageTitleWidget.vue';
 import ArtivactItemSearchWidget from './widgets/ArtivactItemSearchWidget.vue';
-import ArtivactContent from './ArtivactContent.vue';
 import { usePageStore } from '../stores/page';
 import ArtivactImageGalleryWidget from './widgets/ArtivactImageGalleryWidget.vue';
 import ArtivactButtonsWidget from './widgets/ArtivactButtonsWidget.vue';

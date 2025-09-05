@@ -1,20 +1,31 @@
 <template>
-  Index-Page
+  <artivact-content v-if="noIndexPageRef">
+    <label>
+      {{ $t('ArtivactPage.label.noIndexPage') }}
+    </label>
+  </artivact-content>
 </template>
 
-<script setup>
-import {onMounted} from "vue";
-import {api} from "../boot/axios";
-import i18n from "../i18n";
-import {useRouter} from "vue-router";
+<script setup lang="ts">
+import { onMounted, ref } from 'vue';
+import { api } from '../boot/axios';
+import i18n from '../i18n';
+import { useRouter } from 'vue-router';
+import ArtivactContent from '../components/ArtivactContent.vue';
 
 const router = useRouter();
+
+const noIndexPageRef = ref(false);
 
 function redirectToIndexPage() {
   api
     .get('/api/page')
     .then((response) => {
-      router.push('/page/' + response.data);
+      if (response.data !== '') {
+        router.push('/page/' + response.data);
+      } else {
+        noIndexPageRef.value = true;
+      }
     })
     .catch(() => {
       quasar.notify({
@@ -31,6 +42,4 @@ onMounted(() => {
 });
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

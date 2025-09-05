@@ -27,11 +27,6 @@ public class PageEntity {
     private Integer version;
 
     /**
-     * {@code true} if this is the application's index page, {@code false} otherwise.
-     */
-    private boolean indexPage;
-
-    /**
      * The page content as JSON.
      */
     private String contentJson;

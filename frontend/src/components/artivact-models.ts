@@ -132,12 +132,13 @@ export interface License {
 }
 
 export interface AppearanceConfiguration {
-  applicationTitle: string,
-  availableLocales: string,
-  applicationLocale: string,
-  colorTheme: ColorTheme,
-  encodedFavicon: string,
-  license: License
+  applicationTitle: string;
+  availableLocales: string;
+  applicationLocale: string;
+  colorTheme: ColorTheme;
+  encodedFavicon: string;
+  license: License;
+  indexPageId: string;
 }
 
 export interface ApplicationSettings {
@@ -194,7 +195,6 @@ export interface Widget extends BaseRestrictedObject {
 }
 
 export interface PageContent extends BaseRestrictedObject {
-  indexPage: boolean;
   widgets: Widget[];
   editable: boolean;
 }
@@ -269,4 +269,9 @@ export interface ButtonConfig {
   size: number;
   buttonColor: string;
   textColor: string;
+}
+
+export interface PageIdAndAlias {
+  id: string;
+  alias: string;
 }

@@ -52,7 +52,6 @@ public class JdbcPageRepository extends BaseJdbcRepository implements PageReposi
             pageEntity.setId(page.getId());
         }
 
-        pageEntity.setIndexPage(Boolean.TRUE.equals(page.getPageContent().getIndexPage()));
         pageEntity.setContentJson(toJson(page.getPageContent()));
         pageEntity.setAlias(page.getAlias());
 
@@ -97,14 +96,6 @@ public class JdbcPageRepository extends BaseJdbcRepository implements PageReposi
             pageEntityOptional = pageEntityRepository.findById(pageIdOrAlias);
         }
         return pageEntityOptional.map(this::convert);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Optional<PageIdAndAlias> findIndexPageId() {
-        return pageEntityRepository.findFirstIndexPageId(true);
     }
 
     /**

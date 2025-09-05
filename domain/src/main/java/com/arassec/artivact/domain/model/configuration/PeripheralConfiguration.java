@@ -25,6 +25,7 @@ public class PeripheralConfiguration {
     /**
      * All available image-manipulation adapters.
      */
+    @Builder.Default
     private List<PeripheralImplementation> availableImageManipulationPeripheralImplementations = new LinkedList<>();
 
     /**
@@ -35,6 +36,7 @@ public class PeripheralConfiguration {
     /**
      * All available camera adapters.
      */
+    @Builder.Default
     private List<PeripheralImplementation> availableCameraPeripheralImplementations = new LinkedList<>();
 
     /**
@@ -45,6 +47,7 @@ public class PeripheralConfiguration {
     /**
      * All available turntable adapters.
      */
+    @Builder.Default
     private List<PeripheralImplementation> availableTurntablePeripheralImplementations = new LinkedList<>();
 
     /**
@@ -55,6 +58,7 @@ public class PeripheralConfiguration {
     /**
      * All available model creator adapters.
      */
+    @Builder.Default
     private List<PeripheralImplementation> availableModelCreatorPeripheralImplementations = new LinkedList<>();
 
     /**
@@ -65,11 +69,13 @@ public class PeripheralConfiguration {
     /**
      * All available model editor adapters.
      */
+    @Builder.Default
     private List<PeripheralImplementation> availableModelEditorPeripheralImplementations = new LinkedList<>();
 
     /**
      * The configuration values per adapter.
      */
+    @Builder.Default
     private Map<PeripheralImplementation, String> configValues = new EnumMap<>(PeripheralImplementation.class);
 
     /**
