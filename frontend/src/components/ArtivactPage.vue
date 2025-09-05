@@ -1,18 +1,5 @@
 <template>
   <div v-if="pageContentRef && pageId" :class="inEditMode ? 'page' : ''">
-    <q-menu :context-menu="true" v-if="inEditMode">
-      <q-list>
-        <q-item clickable v-close-popup @click="showAddWidgetDialogRef = true">
-          <q-item-section>
-            <label>
-              <q-icon name="add" size="xs" color="primary" class="q-mr-sm" />
-              {{ $t('ArtivactPage.label.addWidget') }}</label
-            >
-          </q-item-section>
-        </q-item>
-      </q-list>
-    </q-menu>
-
     <div
       class="col items-center sticky gt-md"
       v-if="userdataStore.isUserOrAdmin && pageId !== 'INDEX' && !inEditMode"
@@ -41,7 +28,10 @@
           color="primary"
           icon="close"
           class="q-mr-sm main-nav-button"
-          @click="inEditMode = false"
+          @click="
+            inEditMode = false;
+            $emit('exit-edit-mode');
+          "
         >
           <q-tooltip>{{ $t('Common.cancel') }}</q-tooltip>
         </q-btn>
@@ -85,171 +75,122 @@
       </label>
     </artivact-content>
 
-    <template
-      v-for="(widgetData, index) of pageContentRef.widgets"
-      v-bind:key="widgetData.id"
+    <Draggable
+      v-model="pageContentRef.widgets"
+      item-key="id"
+      group="widgets"
+      handle=".move-widget-button"
+      :disabled="!inEditMode"
     >
-      <artivact-page-title-widget
-        :id="widgetData.id"
-        :class="inEditMode ? 'widget' : ''"
-        v-if="widgetData.type === 'PAGE_TITLE'"
-        :widget-data="widgetData as PageTitleWidgetData"
-        :in-edit-mode="inEditMode"
-        :showEditor="inEditMode && pageStore.latestWidgetIndex === index"
-        :move-up-enabled="index > 0"
-        :move-down-enabled="index < pageContentRef.widgets.length - 1"
-        @move-widget-up="moveWidgetUp(pageContentRef.widgets, index)"
-        @move-widget-down="moveWidgetDown(pageContentRef.widgets, index)"
-        @add-widget-above="
-          addWidgetAboveRef = widgetData.id;
-          showAddWidgetDialogRef = true;
-        "
-        @add-widget-below="
-          addWidgetBelowRef = widgetData.id;
-          showAddWidgetDialogRef = true;
-        "
-        @delete-widget="deleteWidget(index)"
-        :page-id="pageId"
-        v-on:image-added="fileAdded($event, widgetData.id)"
-      />
+      <template #item="{ element, index }">
+        <div>
+          <artivact-page-title-widget
+            v-if="element.type === 'PAGE_TITLE'"
+            group="widgets"
+            :id="element.id"
+            :class="inEditMode ? 'widget' : ''"
+            :widget-data="element as PageTitleWidgetData"
+            :in-edit-mode="inEditMode"
+            @add-widget-below="
+              addWidgetBelowRef = element.id;
+              showAddWidgetDialogRef = true;
+            "
+            @delete-widget="() => deleteWidget(index)"
+            :page-id="pageId"
+            v-on:image-added="fileAdded($event, element.id)"
+          />
 
-      <artivact-text-widget
-        :id="widgetData.id"
-        :class="inEditMode ? 'widget' : ''"
-        v-if="widgetData.type === 'TEXT'"
-        :widget-data="widgetData as TextWidgetData"
-        :in-edit-mode="inEditMode"
-        :showEditor="inEditMode && pageStore.latestWidgetIndex === index"
-        :move-up-enabled="index > 0"
-        :move-down-enabled="index < pageContentRef.widgets.length - 1"
-        @move-widget-up="moveWidgetUp(pageContentRef.widgets, index)"
-        @move-widget-down="moveWidgetDown(pageContentRef.widgets, index)"
-        @add-widget-above="
-          addWidgetAboveRef = widgetData.id;
-          showAddWidgetDialogRef = true;
-        "
-        @add-widget-below="
-          addWidgetBelowRef = widgetData.id;
-          showAddWidgetDialogRef = true;
-        "
-        @delete-widget="deleteWidget(index)"
-      />
+          <artivact-text-widget
+            v-else-if="element.type === 'TEXT'"
+            group="widgets"
+            :id="element.id"
+            :class="inEditMode ? 'widget' : ''"
+            :widget-data="element as TextWidgetData"
+            :in-edit-mode="inEditMode"
+            @add-widget-below="
+              addWidgetBelowRef = element.id;
+              showAddWidgetDialogRef = true;
+            "
+            @delete-widget="() => deleteWidget(index)"
+          />
 
-      <artivact-item-search-widget
-        :id="widgetData.id"
-        :class="inEditMode ? 'widget' : ''"
-        v-if="widgetData.type === 'ITEM_SEARCH'"
-        :widget-data="widgetData as ItemSearchWidget"
-        :in-edit-mode="inEditMode"
-        :showEditor="inEditMode && pageStore.latestWidgetIndex === index"
-        :move-up-enabled="index > 0"
-        :move-down-enabled="index < pageContentRef.widgets.length - 1"
-        @move-widget-up="moveWidgetUp(pageContentRef.widgets, index)"
-        @move-widget-down="moveWidgetDown(pageContentRef.widgets, index)"
-        @add-widget-above="
-          addWidgetAboveRef = widgetData.id;
-          showAddWidgetDialogRef = true;
-        "
-        @add-widget-below="
-          addWidgetBelowRef = widgetData.id;
-          showAddWidgetDialogRef = true;
-        "
-        @delete-widget="deleteWidget(index)"
-      />
+          <artivact-item-search-widget
+            v-else-if="element.type === 'ITEM_SEARCH'"
+            group="widgets"
+            :id="element.id"
+            :class="inEditMode ? 'widget' : ''"
+            :widget-data="element as ItemSearchWidget"
+            :in-edit-mode="inEditMode"
+            @add-widget-below="
+              addWidgetBelowRef = element.id;
+              showAddWidgetDialogRef = true;
+            "
+            @delete-widget="() => deleteWidget(index)"
+          />
 
-      <artivact-info-box-widget
-        :id="widgetData.id"
-        :class="inEditMode ? 'widget' : ''"
-        v-if="widgetData.type === 'INFO_BOX'"
-        :widget-data="widgetData as InfoBoxWidgetData"
-        :in-edit-mode="inEditMode"
-        :showEditor="inEditMode && pageStore.latestWidgetIndex === index"
-        :move-up-enabled="index > 0"
-        :move-down-enabled="index < pageContentRef.widgets.length - 1"
-        @move-widget-up="moveWidgetUp(pageContentRef.widgets, index)"
-        @move-widget-down="moveWidgetDown(pageContentRef.widgets, index)"
-        @add-widget-above="
-          addWidgetAboveRef = widgetData.id;
-          showAddWidgetDialogRef = true;
-        "
-        @add-widget-below="
-          addWidgetBelowRef = widgetData.id;
-          showAddWidgetDialogRef = true;
-        "
-        @delete-widget="deleteWidget(index)"
-      />
+          <artivact-info-box-widget
+            v-else-if="element.type === 'INFO_BOX'"
+            group="widgets"
+            :id="element.id"
+            :class="inEditMode ? 'widget' : ''"
+            :widget-data="element as InfoBoxWidgetData"
+            :in-edit-mode="inEditMode"
+            @add-widget-below="
+              addWidgetBelowRef = element.id;
+              showAddWidgetDialogRef = true;
+            "
+            @delete-widget="() => deleteWidget(index)"
+          />
 
-      <artivact-avatar-widget
-        :id="widgetData.id"
-        :class="inEditMode ? 'widget' : ''"
-        v-if="widgetData.type === 'AVATAR'"
-        :widget-data="widgetData as AvatarWidgetData"
-        :in-edit-mode="inEditMode"
-        :showEditor="inEditMode && pageStore.latestWidgetIndex === index"
-        :move-up-enabled="index > 0"
-        :move-down-enabled="index < pageContentRef.widgets.length - 1"
-        @move-widget-up="moveWidgetUp(pageContentRef.widgets, index)"
-        @move-widget-down="moveWidgetDown(pageContentRef.widgets, index)"
-        @add-widget-above="
-          addWidgetAboveRef = widgetData.id;
-          showAddWidgetDialogRef = true;
-        "
-        @add-widget-below="
-          addWidgetBelowRef = widgetData.id;
-          showAddWidgetDialogRef = true;
-        "
-        @delete-widget="deleteWidget(index)"
-        :page-id="pageId"
-        v-on:image-added="fileAdded($event, widgetData.id)"
-      />
+          <artivact-avatar-widget
+            v-else-if="element.type === 'AVATAR'"
+            group="widgets"
+            :id="element.id"
+            :class="inEditMode ? 'widget' : ''"
+            :widget-data="element as AvatarWidgetData"
+            :in-edit-mode="inEditMode"
+            @add-widget-below="
+              addWidgetBelowRef = element.id;
+              showAddWidgetDialogRef = true;
+            "
+            @delete-widget="() => deleteWidget(index)"
+            :page-id="pageId"
+            v-on:image-added="fileAdded($event, element.id)"
+          />
 
-      <artivact-image-gallery-widget
-        :id="widgetData.id"
-        :class="inEditMode ? 'widget' : ''"
-        v-if="widgetData.type === 'IMAGE_GALLERY'"
-        :widget-data="widgetData as ImageGalleryWidgetData"
-        :page-id="pageId"
-        :in-edit-mode="inEditMode"
-        :showEditor="inEditMode && pageStore.latestWidgetIndex === index"
-        :move-up-enabled="index > 0"
-        :move-down-enabled="index < pageContentRef.widgets.length - 1"
-        @move-widget-up="moveWidgetUp(pageContentRef.widgets, index)"
-        @move-widget-down="moveWidgetDown(pageContentRef.widgets, index)"
-        @add-widget-above="
-          addWidgetAboveRef = widgetData.id;
-          showAddWidgetDialogRef = true;
-        "
-        @add-widget-below="
-          addWidgetBelowRef = widgetData.id;
-          showAddWidgetDialogRef = true;
-        "
-        @delete-widget="deleteWidget(index)"
-        @image-added="fileAdded($event, widgetData.id)"
-        @image-deleted="fileDeleted($event, widgetData.id)"
-      />
+          <artivact-image-gallery-widget
+            v-else-if="element.type === 'IMAGE_GALLERY'"
+            group="widgets"
+            :id="element.id"
+            :class="inEditMode ? 'widget' : ''"
+            :widget-data="element as ImageGalleryWidgetData"
+            :page-id="pageId"
+            :in-edit-mode="inEditMode"
+            @add-widget-below="
+              addWidgetBelowRef = element.id;
+              showAddWidgetDialogRef = true;
+            "
+            @delete-widget="() => deleteWidget(index)"
+            @image-added="fileAdded($event, element.id)"
+            @image-deleted="fileDeleted($event, element.id)"
+          />
 
-      <artivact-buttons-widget
-        :id="widgetData.id"
-        :class="inEditMode ? 'widget' : ''"
-        v-if="widgetData.type === 'BUTTONS'"
-        :widget-data="widgetData as ButtonsWidgetData"
-        :in-edit-mode="inEditMode"
-        :showEditor="inEditMode && pageStore.latestWidgetIndex === index"
-        :move-up-enabled="index > 0"
-        :move-down-enabled="index < pageContentRef.widgets.length - 1"
-        @move-widget-up="moveWidgetUp(pageContentRef.widgets, index)"
-        @move-widget-down="moveWidgetDown(pageContentRef.widgets, index)"
-        @add-widget-above="
-          addWidgetAboveRef = widgetData.id;
-          showAddWidgetDialogRef = true;
-        "
-        @add-widget-below="
-          addWidgetBelowRef = widgetData.id;
-          showAddWidgetDialogRef = true;
-        "
-        @delete-widget="deleteWidget(index)"
-      />
-    </template>
+          <artivact-buttons-widget
+            v-else-if="element.type === 'BUTTONS'"
+            group="widgets"
+            :id="element.id"
+            :class="inEditMode ? 'widget' : ''"
+            :widget-data="element as ButtonsWidgetData"
+            :in-edit-mode="inEditMode"
+            @add-widget-below="
+              addWidgetBelowRef = element.id;
+              showAddWidgetDialogRef = true;
+            "
+            @delete-widget="() => deleteWidget(index)"
+          />
+        </div>
+      </template>
+    </Draggable>
 
     <artivact-dialog
       :data-test="'add-widget-modal'"
@@ -257,13 +198,13 @@
       v-if="userdataStore.isUserOrAdmin && inEditMode"
     >
       <template v-slot:header>
-        {{ $t('ArtivactPage.dialog.heading') }}
+        {{ $t('ArtivactPage.dialog.addWidget.heading') }}
       </template>
 
       <template v-slot:body>
         <q-card-section>
           <div class="q-mb-lg">
-            {{ $t('ArtivactPage.dialog.description') }}
+            {{ $t('ArtivactPage.dialog.addWidget.description') }}
           </div>
           <q-select
             data-test="add-widget-selection"
@@ -271,7 +212,7 @@
             v-model="selectedWidgetTypeRef"
             :options="availableWidgetTypes"
             :option-label="(option) => $t(option)"
-            :label="$t('ArtivactPage.dialog.type')"
+            :label="$t('ArtivactPage.dialog.addWidget.type')"
           >
             <template v-slot:option="scope">
               <q-item
@@ -307,16 +248,47 @@
         />
       </template>
     </artivact-dialog>
+
+    <artivact-dialog :dialog-model="showDeleteWidgetDialogRef">
+      <template v-slot:header>
+        {{ $t('ArtivactPage.dialog.deleteWidget.heading') }}
+      </template>
+
+      <template v-slot:body>
+        <q-card-section>
+          <div class="q-mb-lg">
+            {{ $t('ArtivactPage.dialog.deleteWidget.description') }}
+          </div>
+        </q-card-section>
+      </template>
+
+      <template v-slot:cancel>
+        <q-btn
+          :label="$t('Common.cancel')"
+          color="primary"
+          @click="showDeleteWidgetDialogRef = false"
+        />
+      </template>
+
+      <template v-slot:approve>
+        <q-btn
+          data-test="add-widget-modal-approve"
+          :label="$t('ArtivactPage.label.deleteWidget')"
+          color="primary"
+          @click="deleteWidgetConfirmed()"
+        />
+      </template>
+    </artivact-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
+import Draggable from 'vuedraggable';
 import { onMounted, PropType, ref, toRef } from 'vue';
 import {
   ButtonConfig,
   PageContent,
   TranslatableString,
-  Widget,
 } from './artivact-models';
 import { useUserdataStore } from '../stores/userdata';
 import { useQuasar } from 'quasar';
@@ -330,7 +302,6 @@ import {
   PageTitleWidgetData,
   TextWidgetData,
 } from './widgets/artivact-widget-models';
-import { moveDown, moveUp } from './artivact-utils';
 import { api } from '../boot/axios';
 import { useI18n } from 'vue-i18n';
 import ArtivactDialog from './ArtivactDialog.vue';
@@ -364,6 +335,7 @@ const emit = defineEmits<{
     property: string,
     filename: string,
   ): void;
+  (e: 'exit-edit-mode'): void;
 }>();
 
 const quasar = useQuasar();
@@ -378,9 +350,10 @@ const pageIdRef = toRef(props, 'pageId');
 const showAddWidgetDialogRef = ref(false);
 const selectedWidgetTypeRef = ref('PAGE_TITLE');
 const inEditMode = ref(false);
-
-const addWidgetAboveRef = ref('');
 const addWidgetBelowRef = ref('');
+
+const showDeleteWidgetDialogRef = ref(false);
+const deleteWidgetRef = ref(-1);
 
 const availableWidgetTypes = [
   'PAGE_TITLE',
@@ -394,18 +367,13 @@ const availableWidgetTypes = [
 
 function addWidget() {
   let index = pageContentRef.value?.widgets.length;
-  if (addWidgetAboveRef.value !== '') {
-    index = pageContentRef.value?.widgets.findIndex(
-      (element) => element.id === addWidgetAboveRef.value,
-    );
-  } else if (addWidgetBelowRef.value !== '') {
+  if (addWidgetBelowRef.value !== '') {
     index =
       pageContentRef.value?.widgets.findIndex(
         (element) => element.id === addWidgetBelowRef.value,
       ) + 1;
   }
 
-  addWidgetAboveRef.value = '';
   addWidgetBelowRef.value = '';
 
   if (selectedWidgetTypeRef.value === 'PAGE_TITLE') {
@@ -532,15 +500,14 @@ function addWidget() {
 }
 
 function deleteWidget(index: number) {
-  pageContentRef.value?.widgets.splice(index, 1);
+  deleteWidgetRef.value = index;
+  showDeleteWidgetDialogRef.value = true;
 }
 
-function moveWidgetUp(array: [Widget], index: number) {
-  moveUp(array, index);
-}
-
-function moveWidgetDown(array: [Widget], index: number) {
-  moveDown(array, index);
+function deleteWidgetConfirmed() {
+  pageContentRef.value?.widgets.splice(deleteWidgetRef.value, 1);
+  deleteWidgetRef.value = -1;
+  showDeleteWidgetDialogRef.value = false;
 }
 
 function savePage(leaveEditMode: boolean) {
@@ -612,9 +579,5 @@ onMounted(() => {
   height: 100%;
   width: 100%;
   position: absolute;
-}
-
-.page:hover {
-  cursor: pointer;
 }
 </style>

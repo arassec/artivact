@@ -1,134 +1,65 @@
 <template>
   <artivact-widget-template
-    :move-down-enabled="moveDownEnabled"
-    :move-up-enabled="moveUpEnabled"
-    :in-edit-mode="inEditMode"
     v-if="widgetDataRef"
+    :editing="editingRef"
+    :in-edit-mode="inEditMode"
     :restrictions="widgetDataRef.restrictions"
     :navigation-title="widgetDataRef.navigationTitle"
+    @start-editing="editingRef = true"
+    @stop-editing="editingRef = false"
   >
     <template v-slot:widget-content>
-      <artivact-content>
-        <q-space />
+      <q-space />
 
-        <q-card :class="infoBoxStyle">
-          <q-card-section class="text-white" v-if="widgetDataRef.heading">
-            <div class="av-text-h2">{{ translate(widgetDataRef.heading) }}</div>
-            <template v-if="widgetDataRef.content">{{
-              translate(widgetDataRef.content)
-            }}</template>
-          </q-card-section>
-        </q-card>
+      <q-card :class="infoBoxStyle">
+        <q-card-section class="text-white" v-if="widgetDataRef.heading">
+          <div class="av-text-h2">{{ translate(widgetDataRef.heading) }}</div>
+          <template v-if="widgetDataRef.content">{{
+            translate(widgetDataRef.content)
+          }}</template>
+        </q-card-section>
+      </q-card>
 
-        <q-space />
-      </artivact-content>
+      <q-space />
     </template>
 
-    <template v-slot:widget-editor-preview>
-      <artivact-content>
-        <q-space />
-
-        <q-card :class="infoBoxStyle">
-          <q-card-section class="text-white" v-if="widgetDataRef.heading.value">
-            <div class="av-text-h2" v-if="localeStore.selectedLocale === null">
-              {{ widgetDataRef.heading.value }}
-            </div>
-            <div
-              class="av-text-h2"
-              v-if="
-                localeStore.selectedLocale !== null &&
-                widgetDataRef.heading.translations[localeStore.selectedLocale]
-              "
-            >
-              {{
-                widgetDataRef.heading.translations[localeStore.selectedLocale]
-              }}
-            </div>
-            <div
-              v-if="
-                localeStore.selectedLocale !== null &&
-                !widgetDataRef.heading.translations[localeStore.selectedLocale]
-              "
-              class="av-text-h2 text-red"
-            >
-              {{ widgetDataRef.heading.value }}
-            </div>
-            <label v-if="localeStore.selectedLocale === null">{{
-              widgetDataRef.content.value
-            }}</label>
-            <label
-              v-if="
-                localeStore.selectedLocale !== null &&
-                widgetDataRef.heading.translations[localeStore.selectedLocale]
-              "
-            >
-              {{
-                widgetDataRef.content.translations[localeStore.selectedLocale]
-              }}
-            </label>
-            <label
-              v-if="
-                localeStore.selectedLocale !== null &&
-                !widgetDataRef.heading.translations[localeStore.selectedLocale]
-              "
-              class="text-red"
-              >{{ widgetDataRef.content.value }}</label
-            >
-          </q-card-section>
-        </q-card>
-
-        <q-space />
-      </artivact-content>
-    </template>
-
-    <template v-slot:widget-editor-content>
-      <artivact-content>
-        <div class="column full-width">
-          <artivact-restricted-translatable-item-editor
-            :locales="localeStore.locales"
-            :translatable-string="widgetDataRef.heading"
-            :label="$t('InfoBoxWidget.label.heading')"
-            :show-separator="false"
-            class="q-mb-sm"
-          />
-          <artivact-restricted-translatable-item-editor
-            :locales="localeStore.locales"
-            :translatable-string="widgetDataRef.content"
-            :label="$t('InfoBoxWidget.label.content')"
-            :textarea="true"
-            :show-separator="false"
-          />
-          <q-select
-            outlined
-            v-model="widgetDataRef.boxType"
-            :options="infoBoxTypes"
-            :label="$t('InfoBoxWidget.label.outlined')"
-          />
-        </div>
-      </artivact-content>
+    <template v-slot:widget-editor>
+      <div class="column full-width">
+        <artivact-restricted-translatable-item-editor
+          :locales="localeStore.locales"
+          :translatable-string="widgetDataRef.heading"
+          :label="$t('InfoBoxWidget.label.heading')"
+          :show-separator="false"
+          class="q-mb-sm"
+        />
+        <artivact-restricted-translatable-item-editor
+          :locales="localeStore.locales"
+          :translatable-string="widgetDataRef.content"
+          :label="$t('InfoBoxWidget.label.content')"
+          :textarea="true"
+          :show-separator="false"
+        />
+        <q-select
+          outlined
+          v-model="widgetDataRef.boxType"
+          :options="infoBoxTypes"
+          :label="$t('InfoBoxWidget.label.outlined')"
+        />
+      </div>
     </template>
   </artivact-widget-template>
 </template>
 
 <script setup lang="ts">
-import {InfoBoxWidgetData} from 'components/widgets/artivact-widget-models';
-import {computed, PropType, toRef} from 'vue';
-import {useLocaleStore} from 'stores/locale';
-import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
-import ArtivactContent from 'components/ArtivactContent.vue';
-import {translate} from '../artivact-utils';
-import ArtivactWidgetTemplate from 'components/widgets/ArtivactWidgetTemplate.vue';
+import { InfoBoxWidgetData } from './artivact-widget-models';
+import { computed, PropType, ref, toRef } from 'vue';
+import { useLocaleStore } from '../../stores/locale';
+import ArtivactRestrictedTranslatableItemEditor from '../../components/ArtivactRestrictedTranslatableItemEditor.vue';
+import { translate } from '../artivact-utils';
+import ArtivactWidgetTemplate from '../../components/widgets/ArtivactWidgetTemplate.vue';
 
 const props = defineProps({
   inEditMode: {
-    required: true,
-    type: Boolean,
-  },
-  moveUpEnabled: {
-    required: true,
-    type: Boolean,
-  },
-  moveDownEnabled: {
     required: true,
     type: Boolean,
   },
@@ -137,6 +68,8 @@ const props = defineProps({
     type: Object as PropType<InfoBoxWidgetData>,
   },
 });
+
+const editingRef = ref(false);
 
 const localeStore = useLocaleStore();
 

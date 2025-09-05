@@ -1,5 +1,4 @@
 <template>
-
   <artivact-page
     v-if="pageContentRef && pageIdRef"
     :page-id="pageIdRef"
@@ -7,6 +6,7 @@
     v-on:update-page-content="updatePageContent"
     v-on:file-added="fileAdded"
     v-on:file-deleted="fileDeleted"
+    @exit-edit-mode="loadPage(pageIdRef)"
   />
 
   <artivact-dialog :dialog-model="showUnsavedChangesExistDialog" :warn="true">
@@ -21,7 +21,11 @@
     </template>
 
     <template v-slot:cancel>
-      <q-btn :label="$t('Common.cancel')" color="primary" @click="showUnsavedChangesExistDialog = false"/>
+      <q-btn
+        :label="$t('Common.cancel')"
+        color="primary"
+        @click="showUnsavedChangesExistDialog = false"
+      />
     </template>
 
     <template v-slot:approve>
@@ -35,15 +39,21 @@
 </template>
 
 <script setup lang="ts">
-import {useQuasar} from 'quasar';
-import {onBeforeRouteLeave, onBeforeRouteUpdate, RouteLocationNormalized, useRoute, useRouter} from 'vue-router';
-import {api} from '../boot/axios';
-import {onMounted, ref} from 'vue';
+import { useQuasar } from 'quasar';
+import {
+  onBeforeRouteLeave,
+  onBeforeRouteUpdate,
+  RouteLocationNormalized,
+  useRoute,
+  useRouter,
+} from 'vue-router';
+import { api } from '../boot/axios';
+import { onMounted, ref } from 'vue';
 import ArtivactPage from '../components/ArtivactPage.vue';
-import {PageContent, Widget} from '../components/artivact-models';
-import {useBreadcrumbsStore} from '../stores/breadcrumbs';
-import {useMenuStore} from '../stores/menu';
-import {useI18n} from 'vue-i18n';
+import { PageContent, Widget } from '../components/artivact-models';
+import { useBreadcrumbsStore } from '../stores/breadcrumbs';
+import { useMenuStore } from '../stores/menu';
+import { useI18n } from 'vue-i18n';
 import ArtivactDialog from '../components/ArtivactDialog.vue';
 
 const quasar = useQuasar();
@@ -86,7 +96,9 @@ function loadPage(pageId: string | string[]) {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.page')}),
+        message: i18n.t('Common.messages.loading.failed', {
+          item: i18n.t('Common.items.page'),
+        }),
         icon: 'report_problem',
       });
     });
@@ -118,7 +130,7 @@ function fileAdded(widgetId: string, propertyName: string) {
           // eslint-disable-next-line
           pageContentRef.value.widgets[index][propertyName] = (widget as any)[
             propertyName
-            ];
+          ];
         }
       });
     })
@@ -126,7 +138,9 @@ function fileAdded(widgetId: string, propertyName: string) {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.loading.failed', {item: i18n.t('Common.items.page')}),
+        message: i18n.t('Common.messages.loading.failed', {
+          item: i18n.t('Common.items.page'),
+        }),
         icon: 'report_problem',
       });
     });
@@ -134,7 +148,9 @@ function fileAdded(widgetId: string, propertyName: string) {
 
 function fileDeleted(widgetId: string, propertyName: string, filename: string) {
   api
-    .delete('/api/page/' + pageIdRef.value + '/widget/' + widgetId + '/' + filename)
+    .delete(
+      '/api/page/' + pageIdRef.value + '/widget/' + widgetId + '/' + filename,
+    )
     .then((response) => {
       let index = -1;
       for (let i = 0; i < pageContentRef.value.widgets.length; i++) {
@@ -155,7 +171,9 @@ function fileDeleted(widgetId: string, propertyName: string, filename: string) {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.page')}),
+        message: i18n.t('Common.messages.loading.failed', {
+          item: i18n.t('Common.items.page'),
+        }),
         icon: 'report_problem',
       });
     });
@@ -174,7 +192,7 @@ onBeforeRouteLeave((to) => {
     showUnsavedChangesExistDialog.value = true;
     return false;
   }
-})
+});
 
 onBeforeRouteUpdate((to) => {
   let currentPageContentJson = JSON.stringify(pageContentRef.value);
@@ -183,12 +201,11 @@ onBeforeRouteUpdate((to) => {
     showUnsavedChangesExistDialog.value = true;
     return false;
   }
-})
+});
 
 onMounted(() => {
   loadPage(route.params.pageId);
 });
-
 </script>
 
 <style scoped></style>

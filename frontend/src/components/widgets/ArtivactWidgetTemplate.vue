@@ -1,190 +1,76 @@
 <template>
-  <div class="row artivact-widget">
+  <!--suppress VueUnrecognizedDirective -->
+  <artivact-content
+    :class="inEditMode ? 'widget-editor' : ''"
+    @click="inEditMode && $emit('start-editing')"
+    v-click-outside="handleClickOutside"
+  >
+    <slot v-if="!editingRef" name="widget-content"></slot>
 
-    <!-- Content -->
-    <div class="col-grow" v-if="!inEditMode">
-      <slot name="widget-content"></slot>
-    </div>
-
-    <!-- Editor -->
-    <div v-if="inEditMode" class="col-grow widget-editor">
-      <q-tooltip>{{ $t('WidgetTemplate.tooltip.edit') }}</q-tooltip>
-      <div class="q-pb-lg">
-
-        <q-menu :context-menu="true">
-          <q-list data-test="widget-context-menu">
-            <q-item
-              data-test="widget-context-menu-edit-button"
-              clickable
-              v-close-popup
-              @click="showEditorRef = true"
-            >
-              <q-item-section>
-                <label>
-                  <q-icon
-                    name="edit"
-                    size="xs"
-                    color="primary"
-                    class="q-mr-sm"
-                  />
-                  {{ $t('WidgetTemplate.label.edit') }}</label
-                >
-              </q-item-section>
-            </q-item>
-            <q-item
-              data-test="widget-context-menu-up"
-              clickable
-              v-close-popup
-              @click="$emit('move-widget-up')"
-            >
-              <q-item-section>
-                <label>
-                  <q-icon
-                    name="arrow_upward"
-                    size="xs"
-                    color="primary"
-                    class="q-mr-sm"
-                  />
-                  {{ $t('WidgetTemplate.label.moveUp') }}</label
-                >
-              </q-item-section>
-            </q-item>
-            <q-item
-              data-test="widget-context-menu-down"
-              clickable
-              v-close-popup
-              @click="$emit('move-widget-down')"
-            >
-              <q-item-section>
-                <label>
-                  <q-icon
-                    name="arrow_downward"
-                    size="xs"
-                    color="primary"
-                    class="q-mr-sm"
-                  />
-                  {{ $t('WidgetTemplate.label.moveDown') }}</label
-                >
-              </q-item-section>
-            </q-item>
-            <q-item
-              data-test="widget-context-menu-add-above"
-              clickable
-              v-close-popup
-              @click="$emit('add-widget-above')"
-            >
-              <q-item-section>
-                <label>
-                  <q-icon
-                    name="vertical_align_top"
-                    size="xs"
-                    color="primary"
-                    class="q-mr-sm"
-                  />
-                  {{ $t('WidgetTemplate.label.addAbove') }}</label
-                >
-              </q-item-section>
-            </q-item>
-            <q-item
-              data-test="widget-context-menu-add-below"
-              clickable
-              v-close-popup
-              @click="$emit('add-widget-below')"
-            >
-              <q-item-section>
-                <label>
-                  <q-icon
-                    name="vertical_align_bottom"
-                    size="xs"
-                    color="primary"
-                    class="q-mr-sm"
-                  />
-                  {{ $t('WidgetTemplate.label.addBelow') }}</label
-                >
-              </q-item-section>
-            </q-item>
-            <q-item
-              data-test="widget-context-menu-delete"
-              clickable
-              v-close-popup
-              @click="$emit('delete-widget')"
-            >
-              <q-item-section>
-                <label>
-                  <q-icon
-                    name="delete"
-                    size="xs"
-                    color="primary"
-                    class="q-mr-sm"
-                  />
-                  {{ $t('WidgetTemplate.label.delete') }}</label
-                >
-              </q-item-section>
-            </q-item>
-          </q-list>
-        </q-menu>
-
-        <slot name="widget-content"></slot>
-
-        <artivact-widget-editor-modal :dialog-model="showEditorRef">
-
-          <template v-slot:editor-preview>
-            <slot name="widget-editor-preview"></slot>
-          </template>
-
-          <template v-slot:editor-content>
-            <artivact-content>
-              <artivact-restrictions-editor
-                :in-details-view="false"
-                :restrictions="restrictions"
-                @delete-restriction="deleteRestriction"
-                @add-restriction="addRestriction"
-              />
-              <div class="full-width q-mt-md">
-                <artivact-restricted-translatable-item-editor
-                  :locales="localStore.locales"
-                  :label="$t('Widget.label.navigationTitle')"
-                  :translatable-string="navigationTitle"
-                  :show-separator="false"/>
-              </div>
-            </artivact-content>
-            <slot name="widget-editor-content"></slot>
-          </template>
-
-          <template v-slot:approve>
-            <q-btn
-              data-test="widget-editor-modal-approve"
-              :label="$t('Common.apply')"
-              color="primary"
-              @click="showEditorRef = false"
-            />
-          </template>
-        </artivact-widget-editor-modal>
-
+    <template v-if="editingRef">
+      <artivact-restrictions-editor
+        :in-details-view="false"
+        :restrictions="restrictions"
+        @delete-restriction="deleteRestriction"
+        @add-restriction="addRestriction"
+      />
+      <div class="full-width">
+        <artivact-restricted-translatable-item-editor
+          :locales="localStore.locales"
+          :label="$t('Widget.label.navigationTitle')"
+          :translatable-string="navigationTitle"
+          :show-separator="false"
+        />
       </div>
-    </div>
-  </div>
+      <slot name="widget-editor"></slot>
+    </template>
+
+    <q-btn
+      v-if="inEditMode && !editingRef"
+      rounded
+      dense
+      icon="drag_indicator"
+      class="widget-button move-widget-button"
+      color="secondary"
+      @click.stop
+    />
+
+    <q-btn
+      v-if="inEditMode && !editingRef"
+      rounded
+      dense
+      icon="delete"
+      class="widget-button delete-widget-button"
+      @click.stop="$emit('delete-widget')"
+      color="secondary"
+    />
+
+    <q-btn
+      v-if="inEditMode && !editingRef"
+      rounded
+      dense
+      icon="add"
+      class="widget-button add-widget-button"
+      @click.stop="$emit('add-widget-below')"
+      color="secondary"
+    />
+  </artivact-content>
 </template>
 
 <script setup lang="ts">
-import { onMounted, PropType, ref, toRef } from 'vue';
-import ArtivactRestrictionsEditor from 'components/ArtivactRestrictionsEditor.vue';
-import ArtivactWidgetEditorModal from 'components/widgets/ArtivactWidgetEditorModal.vue';
-import ArtivactContent from 'components/ArtivactContent.vue';
-import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
-import { TranslatableString } from 'components/artivact-models';
-import { useLocaleStore } from 'stores/locale';
+import { PropType, toRef } from 'vue';
+import ArtivactContent from '../../components/ArtivactContent.vue';
+import { TranslatableString } from '../artivact-models';
+import { useLocaleStore } from '../../stores/locale';
+import ArtivactRestrictionsEditor from '../ArtivactRestrictionsEditor.vue';
+import ArtivactRestrictedTranslatableItemEditor from '../ArtivactRestrictedTranslatableItemEditor.vue';
 
 const props = defineProps({
   inEditMode: {
     required: true,
     type: Boolean,
   },
-  moveUpEnabled: {
-    required: true,
-    type: Boolean,
-  },
-  moveDownEnabled: {
+  editing: {
     required: true,
     type: Boolean,
   },
@@ -194,27 +80,22 @@ const props = defineProps({
   },
   navigationTitle: {
     required: true,
-    type: Object as PropType<TranslatableString>
+    type: Object as PropType<TranslatableString>,
   },
-  showEditor: {
-    required: false,
-    type: Boolean,
-    default: false
-  }
 });
 
-defineEmits<{
-  (e: 'move-widget-up'): void;
-  (e: 'move-widget-down'): void;
-  (e: 'add-widget-above'): void;
+const emit = defineEmits<{
   (e: 'add-widget-below'): void;
   (e: 'delete-widget'): void;
+  (e: 'start-editing'): void;
+  (e: 'stop-editing'): void;
 }>();
 
 const localStore = useLocaleStore();
 
 const restrictionsRef = toRef(props, 'restrictions');
-const showEditorRef = ref(false);
+const inEditModeRef = toRef(props, 'inEditMode');
+const editingRef = toRef(props, 'editing');
 
 function addRestriction(value: string) {
   if (restrictionsRef.value) {
@@ -232,21 +113,47 @@ function deleteRestriction(value: string) {
   }
 }
 
-onMounted(() => {
-  if (props.showEditor) {
-    showEditorRef.value = true
+function handleClickOutside() {
+  if (inEditModeRef.value && editingRef.value) {
+    emit('stop-editing');
   }
-});
-
+}
 </script>
 
 <style scoped>
-.artivact-widget {
+.widget-editor {
+  position: relative;
   min-height: 4em;
 }
 
 .widget-editor:hover {
-  cursor: pointer;
+  cursor: text;
 }
 
+.widget-button {
+  position: absolute;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  z-index: 2;
+}
+
+.widget-editor:hover .widget-button {
+  opacity: 1;
+}
+
+.move-widget-button {
+  top: 10px;
+  left: -15px;
+}
+
+.delete-widget-button {
+  top: 60px;
+  left: -15px;
+}
+
+.add-widget-button {
+  left: 50%;
+  bottom: -15px;
+  transform: translateX(-50%);
+}
 </style>

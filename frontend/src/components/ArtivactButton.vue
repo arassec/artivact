@@ -3,6 +3,7 @@
     <q-btn
       class="q-mb-md"
       no-caps
+      :disable="disabled"
       :icon="
         config.iconLeft && config.iconLeft.length > 0
           ? config.iconLeft
@@ -39,6 +40,11 @@ defineProps({
       buttonColor: 'primary',
       textColor: 'white',
     },
+  },
+  disabled: {
+    required: false,
+    type: Boolean,
+    default: false,
   },
 });
 </script>

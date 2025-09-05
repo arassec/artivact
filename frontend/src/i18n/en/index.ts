@@ -3,6 +3,7 @@ export default {
     cancel: 'Cancel',
     save: 'Save',
     apply: 'Apply',
+    close: 'Close',
     username: 'Username',
     password: 'Password',
     passwordRepeat: 'Password (repeat)',
@@ -596,6 +597,7 @@ export default {
       noIndexPage:
         'No index page has been defined yet. Create a menu, add a page to it and edit it to be the index page.',
       addWidget: 'Add Widget',
+      deleteWidget: 'Delete Widget',
       pageTitle: 'Page Title',
       textTitle: 'Text Title',
       textContent: 'Text Content',
@@ -606,10 +608,16 @@ export default {
       indexPage: 'Index',
     },
     dialog: {
-      heading: 'Widget Selection',
-      description:
-        'WARNING: Adding a new widget will save the current page configuration!',
-      type: 'Widget Type',
+      addWidget: {
+        heading: 'Widget Selection',
+        description:
+          'WARNING: Adding a new widget will save the current page configuration!',
+        type: 'Widget Type',
+      },
+      deleteWidget: {
+        heading: 'Delete Widget',
+        description: 'Are you sure you want to delete this widget?',
+      },
     },
   },
 

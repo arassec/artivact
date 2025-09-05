@@ -1,121 +1,54 @@
 <template>
   <artivact-widget-template
-    :move-down-enabled="moveDownEnabled"
-    :move-up-enabled="moveUpEnabled"
-    :in-edit-mode="inEditMode"
     v-if="widgetDataRef"
+    :editing="editingRef"
+    :in-edit-mode="inEditMode"
     :restrictions="widgetDataRef.restrictions"
     :navigation-title="widgetDataRef.navigationTitle"
+    @start-editing="editingRef = true"
+    @stop-editing="editingRef = false"
   >
     <template v-slot:widget-content>
-      <artivact-content>
-        <div data-test="text-widget-editor-heading" class="column">
-          <h1 class="av-label-h1" v-if="widgetDataRef.heading">
-            {{ translate(widgetDataRef.heading) }}
-          </h1>
-          <div v-html="format(translate(widgetDataRef.content))" />
-        </div>
-      </artivact-content>
+      <div data-test="text-widget-editor-display">
+        <h1 class="av-label-h1" v-if="widgetDataRef.heading">
+          {{ translate(widgetDataRef.heading) }}
+        </h1>
+        <div v-html="format(translate(widgetDataRef.content))" />
+      </div>
     </template>
 
-    <template v-slot:widget-editor-preview>
-      <artivact-content>
-        <div class="column">
-          <template v-if="widgetDataRef.heading">
-            <h1 class="av-label-h1" v-if="localeStore.selectedLocale === null">
-              {{ widgetDataRef.heading.value }}
-            </h1>
-            <h1
-              class="av-label-h1"
-              v-if="
-                localeStore.selectedLocale !== null &&
-                widgetDataRef.heading.translations[localeStore.selectedLocale]
-              "
-            >
-              {{
-                widgetDataRef.heading.translations[localeStore.selectedLocale]
-              }}
-            </h1>
-            <h1
-              class="av-label-h1 text-red"
-              v-if="
-                localeStore.selectedLocale !== null &&
-                !widgetDataRef.heading.translations[localeStore.selectedLocale]
-              "
-            >
-              {{ widgetDataRef.heading.value }}
-            </h1>
-          </template>
-          <div
-            v-if="localeStore.selectedLocale === null"
-            v-html="format(widgetDataRef.content.value)"
-          />
-          <div
-            v-if="
-              localeStore.selectedLocale !== null &&
-              widgetDataRef.content.translations[localeStore.selectedLocale]
-            "
-            v-html="
-              format(
-                widgetDataRef.content.translations[localeStore.selectedLocale]
-              )
-            "
-          />
-          <div
-            v-if="
-              localeStore.selectedLocale !== null &&
-              !widgetDataRef.content.translations[localeStore.selectedLocale]
-            "
-            class="text-red"
-            v-html="format(widgetDataRef.content.value)"
-          />
-        </div>
-      </artivact-content>
-    </template>
-
-    <template v-slot:widget-editor-content>
-      <artivact-content>
-        <div class="column full-width">
-          <artivact-restricted-translatable-item-editor
-            :locales="localeStore.locales"
-            :translatable-string="widgetDataRef.heading"
-            :label="$t('TextWidget.label.heading')"
-            :show-separator="false"
-            class="q-mb-sm"
-          />
-          <artivact-restricted-translatable-item-editor
-            :locales="localeStore.locales"
-            :translatable-string="widgetDataRef.content"
-            :label="$t('TextWidget.label.content')"
-            :textarea="true"
-            :show-separator="false"
-          />
-        </div>
-      </artivact-content>
+    <template v-slot:widget-editor>
+      <div data-test="text-widget-editor-edit" class="column full-width">
+        <artivact-restricted-translatable-item-editor
+          :locales="localeStore.locales"
+          :translatable-string="widgetDataRef.heading"
+          :label="$t('TextWidget.label.heading')"
+          :show-separator="false"
+          class="q-mb-sm"
+        />
+        <artivact-restricted-translatable-item-editor
+          :locales="localeStore.locales"
+          :translatable-string="widgetDataRef.content"
+          :label="$t('TextWidget.label.content')"
+          :textarea="true"
+          :show-separator="false"
+        />
+      </div>
     </template>
   </artivact-widget-template>
 </template>
 
 <script setup lang="ts">
-import {PropType, toRef} from 'vue';
-import {TextWidgetData} from 'components/widgets/artivact-widget-models';
-import ArtivactContent from 'components/ArtivactContent.vue';
-import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
-import {useLocaleStore} from 'stores/locale';
+import { PropType, ref, toRef } from 'vue';
+import { TextWidgetData } from './artivact-widget-models';
+import ArtivactRestrictedTranslatableItemEditor from '../../components/ArtivactRestrictedTranslatableItemEditor.vue';
+import { useLocaleStore } from '../../stores/locale';
 import MarkdownIt from 'markdown-it';
-import {translate} from '../artivact-utils';
-import ArtivactWidgetTemplate from 'components/widgets/ArtivactWidgetTemplate.vue';
+import { translate } from '../artivact-utils';
+import ArtivactWidgetTemplate from '../../components/widgets/ArtivactWidgetTemplate.vue';
 
 const props = defineProps({
   inEditMode: {
-    required: true,
-    type: Boolean,
-  },
-  moveUpEnabled: {
-    required: true,
-    type: Boolean,
-  },
-  moveDownEnabled: {
     required: true,
     type: Boolean,
   },
@@ -124,6 +57,8 @@ const props = defineProps({
     type: Object as PropType<TextWidgetData>,
   },
 });
+
+const editingRef = ref(false);
 
 const localeStore = useLocaleStore();
 

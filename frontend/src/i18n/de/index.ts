@@ -3,6 +3,7 @@ export default {
     cancel: 'Abbrechen',
     save: 'Speichern',
     apply: 'Anwenden',
+    close: 'Schließen',
     username: 'Benutzername',
     password: 'Passwort',
     passwordRepeat: 'Passwort (wdh.)',
@@ -599,6 +600,7 @@ export default {
       noIndexPage:
         'Es wurde noch keine Index-Seite definiert. Erstellen Sie ein Menu, fügen Sie eine Seite hinzu und konfigurieren Sie diese als Index-Seite.',
       addWidget: 'Widget hinzufügen',
+      deleteWidget: 'Widget löschen',
       pageTitle: 'Seitentitel',
       textTitle: 'Texttitel',
       textContent: 'Textinhalt',
@@ -609,10 +611,16 @@ export default {
       indexPage: 'Index',
     },
     dialog: {
-      heading: 'Widget-Auswahl',
-      description:
-        'ACHTUNG: Das hinzufügen eines Widgets führt zum speichern der aktuellen Seitenkonfiguration!',
-      type: 'Widget-Typ',
+      addWidget: {
+        heading: 'Widget-Auswahl',
+        description:
+          'ACHTUNG: Das hinzufügen eines Widgets führt zum speichern der aktuellen Seitenkonfiguration!',
+        type: 'Widget-Typ',
+      },
+      deleteWidget: {
+        heading: 'Widget Löschen?',
+        description: 'Sind Sie sicher, dass sie dieses Widget löschen möchten?',
+      },
     },
   },
 

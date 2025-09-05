@@ -41,14 +41,17 @@
                   color="white"
                   icon="delete"
                   size="md"
-                  @click="deleteCategory(element)">
-                  <q-tooltip>{{ $t('ArtivactPropertiesConfigurationEditor.tooltip.delete') }}</q-tooltip>
+                  @click="deleteCategory(element)"
+                >
+                  <q-tooltip>{{
+                    $t('ArtivactPropertiesConfigurationEditor.tooltip.delete')
+                  }}</q-tooltip>
                 </q-btn>
               </q-item-section>
             </template>
 
             <q-card class="q-mb-lg">
-              <q-separator/>
+              <q-separator />
 
               <q-card-section>
                 <artivact-restricted-translatable-item-editor
@@ -61,7 +64,7 @@
                 />
               </q-card-section>
 
-              <q-separator/>
+              <q-separator />
 
               <q-card-section>
                 <h2 class="av-text-h2">{{ $t('Common.items.properties') }}</h2>
@@ -77,16 +80,43 @@
                     class="float-right"
                     icon="delete"
                     size="md"
-                    @click="deleteProperty(element, index)">
-                    <q-tooltip>{{ $t('ArtivactPropertiesConfigurationEditor.tooltip.deleteProperty') }}</q-tooltip>
+                    @click="deleteProperty(element, index)"
+                  >
+                    <q-tooltip>{{
+                      $t(
+                        'ArtivactPropertiesConfigurationEditor.tooltip.deleteProperty',
+                      )
+                    }}</q-tooltip>
                   </q-btn>
-                  <q-btn round dense flat class="float-right" icon="swap_vertical_circle" size="md"
-                         v-if="propertiesConfigurationProp.categories.length > 1">
-                    <q-tooltip>{{ $t('ArtivactPropertiesConfigurationEditor.tooltip.switchCategory') }}</q-tooltip>
+                  <q-btn
+                    round
+                    dense
+                    flat
+                    class="float-right"
+                    icon="swap_vertical_circle"
+                    size="md"
+                    v-if="propertiesConfigurationProp.categories.length > 1"
+                  >
+                    <q-tooltip>{{
+                      $t(
+                        'ArtivactPropertiesConfigurationEditor.tooltip.switchCategory',
+                      )
+                    }}</q-tooltip>
                     <q-menu>
                       <q-list>
-                        <template v-for="(category, categoryIndex) in propertiesConfiguration.categories" :key="categoryIndex">
-                          <q-item clickable v-close-popup @click="switchCategory(property, index, element, category)">
+                        <template
+                          v-for="(
+                            category, categoryIndex
+                          ) in propertiesConfiguration.categories"
+                          :key="categoryIndex"
+                        >
+                          <q-item
+                            clickable
+                            v-close-popup
+                            @click="
+                              switchCategory(property, index, element, category)
+                            "
+                          >
                             {{ category.value }}
                           </q-item>
                         </template>
@@ -101,8 +131,11 @@
                     v-if="index > 0"
                     icon="arrow_upward"
                     size="md"
-                    @click="moveUp(element, index)">
-                    <q-tooltip>{{ $t('ArtivactPropertiesConfigurationEditor.tooltip.up') }}</q-tooltip>
+                    @click="moveUp(element, index)"
+                  >
+                    <q-tooltip>{{
+                      $t('ArtivactPropertiesConfigurationEditor.tooltip.up')
+                    }}</q-tooltip>
                   </q-btn>
                   <q-btn
                     round
@@ -112,8 +145,11 @@
                     v-if="index < element.properties.length - 1"
                     icon="arrow_downward"
                     size="md"
-                    @click="moveDown(element, index)">
-                    <q-tooltip>{{ $t('ArtivactPropertiesConfigurationEditor.tooltip.down') }}</q-tooltip>
+                    @click="moveDown(element, index)"
+                  >
+                    <q-tooltip>{{
+                      $t('ArtivactPropertiesConfigurationEditor.tooltip.down')
+                    }}</q-tooltip>
                   </q-btn>
 
                   <artivact-restricted-translatable-item-editor
@@ -130,7 +166,7 @@
                     />
                   </artivact-restricted-translatable-item-editor>
 
-                  <q-separator class="q-mt-sm q-mb-lg"/>
+                  <q-separator class="q-mt-sm q-mb-lg" />
                 </div>
               </q-card-section>
 
@@ -139,7 +175,13 @@
                   <q-space></q-space>
                   <q-btn
                     data-test="add-property-button"
-                    :label="$t('ArtivactPropertiesConfigurationEditor.button.addProperty')" @click="addProperty(element)"/>
+                    :label="
+                      $t(
+                        'ArtivactPropertiesConfigurationEditor.button.addProperty',
+                      )
+                    "
+                    @click="addProperty(element)"
+                  />
                 </div>
               </q-card-section>
             </q-card>
@@ -152,20 +194,26 @@
       <q-space></q-space>
       <q-btn
         data-test="add-category-button"
-        :label="$t('ArtivactPropertiesConfigurationEditor.button.addCategory')" @click="addCategory" color="primary"/>
+        :label="$t('ArtivactPropertiesConfigurationEditor.button.addCategory')"
+        @click="addCategory"
+        color="primary"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-// noinspection ES6UnusedImports
 import draggable from 'vuedraggable';
-import {PropType, toRef} from 'vue';
-import {PropertiesConfiguration, Property, PropertyCategory,} from 'components/artivact-models';
-import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
-import ArtivactPropertyValueRangeEditor from 'components/ArtivactPropertyValueRangeEditor.vue';
-import {translate} from './artivact-utils';
-import {useI18n} from 'vue-i18n';
+import { PropType, toRef } from 'vue';
+import {
+  PropertiesConfiguration,
+  Property,
+  PropertyCategory,
+} from './artivact-models';
+import ArtivactRestrictedTranslatableItemEditor from '../components/ArtivactRestrictedTranslatableItemEditor.vue';
+import ArtivactPropertyValueRangeEditor from '../components/ArtivactPropertyValueRangeEditor.vue';
+import { translate } from './artivact-utils';
+import { useI18n } from 'vue-i18n';
 
 const i18n = useI18n();
 
@@ -208,7 +256,7 @@ function addProperty(category: PropertyCategory) {
 function deleteCategory(category: PropertyCategory) {
   propertiesConfigurationProp.value.categories.splice(
     propertiesConfigurationProp.value.categories.indexOf(category),
-    1
+    1,
   );
 }
 
@@ -239,7 +287,7 @@ function switchCategory(
   property: Property,
   propertyIndex: string | number,
   oldCategory: PropertyCategory,
-  newCategory: PropertyCategory
+  newCategory: PropertyCategory,
 ) {
   newCategory.properties.push(property);
   deleteProperty(oldCategory, propertyIndex);

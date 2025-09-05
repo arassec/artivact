@@ -1,111 +1,90 @@
 <template>
   <artivact-widget-template
-    :move-down-enabled="moveDownEnabled"
-    :move-up-enabled="moveUpEnabled"
-    :in-edit-mode="inEditMode"
     v-if="widgetDataRef"
+    :editing="editingRef"
+    :in-edit-mode="inEditMode"
     :restrictions="widgetDataRef.restrictions"
     :navigation-title="widgetDataRef.navigationTitle"
+    @start-editing="editingRef = true"
+    @stop-editing="editingRef = false"
   >
     <template v-slot:widget-content>
-      <artivact-content>
-        <q-space />
-        <div class="row full-width">
-          <div
-            v-for="(buttonConfig, index) in widgetDataRef.buttonConfigs"
-            :key="index"
-            :class="'col-' + 12 / widgetDataRef.columns"
-            class="flex justify-center"
-          >
-            <artivact-button :config="buttonConfig" />
-          </div>
+      <q-space />
+      <div class="row full-width">
+        <div
+          v-for="(buttonConfig, index) in widgetDataRef.buttonConfigs"
+          :key="index"
+          :class="'col-' + 12 / widgetDataRef.columns"
+          class="flex justify-center"
+        >
+          <artivact-button :config="buttonConfig" :disabled="inEditMode" />
         </div>
-        <q-space />
-      </artivact-content>
+      </div>
+      <q-space />
     </template>
 
-    <template v-slot:widget-editor-preview>
-      <artivact-content>
-        <q-space />
-        <div class="row full-width">
-          <div
+    <template v-slot:widget-editor>
+      <div class="column full-width">
+        <q-input
+          type="number"
+          outlined
+          v-model="widgetDataRef.columns"
+          class="q-mb-xl full-width"
+          :label="$t('ButtonsWidget.label.columns')"
+        />
+
+        <q-list bordered class="rounded-borders q-mb-lg">
+          <q-expansion-item
+            header-class="bg-primary text-white"
+            class="list-entry"
+            expand-separator
+            expand-icon-class="text-white"
             v-for="(buttonConfig, index) in widgetDataRef.buttonConfigs"
             :key="index"
-            :class="'col-' + 12 / widgetDataRef.columns"
-            class="flex justify-center"
           >
-            <artivact-button :config="buttonConfig" />
-          </div>
-        </div>
-        <q-space />
-      </artivact-content>
-    </template>
+            <template v-slot:header>
+              <q-item-section class="list-entry-label">
+                {{ translate(buttonConfig.label) }}
+              </q-item-section>
 
-    <template v-slot:widget-editor-content>
-      <artivact-content>
-        <div class="column full-width">
-          <q-input
-            type="number"
-            outlined
-            v-model="widgetDataRef.columns"
-            class="q-mb-xl full-width"
-            :label="$t('ButtonsWidget.label.columns')"
+              <q-item-section side>
+                <q-btn
+                  round
+                  dense
+                  flat
+                  class="float-right"
+                  color="white"
+                  icon="delete"
+                  size="md"
+                  @click.stop="deleteButton(index)"
+                >
+                </q-btn>
+              </q-item-section>
+            </template>
+
+            <artivact-button-editor :config="buttonConfig" class="q-mt-md" />
+          </q-expansion-item>
+        </q-list>
+
+        <div>
+          <q-btn
+            class="float-right"
+            rounded
+            dense
+            color="primary"
+            icon="add"
+            @click="addButtonConfig()"
           />
-
-          <q-list bordered class="rounded-borders q-mb-lg">
-            <q-expansion-item
-              header-class="bg-primary text-white"
-              class="list-entry"
-              expand-separator
-              expand-icon-class="text-white"
-              v-for="(buttonConfig, index) in widgetDataRef.buttonConfigs"
-              :key="index"
-            >
-              <template v-slot:header>
-                <q-item-section class="list-entry-label">
-                  {{ translate(buttonConfig.label) }}
-                </q-item-section>
-
-                <q-item-section side>
-                  <q-btn
-                    round
-                    dense
-                    flat
-                    class="float-right"
-                    color="white"
-                    icon="delete"
-                    size="md"
-                    @click.stop="deleteButton(index)"
-                  >
-                  </q-btn>
-                </q-item-section>
-              </template>
-
-              <artivact-button-editor :config="buttonConfig" class="q-mt-md" />
-            </q-expansion-item>
-          </q-list>
-
-          <div>
-            <q-btn
-              class="float-right"
-              rounded
-              dense
-              color="primary"
-              icon="add"
-              @click="addButtonConfig()"
-            />
-          </div>
         </div>
-      </artivact-content>
+      </div>
     </template>
   </artivact-widget-template>
 </template>
 
 <script setup lang="ts">
-import { PropType, toRef } from 'vue';
+import { PropType, ref, toRef } from 'vue';
 import { ButtonsWidgetData } from './artivact-widget-models';
 import ArtivactWidgetTemplate from './ArtivactWidgetTemplate.vue';
-import ArtivactContent from '../ArtivactContent.vue';
 import ArtivactButton from '../ArtivactButton.vue';
 import ArtivactButtonEditor from '../ArtivactButtonEditor.vue';
 import { ButtonConfig, TranslatableString } from '../artivact-models';
@@ -116,19 +95,13 @@ const props = defineProps({
     required: true,
     type: Boolean,
   },
-  moveUpEnabled: {
-    required: true,
-    type: Boolean,
-  },
-  moveDownEnabled: {
-    required: true,
-    type: Boolean,
-  },
   widgetData: {
     required: true,
     type: Object as PropType<ButtonsWidgetData>,
   },
 });
+
+const editingRef = ref(false);
 
 const widgetDataRef = toRef(props, 'widgetData');
 
