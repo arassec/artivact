@@ -9,11 +9,14 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { api } from '../boot/axios';
-import i18n from '../i18n';
 import { useRouter } from 'vue-router';
 import ArtivactContent from '../components/ArtivactContent.vue';
+import { useQuasar } from 'quasar';
+import { useI18n } from 'vue-i18n';
 
+const quasar = useQuasar();
 const router = useRouter();
+const i18n = useI18n();
 
 const noIndexPageRef = ref(false);
 

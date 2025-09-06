@@ -83,14 +83,6 @@ function loadPage(pageId: string | string[]) {
     .then((response) => {
       pageContentRef.value = response.data;
       originalPageContentJson = JSON.stringify(response.data);
-      // With only one page yet, "index page" should be checked by default:
-      let menus = menuStore.availableMenus;
-      if (menus.length == 1) {
-        let menu = menus[0];
-        if (menu?.targetPageId || menu?.menuEntries.length == 1) {
-          pageContentRef.value.indexPage = true;
-        }
-      }
     })
     .catch(() => {
       quasar.notify({
@@ -188,6 +180,8 @@ function proceed() {
 onBeforeRouteLeave((to) => {
   let currentPageContentJson = JSON.stringify(pageContentRef.value);
   if (currentPageContentJson !== originalPageContentJson) {
+    console.log(originalPageContentJson);
+    console.log(currentPageContentJson);
     nextRoute = to;
     showUnsavedChangesExistDialog.value = true;
     return false;

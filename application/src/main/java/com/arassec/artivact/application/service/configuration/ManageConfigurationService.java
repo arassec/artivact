@@ -6,9 +6,6 @@ import com.arassec.artivact.application.infrastructure.aspect.TranslateResult;
 import com.arassec.artivact.application.port.in.configuration.*;
 import com.arassec.artivact.application.port.out.repository.ConfigurationRepository;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
-import com.arassec.artivact.domain.exception.ArtivactException;
-import com.arassec.artivact.domain.model.appearance.ColorTheme;
-import com.arassec.artivact.domain.model.appearance.License;
 import com.arassec.artivact.domain.model.configuration.*;
 import com.arassec.artivact.domain.model.property.PropertyCategory;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,13 +14,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -123,37 +115,7 @@ public class ManageConfigurationService
     public AppearanceConfiguration loadTranslatedAppearanceConfiguration() {
         Optional<AppearanceConfiguration> configurationOptional =
                 configurationRepository.findByType(ConfigurationType.APPEARANCE, AppearanceConfiguration.class);
-
-        AppearanceConfiguration appearanceConfiguration = new AppearanceConfiguration();
-
-        if (configurationOptional.isPresent()) {
-            appearanceConfiguration = configurationOptional.get();
-            if (!StringUtils.hasText(appearanceConfiguration.getEncodedFavicon())) {
-                setDefaultFavicon(appearanceConfiguration);
-            }
-            if (appearanceConfiguration.getLicense() == null) {
-                appearanceConfiguration.setLicense(new License());
-            }
-        } else {
-            appearanceConfiguration.setApplicationTitle("Artivact");
-            appearanceConfiguration.setAvailableLocales("");
-            appearanceConfiguration.setLicense(new License());
-
-            ColorTheme colorTheme = new ColorTheme();
-            colorTheme.setPrimary("#6e7e85");
-            colorTheme.setSecondary("#bbbac6");
-            colorTheme.setAccent("#F5F5F5");
-            colorTheme.setDark("#364958");
-            colorTheme.setPositive("#87a330");
-            colorTheme.setNegative("#a4031f");
-            colorTheme.setInfo("#e2e2e2");
-            colorTheme.setWarning("#e6c229");
-            appearanceConfiguration.setColorTheme(colorTheme);
-
-            setDefaultFavicon(appearanceConfiguration);
-        }
-
-        return appearanceConfiguration;
+        return configurationOptional.orElseGet(AppearanceConfiguration::new);
     }
 
     /**
@@ -203,49 +165,12 @@ public class ManageConfigurationService
 
         PeripheralConfiguration peripheralConfiguration = configurationOptional.orElseGet(PeripheralConfiguration::new);
 
-        boolean windowsOs = System.getProperty("os.name").toLowerCase().contains("windows");
-
-        // Initialize default values on first creation:
-        if (peripheralConfiguration.getImageManipulationPeripheralImplementation() == null) {
-            peripheralConfiguration.setImageManipulationPeripheralImplementation(PeripheralImplementation.DEFAULT_IMAGE_MANIPULATION_PERIPHERAL);
-            peripheralConfiguration.setCameraPeripheralImplementation(PeripheralImplementation.DEFAULT_CAMERA_PERIPHERAL);
-            peripheralConfiguration.setTurntablePeripheralImplementation(PeripheralImplementation.DEFAULT_TURNTABLE_PERIPHERAL);
-            peripheralConfiguration.setModelCreatorPeripheralImplementation(PeripheralImplementation.FALLBACK_MODEL_CREATOR_PERIPHERAL);
-            peripheralConfiguration.setModelEditorPeripheralImplementation(PeripheralImplementation.FALLBACK_MODEL_EDITOR_PERIPHERAL);
-
-            peripheralConfiguration.getConfigValues().put(PeripheralImplementation.DEFAULT_TURNTABLE_PERIPHERAL, "100");
-
-            peripheralConfiguration.getConfigValues().put(PeripheralImplementation.DEFAULT_IMAGE_MANIPULATION_PERIPHERAL, "silueta.onnx#input.1#320#320#5");
-
-            peripheralConfiguration.getConfigValues().put(PeripheralImplementation.DEFAULT_CAMERA_PERIPHERAL, "");
-            peripheralConfiguration.getConfigValues().put(PeripheralImplementation.DIGI_CAM_CONTROL_CAMERA_PERIPHERAL, "C:/Program Files (x86)/digiCamControl/CameraControlCmd.exe");
-            peripheralConfiguration.getConfigValues().put(PeripheralImplementation.GPHOTO_TWO_CAMERA_PERIPHERAL, "/usr/bin/gphoto2");
-
-            peripheralConfiguration.getConfigValues().put(PeripheralImplementation.FALLBACK_MODEL_CREATOR_PERIPHERAL, "");
-            peripheralConfiguration.getConfigValues().put(PeripheralImplementation.FALLBACK_MODEL_EDITOR_PERIPHERAL, "");
-
-            if (windowsOs) {
-                peripheralConfiguration.getConfigValues().put(PeripheralImplementation.MESHROOM_MODEL_CREATOR_PERIPHERAL, "C:/Users/<USER>/Tools/Meshroom/Meshroom.exe");
-                peripheralConfiguration.getConfigValues().put(PeripheralImplementation.METASHAPE_MODEL_CREATOR_PERIPHERAL, "C:/Program Files/Agisoft/Metashape/metashape.exe");
-                peripheralConfiguration.getConfigValues().put(PeripheralImplementation.REALITY_SCAN_MODEL_CREATOR_PERIPHERAL, "C:/Program Files/Capturing Reality/RealityScan/RealityScan.exe");
-
-                peripheralConfiguration.getConfigValues().put(PeripheralImplementation.BLENDER_MODEL_EDITOR_PERIPHERAL, "C:/Users/<USER>/Tools/Blender/blender.exe");
-            } else {
-                peripheralConfiguration.getConfigValues().put(PeripheralImplementation.MESHROOM_MODEL_CREATOR_PERIPHERAL, "/home/<USER>/Tools/meshroom/Meshroom");
-                peripheralConfiguration.getConfigValues().put(PeripheralImplementation.METASHAPE_MODEL_CREATOR_PERIPHERAL, "/home/<USER>/Tools/metashape/metashape.sh");
-
-                peripheralConfiguration.getConfigValues().put(PeripheralImplementation.BLENDER_MODEL_EDITOR_PERIPHERAL, "/home/<USER>/Tools/blender/blender");
-            }
-        } else if (windowsOs && peripheralConfiguration.getConfigValues().get(PeripheralImplementation.REALITY_SCAN_MODEL_CREATOR_PERIPHERAL) == null) {
-            peripheralConfiguration.getConfigValues().put(PeripheralImplementation.REALITY_SCAN_MODEL_CREATOR_PERIPHERAL, "C:/Program Files/Capturing Reality/RealityScan/RealityScan.exe");
-        }
-
         // Initialize available options for the current platform:
         peripheralConfiguration.getAvailableTurntablePeripheralImplementations().add(PeripheralImplementation.DEFAULT_TURNTABLE_PERIPHERAL);
-
         peripheralConfiguration.getAvailableImageManipulationPeripheralImplementations().add(PeripheralImplementation.DEFAULT_IMAGE_MANIPULATION_PERIPHERAL);
-
         peripheralConfiguration.getAvailableCameraPeripheralImplementations().add(PeripheralImplementation.DEFAULT_CAMERA_PERIPHERAL);
+
+        boolean windowsOs = System.getProperty("os.name").toLowerCase().contains("windows");
 
         if (windowsOs) {
             peripheralConfiguration.getAvailableCameraPeripheralImplementations().add(PeripheralImplementation.DIGI_CAM_CONTROL_CAMERA_PERIPHERAL);
@@ -296,20 +221,6 @@ public class ManageConfigurationService
     @Override
     public void saveExchangeConfiguration(ExchangeConfiguration exchangeConfiguration) {
         configurationRepository.saveConfiguration(ConfigurationType.EXCHANGE, exchangeConfiguration);
-    }
-
-    /**
-     * Sets Artivact's default favicon to the appearance configuration.
-     *
-     * @param appearanceConfiguration The configuration to update.
-     */
-    private void setDefaultFavicon(AppearanceConfiguration appearanceConfiguration) {
-        ClassPathResource classPathResource = new ClassPathResource("icons/favicon-32x32.ico", this.getClass().getClassLoader());
-        try (InputStream is = classPathResource.getInputStream()) {
-            appearanceConfiguration.setEncodedFavicon(Base64.getEncoder().encodeToString(is.readAllBytes()));
-        } catch (IOException e) {
-            throw new ArtivactException("Could not read 32x32 pixel favicon!", e);
-        }
     }
 
 }

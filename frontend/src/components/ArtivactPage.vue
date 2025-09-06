@@ -225,7 +225,7 @@
       </template>
     </artivact-dialog>
 
-    <artivact-dialog :dialog-model="showDeleteWidgetDialogRef">
+    <artivact-dialog :dialog-model="showDeleteWidgetDialogRef" :warn="true">
       <template v-slot:header>
         {{ $t('ArtivactPage.dialog.deleteWidget.heading') }}
       </template>

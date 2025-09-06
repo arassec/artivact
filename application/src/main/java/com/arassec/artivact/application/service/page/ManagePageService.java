@@ -150,7 +150,7 @@ public class ManagePageService
     @Override
     public Optional<PageIdAndAlias> loadIndexPageIdAndAlias() {
         AppearanceConfiguration appearanceConfiguration = configurationRepository
-                .findByType(ConfigurationType.APPEARANCE, AppearanceConfiguration.class).orElseThrow();
+                .findByType(ConfigurationType.APPEARANCE, AppearanceConfiguration.class).orElse(new AppearanceConfiguration());
 
         String indexPageId = appearanceConfiguration.getIndexPageId();
 
@@ -289,6 +289,8 @@ public class ManagePageService
         if (StringUtils.hasText(persistedPageAlias)) {
             page.setAlias(persistedPageAlias);
         }
+
+        page.setVersion(page.getVersion() + 1);
 
         pageRepository.save(page);
 
