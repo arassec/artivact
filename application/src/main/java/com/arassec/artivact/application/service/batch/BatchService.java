@@ -31,8 +31,14 @@ public class BatchService implements StartBatchOperationUseCase {
      */
     private final SearchItemsUseCase searchItemsUseCase;
 
+    /**
+     * Use case to load items.
+     */
     private final LoadItemUseCase loadItemUseCase;
 
+    /**
+     * Use case to save items.
+     */
     private final SaveItemUseCase saveItemUseCase;
 
     /**
@@ -40,6 +46,9 @@ public class BatchService implements StartBatchOperationUseCase {
      */
     private final List<BatchProcessor> batchProcessors;
 
+    /**
+     * Use case to execute long-running background operations.
+     */
     private final RunBackgroundOperationUseCase runBackgroundOperationUseCase;
 
     /**
@@ -62,6 +71,13 @@ public class BatchService implements StartBatchOperationUseCase {
             log.info("Starting batch processing of items: {}", parameters.getTask());
             batchProcessors.forEach(BatchProcessor::initialize);
 
+            // If exclusive processing of all items has been performed, return.
+            if (batchProcessors.stream()
+                    .anyMatch(batchProcessor -> batchProcessor.processAllExclusive(parameters))) {
+                return;
+            }
+
+            // Otherwise process every single matching item:
             List<Item> itemsToProcess;
             if (BatchProcessingTask.UPLOAD_MODIFIED_ITEM.equals(parameters.getTask())) {
                 itemsToProcess = loadItemUseCase.loadModified(parameters.getMaxItems());

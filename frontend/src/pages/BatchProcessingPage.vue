@@ -25,25 +25,29 @@
         v-if="
           batchProcessingParamersRef.task !== BatchProcessingTask.DELETE_ITEM &&
           batchProcessingParamersRef.task !==
-            BatchProcessingTask.UPLOAD_MODIFIED_ITEM
+            BatchProcessingTask.UPLOAD_MODIFIED_ITEM &&
+          batchProcessingParamersRef.task !==
+            BatchProcessingTask.UPDATE_SEARCH_INDEX
         "
       >
-        <h2 class="av-text-h2 q-mt-lg">
-          {{ $t('BatchProcessingPage.parameters.targetId') }}
-        </h2>
-        <div class="full-width q-mb-md">
-          {{ $t('BatchProcessingPage.parameters.targetIdDescription') }}
+        <div class="q-mt-lg">
+          <h2 class="av-text-h2">
+            {{ $t('BatchProcessingPage.parameters.targetId') }}
+          </h2>
+          <div class="full-width q-mb-md">
+            {{ $t('BatchProcessingPage.parameters.targetIdDescription') }}
+          </div>
+          <q-select
+            class="param-select"
+            data-test="batch-processing-tag-selection"
+            outlined
+            dense
+            v-model="selectedTagRef"
+            :options="tagsConfigurationRef.tags"
+            :option-label="(tag: Tag) => tag.translatedValue"
+          >
+          </q-select>
         </div>
-        <q-select
-          class="param-select"
-          data-test="batch-processing-tag-selection"
-          outlined
-          dense
-          v-model="selectedTagRef"
-          :options="tagsConfigurationRef.tags"
-          :option-label="(tag: Tag) => tag.translatedValue"
-        >
-        </q-select>
       </template>
     </div>
 
@@ -76,7 +80,7 @@
     />
   </artivact-content>
 
-  <ArtivactContent>
+  <artivact-content>
     <q-separator />
 
     <div class="full-width q-mt-lg">
@@ -128,7 +132,7 @@
       :success-message="'BatchProcessingPage.messages.process.success'"
       :error-message="'BatchProcessingPage.messages.process.failed'"
     />
-  </ArtivactContent>
+  </artivact-content>
 </template>
 
 <script setup lang="ts">

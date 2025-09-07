@@ -24,14 +24,6 @@ public class UploadModifiedItemBatchProcessor implements BatchProcessor {
      * {@inheritDoc}
      */
     @Override
-    public void initialize() {
-        // Nothing to do here.
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public boolean process(BatchProcessingParameters params, Item item) {
         if (BatchProcessingTask.UPLOAD_MODIFIED_ITEM.equals(params.getTask())) {
             uploadItemUseCase.uploadItemToRemoteInstance(item.getId(), false);

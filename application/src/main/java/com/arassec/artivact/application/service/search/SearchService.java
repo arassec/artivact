@@ -4,7 +4,6 @@ import com.arassec.artivact.application.infrastructure.aspect.RestrictResult;
 import com.arassec.artivact.application.infrastructure.aspect.TranslateResult;
 import com.arassec.artivact.application.port.in.search.ManageSearchIndexUseCase;
 import com.arassec.artivact.application.port.in.search.SearchItemsUseCase;
-import com.arassec.artivact.application.port.in.operation.RunBackgroundOperationUseCase;
 import com.arassec.artivact.application.port.out.gateway.SearchGateway;
 import com.arassec.artivact.application.port.out.repository.ItemRepository;
 import com.arassec.artivact.domain.model.item.Item;
@@ -35,9 +34,10 @@ public class SearchService
      */
     private final ItemRepository itemRepository;
 
-    private final SearchGateway searchAdapter;
-
-    private final RunBackgroundOperationUseCase runBackgroundOperationUseCase;
+    /**
+     * Gateway to the search engine.
+     */
+    private final SearchGateway searchGateway;
 
     /**
      * The object mapper.
@@ -50,13 +50,11 @@ public class SearchService
      */
     @Override
     public synchronized void recreateIndex() {
-        runBackgroundOperationUseCase.execute("search", "createIndex", progressMonitor -> {
-            log.info("Recreating search index.");
-            searchAdapter.prepareIndexing(false);
-            itemRepository.findAll().forEach(item -> searchAdapter.updateIndex(item, false));
-            searchAdapter.finalizeIndexing();
-            log.info("Search index created.");
-        });
+        log.info("Recreating search index.");
+        searchGateway.prepareIndexing(false);
+        itemRepository.findAll().forEach(item -> searchGateway.updateIndex(item, false));
+        searchGateway.finalizeIndexing();
+        log.info("Search index created.");
     }
 
     /**
@@ -66,9 +64,9 @@ public class SearchService
      */
     @Override
     public synchronized void updateIndex(Item item) {
-        searchAdapter.prepareIndexing(true);
-        searchAdapter.updateIndex(item, true);
-        searchAdapter.finalizeIndexing();
+        searchGateway.prepareIndexing(true);
+        searchGateway.updateIndex(item, true);
+        searchGateway.finalizeIndexing();
     }
 
     /**
@@ -88,7 +86,7 @@ public class SearchService
             return itemRepository.findAll(maxResults);
         }
 
-        return itemRepository.findAllById(searchAdapter.search(query, maxResults));
+        return itemRepository.findAllById(searchGateway.search(query, maxResults));
     }
 
     /**

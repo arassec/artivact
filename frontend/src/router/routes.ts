@@ -1,18 +1,17 @@
-import {RouteRecordRaw} from 'vue-router';
-import {api} from '../boot/axios';
-import {setCssVar, useQuasar} from 'quasar';
-import {useUserdataStore} from '../stores/userdata';
-import {Profiles} from '../components/artivact-models';
-import {useProfilesStore} from '../stores/profiles';
-import {useApplicationSettingsStore} from '../stores/application-settings';
-import {useLocaleStore} from '../stores/locale';
+import { RouteRecordRaw } from 'vue-router';
+import { api } from '../boot/axios';
+import { setCssVar, useQuasar } from 'quasar';
+import { useUserdataStore } from '../stores/userdata';
+import { Profiles } from '../components/artivact-models';
+import { useProfilesStore } from '../stores/profiles';
+import { useApplicationSettingsStore } from '../stores/application-settings';
+import { useLocaleStore } from '../stores/locale';
 
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
     component: () => import('../layouts/MainLayout.vue'),
     beforeEnter: (to, from, next) => {
-
       const quasar = useQuasar();
 
       const applicationSettingsStore = useApplicationSettingsStore();
@@ -23,7 +22,6 @@ const routes: RouteRecordRaw[] = [
       api
         .get('/api/configuration/public/settings')
         .then((response) => {
-
           applicationSettingsStore.setSettings(response.data);
 
           localeStore.setAvailableLocales(response.data.availableLocales);
@@ -41,7 +39,7 @@ const routes: RouteRecordRaw[] = [
           setCssVar('warning', colorTheme.warning);
 
           const profiles: Profiles = response.data.profiles;
-          profilesStore.setE2eModeEnabled(profiles.e2e)
+          profilesStore.setE2eModeEnabled(profiles.e2e);
           profilesStore.setDesktopModeEnabled(profiles.desktop || profiles.e2e);
           profilesStore.setServerModeEnabled(!profiles.desktop || profiles.e2e);
 
@@ -103,33 +101,59 @@ const routes: RouteRecordRaw[] = [
         });
     },
     children: [
-      {path: '', component: () => import('../pages/IndexPage.vue')},
-      {path: '/page/:pageId?', component: () => import('../pages/EditablePage.vue')},
-      {path: '/user-login', component: () => import('../pages/LoginPage.vue')},
-      {path: '/item/:itemId?', component: () => import('../pages/ItemDetailsPage.vue')},
-      {path: '/account', component: () => import('../pages/AccountSettingsPage.vue')},
-      {path: '/administration/collection-exports', component: () => import('../pages/CollectionExportsPage.vue')},
-      {path: '/administration/accounts', component: () => import('../pages/AccountsConfigurationPage.vue')},
-      {path: '/administration/batch', component: () => import('../pages/BatchProcessingPage.vue')},
-      {path: '/administration/configuration/item/:itemId?', component: () => import('../pages/ItemEditPage.vue')},
+      { path: '', component: () => import('../pages/IndexPage.vue') },
+      {
+        path: '/page/:pageId?',
+        component: () => import('../pages/EditablePage.vue'),
+      },
+      {
+        path: '/user-login',
+        component: () => import('../pages/LoginPage.vue'),
+      },
+      {
+        path: '/item/:itemId?',
+        component: () => import('../pages/ItemDetailsPage.vue'),
+      },
+      {
+        path: '/account',
+        component: () => import('../pages/AccountSettingsPage.vue'),
+      },
+      {
+        path: '/administration/collection-exports',
+        component: () => import('../pages/CollectionExportsPage.vue'),
+      },
+      {
+        path: '/administration/accounts',
+        component: () => import('../pages/AccountsConfigurationPage.vue'),
+      },
+      {
+        path: '/administration/batch',
+        component: () => import('../pages/BatchProcessingPage.vue'),
+      },
+      {
+        path: '/administration/configuration/item/:itemId?',
+        component: () => import('../pages/ItemEditPage.vue'),
+      },
       {
         path: '/administration/configuration/properties',
-        component: () => import('../pages/PropertiesConfigurationPage.vue')
+        component: () => import('../pages/PropertiesConfigurationPage.vue'),
       },
-      {path: '/administration/configuration/tags', component: () => import('../pages/TagsConfigurationPage.vue')},
+      {
+        path: '/administration/configuration/tags',
+        component: () => import('../pages/TagsConfigurationPage.vue'),
+      },
       {
         path: '/administration/configuration/appearance',
-        component: () => import('../pages/AppearanceConfigurationPage.vue')
+        component: () => import('../pages/AppearanceConfigurationPage.vue'),
       },
       {
         path: '/administration/configuration/peripherals',
-        component: () => import('../pages/PeripheralsConfigurationPage.vue')
+        component: () => import('../pages/PeripheralsConfigurationPage.vue'),
       },
       {
         path: '/administration/configuration/exchange',
-        component: () => import('../pages/ExchangeConfigurationPage.vue')
+        component: () => import('../pages/ExchangeConfigurationPage.vue'),
       },
-      {path: '/administration/configuration/search', component: () => import('../pages/SearchConfigurationPage.vue')},
     ],
   },
 

@@ -51,7 +51,7 @@ public class BackgroundOperationService implements RunBackgroundOperationUseCase
 
         executorService.submit(() -> {
             try {
-                log.info("Starting background Operation: {}", backgroundOperation);
+                log.info("Starting background Operation: {}/{}", topic, step);
                 backgroundOperation.execute(progressMonitor);
                 log.info("Background operation finished!");
                 progressMonitor = null;

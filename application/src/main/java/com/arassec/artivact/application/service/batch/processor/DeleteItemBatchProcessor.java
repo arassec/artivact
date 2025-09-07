@@ -21,14 +21,6 @@ public class DeleteItemBatchProcessor implements BatchProcessor {
     private final DeleteItemUseCase deleteItemUseCase;
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void initialize() {
-        // Nothing to do here...
-    }
-
-    /**
      * Deletes the given item.
      *
      * @param params The parameters for batch processing an item.

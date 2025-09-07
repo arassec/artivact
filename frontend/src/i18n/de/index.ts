@@ -312,18 +312,6 @@ export default {
     },
   },
 
-  SearchConfigurationPage: {
-    heading: 'Suchmaschinenkonfiguration',
-    label:
-      'Auf dieser Seite kann der Suchindex der intern verwendeten Suchmaschine (neu) erstellt werden, sollte dies nötig sein.',
-    btnLabel: 'Suchindex (neu) erstellen',
-    messages: {
-      indexCreated: 'Suchindex erstellt/aktualisiert',
-      indexCreationFailed:
-        'Erstellung/Aktualisierung des Suchindex fehlgeschlagen!',
-    },
-  },
-
   TagsConfigurationPage: {
     heading: 'Tags',
     configuration: {
@@ -727,7 +715,6 @@ export default {
     locale: 'Sprache',
     exhib: 'Ausstellung',
     system: 'System',
-    search: 'Suchmaschine',
     documentation: 'Doku',
     batch: 'Stapelverarbeitung',
     dialog: {
@@ -1052,4 +1039,5 @@ export default {
   ADD_TAG_TO_ITEM: 'Tag hinzufügen',
   REMOVE_TAG_FROM_ITEM: 'Tag entfernen',
   UPLOAD_MODIFIED_ITEM: 'Geänderte Objekte hochladen',
+  UPDATE_SEARCH_INDEX: 'Suchindex aktualisieren',
 };

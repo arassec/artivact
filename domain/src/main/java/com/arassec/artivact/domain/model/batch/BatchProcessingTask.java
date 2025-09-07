@@ -23,6 +23,11 @@ public enum BatchProcessingTask {
     /**
      * Uploads all modified items to a remote Artivact instance.
      */
-    UPLOAD_MODIFIED_ITEM
+    UPLOAD_MODIFIED_ITEM,
+
+    /**
+     * Updates the search index of items.
+     */
+    UPDATE_SEARCH_INDEX
 
 }

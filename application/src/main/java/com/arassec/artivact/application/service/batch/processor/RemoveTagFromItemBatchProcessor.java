@@ -18,14 +18,6 @@ import java.util.Optional;
 public class RemoveTagFromItemBatchProcessor implements BatchProcessor {
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void initialize() {
-        // Nothing to do here.
-    }
-
-    /**
      * Removes a tag from an item if necessary.
      *
      * @param params The parameters for batch processing an item.

@@ -310,17 +310,6 @@ export default {
     },
   },
 
-  SearchConfigurationPage: {
-    heading: 'Search Engine Configuration',
-    label:
-      'Here you can (re-)create the search index if this might be necessary for some reason.',
-    btnLabel: '(Re-)Create Search Index',
-    messages: {
-      indexCreated: 'Index created successfully.',
-      indexCreationFailed: 'Index creation failed!',
-    },
-  },
-
   TagsConfigurationPage: {
     heading: 'Tags',
     configuration: {
@@ -730,7 +719,6 @@ export default {
     locale: 'Locale',
     exhib: 'Exhib.',
     system: 'System',
-    search: 'Searchengine',
     documentation: 'Docs',
     batch: 'Batch Processing',
     dialog: {
@@ -1049,4 +1037,5 @@ export default {
   ADD_TAG_TO_ITEM: 'Add tag',
   REMOVE_TAG_FROM_ITEM: 'Remove tag',
   UPLOAD_MODIFIED_ITEM: 'Upload modified item',
+  UPDATE_SEARCH_INDEX: 'Update search index',
 };
