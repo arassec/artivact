@@ -140,13 +140,33 @@ export default {
     },
   },
 
-  CollectionExportsPage: {
-    heading: 'Collection Exports',
+  EditablePage: {
+    dialog: {
+      heading: 'Unsaved Changes!',
+      content:
+        'There are unsaved changes to the page configuration. Do you really want to leave?',
+      approve: 'Leave',
+    },
+  },
+
+  ErrorNotFoundPage: {
+    heading: '404',
+    description: 'Page not found...',
+  },
+
+  ExchangeConfigurationPage: {
+    heading: 'Collection Exchange',
+    configuration: {
+      heading: 'Item Synchronization',
+      description:
+        'Here you can configure exchange parameters for syncing items with remote Artivact instances.',
+    },
     tabs: {
       configuration: 'Configuration',
+      export: 'Export',
       import: 'Import',
     },
-    configuration: {
+    export: {
       heading: 'Export Configurations',
       description:
         'This page can be used to create and manage collection exports. Those can be used to transfer menus, their pages and items displayed on the pages to other Artivact instances. Additionally, the collection exports can be served by Artivact instances to be used e.g. in the Artivact XR app.',
@@ -176,28 +196,6 @@ export default {
     messages: {
       buildExportFileFailed: 'Export file building failed!',
       importSuccess: 'Import successful',
-    },
-  },
-
-  EditablePage: {
-    dialog: {
-      heading: 'Unsaved Changes!',
-      content:
-        'There are unsaved changes to the page configuration. Do you really want to leave?',
-      approve: 'Leave',
-    },
-  },
-
-  ErrorNotFoundPage: {
-    heading: '404',
-    description: 'Page not found...',
-  },
-
-  ExchangeConfigurationPage: {
-    heading: 'Data Exchange',
-    configuration: {
-      description:
-        'Here you can configure exchange parameters for syncing items with remote Artivact instances.',
     },
   },
 

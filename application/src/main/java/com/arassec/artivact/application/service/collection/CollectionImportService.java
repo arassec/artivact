@@ -109,11 +109,13 @@ public class CollectionImportService implements ImportCollectionUseCase {
                 Path coverPictureFile = importContext.getImportDir().resolve("cover-picture." + exchangeMainData.getCoverPictureExtension());
                 if (fileRepository.exists(coverPictureFile)) {
                     fileRepository.copy(coverPictureFile, getProjectRootUseCase.getExportsDir()
-                            .resolve(exchangeMainData.getId() + "." + exchangeMainData.getCoverPictureExtension()));
+                                    .resolve(exchangeMainData.getId() + "." + exchangeMainData.getCoverPictureExtension()),
+                            StandardCopyOption.REPLACE_EXISTING);
                 }
             }
 
             fileRepository.delete(importContext.getImportDir());
+            fileRepository.delete(file);
 
             collectionExportRepository.save(createCollectionExport(exchangeMainData, onlyForDistribution));
         });

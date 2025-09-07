@@ -119,10 +119,6 @@ const routes: RouteRecordRaw[] = [
         component: () => import('../pages/AccountSettingsPage.vue'),
       },
       {
-        path: '/administration/collection-exports',
-        component: () => import('../pages/CollectionExportsPage.vue'),
-      },
-      {
         path: '/administration/accounts',
         component: () => import('../pages/AccountsConfigurationPage.vue'),
       },

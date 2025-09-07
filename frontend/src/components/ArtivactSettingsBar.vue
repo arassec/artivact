@@ -130,18 +130,6 @@
       </q-menu>
     </q-btn>
 
-    <!-- COLLECTION EXPORTS -->
-    <router-link to="/administration/collection-exports">
-      <q-btn
-        data-test="collection-exports-button"
-        flat
-        color="white"
-        icon="output"
-        v-if="userdataStore.isUserOrAdmin"
-      >
-      </q-btn>
-    </router-link>
-
     <!-- SYSTEM SETTINGS -->
     <q-btn
       data-test="system-settings-button"
@@ -201,6 +189,26 @@
             </q-item-section>
           </q-item>
           <q-item
+            data-test="artivact-system-settings-exchange"
+            clickable
+            v-close-popup
+            @click="gotoExchangeConfigurationPage"
+            v-if="userdataStore.isAdmin"
+            class="menu-entry"
+          >
+            <q-item-section
+              ><label class="menu-label">
+                <q-icon
+                  name="import_export"
+                  size="xs"
+                  color="primary"
+                  class="q-mr-sm"
+                ></q-icon>
+                {{ $t('ArtivactSettingsBar.exchange') }}</label
+              >
+            </q-item-section>
+          </q-item>
+          <q-item
             data-test="artivact-system-settings-appearance"
             clickable
             v-close-popup
@@ -237,26 +245,6 @@
                   class="q-mr-sm"
                 ></q-icon>
                 {{ $t('ArtivactSettingsBar.peripherals') }}</label
-              >
-            </q-item-section>
-          </q-item>
-          <q-item
-            data-test="artivact-system-settings-exchange"
-            clickable
-            v-close-popup
-            @click="gotoExchangeConfigurationPage"
-            v-if="userdataStore.isAdmin"
-            class="menu-entry"
-          >
-            <q-item-section
-              ><label class="menu-label">
-                <q-icon
-                  name="import_export"
-                  size="xs"
-                  color="primary"
-                  class="q-mr-sm"
-                ></q-icon>
-                {{ $t('ArtivactSettingsBar.exchange') }}</label
               >
             </q-item-section>
           </q-item>
@@ -479,7 +467,7 @@
         <q-item clickable class="menu-entry" v-if="userdataStore.isAdmin">
           <q-item-section>
             <label class="menu-label">
-              <q-icon name="article" size="sm" class="q-mr-sm" />
+              <q-icon name="settings" size="sm" class="q-mr-sm" />
               <label>{{ $t('ArtivactSettingsBar.system') }}</label>
             </label>
           </q-item-section>
@@ -526,25 +514,6 @@
               <q-item
                 clickable
                 v-close-popup
-                @click="gotoAppearanceConfigurationPage"
-                v-if="userdataStore.isAdmin"
-                class="menu-entry"
-              >
-                <q-item-section
-                  ><label class="menu-label">
-                    <q-icon
-                      name="palette"
-                      size="xs"
-                      color="primary"
-                      class="q-mr-sm"
-                    ></q-icon>
-                    {{ $t('ArtivactSettingsBar.appearance') }}</label
-                  >
-                </q-item-section>
-              </q-item>
-              <q-item
-                clickable
-                v-close-popup
                 @click="gotoExchangeConfigurationPage"
                 v-if="
                   userdataStore.isAdmin && profilesStore.isDesktopModeEnabled
@@ -560,6 +529,25 @@
                       class="q-mr-sm"
                     ></q-icon>
                     {{ $t('ArtivactSettingsBar.exchange') }}</label
+                  >
+                </q-item-section>
+              </q-item>
+              <q-item
+                clickable
+                v-close-popup
+                @click="gotoAppearanceConfigurationPage"
+                v-if="userdataStore.isAdmin"
+                class="menu-entry"
+              >
+                <q-item-section
+                  ><label class="menu-label">
+                    <q-icon
+                      name="palette"
+                      size="xs"
+                      color="primary"
+                      class="q-mr-sm"
+                    ></q-icon>
+                    {{ $t('ArtivactSettingsBar.appearance') }}</label
                   >
                 </q-item-section>
               </q-item>

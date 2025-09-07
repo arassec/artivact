@@ -284,7 +284,6 @@ public class CollectionExportController extends BaseImportController {
     public void importCollection(@RequestPart(value = "file") final MultipartFile file) {
         Path tempFile = saveTempFile(file);
         importCollectionUseCase.importCollection(tempFile);
-        fileRepository.delete(tempFile);
     }
 
     /**
@@ -296,7 +295,6 @@ public class CollectionExportController extends BaseImportController {
     public void importCollectionForDistribution(@RequestPart(value = "file") final MultipartFile file) {
         Path tempFile = saveTempFile(file);
         importCollectionUseCase.importCollectionForDistribution(tempFile);
-        fileRepository.delete(tempFile);
     }
 
 }

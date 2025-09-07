@@ -142,13 +142,32 @@ export default {
     },
   },
 
-  CollectionExportsPage: {
-    heading: 'Sammlunsgexporte',
+  EditablePage: {
+    dialog: {
+      heading: 'Änderungen Verwerfen?',
+      content:
+        'Die neue Seitenkonfiguration wurden noch nicht gespeichert. Die Änderungen gehen beim Verlassen der Seite verloren. Möchten Sie trotzdem fortfahren',
+      approve: 'Fortfahren',
+    },
+  },
+
+  ErrorNotFoundPage: {
+    heading: '404',
+    description: 'Seite nicht gefunden...',
+  },
+
+  ExchangeConfigurationPage: {
+    heading: 'Sammlungsaustausch',
+    configuration: {
+      description:
+        'Hier können Parameter für den Austausch von Sammlungsobjekten zwischen verschiedenen Artivact-Instanzen konfiguriert werden.',
+    },
     tabs: {
       configuration: 'Konfiguration',
+      export: 'Export',
       import: 'Import',
     },
-    configuration: {
+    export: {
       heading: 'Exportkonfigurationen',
       description:
         'Auf dieser Seite können Sammlungsexport erzeugt und verwaltet werden. Exporte können verwendet werden um Menus, Seiten und Objekte auf andere Artivact-Instanzen zu übertragen. Zusätzlich können Sie von Artivact-Instanzen zum Download bereitgestellt werden, um in anderen Anwendungen verwendet zu werden (wie z.B. der Artivact XR App).',
@@ -178,28 +197,6 @@ export default {
         buildExportFileFailed: 'Erzeugung der Exportdatei fehlgeschlagen!',
         importSuccess: 'Import erfolgreich',
       },
-    },
-  },
-
-  EditablePage: {
-    dialog: {
-      heading: 'Änderungen Verwerfen?',
-      content:
-        'Die neue Seitenkonfiguration wurden noch nicht gespeichert. Die Änderungen gehen beim Verlassen der Seite verloren. Möchten Sie trotzdem fortfahren',
-      approve: 'Fortfahren',
-    },
-  },
-
-  ErrorNotFoundPage: {
-    heading: '404',
-    description: 'Seite nicht gefunden...',
-  },
-
-  ExchangeConfigurationPage: {
-    heading: 'Datenaustausch',
-    configuration: {
-      description:
-        'Hier können Parameter für den Austausch von Objekten zwischen verschiedenen Artivact-Instanzen konfiguriert werden.',
     },
   },
 
