@@ -174,16 +174,6 @@ public class ManagePageService
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<PageIdAndAlias> loadPageIds() {
-        return pageRepository.findAll().stream()
-                .map(page -> new PageIdAndAlias(page.getId(), page.getAlias()))
-                .toList();
-    }
-
-    /**
      * Loads the content of the given page.
      *
      * @param pageIdOrAlias The page's ID or alias.

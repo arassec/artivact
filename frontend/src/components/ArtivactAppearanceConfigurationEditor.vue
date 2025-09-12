@@ -414,17 +414,14 @@
 
 <script setup lang="ts">
 import { onMounted, PropType, ref, Ref, toRef } from 'vue';
-import {
-  AppearanceConfiguration,
-  SelectboxModel,
-} from 'components/artivact-models';
-import ArtivactThemeColorEditor from 'components/ArtivactThemeColorEditor.vue';
+import { AppearanceConfiguration, SelectboxModel } from './artivact-models';
+import ArtivactThemeColorEditor from '../components/ArtivactThemeColorEditor.vue';
 import { QUploader, useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
-import { useProfilesStore } from 'stores/profiles';
-import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
-import { useLocaleStore } from 'stores/locale';
-import { api } from 'boot/axios';
+import { useProfilesStore } from '../stores/profiles';
+import ArtivactRestrictedTranslatableItemEditor from '../components/ArtivactRestrictedTranslatableItemEditor.vue';
+import { useLocaleStore } from '../stores/locale';
+import { useMenuStore } from '../stores/menu';
 
 const props = defineProps({
   appearanceConfiguration: {
@@ -435,6 +432,8 @@ const props = defineProps({
 
 const quasar = useQuasar();
 const i18n = useI18n();
+
+const menuStore = useMenuStore();
 
 const localeStore = useLocaleStore();
 
@@ -479,29 +478,26 @@ function uploadComplete() {
 
 function createIndexPageOptions() {
   indexPageOptionsRef.value = [] as SelectboxModel[];
-  api
-    .get('/api/page/id')
-    .then((response) => {
-      response.data.forEach((pageIdAndAlias) => {
-        indexPageOptionsRef.value.push({
-          label: pageIdAndAlias.alias
-            ? pageIdAndAlias.alias
-            : pageIdAndAlias.id,
-          value: pageIdAndAlias.id,
-          disable: false,
-        });
+  menuStore.menus.forEach((menu) => {
+    if (menu.targetPageId) {
+      indexPageOptionsRef.value.push({
+        label: menu.translatedValue,
+        value: menu.targetPageId,
+        disable: false,
       });
-    })
-    .catch(() => {
-      quasar.notify({
-        color: 'negative',
-        position: 'bottom',
-        message: i18n.t('Common.messages.loading.failed', {
-          item: i18n.t('Common.items.pages'),
-        }),
-        icon: 'report_problem',
+    }
+    if (menu.menuEntries.length > 0) {
+      menu.menuEntries.forEach((menuEntry) => {
+        if (menuEntry.targetPageId) {
+          indexPageOptionsRef.value.push({
+            label: menuEntry.translatedValue,
+            value: menuEntry.targetPageId,
+            disable: false,
+          });
+        }
       });
-    });
+    }
+  });
 }
 
 onMounted(() => {

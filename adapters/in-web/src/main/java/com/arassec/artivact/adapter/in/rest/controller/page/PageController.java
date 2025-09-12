@@ -16,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URLConnection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -38,11 +37,6 @@ public class PageController {
     private final ResetWipPageContentUseCase resetWipPageContentUseCase;
 
     private final PublishWipPageContentUseCase publishWipPageContentUseCase;
-
-    @GetMapping("/id")
-    public List<PageIdAndAlias> getPageIds() {
-        return loadPageContentUseCase.loadPageIds();
-    }
 
     /**
      * Returns the alias or ID of the index page.

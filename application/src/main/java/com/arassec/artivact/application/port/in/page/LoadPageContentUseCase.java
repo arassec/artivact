@@ -4,7 +4,6 @@ import com.arassec.artivact.domain.model.page.Page;
 import com.arassec.artivact.domain.model.page.PageContent;
 import com.arassec.artivact.domain.model.page.PageIdAndAlias;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -43,12 +42,5 @@ public interface LoadPageContentUseCase {
      * @return The index {@link Page}.
      */
     Optional<PageIdAndAlias> loadIndexPageIdAndAlias();
-
-    /**
-     * Loads all available page ids.
-     *
-     * @return List of page IDs and their aliases.
-     */
-    List<PageIdAndAlias> loadPageIds();
 
 }
