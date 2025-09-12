@@ -192,7 +192,9 @@ public class ProjectInitializationService {
             AppearanceConfiguration appearanceConfiguration = new AppearanceConfiguration();
 
             appearanceConfiguration.setApplicationTitle("Artivact");
-            appearanceConfiguration.setIndexPageId(INITIAL_INDEX_PAGE_ID);
+            if (checkRuntimeConfigurationUseCase.isDesktopProfileEnabled() || checkRuntimeConfigurationUseCase.isE2eProfileEnabled()) {
+                appearanceConfiguration.setIndexPageId(INITIAL_INDEX_PAGE_ID);
+            }
             appearanceConfiguration.setAvailableLocales("");
             appearanceConfiguration.setLicense(new License());
 

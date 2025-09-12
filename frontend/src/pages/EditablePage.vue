@@ -8,7 +8,7 @@
     v-on:file-added="fileAdded"
     v-on:file-deleted="fileDeleted"
     @enter-edit-mode="loadPage(pageIdRef, true)"
-    @exit-edit-mode="loadPage(pageIdRef, false)"
+    @exit-edit-mode="exitEditMode(pageIdRef)"
     @reset-wip="showResetWipDialogRef = true"
     @publish-wip="showPublishWipDialogRef = true"
   />
@@ -70,7 +70,7 @@
         data-test="add-widget-modal-approve"
         :label="$t('EditablePage.dialog.publishWip.approve')"
         color="primary"
-        @click="publishWip()"
+        @click="publishWip(true)"
       />
     </template>
   </artivact-dialog>
@@ -86,12 +86,14 @@ import { Widget } from '../components/artivact-models';
 import { useBreadcrumbsStore } from '../stores/breadcrumbs';
 import { useI18n } from 'vue-i18n';
 import ArtivactDialog from '../components/ArtivactDialog.vue';
+import { useProfilesStore } from '../stores/profiles';
 
 const quasar = useQuasar();
 const route = useRoute();
 const i18n = useI18n();
 
 const breadcrumbsStore = useBreadcrumbsStore();
+const profilesStore = useProfilesStore();
 
 const pageContentRef = ref();
 const pageIdRef = ref('');
@@ -102,6 +104,17 @@ const showResetWipDialogRef = ref(false);
 const showPublishWipDialogRef = ref(false);
 
 let originalPageContentJson: string;
+let publishedPageContentJson: string;
+
+async function exitEditMode(pageId: string) {
+  if (profilesStore.isE2eModeEnabled || profilesStore.isDesktopModeEnabled) {
+    let currentPageContentJson = JSON.stringify(pageContentRef.value);
+    if (currentPageContentJson !== publishedPageContentJson) {
+      await publishWip(false);
+    }
+  }
+  loadPage(pageId, false);
+}
 
 function loadPage(pageId: string | string[], wip: boolean) {
   pageIdRef.value = Array.isArray(pageId) ? pageId[0] : pageId;
@@ -122,6 +135,9 @@ function loadPage(pageId: string | string[], wip: boolean) {
     .then((response) => {
       pageContentRef.value = response.data;
       originalPageContentJson = JSON.stringify(response.data);
+      if (!wip) {
+        publishedPageContentJson = JSON.stringify(response.data);
+      }
       inEditModeRef.value = wip;
     })
     .catch(() => {
@@ -259,20 +275,22 @@ function resetWip() {
     });
 }
 
-function publishWip() {
-  api
+async function publishWip(notifySuccess: boolean) {
+  return api
     .post('/api/page/publish-wip/' + pageIdRef.value)
     .then((response) => {
       pageContentRef.value = response.data;
       originalPageContentJson = JSON.stringify(response.data);
       showPublishWipDialogRef.value = false;
       inEditModeRef.value = false;
-      quasar.notify({
-        color: 'positive',
-        position: 'bottom',
-        message: i18n.t('EditablePage.publishWip.success'),
-        icon: 'check',
-      });
+      if (notifySuccess) {
+        quasar.notify({
+          color: 'positive',
+          position: 'bottom',
+          message: i18n.t('EditablePage.publishWip.success'),
+          icon: 'check',
+        });
+      }
     })
     .catch(() => {
       quasar.notify({

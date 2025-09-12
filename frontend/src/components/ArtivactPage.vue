@@ -23,6 +23,7 @@
     <div class="col items-center sticky gt-sm" v-if="inEditModeRef">
       <div class="absolute-top-right q-ma-md">
         <q-btn
+          v-if="!profilesStore.isDesktopModeEnabled"
           data-test="reset-wip-button"
           round
           color="primary"
@@ -33,6 +34,7 @@
           <q-tooltip>{{ $t('ArtivactPage.tooltip.resetWip') }}</q-tooltip>
         </q-btn>
         <q-btn
+          v-if="!profilesStore.isDesktopModeEnabled"
           data-test="publish-wip-button"
           round
           color="primary"
@@ -299,6 +301,7 @@ import ArtivactItemSearchWidget from './widgets/ArtivactItemSearchWidget.vue';
 import { usePageStore } from '../stores/page';
 import ArtivactImageGalleryWidget from './widgets/ArtivactImageGalleryWidget.vue';
 import ArtivactButtonsWidget from './widgets/ArtivactButtonsWidget.vue';
+import { useProfilesStore } from '../stores/profiles';
 
 const props = defineProps({
   pageId: {
@@ -334,6 +337,7 @@ const i18n = useI18n();
 
 const userdataStore = useUserdataStore();
 const pageStore = usePageStore();
+const profilesStore = useProfilesStore();
 
 const pageContentRef = toRef(props, 'pageContent');
 const inEditModeRef = toRef(props, 'inEditMode');
