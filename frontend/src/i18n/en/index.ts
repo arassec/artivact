@@ -142,10 +142,26 @@ export default {
 
   EditablePage: {
     dialog: {
-      heading: 'Unsaved Changes!',
-      content:
-        'There are unsaved changes to the page configuration. Do you really want to leave?',
-      approve: 'Leave',
+      resetWip: {
+        heading: 'Reset Page?',
+        content:
+          'Are you sure you want to reset the page to the latest published version? All changes will be lost!',
+        approve: 'Reset',
+      },
+      publishWip: {
+        heading: 'Publish Page?',
+        content:
+          'Do you really want to publish the current page configuration?',
+        approve: 'Publish',
+      },
+    },
+    resetWip: {
+      success: 'Page reset',
+      failed: 'Page reset failed!',
+    },
+    publishWip: {
+      success: 'Page published',
+      failed: 'Publishing page failed!',
     },
   },
 
@@ -583,6 +599,8 @@ export default {
       edit: 'Edit page',
       cancel: 'Leave Edit Mode',
       add: 'Add Widget',
+      resetWip: 'Reset Page',
+      publishWip: 'Publish Page',
     },
     label: {
       noIndexPage:
@@ -896,6 +914,9 @@ export default {
         'Configures whether the images can be opened in fullscreen detail view.',
       iconMode: 'Display images as smaller icons.',
       hideBorder: 'Hides the border around the gallery.',
+      textPositionTop: 'Show images below text',
+      textPositionLeft: 'Show images right of text',
+      textPositionRight: 'Show images left of text',
     },
   },
 

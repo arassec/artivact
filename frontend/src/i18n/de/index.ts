@@ -144,10 +144,22 @@ export default {
 
   EditablePage: {
     dialog: {
-      heading: 'Änderungen Verwerfen?',
-      content:
-        'Die neue Seitenkonfiguration wurden noch nicht gespeichert. Die Änderungen gehen beim Verlassen der Seite verloren. Möchten Sie trotzdem fortfahren',
-      approve: 'Fortfahren',
+      resetWip: {
+        heading: 'Änderungen verwerfen?',
+        content:
+          'Alle Änderungen werden verworfen und die Seite auf die zuletzt veröffentlichte Version zurückgesetzt. Möchten Sie trotzdem fortfahren',
+        approve: 'Fortfahren',
+      },
+      publishWip: {
+        heading: 'Seite veröffentlichen?',
+        content:
+          'Möchten Sie die aktuelle Seitenkonfiguration veröffentlichen?',
+        approve: 'Veröffentlichen',
+      },
+    },
+    wipReset: {
+      success: 'Seite zurückgesetzt.',
+      failed: 'Seite konnte nicht zurückgesetzt werden!',
     },
   },
 
@@ -578,6 +590,8 @@ export default {
       edit: 'Seite bearbeiten',
       cancel: 'Bearbeitungsmodus verlassen',
       add: 'Widget hinzufügen',
+      resetWip: 'Seite zurücksetzen',
+      publishWip: 'Seite veröffentlichen',
     },
     label: {
       noIndexPage:
@@ -891,6 +905,9 @@ export default {
         'Gibt an, ob die Bilder als Vollbild-Detailansicht geöffnet werden können.',
       iconMode: 'Zeigt Bilder als kleinere Icons an.',
       hideBorder: 'Blendet den Rahmen um die Bildergallerie aus.',
+      textPositionTop: 'Bilder unter dem Text',
+      textPositionLeft: 'Bilder rechts vom Text',
+      textPositionRight: 'Bilder links vom Text',
     },
   },
 

@@ -32,6 +32,11 @@ public class PageEntity {
     private String contentJson;
 
     /**
+     * The 'work-in-progress' page content as JSON.
+     */
+    private String wipContentJson;
+
+    /**
      * An alias under which this page can be opened, instead of using its ID.
      */
     private String alias;

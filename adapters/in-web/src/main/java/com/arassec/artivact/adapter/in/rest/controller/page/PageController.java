@@ -1,8 +1,6 @@
 package com.arassec.artivact.adapter.in.rest.controller.page;
 
-import com.arassec.artivact.application.port.in.page.LoadPageContentUseCase;
-import com.arassec.artivact.application.port.in.page.ManagePageMediaUseCase;
-import com.arassec.artivact.application.port.in.page.SavePageContentUseCase;
+import com.arassec.artivact.application.port.in.page.*;
 import com.arassec.artivact.domain.model.item.ImageSize;
 import com.arassec.artivact.domain.model.page.PageContent;
 import com.arassec.artivact.domain.model.page.PageIdAndAlias;
@@ -36,6 +34,10 @@ public class PageController {
     private final SavePageContentUseCase savePageContentUseCase;
 
     private final ManagePageMediaUseCase managePageMediaUseCase;
+
+    private final ResetWipPageContentUseCase resetWipPageContentUseCase;
+
+    private final PublishWipPageContentUseCase publishWipPageContentUseCase;
 
     @GetMapping("/id")
     public List<PageIdAndAlias> getPageIds() {
@@ -72,6 +74,17 @@ public class PageController {
     }
 
     /**
+     * Returns the 'work-in-progress' page with the given ID.
+     *
+     * @param pageIdOrAlias The page's ID or alias.
+     * @return The page content.
+     */
+    @GetMapping("/{pageIdOrAlias}/wip")
+    public PageContent loadWipPageContent(@PathVariable String pageIdOrAlias, Authentication authentication) {
+        return loadPageContentUseCase.loadTranslatedRestrictedWipPageContent(pageIdOrAlias, getRoles(authentication));
+    }
+
+    /**
      * Saves a page.
      *
      * @param pageIdOrAlias The page's ID or alias.
@@ -95,7 +108,9 @@ public class PageController {
     public ResponseEntity<String> saveFile(@PathVariable String pageIdOrAlias,
                                            @PathVariable String widgetId,
                                            @RequestPart(value = "file") final MultipartFile file) {
-        return ResponseEntity.ok(managePageMediaUseCase.saveFile(pageIdOrAlias, widgetId, file));
+        synchronized (this) {
+            return ResponseEntity.ok(managePageMediaUseCase.saveFile(pageIdOrAlias, widgetId, file));
+        }
     }
 
     /**
@@ -109,7 +124,9 @@ public class PageController {
     public PageContent deleteFile(@PathVariable String pageIdOrAlias,
                                   @PathVariable String widgetId,
                                   @PathVariable String filename) {
-        return managePageMediaUseCase.deleteFile(pageIdOrAlias, widgetId, filename);
+        synchronized (this) {
+            return managePageMediaUseCase.deleteFile(pageIdOrAlias, widgetId, filename);
+        }
     }
 
     /**
@@ -137,9 +154,61 @@ public class PageController {
         headers.setContentDisposition(contentDisposition);
         headers.setContentType(MediaType.valueOf(URLConnection.guessContentTypeFromName(filename)));
 
-        byte[] model = managePageMediaUseCase.loadFile(widgetId, filename, imageSize);
+        byte[] model = managePageMediaUseCase.loadFile(widgetId, filename, imageSize, false);
 
         return new HttpEntity<>(model, headers);
+    }
+
+    /**
+     * Loads a widget's 'work-in-progress' file.
+     *
+     * @param widgetId  The widget's ID.
+     * @param filename  The name of the file.
+     * @param imageSize Optional target size of an image.
+     * @return The file as byte array.
+     */
+    @GetMapping(value = "/widget/{widgetId}/{filename}/wip", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public HttpEntity<byte[]> loadWipFile(@PathVariable String widgetId,
+                                          @PathVariable String filename,
+                                          @RequestParam(required = false) ImageSize imageSize) {
+
+        if (!StringUtils.hasText(filename)) {
+            return new HttpEntity<>(new byte[0]);
+        }
+
+        var contentDisposition = ContentDisposition.builder("inline")
+                .filename(filename)
+                .build();
+
+        var headers = new HttpHeaders();
+        headers.setContentDisposition(contentDisposition);
+        headers.setContentType(MediaType.valueOf(URLConnection.guessContentTypeFromName(filename)));
+
+        byte[] model = managePageMediaUseCase.loadFile(widgetId, filename, imageSize, true);
+
+        return new HttpEntity<>(model, headers);
+    }
+
+    /**
+     * Resets the 'work-in-progress' state of a page to its published one.
+     *
+     * @param pageIdOrAlias The page's ID or alias.
+     * @return The updated page content.
+     */
+    @PostMapping("/reset-wip/{pageIdOrAlias}")
+    public PageContent resetWipPageContent(@PathVariable String pageIdOrAlias) {
+        return resetWipPageContentUseCase.resetWipPageContent(pageIdOrAlias);
+    }
+
+    /**
+     * Publishes the 'work-in-progress' state of a page.
+     *
+     * @param pageIdOrAlias The page's ID or alias.
+     * @return The updated page content.
+     */
+    @PostMapping("/publish-wip/{pageIdOrAlias}")
+    public PageContent publishWipPageContent(@PathVariable String pageIdOrAlias) {
+        return publishWipPageContentUseCase.publishWipPageContent(pageIdOrAlias);
     }
 
     /**

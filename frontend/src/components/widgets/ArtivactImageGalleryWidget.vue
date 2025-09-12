@@ -59,6 +59,7 @@
                   widgetDataRef.id +
                   '/' +
                   filename +
+                  (inEditMode ? '/wip' : '') +
                   '?imageSize=DETAIL'
                 "
                 fit="cover"
@@ -71,6 +72,7 @@
                   widgetDataRef.id +
                   '/' +
                   filename +
+                  (inEditMode ? '/wip' : '') +
                   '?imageSize=DETAIL'
                 "
                 fit="scale-down"
@@ -106,13 +108,23 @@
           :textarea="true"
           :show-separator="false"
         />
-        <q-select
-          class="q-mb-md"
-          outlined
-          v-model="widgetDataRef.textPosition"
-          :options="Object.values(ImageGalleryWidgetTextPosition)"
-          label="TEXT POSITION"
-        />
+        <div class="q-gutter-sm q-mb-md">
+          <q-radio
+            v-model="widgetDataRef.textPosition"
+            val="TOP"
+            :label="$t('ImageGalleryWidget.label.textPositionTop')"
+          ></q-radio>
+          <q-radio
+            v-model="widgetDataRef.textPosition"
+            val="LEFT"
+            :label="$t('ImageGalleryWidget.label.textPositionLeft')"
+          ></q-radio>
+          <q-radio
+            v-model="widgetDataRef.textPosition"
+            val="RIGHT"
+            :label="$t('ImageGalleryWidget.label.textPositionRight')"
+          ></q-radio>
+        </div>
         <div class="row">
           <q-uploader
             :label="$t('ImageGalleryWidget.label.images')"
@@ -172,6 +184,7 @@
                     widgetDataRef.id +
                     '/' +
                     element +
+                    (inEditMode ? '/wip' : '') +
                     '?imageSize=ITEM_CARD'
                   "
                 ></q-img>

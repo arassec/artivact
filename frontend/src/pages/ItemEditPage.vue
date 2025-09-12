@@ -1,7 +1,7 @@
 <template>
   <div v-if="itemDataRef && userdataStore.isUserOrAdmin">
-    <div class="col items-center sticky gt-md">
-      <div class="absolute-top-left q-ma-md">
+    <div class="col items-center sticky gt-sm">
+      <div class="absolute-top-right q-ma-md">
         <q-btn
           data-test="close-button"
           round

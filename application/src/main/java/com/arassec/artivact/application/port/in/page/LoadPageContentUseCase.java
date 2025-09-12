@@ -20,6 +20,15 @@ public interface LoadPageContentUseCase {
     PageContent loadPageContent(String pageIdOrAlias, Set<String> roles);
 
     /**
+     * Loads the 'work-in-progress' content of the given page.
+     *
+     * @param pageIdOrAlias The page's ID or alias.
+     * @param roles         The available roles.
+     * @return The {@link PageContent} of the page.
+     */
+    PageContent loadTranslatedRestrictedWipPageContent(String pageIdOrAlias, Set<String> roles);
+
+    /**
      * Loads the content of the given page and applies translations and restrictions.
      *
      * @param pageIdOrAlias The page's ID or the page's alias.

@@ -66,7 +66,7 @@ public class ImageGalleryWidget extends Widget implements FileProcessingWidget {
      */
     @Override
     public void processFile(String filename, FileProcessingOperation operation) {
-        if (FileProcessingOperation.ADD.equals(operation)) {
+        if (FileProcessingOperation.ADD.equals(operation) && !images.contains(filename)) {
             images.add(filename);
         } else if (FileProcessingOperation.REMOVE.equals(operation)) {
             images.remove(filename);

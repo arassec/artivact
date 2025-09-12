@@ -24,6 +24,11 @@ public class Page {
     private PageContent pageContent;
 
     /**
+     * The page's 'work-in-progress' content.
+     */
+    private PageContent wipPageContent;
+
+    /**
      * An alias under which this page can be opened, instead of using its ID.
      */
     private String alias;

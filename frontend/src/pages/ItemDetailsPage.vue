@@ -1,29 +1,27 @@
 <template>
   <div v-if="itemDataDetailsRef">
     <div class="col items-center sticky gt-sm">
-      <div class="absolute-top-left q-ma-md" v-if="userdataStore.authenticated">
-        <q-btn
-          round
-          color="primary"
-          icon="delete"
-          class="main-nav-button"
-          @click="confirmDeleteRef = true"
-        >
-          <q-tooltip>{{
-            $t('ItemDetailsPage.button.tooltip.delete')
-          }}</q-tooltip>
-        </q-btn>
-      </div>
-
       <div
         class="absolute-top-right q-ma-md"
         v-if="userdataStore.authenticated"
       >
-        <!-- DOWNLOAD BUTTON -->
         <q-form
           :action="'/api/item/' + itemDataDetailsRef.id + '/export'"
           method="get"
         >
+          <!-- DELETE ITEM BUTTON -->
+          <q-btn
+            round
+            color="primary"
+            icon="delete"
+            class="q-mr-sm main-nav-button"
+            @click="confirmDeleteRef = true"
+          >
+            <q-tooltip>{{
+              $t('ItemDetailsPage.button.tooltip.delete')
+            }}</q-tooltip>
+          </q-btn>
+          <!-- DOWNLOAD BUTTON -->
           <q-btn
             data-test="download-button"
             round

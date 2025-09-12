@@ -25,6 +25,7 @@
                 widgetDataRef.id +
                 '/' +
                 widgetDataRef.avatarImage +
+                (inEditMode ? '/wip' : '') +
                 '?imageSize=ITEM_CARD'
               "
             />

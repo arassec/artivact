@@ -53,6 +53,7 @@ public class JdbcPageRepository extends BaseJdbcRepository implements PageReposi
         }
 
         pageEntity.setContentJson(toJson(page.getPageContent()));
+        pageEntity.setWipContentJson(toJson(page.getWipPageContent()));
         pageEntity.setAlias(page.getAlias());
 
         pageEntityRepository.save(pageEntity);
@@ -107,6 +108,7 @@ public class JdbcPageRepository extends BaseJdbcRepository implements PageReposi
         page.setId(pageEntity.getId());
         page.setVersion(pageEntity.getVersion());
         page.setPageContent(fromJson(pageEntity.getContentJson(), PageContent.class));
+        page.setWipPageContent(fromJson(pageEntity.getWipContentJson(), PageContent.class));
         page.setAlias(pageEntity.getAlias());
 
         // Cleanup Widgets...

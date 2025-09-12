@@ -338,6 +338,7 @@ public class FilesystemFileRepository implements FileRepository {
     @Override
     public void scaleImage(Path originalImage, Path targetImage, int targetWidth) {
         try {
+            log.debug("Scaling image from {} to {}", originalImage, targetImage);
             BufferedImage bufferedImage = ImageIO.read(originalImage.toFile());
             String[] fileNameParts = originalImage.getFileName().toString().split("\\.");
             String fileEnding = fileNameParts[fileNameParts.length - 1];

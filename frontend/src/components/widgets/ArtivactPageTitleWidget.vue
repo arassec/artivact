@@ -17,6 +17,7 @@
               widgetDataRef.id +
               '/' +
               widgetDataRef.backgroundImage +
+              (inEditMode ? '/wip' : '') +
               '?imageSize=PAGE_TITLE'
             "
             class="av-darkened-parallax-container"
@@ -44,6 +45,7 @@
               widgetDataRef.id +
               '/' +
               widgetDataRef.backgroundImage +
+              (inEditMode ? '/wip' : '') +
               '?imageSize=PAGE_TITLE'
             "
           >

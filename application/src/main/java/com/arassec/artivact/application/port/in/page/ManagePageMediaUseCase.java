@@ -23,9 +23,10 @@ public interface ManagePageMediaUseCase {
      * @param widgetId   The widget's ID.
      * @param filename   The filename.
      * @param targetSize The desired target size (if an image is loaded).
+     * @param wip Specifies whether the 'work-in-progress' version of the file should be loaded, or the productive one.
      * @return The file as {@link FileSystemResource}.
      */
-    byte[] loadFile(String widgetId, String filename, ImageSize targetSize);
+    byte[] loadFile(String widgetId, String filename, ImageSize targetSize, boolean wip);
 
     /**
      * Deletes a file for a given widget from the filesystem.

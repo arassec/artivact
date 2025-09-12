@@ -122,7 +122,7 @@ class PageControllerTest {
     @Test
     void testLoadFile() {
         byte[] file = "file-content".getBytes();
-        when(pageService.loadFile("widget-id", "file.jpg", ImageSize.ITEM_CARD)).thenReturn(file);
+        when(pageService.loadFile("widget-id", "file.jpg", ImageSize.ITEM_CARD, false)).thenReturn(file);
 
         HttpEntity<byte[]> response = controller.loadFile("widget-id", "file.jpg", ImageSize.ITEM_CARD);
 

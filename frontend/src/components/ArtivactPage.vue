@@ -1,8 +1,8 @@
 <template>
-  <div v-if="pageContentRef && pageId" :class="inEditMode ? 'page' : ''">
+  <div v-if="pageContentRef && pageId" :class="inEditModeRef ? 'page' : ''">
     <div
-      class="col items-center sticky gt-md"
-      v-if="userdataStore.isUserOrAdmin && pageId !== 'INDEX' && !inEditMode"
+      class="col items-center sticky gt-sm"
+      v-if="userdataStore.isUserOrAdmin && pageId !== 'INDEX' && !inEditModeRef"
     >
       <div class="absolute-top-right q-ma-md">
         <q-btn
@@ -13,40 +13,44 @@
           color="primary"
           icon="edit"
           class="edit-page-button float-right"
-          @click="inEditMode = true"
+          @click="$emit('enter-edit-mode')"
         >
           <q-tooltip>{{ $t('ArtivactPage.tooltip.edit') }}</q-tooltip>
         </q-btn>
       </div>
     </div>
 
-    <div class="col items-center sticky gt-md" v-if="inEditMode">
-      <div class="absolute-top-left q-ma-md">
+    <div class="col items-center sticky gt-sm" v-if="inEditModeRef">
+      <div class="absolute-top-right q-ma-md">
+        <q-btn
+          data-test="reset-wip-button"
+          round
+          color="primary"
+          icon="undo"
+          class="q-mr-sm main-nav-button"
+          @click="$emit('reset-wip')"
+        >
+          <q-tooltip>{{ $t('ArtivactPage.tooltip.resetWip') }}</q-tooltip>
+        </q-btn>
+        <q-btn
+          data-test="publish-wip-button"
+          round
+          color="primary"
+          icon="publish"
+          class="q-mr-sm main-nav-button"
+          @click="$emit('publish-wip')"
+        >
+          <q-tooltip>{{ $t('ArtivactPage.tooltip.publishWip') }}</q-tooltip>
+        </q-btn>
         <q-btn
           data-test="close-button"
           round
           color="primary"
           icon="close"
-          class="q-mr-sm main-nav-button"
-          @click="
-            inEditMode = false;
-            $emit('exit-edit-mode');
-          "
-        >
-          <q-tooltip>{{ $t('Common.cancel') }}</q-tooltip>
-        </q-btn>
-      </div>
-
-      <div class="absolute-top-right q-ma-md">
-        <q-btn
-          data-test="save-button"
-          round
-          color="primary"
-          icon="save"
           class="main-nav-button"
-          @click="savePage(false)"
+          @click="$emit('exit-edit-mode')"
         >
-          <q-tooltip>{{ $t('Common.save') }}</q-tooltip>
+          <q-tooltip>{{ $t('Common.close') }}</q-tooltip>
         </q-btn>
       </div>
     </div>
@@ -56,7 +60,8 @@
       item-key="id"
       group="widgets"
       handle=".move-widget-button"
-      :disabled="!inEditMode"
+      :disabled="!inEditModeRef"
+      @dragend="$emit('update-page-content')"
     >
       <template #item="{ element, index }">
         <div>
@@ -64,9 +69,9 @@
             v-if="element.type === 'PAGE_TITLE'"
             group="widgets"
             :id="element.id"
-            :class="inEditMode ? 'widget' : ''"
+            :class="inEditModeRef ? 'widget' : ''"
             :widget-data="element as PageTitleWidgetData"
-            :in-edit-mode="inEditMode"
+            :in-edit-mode="inEditModeRef"
             @add-widget-below="
               addWidgetBelowRef = element.id;
               showAddWidgetDialogRef = true;
@@ -74,57 +79,61 @@
             @delete-widget="() => deleteWidget(index)"
             :page-id="pageId"
             v-on:image-added="fileAdded($event, element.id)"
+            @stop-editing="$emit('update-page-content')"
           />
 
           <artivact-text-widget
             v-else-if="element.type === 'TEXT'"
             group="widgets"
             :id="element.id"
-            :class="inEditMode ? 'widget' : ''"
+            :class="inEditModeRef ? 'widget' : ''"
             :widget-data="element as TextWidgetData"
-            :in-edit-mode="inEditMode"
+            :in-edit-mode="inEditModeRef"
             @add-widget-below="
               addWidgetBelowRef = element.id;
               showAddWidgetDialogRef = true;
             "
             @delete-widget="() => deleteWidget(index)"
+            @stop-editing="$emit('update-page-content')"
           />
 
           <artivact-item-search-widget
             v-else-if="element.type === 'ITEM_SEARCH'"
             group="widgets"
             :id="element.id"
-            :class="inEditMode ? 'widget' : ''"
+            :class="inEditModeRef ? 'widget' : ''"
             :widget-data="element as ItemSearchWidget"
-            :in-edit-mode="inEditMode"
+            :in-edit-mode="inEditModeRef"
             @add-widget-below="
               addWidgetBelowRef = element.id;
               showAddWidgetDialogRef = true;
             "
             @delete-widget="() => deleteWidget(index)"
+            @stop-editing="$emit('update-page-content')"
           />
 
           <artivact-info-box-widget
             v-else-if="element.type === 'INFO_BOX'"
             group="widgets"
             :id="element.id"
-            :class="inEditMode ? 'widget' : ''"
+            :class="inEditModeRef ? 'widget' : ''"
             :widget-data="element as InfoBoxWidgetData"
-            :in-edit-mode="inEditMode"
+            :in-edit-mode="inEditModeRef"
             @add-widget-below="
               addWidgetBelowRef = element.id;
               showAddWidgetDialogRef = true;
             "
             @delete-widget="() => deleteWidget(index)"
+            @stop-editing="$emit('update-page-content')"
           />
 
           <artivact-avatar-widget
             v-else-if="element.type === 'AVATAR'"
             group="widgets"
             :id="element.id"
-            :class="inEditMode ? 'widget' : ''"
+            :class="inEditModeRef ? 'widget' : ''"
             :widget-data="element as AvatarWidgetData"
-            :in-edit-mode="inEditMode"
+            :in-edit-mode="inEditModeRef"
             @add-widget-below="
               addWidgetBelowRef = element.id;
               showAddWidgetDialogRef = true;
@@ -132,16 +141,17 @@
             @delete-widget="() => deleteWidget(index)"
             :page-id="pageId"
             v-on:image-added="fileAdded($event, element.id)"
+            @stop-editing="$emit('update-page-content')"
           />
 
           <artivact-image-gallery-widget
             v-else-if="element.type === 'IMAGE_GALLERY'"
             group="widgets"
             :id="element.id"
-            :class="inEditMode ? 'widget' : ''"
+            :class="inEditModeRef ? 'widget' : ''"
             :widget-data="element as ImageGalleryWidgetData"
             :page-id="pageId"
-            :in-edit-mode="inEditMode"
+            :in-edit-mode="inEditModeRef"
             @add-widget-below="
               addWidgetBelowRef = element.id;
               showAddWidgetDialogRef = true;
@@ -149,20 +159,22 @@
             @delete-widget="() => deleteWidget(index)"
             @image-added="fileAdded($event, element.id)"
             @image-deleted="fileDeleted($event, element.id)"
+            @stop-editing="$emit('update-page-content')"
           />
 
           <artivact-buttons-widget
             v-else-if="element.type === 'BUTTONS'"
             group="widgets"
             :id="element.id"
-            :class="inEditMode ? 'widget' : ''"
+            :class="inEditModeRef ? 'widget' : ''"
             :widget-data="element as ButtonsWidgetData"
-            :in-edit-mode="inEditMode"
+            :in-edit-mode="inEditModeRef"
             @add-widget-below="
               addWidgetBelowRef = element.id;
               showAddWidgetDialogRef = true;
             "
             @delete-widget="() => deleteWidget(index)"
+            @stop-editing="$emit('update-page-content')"
           />
         </div>
       </template>
@@ -171,7 +183,7 @@
     <artivact-dialog
       :data-test="'add-widget-modal'"
       :dialog-model="showAddWidgetDialogRef"
-      v-if="userdataStore.isUserOrAdmin && inEditMode"
+      v-if="userdataStore.isUserOrAdmin && inEditModeRef"
     >
       <template v-slot:header>
         {{ $t('ArtivactPage.dialog.addWidget.heading') }}
@@ -267,7 +279,6 @@ import {
   TranslatableString,
 } from './artivact-models';
 import { useUserdataStore } from '../stores/userdata';
-import { useQuasar } from 'quasar';
 import {
   AvatarWidgetData,
   ButtonsWidgetData,
@@ -278,7 +289,6 @@ import {
   PageTitleWidgetData,
   TextWidgetData,
 } from './widgets/artivact-widget-models';
-import { api } from '../boot/axios';
 import { useI18n } from 'vue-i18n';
 import ArtivactDialog from './ArtivactDialog.vue';
 import ArtivactAvatarWidget from './widgets/ArtivactAvatarWidget.vue';
@@ -299,10 +309,13 @@ const props = defineProps({
     required: true,
     type: Object as PropType<PageContent>,
   },
+  inEditMode: {
+    required: true,
+    type: Boolean,
+  },
 });
 
 const emit = defineEmits<{
-  (e: 'update-page-content', pageContent: PageContent): void;
   (e: 'file-added', widgetId: string, property: string): void;
   (
     e: 'file-deleted',
@@ -310,21 +323,23 @@ const emit = defineEmits<{
     property: string,
     filename: string,
   ): void;
+  (e: 'update-page-content'): void;
+  (e: 'enter-edit-mode'): void;
   (e: 'exit-edit-mode'): void;
+  (e: 'reset-wip'): void;
+  (e: 'publish-wip'): void;
 }>();
 
-const quasar = useQuasar();
 const i18n = useI18n();
 
 const userdataStore = useUserdataStore();
 const pageStore = usePageStore();
 
 const pageContentRef = toRef(props, 'pageContent');
-const pageIdRef = toRef(props, 'pageId');
+const inEditModeRef = toRef(props, 'inEditMode');
 
 const showAddWidgetDialogRef = ref(false);
 const selectedWidgetTypeRef = ref('PAGE_TITLE');
-const inEditMode = ref(false);
 const addWidgetBelowRef = ref('');
 
 const showDeleteWidgetDialogRef = ref(false);
@@ -469,9 +484,10 @@ function addWidget() {
     } as ButtonsWidgetData);
   }
   showAddWidgetDialogRef.value = false;
-  savePage(false);
 
   pageStore.setLatestWidgetIndex(index);
+
+  emit('update-page-content');
 }
 
 function deleteWidget(index: number) {
@@ -483,35 +499,7 @@ function deleteWidgetConfirmed() {
   pageContentRef.value?.widgets.splice(deleteWidgetRef.value, 1);
   deleteWidgetRef.value = -1;
   showDeleteWidgetDialogRef.value = false;
-}
-
-function savePage(leaveEditMode: boolean) {
-  api
-    .post('/api/page/' + pageIdRef.value, pageContentRef.value)
-    .then((response) => {
-      quasar.notify({
-        color: 'positive',
-        position: 'bottom',
-        message: i18n.t('Common.messages.saving.success', {
-          item: i18n.t('Common.items.page'),
-        }),
-        icon: 'check',
-      });
-      emit('update-page-content', response.data);
-      if (leaveEditMode) {
-        inEditMode.value = false;
-      }
-    })
-    .catch(() => {
-      quasar.notify({
-        color: 'negative',
-        position: 'bottom',
-        message: i18n.t('Common.messages.saving.failed', {
-          item: i18n.t('Common.items.page'),
-        }),
-        icon: 'report_problem',
-      });
-    });
+  emit('update-page-content');
 }
 
 function fileAdded(propertyName: string, widgetId: string) {
@@ -525,7 +513,7 @@ function fileDeleted(parameters: string[], widgetId: string) {
 onMounted(() => {
   if (pageStore.isNewPageCreated) {
     pageStore.setNewPageCreated(false);
-    inEditMode.value = true;
+    inEditModeRef.value = true;
     showAddWidgetDialogRef.value = true;
   }
 });
