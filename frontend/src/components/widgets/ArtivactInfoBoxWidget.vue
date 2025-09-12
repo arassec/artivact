@@ -39,12 +39,23 @@
           :textarea="true"
           :show-separator="false"
         />
-        <q-select
-          outlined
-          v-model="widgetDataRef.boxType"
-          :options="infoBoxTypes"
-          :label="$t('InfoBoxWidget.label.outlined')"
-        />
+        <div class="q-gutter-sm q-mb-md">
+          <q-radio
+            v-model="widgetDataRef.boxType"
+            val="INFO"
+            :label="$t('InfoBoxWidget.label.typeInfo')"
+          ></q-radio>
+          <q-radio
+            v-model="widgetDataRef.boxType"
+            val="WARN"
+            :label="$t('InfoBoxWidget.label.typeWarn')"
+          ></q-radio>
+          <q-radio
+            v-model="widgetDataRef.boxType"
+            val="ALERT"
+            :label="$t('InfoBoxWidget.label.typeAlert')"
+          ></q-radio>
+        </div>
       </div>
     </template>
   </artivact-widget-template>

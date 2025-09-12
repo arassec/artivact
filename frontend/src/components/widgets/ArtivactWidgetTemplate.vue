@@ -9,6 +9,7 @@
 
     <template v-if="editingRef">
       <artivact-restrictions-editor
+        v-if="userDataStore.isAdmin"
         :in-details-view="false"
         :restrictions="restrictions"
         @delete-restriction="deleteRestriction"
@@ -64,6 +65,7 @@ import { TranslatableString } from '../artivact-models';
 import { useLocaleStore } from '../../stores/locale';
 import ArtivactRestrictionsEditor from '../ArtivactRestrictionsEditor.vue';
 import ArtivactRestrictedTranslatableItemEditor from '../ArtivactRestrictedTranslatableItemEditor.vue';
+import { useUserdataStore } from '../../stores/userdata';
 
 const props = defineProps({
   inEditMode: {
@@ -92,6 +94,7 @@ const emit = defineEmits<{
 }>();
 
 const localStore = useLocaleStore();
+const userDataStore = useUserdataStore();
 
 const restrictionsRef = toRef(props, 'restrictions');
 const inEditModeRef = toRef(props, 'inEditMode');

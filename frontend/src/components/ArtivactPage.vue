@@ -357,7 +357,11 @@ const availableWidgetTypes = [
   'AVATAR',
   'IMAGE_GALLERY',
   'BUTTONS',
-];
+].sort((a, b) => {
+  const labelA = i18n.t(a).toString();
+  const labelB = i18n.t(b).toString();
+  return labelA.localeCompare(labelB);
+});
 
 function addWidget() {
   let index = pageContentRef.value?.widgets.length;
@@ -517,8 +521,8 @@ function fileDeleted(parameters: string[], widgetId: string) {
 onMounted(() => {
   if (pageStore.isNewPageCreated) {
     pageStore.setNewPageCreated(false);
-    inEditModeRef.value = true;
     showAddWidgetDialogRef.value = true;
+    emit('enter-edit-mode');
   }
 });
 </script>

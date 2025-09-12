@@ -159,40 +159,7 @@ function loadPage(pageId: string | string[], wip: boolean) {
 }
 
 function fileAdded(widgetId: string, propertyName: string) {
-  let url = '/api/page/' + pageIdRef.value;
-  if (inEditModeRef.value) {
-    url += '/wip';
-  }
-
-  api
-    .get(url)
-    .then((response) => {
-      let index = -1;
-      for (let i = 0; i < pageContentRef.value.widgets.length; i++) {
-        if (pageContentRef.value.widgets[i].id === widgetId) {
-          index = i;
-        }
-      }
-      response.data.widgets.forEach((widget: Widget) => {
-        if (widget.id === widgetId) {
-          // eslint-disable-next-line
-          pageContentRef.value.widgets[index][propertyName] = (widget as any)[
-            propertyName
-          ];
-        }
-      });
-      originalPageContentJson = JSON.stringify(pageContentRef.value);
-    })
-    .catch(() => {
-      quasar.notify({
-        color: 'negative',
-        position: 'bottom',
-        message: i18n.t('Common.messages.loading.failed', {
-          item: i18n.t('Common.items.page'),
-        }),
-        icon: 'report_problem',
-      });
-    });
+  loadPage(pageIdRef.value, true);
 }
 
 function fileDeleted(widgetId: string, propertyName: string, filename: string) {

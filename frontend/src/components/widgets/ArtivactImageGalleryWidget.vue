@@ -30,8 +30,10 @@
             :class="!widgetDataRef.hideBorder ? 'shadow-1 rounded-borders' : ''"
             transition-prev="slide-right"
             transition-next="slide-left"
-            :height="widgetDataRef.iconMode ? '200px' : '500px'"
-            :style="widgetDataRef.iconMode ? 'width: 200px;' : ''"
+            :height="widgetDataRef.iconMode && !fullscreen ? '200px' : '500px'"
+            :style="
+              widgetDataRef.iconMode && !fullscreen ? 'width: 200px;' : ''
+            "
             control-color="primary"
             control-type="regular"
             control-text-color="white"
@@ -44,9 +46,9 @@
           >
             <q-carousel-slide
               style="padding: 0"
-              v-for="filename in widgetDataRef.images"
+              v-for="(filename, index) in widgetDataRef.images"
               draggable="false"
-              :name="filename"
+              :name="index"
               dense
               arrows
               :class="widgetDataRef.iconMode ? 'av-icon' : ''"
@@ -72,8 +74,7 @@
                   widgetDataRef.id +
                   '/' +
                   filename +
-                  (inEditMode ? '/wip' : '') +
-                  '?imageSize=DETAIL'
+                  (inEditMode ? '/wip' : '')
                 "
                 fit="scale-down"
               />
@@ -128,6 +129,7 @@
         <div class="row">
           <q-uploader
             :label="$t('ImageGalleryWidget.label.images')"
+            auto-upload
             field-name="file"
             :no-thumbnails="true"
             class="q-mb-md col"
@@ -240,16 +242,12 @@ const pageIdRef = toRef(props, 'pageId');
 const widgetDataRef = toRef(props, 'widgetData');
 
 const fullscreen = ref(false);
-const slide = ref(widgetDataRef.value.images[0]);
+const slide = ref(0);
 
 function deleteImage(filename: string) {
+  emit('image-deleted', ['images', filename]);
   if (widgetDataRef.value.images.length > 0) {
-    emit('image-deleted', ['images', filename]);
-    widgetDataRef.value.images.forEach((image) => {
-      if (image !== filename) {
-        slide.value = image;
-      }
-    });
+    slide.value = 0;
   }
 }
 

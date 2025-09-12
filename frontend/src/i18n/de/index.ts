@@ -916,6 +916,9 @@ export default {
       heading: 'Überschrift',
       content: 'Inhalt',
       outlined: 'Art',
+      typeInfo: 'Info-Box',
+      typeWarn: 'Warnung-Box',
+      typeAlert: 'Alarm-Box',
     },
   },
 

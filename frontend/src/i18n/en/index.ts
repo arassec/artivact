@@ -925,6 +925,9 @@ export default {
       heading: 'Heading',
       content: 'Content',
       outlined: 'Outlined',
+      typeInfo: 'Info-Box',
+      typeWarn: 'Warning-Box',
+      typeAlert: 'Alert-Box',
     },
   },
 
