@@ -1,20 +1,17 @@
 package com.arassec.artivact.adapter.in.rest.controller.configuration;
 
-import com.arassec.artivact.adapter.in.rest.controller.BaseImportController;
+import com.arassec.artivact.adapter.in.rest.controller.BaseController;
 import com.arassec.artivact.adapter.in.rest.model.ApplicationSettings;
 import com.arassec.artivact.adapter.in.rest.model.Profiles;
 import com.arassec.artivact.adapter.in.rest.model.UserData;
 import com.arassec.artivact.application.port.in.configuration.*;
 import com.arassec.artivact.application.port.in.project.CleanupExportFilesUseCase;
-import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
-import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.Roles;
 import com.arassec.artivact.domain.model.configuration.*;
 import com.arassec.artivact.domain.model.misc.ExchangeDefinitions;
 import com.arassec.artivact.domain.model.property.PropertyCategory;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
@@ -42,13 +39,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/configuration")
-public class ConfigurationController extends BaseImportController {
-
-    @Getter
-    private final UseProjectDirsUseCase useProjectDirsUseCase;
-
-    @Getter
-    private final FileRepository fileRepository;
+public class ConfigurationController extends BaseController {
 
     private final LoadPropertiesConfigurationUseCase loadPropertiesConfigurationUseCase;
 
@@ -115,14 +106,16 @@ public class ConfigurationController extends BaseImportController {
     @GetMapping(value = "/public/user")
     public UserData getUserData(Authentication authentication) {
         if (authentication != null) {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            return UserData.builder()
-                    .authenticated(true)
-                    .roles(userDetails.getAuthorities().stream()
-                            .map(GrantedAuthority::getAuthority)
-                            .toList())
-                    .username(userDetails.getUsername())
-                    .build();
+            if (authentication.getPrincipal() instanceof UserDetails userDetails) {
+                return UserData.builder()
+                        .authenticated(true)
+                        .roles(userDetails.getAuthorities().stream()
+                                .map(GrantedAuthority::getAuthority)
+                                .toList())
+                        .username(userDetails.getUsername())
+                        .build();
+            }
+            ;
         }
         return UserData.builder().authenticated(false).build();
     }

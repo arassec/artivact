@@ -142,7 +142,7 @@ public class ItemController extends BaseImportController {
      * @param itemId The item's ID.
      */
     @DeleteMapping("/{itemId}")
-    public void deleteItem(@PathVariable String itemId) {
+    public void delete(@PathVariable String itemId) {
         deleteItemUseCase.delete(itemId);
     }
 
