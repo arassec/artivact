@@ -24,4 +24,9 @@ public class PageContent extends BaseRestrictedObject {
      */
     private boolean editable;
 
+    /**
+     * Metadata of a page.
+     */
+    private PageMetaData metaData;
+
 }

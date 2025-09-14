@@ -63,7 +63,7 @@ public class PageController {
      * @return The page content.
      */
     @GetMapping("/{pageIdOrAlias}")
-    public PageContent loadTranslatedPageContent(@PathVariable String pageIdOrAlias, Authentication authentication) {
+    public PageContent loadPageContent(@PathVariable String pageIdOrAlias, Authentication authentication) {
         return loadPageContentUseCase.loadTranslatedRestrictedPageContent(pageIdOrAlias, getRoles(authentication));
     }
 

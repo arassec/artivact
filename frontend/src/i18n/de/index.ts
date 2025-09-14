@@ -594,6 +594,7 @@ export default {
       add: 'Widget hinzufügen',
       resetWip: 'Seite zurücksetzen',
       publishWip: 'Seite veröffentlichen',
+      editMetadata: 'Metadatan bearbeiten',
     },
     label: {
       noIndexPage:
@@ -618,6 +619,23 @@ export default {
       deleteWidget: {
         heading: 'Widget Löschen?',
         description: 'Sind Sie sicher, dass sie dieses Widget löschen möchten?',
+      },
+      editMetadata: {
+        heading: 'Metadaten bearbeiten',
+        description:
+          'Hier können die Metadaten der Seite bearbeitet werden, die im HTML HEAD-Element ausgegeben werden.',
+        label: {
+          title: 'Titel',
+          description: 'Beschreibung',
+          author: 'Autor',
+          keywords: 'Schlagworte',
+        },
+        desc: {
+          title: 'Der Titel der Seite, der im Browser-Tab angezeigt wird.',
+          description: 'Eine kurze Beschreibung des Seiteninhalts.',
+          author: 'Der Autor der Seite',
+          keywords: 'Eine kommaseparierte Liste mit Schlagworten zu der Seite.',
+        },
       },
     },
   },

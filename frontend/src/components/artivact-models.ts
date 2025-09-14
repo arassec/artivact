@@ -194,9 +194,17 @@ export interface Widget extends BaseRestrictedObject {
   navigationTitle: TranslatableString;
 }
 
+export interface PageMetaData {
+  title: TranslatableString;
+  description: TranslatableString;
+  author: string;
+  keywords: TranslatableString;
+}
+
 export interface PageContent extends BaseRestrictedObject {
   widgets: Widget[];
   editable: boolean;
+  metaData: PageMetaData;
 }
 
 export interface BreadcrumbData {

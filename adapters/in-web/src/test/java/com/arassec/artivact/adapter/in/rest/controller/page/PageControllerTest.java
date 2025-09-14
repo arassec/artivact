@@ -88,8 +88,8 @@ class PageControllerTest {
      * Tests loading translated page content.
      */
     @Test
-    void testLoadTranslatedPageContent() {
-        controller.loadTranslatedPageContent("page-id", authentication);
+    void testLoadPageContent() {
+        controller.loadPageContent("page-id", authentication);
         verify(pageService, times(1)).loadTranslatedRestrictedPageContent("page-id", Set.of("ROLE_USER"));
     }
 

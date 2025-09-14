@@ -12,6 +12,7 @@ import com.arassec.artivact.application.port.out.repository.PageRepository;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.BaseRestrictedObject;
 import com.arassec.artivact.domain.model.Roles;
+import com.arassec.artivact.domain.model.TranslatableString;
 import com.arassec.artivact.domain.model.configuration.AppearanceConfiguration;
 import com.arassec.artivact.domain.model.configuration.ConfigurationType;
 import com.arassec.artivact.domain.model.item.ImageSize;
@@ -170,7 +171,6 @@ public class ManagePageService
         Optional<Page> optionalPage = pageRepository.findById(indexPageId);
 
         return optionalPage.map(page -> new PageIdAndAlias(indexPageId, page.getAlias()));
-
     }
 
     /**
@@ -188,9 +188,12 @@ public class ManagePageService
 
         Optional<Page> pageOptional = pageRepository.findByIdOrAlias(pageIdOrAlias);
         Page page = pageOptional.orElseThrow(() -> new ArtivactException("Page not found for ID or alias: " + pageIdOrAlias));
+
         computeEditable(page.getPageContent(), roles);
+        addMetadataIfRequired(page);
 
         page.getPageContent().setRestrictions(findMenuRestrictions(page.getId()));
+
 
         return page.getPageContent();
     }
@@ -226,6 +229,8 @@ public class ManagePageService
                         .forEach(widgetFile -> fileRepository.copy(widgetFile, widgetWipDir.resolve(widgetFile.getFileName())));
             }
         });
+
+        addMetadataIfRequired(page);
 
         PageContent pageContent = page.getWipPageContent();
         if (wipInitialized.get()) {
@@ -682,4 +687,32 @@ public class ManagePageService
         }
         return new FileSystemResource(fileRepository.getSubdirFilePath(root, id, WIDGET_WIP_DIR).resolve(filename));
     }
+
+    /**
+     * Adds default metadata to the page if required.
+     *
+     * @param page The page to add metadata to.
+     */
+    private void addMetadataIfRequired(Page page) {
+        if (page.getPageContent().getMetaData() == null || page.getWipPageContent().getMetaData() == null) {
+            AppearanceConfiguration appearanceConfiguration =
+                    configurationRepository.findByType(ConfigurationType.APPEARANCE, AppearanceConfiguration.class).orElseThrow();
+
+            if (page.getPageContent().getMetaData() == null) {
+                page.getPageContent().setMetaData(new PageMetaData(
+                        new TranslatableString(appearanceConfiguration.getApplicationTitle()),
+                        new TranslatableString(""),
+                        "",
+                        new TranslatableString("")));
+            }
+            if (page.getWipPageContent().getMetaData() == null) {
+                page.getWipPageContent().setMetaData(new PageMetaData(
+                        new TranslatableString(appearanceConfiguration.getApplicationTitle()),
+                        new TranslatableString(""),
+                        "",
+                        new TranslatableString("")));
+            }
+        }
+    }
+
 }

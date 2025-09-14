@@ -4,9 +4,9 @@
     :page-id="pageIdRef"
     :page-content="pageContentRef"
     :in-edit-mode="inEditModeRef"
-    v-on:update-page-content="savePageIfRequired"
-    v-on:file-added="fileAdded"
-    v-on:file-deleted="fileDeleted"
+    @update-page-content="savePageIfRequired"
+    @file-added="fileAdded"
+    @file-deleted="fileDeleted"
     @enter-edit-mode="loadPage(pageIdRef, true)"
     @exit-edit-mode="exitEditMode(pageIdRef)"
     @reset-wip="showResetWipDialogRef = true"
@@ -77,7 +77,7 @@
 </template>
 
 <script setup lang="ts">
-import { useQuasar } from 'quasar';
+import { useMeta, useQuasar } from 'quasar';
 import { useRoute } from 'vue-router';
 import { api } from '../boot/axios';
 import { onMounted, ref } from 'vue';
@@ -102,6 +102,11 @@ const inEditModeRef = ref(false);
 
 const showResetWipDialogRef = ref(false);
 const showPublishWipDialogRef = ref(false);
+
+const metaTitleRef = ref(null);
+const metaDescriptionRef = ref(null);
+const metaAuthorRef = ref(null);
+const metaKeywordsRef = ref(null);
 
 let originalPageContentJson: string;
 let publishedPageContentJson: string;
@@ -133,6 +138,12 @@ function loadPage(pageId: string | string[], wip: boolean) {
   api
     .get(url)
     .then((response) => {
+      metaTitleRef.value = response.data.metaData.title.translatedValue;
+      metaDescriptionRef.value =
+        response.data.metaData.description.translatedValue;
+      metaAuthorRef.value = response.data.metaData.author;
+      metaKeywordsRef.value = response.data.metaData.keywords.translatedValue;
+
       pageContentRef.value = response.data;
       originalPageContentJson = JSON.stringify(response.data);
       if (!wip) {
@@ -268,6 +279,26 @@ async function publishWip(notifySuccess: boolean) {
       });
     });
 }
+
+useMeta(() => {
+  return {
+    title: metaTitleRef.value,
+    meta: {
+      description: {
+        name: 'description',
+        content: metaDescriptionRef.value,
+      },
+      author: {
+        name: 'author',
+        content: metaAuthorRef.value,
+      },
+      keywords: {
+        name: 'keywords',
+        content: metaKeywordsRef.value,
+      },
+    },
+  };
+});
 
 onMounted(() => {
   loadPage(route.params.pageId, false);

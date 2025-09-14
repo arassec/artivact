@@ -45,6 +45,17 @@
           <q-tooltip>{{ $t('ArtivactPage.tooltip.publishWip') }}</q-tooltip>
         </q-btn>
         <q-btn
+          v-if="!profilesStore.isDesktopModeEnabled"
+          data-test="edit-metadata-button"
+          round
+          color="primary"
+          icon="tag"
+          class="q-mr-sm main-nav-button"
+          @click="showEditMetadataDialogRef = true"
+        >
+          <q-tooltip>{{ $t('ArtivactPage.tooltip.editMetadata') }}</q-tooltip>
+        </q-btn>
+        <q-btn
           data-test="close-button"
           round
           color="primary"
@@ -269,6 +280,69 @@
         />
       </template>
     </artivact-dialog>
+
+    <artivact-dialog :dialog-model="showEditMetadataDialogRef">
+      <template v-slot:header>
+        {{ $t('ArtivactPage.dialog.editMetadata.heading') }}
+      </template>
+
+      <template v-slot:body>
+        <q-card-section>
+          <div class="q-mb-lg">
+            {{ $t('ArtivactPage.dialog.editMetadata.description') }}
+          </div>
+          <div>
+            {{ $t('ArtivactPage.dialog.editMetadata.desc.title') }}
+            <artivact-restricted-translatable-item-editor
+              :label="$t('ArtivactPage.dialog.editMetadata.label.title')"
+              :translatable-string="pageContentRef.metaData.title"
+              :show-separator="false"
+            />
+          </div>
+          <div>
+            {{ $t('ArtivactPage.dialog.editMetadata.desc.description') }}
+            <artivact-restricted-translatable-item-editor
+              :label="$t('ArtivactPage.dialog.editMetadata.label.description')"
+              :translatable-string="pageContentRef.metaData.description"
+              :show-separator="false"
+            />
+          </div>
+          <div class="q-mb-md">
+            {{ $t('ArtivactPage.dialog.editMetadata.desc.author') }}
+            <q-input
+              v-model="pageContentRef.metaData.author"
+              :label="$t('ArtivactPage.dialog.editMetadata.label.author')"
+              outlined
+            />
+          </div>
+          <div>
+            {{ $t('ArtivactPage.dialog.editMetadata.desc.keywords') }}
+            <artivact-restricted-translatable-item-editor
+              :label="$t('ArtivactPage.dialog.editMetadata.label.keywords')"
+              :translatable-string="pageContentRef.metaData.keywords"
+              :show-separator="false"
+            />
+          </div>
+        </q-card-section>
+      </template>
+
+      <template v-slot:cancel>
+        <q-btn
+          :label="$t('Common.cancel')"
+          color="primary"
+          @click="showEditMetadataDialogRef = false"
+        />
+      </template>
+
+      <template v-slot:approve>
+        <q-btn
+          data-test="add-widget-modal-approve"
+          :label="$t('Common.save')"
+          color="primary"
+          @click="updateMetadata()"
+        />
+      </template>
+    </artivact-dialog>
   </div>
 </template>
 
@@ -302,6 +376,7 @@ import { usePageStore } from '../stores/page';
 import ArtivactImageGalleryWidget from './widgets/ArtivactImageGalleryWidget.vue';
 import ArtivactButtonsWidget from './widgets/ArtivactButtonsWidget.vue';
 import { useProfilesStore } from '../stores/profiles';
+import ArtivactRestrictedTranslatableItemEditor from './ArtivactRestrictedTranslatableItemEditor.vue';
 
 const props = defineProps({
   pageId: {
@@ -348,6 +423,8 @@ const addWidgetBelowRef = ref('');
 
 const showDeleteWidgetDialogRef = ref(false);
 const deleteWidgetRef = ref(-1);
+
+const showEditMetadataDialogRef = ref(false);
 
 const availableWidgetTypes = [
   'PAGE_TITLE',
@@ -516,6 +593,11 @@ function fileAdded(propertyName: string, widgetId: string) {
 
 function fileDeleted(parameters: string[], widgetId: string) {
   emit('file-deleted', widgetId, parameters[0], parameters[1]);
+}
+
+function updateMetadata() {
+  showEditMetadataDialogRef.value = false;
+  emit('update-page-content');
 }
 
 onMounted(() => {

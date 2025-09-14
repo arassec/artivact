@@ -603,6 +603,7 @@ export default {
       add: 'Add Widget',
       resetWip: 'Reset Page',
       publishWip: 'Publish Page',
+      editMetadata: 'Edit Metadata',
     },
     label: {
       noIndexPage:
@@ -627,6 +628,23 @@ export default {
       deleteWidget: {
         heading: 'Delete Widget',
         description: 'Are you sure you want to delete this widget?',
+      },
+      editMetadata: {
+        heading: 'Edit Metadata',
+        description:
+          'You can edit the metadata of this page here. The values will be used in the HTML HEAD element.',
+        label: {
+          title: 'Title',
+          description: 'Description',
+          author: 'Author',
+          keywords: 'Keywords',
+        },
+        desc: {
+          title: 'The page title displayed in the browser tab.',
+          description: 'A short description of the page.',
+          author: 'The author of the page.',
+          keywords: 'Comma-separated list of Keywords for the page.',
+        },
       },
     },
   },
