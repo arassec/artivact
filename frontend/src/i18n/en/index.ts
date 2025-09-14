@@ -42,6 +42,10 @@ export default {
       export: 'Export',
       menus: 'Menus',
       menu: 'Menu',
+      image: 'Image',
+      images: 'Images',
+      model: '3D Model',
+      models: '3D Models',
       applicationLocale: 'Application Locale',
       collectionExport: 'Collection Export',
       collectionExports: 'Collection Exports',
@@ -264,8 +268,6 @@ export default {
     },
     label: {
       tags: 'Tags:',
-      images: 'Images',
-      models: '3D Models',
       noProperties:
         'There are currently no property definitions for items available. Go to the configuration page and add properties.',
     },
@@ -501,7 +503,7 @@ export default {
     },
   },
 
-  ArtivactModelEditor: {
+  ArtivactItemModelEditor: {
     tooltip: {
       open: 'Open the directory containing the 3D model.',
       upload: 'Upload an existing GLTF/GLB 3D model to this item.',
@@ -786,15 +788,18 @@ export default {
       details: 'Show image set details',
       backgrounds: 'Remove image backgrounds',
       delete: 'Delete image set',
+      directCapture: 'Capture single photo into item media',
     },
     label: {
       numPhotos: 'Number of photos',
       turntable: 'Use Turntable?',
       delay: 'Turntable Delay',
       backgrounds: 'Remove image backgrounds?',
+      add: 'Add',
     },
     captureParameters: 'Photo-Capture Parameters',
     startCapturing: 'Start Capturing',
+    transferPhotoToMedia: 'Add Photo to Media?',
     dialog: {
       upload: {
         heading: 'Upload Files to new Image-Set',
@@ -810,6 +815,10 @@ export default {
         description:
           'Are you sure you want to delete this Image-Set and all its files? This action cannot be undone!',
         approve: 'Delete Image-Set',
+      },
+      captureSinglePhotoInProgress: {
+        heading: 'Capturing Photo',
+        description: 'Capturing single photo to import as item media.',
       },
     },
     messages: {

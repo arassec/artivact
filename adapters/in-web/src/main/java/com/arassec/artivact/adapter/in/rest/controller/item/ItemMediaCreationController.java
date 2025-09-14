@@ -40,10 +40,22 @@ public class ItemMediaCreationController extends BaseController {
      * @param itemId              The item's ID.
      * @param captureImagesparams Configuration parameters for image capturing.
      */
+    @PostMapping("/capture-image")
+    public String captureImage(@PathVariable String itemId,
+                               @RequestBody CaptureImagesParams captureImagesparams) {
+        return captureImagesUseCase.captureImage(itemId, captureImagesparams.isRemoveBackgrounds());
+    }
+
+    /**
+     * Starts capturing images into a new image-set of an item.
+     *
+     * @param itemId              The item's ID.
+     * @param captureImagesparams Configuration parameters for image capturing.
+     */
     @PostMapping("/capture-images")
     public void captureImages(@PathVariable String itemId,
                               @RequestBody CaptureImagesParams captureImagesparams) {
-        captureImagesUseCase.capture(itemId, captureImagesparams);
+        captureImagesUseCase.captureImages(itemId, captureImagesparams);
     }
 
     /**

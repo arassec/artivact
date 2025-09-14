@@ -55,10 +55,56 @@ public class CaptureItemImageService implements CaptureItemImageUseCase {
     private final List<Peripheral> peripheralAdapters;
 
     /**
+     * {@inheritDoc
+     */
+    @Override
+    public String captureImage(String itemId, boolean removeBackground) {
+        PeripheralConfiguration adapterConfiguration = loadAdapterConfigurationUseCase.loadPeripheralConfiguration();
+
+        ProgressMonitor progressMonitor = new ProgressMonitor("captureTempImage", "start");
+
+        CameraPeripheral cameraPeripheral = getPeripheral(adapterConfiguration.getCameraPeripheralImplementation(), CameraPeripheral.class);
+        log.debug("Initializing camera adapter for temp image capturing: {}", cameraPeripheral.getSupportedImplementation());
+        cameraPeripheral.initialize(progressMonitor, PeripheralInitParams.builder()
+                .configuration(adapterConfiguration)
+                .build());
+
+        ImageManipulationPeripheral imageManipulationPeripheral = getPeripheral(adapterConfiguration.getImageManipulationPeripheralImplementation(), ImageManipulationPeripheral.class);
+        log.debug("Initializing image-manipulation adapter for temp image capturing: {}", imageManipulationPeripheral.getSupportedImplementation());
+        imageManipulationPeripheral.initialize(progressMonitor, PeripheralInitParams.builder()
+                .projectRoot(useProjectDirsUseCase.getProjectRoot())
+                .configuration(adapterConfiguration)
+                .workDir(useProjectDirsUseCase.getImagesDir(itemId))
+                .build());
+
+        Path targetDir = useProjectDirsUseCase.getImagesDir(itemId);
+        fileRepository.createDirIfRequired(targetDir);
+
+        String filename = fileRepository.getAssetName(fileRepository.getNextAssetNumber(targetDir), "jpg");
+        Path targetFile = targetDir.resolve(filename).toAbsolutePath();
+
+        if (cameraPeripheral.captureImage(targetFile)) {
+            if (removeBackground) {
+                imageManipulationPeripheral.removeBackground(targetFile);
+            }
+        }
+
+        cameraPeripheral.teardown();
+        imageManipulationPeripheral.teardown();
+
+        if (removeBackground) {
+            fileRepository.delete(targetFile);
+            return imageManipulationPeripheral.getModifiedImages().getFirst().getFileName().toString();
+        }
+
+        return targetFile.getFileName().toString();
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
-    public synchronized void capture(String itemId, CaptureImagesParams captureImagesParams) {
+    public synchronized void captureImages(String itemId, CaptureImagesParams captureImagesParams) {
         runBackgroundOperationUseCase.execute("captureImages", "start", progressMonitor -> {
             List<CreationImageSet> creationImageSets = captureImages(itemId, captureImagesParams, progressMonitor);
             Item item = loadItemUseCase.loadTranslated(itemId);
@@ -103,7 +149,7 @@ public class CaptureItemImageService implements CaptureItemImageUseCase {
                 .build());
 
         ImageManipulationPeripheral imageManipulationPeripheral = getPeripheral(adapterConfiguration.getImageManipulationPeripheralImplementation(), ImageManipulationPeripheral.class);
-        log.debug("Initializing iamge-manipulation adapter for image capturing: {}", imageManipulationPeripheral.getSupportedImplementation());
+        log.debug("Initializing image-manipulation adapter for image capturing: {}", imageManipulationPeripheral.getSupportedImplementation());
         imageManipulationPeripheral.initialize(progressMonitor, PeripheralInitParams.builder()
                 .projectRoot(useProjectDirsUseCase.getProjectRoot())
                 .configuration(adapterConfiguration)

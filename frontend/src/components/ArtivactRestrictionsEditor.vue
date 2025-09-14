@@ -6,12 +6,13 @@
     <div class="editor-label q-mt-xs">
       <p
         class="q-mr-xs vertical-middle badge-container-label editor-label"
-        :class="inDetailsViewProp ? ' text-grey' : ''">
+        :class="inDetailsViewProp ? ' text-grey' : ''"
+      >
         {{ $t('ArtivactRestrictionsEditor.restrictions') }}
       </p>
     </div>
 
-    <div>
+    <div class="q-ml-sm">
       <q-toggle
         :label="$t('ROLE_ADMIN')"
         v-model="adminRef"

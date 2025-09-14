@@ -28,7 +28,7 @@
               icon="text_snippet"
               :label="$t('ItemEditPage.tab.base')"
               class="nav-tab"
-              @click="saveItem(false)"
+              @click="saveItemIfNecessary(false)"
             />
             <q-tab
               data-test="edit-item-media-tab"
@@ -36,7 +36,7 @@
               icon="image"
               :label="$t('ItemEditPage.tab.media')"
               class="nav-tab"
-              @click="saveItem(false)"
+              @click="saveItemIfNecessary(false)"
             />
             <q-tab
               data-test="edit-item-properties-tab"
@@ -44,7 +44,7 @@
               icon="library_books"
               :label="$t('ItemEditPage.tab.properties')"
               class="nav-tab"
-              @click="saveItem(false)"
+              @click="saveItemIfNecessary(false)"
             />
             <q-tab
               data-test="edit-item-creation-tab"
@@ -52,7 +52,7 @@
               icon="3d_rotation"
               :label="$t('ItemEditPage.tab.creation')"
               class="nav-tab"
-              @click="saveItem(false)"
+              @click="saveItemIfNecessary(false)"
               v-if="profilesStore.isDesktopModeEnabled"
             />
           </q-tabs>
@@ -182,15 +182,11 @@
 
           <!-- MEDIA -->
           <div v-show="tabRef == 'media'">
-            <h2 class="av-text-h2">{{ $t('ItemEditPage.label.images') }}</h2>
-            <div class="q-mb-xl">
-              <artivact-item-image-editor
-                :images="itemDataRef.images"
-                :item-id="itemDataRef.id"
-                @uploaded="loadItemMediaData(itemDataRef.id)"
-              />
-            </div>
-            <h2 class="av-text-h2">{{ $t('ItemEditPage.label.models') }}</h2>
+            <artivact-item-image-editor
+              :images="itemDataRef.images"
+              :item-id="itemDataRef.id"
+              @uploaded="loadItemMediaData(itemDataRef.id)"
+            />
             <artivact-item-model-editor
               :models="itemDataRef.models"
               :item-id="itemDataRef.id"
@@ -218,17 +214,16 @@
             v-if="profilesStore.isDesktopModeEnabled"
             v-show="tabRef == 'creation'"
           >
-            <h2 class="av-text-h2">{{ $t('ItemEditPage.label.images') }}</h2>
             <div class="q-mb-xl">
               <artivact-item-image-set-editor
                 ref="imageSetEditorRef"
                 :item-id="savedItemId"
                 :creation-image-sets="itemDataRef.creationImageSets"
-                @delete-image="saveItem(false)"
+                @delete-image="saveItemIfNecessary(false)"
                 @update-item="loadItemData(itemDataRef.id)"
+                @save-item="saveItem(false)"
               />
             </div>
-            <h2 class="av-text-h2">{{ $t('ItemEditPage.label.models') }}</h2>
             <artivact-item-model-set-editor
               :item-id="savedItemId"
               :creation-model-sets="itemDataRef.creationModelSets"
@@ -421,44 +416,48 @@ function addRestriction(role: string) {
   itemDataRef.value?.restrictions.push(role);
 }
 
-function saveItem(exitEditMode) {
+function saveItemIfNecessary(exitEditMode: boolean) {
   let currentPageContentJson = JSON.stringify(itemDataRef.value);
   if (currentPageContentJson !== originalItemJson) {
-    let item = itemDataRef.value;
-    api
-      .put('/api/item', item)
-      .then(() => {
-        originalItemJson = JSON.stringify(itemDataRef.value);
-        quasar.notify({
-          color: 'positive',
-          position: 'bottom',
-          message: i18n.t('Common.messages.saving.success', {
-            item: i18n.t('Common.items.item'),
-          }),
-          icon: 'done',
-        });
-        if (exitEditMode) {
-          router.push('/item/' + item.id);
-        }
-      })
-      .catch(() => {
-        quasar.notify({
-          color: 'negative',
-          position: 'bottom',
-          message: i18n.t('Common.messages.saving.failed', {
-            item: i18n.t('Common.items.item'),
-          }),
-          icon: 'report_problem',
-        });
-      });
+    saveItem(exitEditMode);
   } else if (exitEditMode) {
     router.push('/item/' + itemDataRef.value.id);
   }
 }
 
+function saveItem(exitEditMode: boolean) {
+  let item = itemDataRef.value;
+  api
+    .put('/api/item', item)
+    .then(() => {
+      originalItemJson = JSON.stringify(itemDataRef.value);
+      quasar.notify({
+        color: 'positive',
+        position: 'bottom',
+        message: i18n.t('Common.messages.saving.success', {
+          item: i18n.t('Common.items.item'),
+        }),
+        icon: 'done',
+      });
+      if (exitEditMode) {
+        router.push('/item/' + item.id);
+      }
+    })
+    .catch(() => {
+      quasar.notify({
+        color: 'negative',
+        position: 'bottom',
+        message: i18n.t('Common.messages.saving.failed', {
+          item: i18n.t('Common.items.item'),
+        }),
+        icon: 'report_problem',
+      });
+    });
+}
+
 function exitEditMode() {
   breadcrumbsStore.removeLastBreadcrumb();
-  saveItem(true);
+  saveItemIfNecessary(true);
 }
 
 onMounted(() => {

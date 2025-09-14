@@ -42,6 +42,10 @@ export default {
       export: 'Export',
       menus: 'Menüs',
       menu: 'Menü',
+      image: 'Bild',
+      images: 'Bilder',
+      model: '3D Modell',
+      models: '3D Modelle',
       applicationLocale: 'Anwendungssprache',
       collectionExport: 'Sammlungsexport',
       collectionExports: 'Sammlungsexporte',
@@ -261,8 +265,6 @@ export default {
     },
     label: {
       tags: 'Tags:',
-      images: 'Bilder',
-      models: '3D-Modelle',
       noProperties:
         'Momentan sind keine Eigenschaften für Objekte definiert. Nutzen Sie die Eigenschafts-Konfiguration um diese zu definieren.',
     },
@@ -493,7 +495,7 @@ export default {
     },
   },
 
-  ArtivactModelEditor: {
+  ArtivactItemModelEditor: {
     tooltip: {
       open: 'Verzeichnis mit 3D-Modell öffnen',
       upload: 'Bestehende GLTF/GLB-Datei zu Objekt hinzufügen.',
@@ -771,21 +773,24 @@ export default {
 
   ItemImageSetEditor: {
     tooltip: {
-      capture: 'Fotos per Kamera aufnehmen',
+      capture: 'Fotoserie per Kamera aufnehmen',
       open: 'Verzeichnis mit Bildern öffnen',
       upload: 'Bestehende Bilder in neues Bilder-Set hochladen',
       details: 'Bilder-Set Details anzeigen',
       backgrounds: 'Bilder freistellen',
       delete: 'Bilder-Set löschen',
+      directCapture: 'Einzelfoto per Kamera aufnehmen und in Medien übernehmen',
     },
     label: {
       numPhotos: 'Anzahl Fotos',
       turntable: 'Drehteller benutzen?',
       delay: 'Drehteller Verzögerung',
       backgrounds: 'Bilder freistellen?',
+      add: 'übernehmen',
     },
     captureParameters: 'Aufnahme-Parameter',
     startCapturing: 'Aufnahmen starten',
+    transferPhotoToMedia: 'Foto in Medien übernehmen?',
     dialog: {
       upload: {
         heading: 'Bilder in neues Bilder-Set hochladen',
@@ -801,6 +806,11 @@ export default {
         description:
           'Sind Sie sicher, dass Sie das ausgewählte Bilder-Set löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden!',
         approve: 'Bilder-Set löschen',
+      },
+      captureSinglePhotoInProgress: {
+        heading: 'Fotoaufnahme',
+        description:
+          'Es wird ein einzelnes Foto erstellt, um es in die Objekt-Medien zu übernehmen.',
       },
     },
     messages: {

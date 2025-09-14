@@ -1,27 +1,48 @@
 <template>
-  <q-btn
-    data-test="item-creation-create-model-button"
-    text-color="primary"
-    class="q-mr-md"
-    round
-    dense
-    color="accent"
-    icon="add_circle"
-    @click="createModel"
-  >
-    <q-tooltip>{{ $t('ItemModelSetEditor.tooltip.create') }}</q-tooltip>
-  </q-btn>
-  <q-btn
-    text-color="primary"
-    class="q-mr-md"
-    round
-    dense
-    color="accent"
-    icon="folder"
-    @click="openModelsDir"
-  >
-    <q-tooltip>{{ $t('ItemModelSetEditor.tooltip.open') }}</q-tooltip>
-  </q-btn>
+  <h2 class="av-text-h2">
+    {{ $t('Common.items.models') }}
+    <q-btn
+      data-test="item-creation-create-model-button"
+      text-color="primary"
+      round
+      dense
+      flat
+      color="accent"
+      icon="add_circle"
+      @click="createModel"
+    >
+      <q-tooltip>{{ $t('ItemModelSetEditor.tooltip.create') }}</q-tooltip>
+    </q-btn>
+    <q-btn
+      text-color="primary"
+      round
+      dense
+      flat
+      color="accent"
+      icon="more_vert"
+    >
+      <q-menu
+        anchor="top right"
+        self="top left"
+        auto-close
+        transition-show="jump-right"
+        transition-hide="jump-left"
+      >
+        <div class="row no-wrap q-pa-sm">
+          <q-btn
+            text-color="primary"
+            round
+            dense
+            color="accent"
+            icon="folder"
+            @click="openModelsDir"
+          >
+            <q-tooltip>{{ $t('ItemModelSetEditor.tooltip.open') }}</q-tooltip>
+          </q-btn>
+        </div>
+      </q-menu>
+    </q-btn>
+  </h2>
 
   <div class="row">
     <q-card

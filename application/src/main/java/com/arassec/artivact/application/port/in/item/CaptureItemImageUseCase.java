@@ -8,11 +8,20 @@ import com.arassec.artivact.domain.model.media.CaptureImagesParams;
 public interface CaptureItemImageUseCase {
 
     /**
+     * Captures a single image to the item's image directory.
+     *
+     * @param itemId           The item's ID.
+     * @param removeBackground Set to {@code true}, to remove the images background.
+     * @return The captured image's filename.
+     */
+    String captureImage(String itemId, boolean removeBackground);
+
+    /**
      * Captures images using a peripheral adapter for the given item.
      *
      * @param itemId              The item's ID.
      * @param captureImagesParams Parameters for image capturing.
      */
-    void capture(String itemId, CaptureImagesParams captureImagesParams);
+    void captureImages(String itemId, CaptureImagesParams captureImagesParams);
 
 }

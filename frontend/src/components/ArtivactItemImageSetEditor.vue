@@ -1,37 +1,73 @@
 <template>
-  <q-btn
-    data-test="item-creation-camera-button"
-    text-color="primary"
-    class="q-mr-md"
-    round
-    dense
-    color="accent"
-    icon="camera"
-    @click="showCapturePhotosModalRef = true"
-  >
-    <q-tooltip>{{ $t('ItemImageSetEditor.tooltip.capture') }}</q-tooltip>
-  </q-btn>
-  <q-btn
-    text-color="primary"
-    class="q-mr-md"
-    round
-    dense
-    color="accent"
-    icon="folder"
-    @click="openImagesDir()"
-  >
-    <q-tooltip>{{ $t('ItemImageSetEditor.tooltip.open') }}</q-tooltip>
-  </q-btn>
-  <q-btn
-    text-color="primary"
-    round
-    dense
-    color="accent"
-    icon="upload_file"
-    @click="showUploadFilesModalRef = true"
-  >
-    <q-tooltip>{{ $t('ItemImageSetEditor.tooltip.upload') }}</q-tooltip>
-  </q-btn>
+  <h2 class="av-text-h2">
+    {{ $t('Common.items.images') }}
+    <q-btn
+      data-test="item-creation-camera-button"
+      text-color="primary"
+      round
+      dense
+      flat
+      color="accent"
+      icon="image"
+      @click="captureSinglePhoto()"
+    >
+      <q-tooltip>{{
+        $t('ItemImageSetEditor.tooltip.directCapture')
+      }}</q-tooltip>
+    </q-btn>
+    <q-btn
+      data-test="item-creation-camera-button"
+      text-color="primary"
+      round
+      dense
+      flat
+      color="accent"
+      icon="camera"
+      @click="showCapturePhotosModalRef = true"
+    >
+      <q-tooltip>{{ $t('ItemImageSetEditor.tooltip.capture') }}</q-tooltip>
+    </q-btn>
+    <q-btn
+      text-color="primary"
+      round
+      dense
+      flat
+      color="accent"
+      icon="more_vert"
+    >
+      <q-menu
+        anchor="top right"
+        self="top left"
+        auto-close
+        transition-show="jump-right"
+        transition-hide="jump-left"
+      >
+        <div class="row no-wrap q-pa-sm">
+          <q-btn
+            text-color="primary"
+            class="q-mr-md"
+            round
+            dense
+            color="accent"
+            icon="folder"
+            @click="openImagesDir()"
+          >
+            <q-tooltip>{{ $t('ItemImageSetEditor.tooltip.open') }}</q-tooltip>
+          </q-btn>
+          <q-btn
+            text-color="primary"
+            round
+            dense
+            color="accent"
+            icon="upload_file"
+            @click="showUploadFilesModalRef = true"
+          >
+            <q-tooltip>{{ $t('ItemImageSetEditor.tooltip.upload') }}</q-tooltip>
+          </q-btn>
+        </div>
+      </q-menu>
+    </q-btn>
+  </h2>
 
   <div class="row">
     <q-card
@@ -109,6 +145,68 @@
       </q-card-actions>
     </q-card>
   </div>
+
+  <!-- TRANSFER SINGLE PHOTO TO MEDIA -->
+  <artivact-dialog :dialog-model="showTransferPhotoToMediaModalRef">
+    <template v-slot:header>
+      {{ $t('ItemImageSetEditor.transferPhotoToMedia') }}
+    </template>
+
+    <template v-slot:body>
+      <q-card-section>
+        <q-img
+          :src="
+            '/api/item/' +
+            itemId +
+            '/image/' +
+            tempImageFilenameRef +
+            '?imageSize=DETAIL'
+          "
+        ></q-img>
+      </q-card-section>
+    </template>
+
+    <template v-slot:cancel>
+      <q-btn
+        color="primary"
+        :label="$t('Common.cancel')"
+        @click="deleteTempImage()"
+      />
+    </template>
+
+    <template v-slot:approve>
+      <q-btn
+        color="primary"
+        :label="$t('ItemImageSetEditor.label.add')"
+        @click="addTempImageToMedia()"
+      />
+    </template>
+  </artivact-dialog>
+
+  <!-- SINGLE PHOTO CAPTURE IN PROGRESS -->
+  <artivact-dialog
+    :dialog-model="showCaptureSinglePhotoModalRef"
+    :hide-buttons="true"
+  >
+    <template v-slot:header>
+      {{ $t('ItemImageSetEditor.dialog.captureSinglePhotoInProgress.heading') }}
+    </template>
+
+    <template v-slot:body>
+      <q-card-section>
+        <div class="row">
+          <q-spinner size="2em" class="q-mr-md col" />
+          <div>
+            {{
+              $t(
+                'ItemImageSetEditor.dialog.captureSinglePhotoInProgress.description',
+              )
+            }}
+          </div>
+        </div>
+      </q-card-section>
+    </template>
+  </artivact-dialog>
 
   <!-- CAPTURE PHOTOS -->
   <artivact-dialog :dialog-model="showCapturePhotosModalRef">
@@ -209,7 +307,7 @@
           >
             <q-img :src="image.url + '?imageSize=ITEM_CARD'">
               <div class="absolute-bottom">
-                <div class="text-h6">{{ image.fileName }}</div>
+                {{ image.fileName }}
               </div>
             </q-img>
             <q-card-actions>
@@ -323,6 +421,7 @@ const emit = defineEmits<{
   (e: 'delete-image-set', imageSet: ImageSet): void;
   (e: 'delete-image'): void;
   (e: 'update-item'): void;
+  (e: 'save-item'): void;
 }>();
 
 const showCapturePhotosModalRef = ref(false);
@@ -337,6 +436,10 @@ let selectedImageSet: ImageSet;
 
 const showUploadFilesModalRef = ref(false);
 const showOperationInProgressModalRef = ref(false);
+const showCaptureSinglePhotoModalRef = ref(false);
+const showTransferPhotoToMediaModalRef = ref(false);
+
+const tempImageFilenameRef = ref(null);
 
 const confirmDeleteRef = ref(false);
 let selectedImageSetIndex = -1;
@@ -378,6 +481,44 @@ function showImageDetails(imageSet: ImageSet) {
   pageData.cur = 1;
   updateImagesPage(0);
   showImageSetDetailsModalRef.value = true;
+}
+
+function captureSinglePhoto() {
+  showCaptureSinglePhotoModalRef.value = true;
+  api
+    .post(
+      '/api/item/' + props.itemId + '/media-creation/capture-image',
+      capturePhotosParamsRef.value,
+    )
+    .then((response) => {
+      if (response) {
+        tempImageFilenameRef.value = response.data;
+        showCaptureSinglePhotoModalRef.value = false;
+        showTransferPhotoToMediaModalRef.value = true;
+      }
+    })
+    .catch(() => {
+      quasar.notify({
+        color: 'negative',
+        position: 'bottom',
+        message: i18n.t('ItemImageSetEditor.messages.capturingFailed'),
+        icon: 'report_problem',
+      });
+    });
+}
+
+function addTempImageToMedia() {
+  showTransferPhotoToMediaModalRef.value = false;
+  transferImageToMedia({
+    fileName: tempImageFilenameRef.value,
+    url: '',
+    transferable: true,
+  } as Asset);
+}
+
+function deleteTempImage() {
+  showTransferPhotoToMediaModalRef.value = false;
+  emit('save-item'); // Removes the not referenced, newly captured image!
 }
 
 function capturePhotos() {
