@@ -13,7 +13,12 @@ const elements: ClickOutsideElement[] = [];
 // globaler Listener
 function onClick(event: Event) {
   const target = event.target as HTMLElement;
-  if (target.closest('.move-widget-button')) {
+  if (
+    target.closest('.move-widget-button') ||
+    target.closest('.q-menu') ||
+    target.closest('.q-dialog') ||
+    target.closest('.q-popover')
+  ) {
     return;
   }
   elements.forEach(({ el, handler }) => {
