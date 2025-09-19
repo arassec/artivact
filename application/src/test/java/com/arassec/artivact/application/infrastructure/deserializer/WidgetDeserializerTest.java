@@ -1,6 +1,5 @@
-package com.arassec.artivact.application.infrastructure;
+package com.arassec.artivact.application.infrastructure.deserializer;
 
-import com.arassec.artivact.application.infrastructure.deserializer.WidgetDeserializer;
 import com.arassec.artivact.domain.model.page.Widget;
 import com.arassec.artivact.domain.model.page.WidgetType;
 import com.arassec.artivact.domain.model.page.widget.*;

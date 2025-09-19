@@ -1,13 +1,13 @@
-package com.arassec.artivact.application.service;
+package com.arassec.artivact.application.service.item.itest;
 
 import com.arassec.artivact.application.infrastructure.aspect.GenerateIdsAspect;
 import com.arassec.artivact.application.infrastructure.aspect.RestrictResultAspect;
 import com.arassec.artivact.application.infrastructure.aspect.TranslateResultAspect;
-import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.in.configuration.LoadPropertiesConfigurationUseCase;
 import com.arassec.artivact.application.port.in.configuration.LoadTagsConfigurationUseCase;
 import com.arassec.artivact.application.port.in.item.LoadItemUseCase;
 import com.arassec.artivact.application.port.in.item.SaveItemUseCase;
+import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.in.search.ManageSearchIndexUseCase;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.application.port.out.repository.ItemRepository;
@@ -54,7 +54,7 @@ import static org.mockito.Mockito.*;
         TranslateResultAspect.class,
         ObjectMapper.class
 })
-class ItemServiceIntegrationTest {
+class ItemManagementIntegrationTest {
 
     @Autowired
     private LoadItemUseCase loadItemUseCase;

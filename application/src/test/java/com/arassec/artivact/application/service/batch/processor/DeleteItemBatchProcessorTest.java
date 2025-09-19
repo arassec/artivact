@@ -1,10 +1,9 @@
-package com.arassec.artivact.application.batch;
+package com.arassec.artivact.application.service.batch.processor;
 
-import com.arassec.artivact.application.service.batch.processor.DeleteItemBatchProcessor;
+import com.arassec.artivact.application.service.item.ManageItemService;
 import com.arassec.artivact.domain.model.batch.BatchProcessingParameters;
 import com.arassec.artivact.domain.model.batch.BatchProcessingTask;
 import com.arassec.artivact.domain.model.item.Item;
-import com.arassec.artivact.application.service.item.ManageItemService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

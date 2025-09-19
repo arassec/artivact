@@ -1,13 +1,12 @@
-package com.arassec.artivact.application.batch;
+package com.arassec.artivact.application.service.batch.processor;
 
-import com.arassec.artivact.application.service.batch.processor.AddTagToItemBatchProcessor;
+import com.arassec.artivact.application.port.out.repository.ConfigurationRepository;
 import com.arassec.artivact.domain.model.batch.BatchProcessingParameters;
 import com.arassec.artivact.domain.model.batch.BatchProcessingTask;
 import com.arassec.artivact.domain.model.configuration.ConfigurationType;
 import com.arassec.artivact.domain.model.configuration.TagsConfiguration;
 import com.arassec.artivact.domain.model.item.Item;
 import com.arassec.artivact.domain.model.tag.Tag;
-import com.arassec.artivact.application.port.out.repository.ConfigurationRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

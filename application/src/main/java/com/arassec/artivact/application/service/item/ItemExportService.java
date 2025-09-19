@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.OutputStream;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.ITEM_EXCHANGE_FILENAME_JSON;
@@ -137,12 +138,12 @@ public class ItemExportService extends BaseExportService implements ExportItemUs
         if (exportContext.getExportConfiguration().isOptimizeSize()) {
             if (!models.isEmpty()) {
                 String firstModel = models.getFirst();
-                fileRepository.copy(modelsSourceDir.resolve(firstModel), itemExportDir.resolve(firstModel));
+                fileRepository.copy(modelsSourceDir.resolve(firstModel), itemExportDir.resolve(firstModel), StandardCopyOption.REPLACE_EXISTING);
                 item.getMediaContent().getImages().clear();
                 item.getMediaContent().getModels().retainAll(List.of(firstModel));
             } else if (!images.isEmpty()) {
                 String firstImage = images.getFirst();
-                fileRepository.copy(imagesSourceDir.resolve(firstImage), itemExportDir.resolve(firstImage));
+                fileRepository.copy(imagesSourceDir.resolve(firstImage), itemExportDir.resolve(firstImage), StandardCopyOption.REPLACE_EXISTING);
                 item.getMediaContent().getModels().clear();
                 item.getMediaContent().getImages().retainAll(List.of(firstImage));
             }

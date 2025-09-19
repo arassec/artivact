@@ -1,6 +1,5 @@
-package com.arassec.artivact.application.batch;
+package com.arassec.artivact.application.service.batch.processor;
 
-import com.arassec.artivact.application.service.batch.processor.RemoveTagFromItemBatchProcessor;
 import com.arassec.artivact.domain.model.batch.BatchProcessingParameters;
 import com.arassec.artivact.domain.model.batch.BatchProcessingTask;
 import com.arassec.artivact.domain.model.item.Item;

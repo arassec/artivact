@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
 @Slf4j
 @Service
@@ -68,7 +69,7 @@ public class CollectionExportService extends BaseExportService implements Export
                     .resolve(collectionExport.getId() + "." + collectionExport.getCoverPictureExtension());
             if (fileRepository.exists(coverPictureFile)) {
                 fileRepository.copy(coverPictureFile, exportContext.getExportDir()
-                        .resolve("cover-picture." + collectionExport.getCoverPictureExtension()));
+                        .resolve("cover-picture." + collectionExport.getCoverPictureExtension()), StandardCopyOption.REPLACE_EXISTING);
             }
         }
 
