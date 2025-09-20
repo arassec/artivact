@@ -40,6 +40,7 @@ class CollectionExportControllerTest {
     @Mock
     private UseProjectDirsUseCase useProjectDirsUseCase;
 
+    @SuppressWarnings("unused")
     @Mock
     private FileRepository fileRepository;
 
@@ -145,7 +146,7 @@ class CollectionExportControllerTest {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         entity.getBody().writeTo(outputStream);
 
-        assertThat(outputStream.toString()).isEqualTo("test");
+        assertThat(outputStream).hasToString("test");
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -172,7 +173,7 @@ class CollectionExportControllerTest {
     }
 
     @Test
-    void testSaveCoverPicture() throws IOException {
+    void testSaveCoverPicture() {
         MultipartFile file = new MockMultipartFile("file", "cover.png", "image/png", "data".getBytes());
         controller.saveCoverPicture("id-1", file);
         verify(saveCollectionExportCoverPictureUseCase).saveCoverPicture(eq("id-1"), eq("cover.png"), any());

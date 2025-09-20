@@ -87,7 +87,8 @@ class DefaultCameraPeripheralTest {
     @Test
     void testImageCaptureFail() {
         when(imageCaptureDevice.captureImage()).thenReturn(Optional.empty());
-        assertThrows(ArtivactException.class, () -> defaultCameraPeripheral.captureImage(Path.of("test.jpg")));
+        Path imagePath = Path.of("test.jpg");
+        assertThrows(ArtivactException.class, () -> defaultCameraPeripheral.captureImage(imagePath));
     }
 
 }

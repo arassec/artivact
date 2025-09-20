@@ -1,9 +1,9 @@
 package com.arassec.artivact.adapter.in.rest.controller.page;
 
-import com.arassec.artivact.application.service.page.ManagePageService;
+import com.arassec.artivact.application.port.in.page.*;
 import com.arassec.artivact.domain.model.item.ImageSize;
 import com.arassec.artivact.domain.model.page.PageContent;
-import org.junit.jupiter.api.BeforeEach;
+import com.arassec.artivact.domain.model.page.PageIdAndAlias;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,129 +13,192 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
-/**
- * Tests the {@link PageController}.
- */
 @ExtendWith(MockitoExtension.class)
 class PageControllerTest {
 
-    /**
-     * The controller under test.
-     */
+    @Mock
+    private LoadPageContentUseCase loadPageContentUseCase;
+
+    @Mock
+    private SavePageContentUseCase savePageContentUseCase;
+
+    @Mock
+    private ManagePageMediaUseCase managePageMediaUseCase;
+
+    @Mock
+    private ResetWipPageContentUseCase resetWipPageContentUseCase;
+
+    @Mock
+    private PublishWipPageContentUseCase publishWipPageContentUseCase;
+
+    @Mock
+    private Authentication authentication;
+
+    @Mock
+    private UserDetails userDetails;
+
     @InjectMocks
     private PageController controller;
 
-    /**
-     * Service mock.
-     */
-    @Mock
-    private ManagePageService pageService;
+    @Test
+    void testLoadIndexPageIdOrAliasReturnsAlias() {
+        PageIdAndAlias page = new PageIdAndAlias("123", "home");
+        when(loadPageContentUseCase.loadIndexPageIdAndAlias()).thenReturn(Optional.of(page));
 
-    /**
-     * Spring-Security Authentication mock.
-     */
-    private final Authentication authentication = mock(Authentication.class);
+        String result = controller.loadIndexPageIdOrAlias();
 
-    /**
-     * Initializes the test environment.
-     */
-    @BeforeEach
-    void setUp() {
-        UserDetails userDetails = new UserDetails() {
-            @Override
-            public Collection<? extends GrantedAuthority> getAuthorities() {
-                return Set.of(new SimpleGrantedAuthority("ROLE_USER"));
-            }
-
-            @Override
-            public String getPassword() {
-                return "password";
-            }
-
-            @Override
-            public String getUsername() {
-                return "username";
-            }
-        };
-        when(authentication.getPrincipal()).thenReturn(userDetails);
+        assertThat(result).isEqualTo("home");
     }
 
-    /**
-     * Tests loading the index page's alias or ID.
-     */
     @Test
-    void testLoadIndexPageIdOrAlias() {
-        when(pageService.loadIndexPageIdAndAlias()).thenReturn(Optional.empty());
-        assertThat(controller.loadIndexPageIdOrAlias()).isEmpty();
-        // TODO
+    void testLoadIndexPageIdOrAliasReturnsIdIfAliasEmpty() {
+        PageIdAndAlias page = new PageIdAndAlias("123", "");
+        when(loadPageContentUseCase.loadIndexPageIdAndAlias()).thenReturn(Optional.of(page));
+
+        String result = controller.loadIndexPageIdOrAlias();
+
+        assertThat(result).isEqualTo("123");
     }
 
-    /**
-     * Tests loading translated page content.
-     */
     @Test
-    void testLoadPageContent() {
-        controller.loadPageContent("page-id", authentication);
-        verify(pageService, times(1)).loadTranslatedRestrictedPageContent("page-id", Set.of("ROLE_USER"));
+    void testLoadIndexPageIdOrAliasReturnsEmptyStringIfNone() {
+        when(loadPageContentUseCase.loadIndexPageIdAndAlias()).thenReturn(Optional.empty());
+
+        String result = controller.loadIndexPageIdOrAlias();
+
+        assertThat(result).isEmpty();
     }
 
-    /**
-     * Tests saving page content.
-     */
     @Test
-    void testSavePageContent() {
-        PageContent pageContent = new PageContent();
-        controller.savePageContent("page-id", pageContent, authentication);
-        verify(pageService, times(1)).savePageContent("page-id", Set.of("ROLE_USER"), pageContent);
+    void testLoadPageContentDelegatesToUseCase() {
+        PageContent expected = new PageContent();
+        mockRoles("ROLE_USER");
+
+        when(loadPageContentUseCase.loadTranslatedRestrictedPageContent(eq("alias"), any())).thenReturn(expected);
+
+        PageContent result = controller.loadPageContent("alias", authentication);
+
+        assertThat(result).isSameAs(expected);
     }
 
-    /**
-     * Tests saving a file.
-     */
     @Test
-    void testSaveFile() {
+    void testLoadWipPageContentDelegatesToUseCase() {
+        PageContent expected = new PageContent();
+        mockRoles("ROLE_ADMIN");
+
+        when(loadPageContentUseCase.loadTranslatedRestrictedWipPageContent(eq("page1"), any())).thenReturn(expected);
+
+        PageContent result = controller.loadWipPageContent("page1", authentication);
+
+        assertThat(result).isSameAs(expected);
+    }
+
+    @Test
+    void testSavePageContentDelegatesToUseCase() {
+        PageContent input = new PageContent();
+        PageContent saved = new PageContent();
+        mockRoles("ROLE_EDITOR");
+
+        when(savePageContentUseCase.savePageContent(eq("page2"), any(), eq(input))).thenReturn(saved);
+
+        PageContent result = controller.savePageContent("page2", input, authentication);
+
+        assertThat(result).isSameAs(saved);
+    }
+
+    @Test
+    void testSaveFileDelegatesToUseCase() {
         MultipartFile file = mock(MultipartFile.class);
-        when(pageService.saveFile("page-id", "widget-id", file)).thenReturn("file.txt");
+        when(managePageMediaUseCase.saveFile("p1", "w1", file)).thenReturn("saved.png");
 
-        ResponseEntity<String> responseEntity = controller.saveFile("page-id", "widget-id", file);
+        ResponseEntity<String> response = controller.saveFile("p1", "w1", file);
 
-        assertEquals("file.txt", responseEntity.getBody());
+        assertThat(response.getBody()).isEqualTo("saved.png");
     }
 
-    /**
-     * Tests loading a file.
-     */
     @Test
-    void testLoadFile() {
-        byte[] file = "file-content".getBytes();
-        when(pageService.loadFile("widget-id", "file.jpg", ImageSize.ITEM_CARD, false)).thenReturn(file);
+    void testDeleteFileDelegatesToUseCase() {
+        PageContent updated = new PageContent();
+        when(managePageMediaUseCase.deleteFile("p2", "w2", "f2.png")).thenReturn(updated);
 
-        HttpEntity<byte[]> response = controller.loadFile("widget-id", "file.jpg", ImageSize.ITEM_CARD);
+        PageContent result = controller.deleteFile("p2", "w2", "f2.png");
 
-        byte[] body = response.getBody();
+        assertThat(result).isSameAs(updated);
+    }
 
-        List<String> contentDispositionHeader = response.getHeaders().get("Content-Disposition");
-        assertNotNull(contentDispositionHeader);
-        assertEquals("inline; filename=\"file.jpg\"", contentDispositionHeader.getFirst());
+    @Test
+    void testLoadFileReturnsHeadersAndData() {
+        byte[] data = "hello".getBytes();
+        when(managePageMediaUseCase.loadFile("w1", "test.txt", null, false)).thenReturn(data);
 
-        assertEquals("image/jpeg", response.getHeaders().getFirst("Content-Type"));
+        HttpEntity<byte[]> response = controller.loadFile("w1", "test.txt", null);
 
-        assertNotNull(body);
-        assertEquals("file-content", new String(body));
+        assertThat(response.getBody()).isEqualTo(data);
+        assertThat(Objects.requireNonNull(response.getHeaders().getContentType())).hasToString("text/plain");
+    }
+
+    @Test
+    void testLoadFileReturnsEmptyArrayIfFilenameBlank() {
+        HttpEntity<byte[]> response = controller.loadFile("w1", "", null);
+
+        assertThat(response.getBody()).isEmpty();
+    }
+
+    @Test
+    void testLoadWipFileDelegatesAndSetsHeaders() {
+        byte[] data = "wipdata".getBytes();
+        when(managePageMediaUseCase.loadFile("w2", "image.png", ImageSize.ITEM_CARD, true)).thenReturn(data);
+
+        HttpEntity<byte[]> response = controller.loadWipFile("w2", "image.png", ImageSize.ITEM_CARD);
+
+        assertThat(response.getBody()).isEqualTo(data);
+        assertThat(Objects.requireNonNull(response.getHeaders().getContentType())).hasToString("image/png");
+    }
+
+    @Test
+    void testLoadWipFileReturnsEmptyArrayIfFilenameBlank() {
+        HttpEntity<byte[]> response = controller.loadWipFile("w3", "  ", null);
+
+        assertThat(response.getBody()).isEmpty();
+    }
+
+    @Test
+    void testResetWipPageContentDelegatesToUseCase() {
+        PageContent reset = new PageContent();
+        when(resetWipPageContentUseCase.resetWipPageContent("page3")).thenReturn(reset);
+
+        PageContent result = controller.resetWipPageContent("page3");
+
+        assertThat(result).isSameAs(reset);
+    }
+
+    @Test
+    void testPublishWipPageContentDelegatesToUseCase() {
+        PageContent published = new PageContent();
+        when(publishWipPageContentUseCase.publishWipPageContent("page4")).thenReturn(published);
+
+        PageContent result = controller.publishWipPageContent("page4");
+
+        assertThat(result).isSameAs(published);
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private void mockRoles(String... roles) {
+        when(authentication.getPrincipal()).thenReturn(userDetails);
+        when(userDetails.getAuthorities()).thenReturn(
+                (Collection) Stream.of(roles).map(r -> (GrantedAuthority) () -> r).toList()
+        );
     }
 
 }

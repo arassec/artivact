@@ -159,7 +159,8 @@ class ManagePageServiceTest {
 
         when(menuRepository.load()).thenReturn(new MenuConfiguration(List.of(new Menu())));
         when(pageRepository.findByIdOrAlias("page-1")).thenReturn(Optional.of(page));
-        when(useProjectDirsUseCase.getWidgetsDir()).thenReturn(Path.of("widgets"));
+        Path widgetsPath = Path.of("widgets");
+        when(useProjectDirsUseCase.getWidgetsDir()).thenReturn(widgetsPath);
         when(configurationRepository.findByType(ConfigurationType.APPEARANCE, AppearanceConfiguration.class))
                 .thenReturn(Optional.of(new AppearanceConfiguration("appTitle", null, null, null, null, null, null)));
 
@@ -169,22 +170,25 @@ class ManagePageServiceTest {
         page.setPageContent(pageContent);
         page.setWipPageContent(new PageContent());
 
-        when(fileRepository.getSubdirFilePath(eq(Path.of("widgets")), eq("widget1"), isNull())).thenReturn(Path.of("widgets/widget1"));
-        when(fileRepository.getSubdirFilePath(eq(Path.of("widgets")), eq("widget1"), eq("wip"))).thenReturn(Path.of("widgets/widget1/wip"));
+        Path widgetPath = Path.of("widgets/widget1");
+        when(fileRepository.getSubdirFilePath(eq(widgetsPath), eq("widget1"), isNull())).thenReturn(widgetPath);
+        Path widgetWipPath = Path.of("widgets/widget1/wip");
+        when(fileRepository.getSubdirFilePath(widgetsPath, "widget1", "wip")).thenReturn(widgetWipPath);
 
-        when(fileRepository.exists(Path.of("widgets/widget1"))).thenReturn(true);
-        when(fileRepository.exists(Path.of("widgets/widget1/wip"))).thenReturn(false);
+        when(fileRepository.exists(widgetPath)).thenReturn(true);
+        when(fileRepository.exists(widgetWipPath)).thenReturn(false);
 
         PageContent content = service.loadTranslatedRestrictedWipPageContent("page-1", Set.of(Roles.ROLE_ADMIN));
         assertThat(content).isNotNull();
-        verify(fileRepository).createDirIfRequired(Path.of("widgets/widget1/wip"));
+        verify(fileRepository).createDirIfRequired(widgetWipPath);
     }
 
     @Test
     void testLoadFileDelegatesToFileRepository() {
-        when(fileRepository.getSubdirFilePath(any(), anyString(), any())).thenReturn(Path.of("widgets"));
+        Path widgetsPath = Path.of("widgets");
+        when(fileRepository.getSubdirFilePath(any(), anyString(), any())).thenReturn(widgetsPath);
         when(fileRepository.readBytes(any())).thenReturn(new byte[]{1, 2, 3});
-        when(useProjectDirsUseCase.getWidgetsDir()).thenReturn(Path.of("widgets"));
+        when(useProjectDirsUseCase.getWidgetsDir()).thenReturn(widgetsPath);
         byte[] data = service.loadFile("widget1", "file.txt", null, true);
         assertThat(data).containsExactly(1, 2, 3);
     }

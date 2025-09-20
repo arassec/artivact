@@ -105,17 +105,14 @@ public class ConfigurationController extends BaseController {
      */
     @GetMapping(value = "/public/user")
     public UserData getUserData(Authentication authentication) {
-        if (authentication != null) {
-            if (authentication.getPrincipal() instanceof UserDetails userDetails) {
-                return UserData.builder()
-                        .authenticated(true)
-                        .roles(userDetails.getAuthorities().stream()
-                                .map(GrantedAuthority::getAuthority)
-                                .toList())
-                        .username(userDetails.getUsername())
-                        .build();
-            }
-            ;
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails userDetails) {
+            return UserData.builder()
+                    .authenticated(true)
+                    .roles(userDetails.getAuthorities().stream()
+                            .map(GrantedAuthority::getAuthority)
+                            .toList())
+                    .username(userDetails.getUsername())
+                    .build();
         }
         return UserData.builder().authenticated(false).build();
     }

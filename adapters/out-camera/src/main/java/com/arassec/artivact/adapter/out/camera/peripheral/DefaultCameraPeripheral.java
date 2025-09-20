@@ -68,9 +68,9 @@ public class DefaultCameraPeripheral extends BasePeripheralAdapter implements Ca
     @Override
     public boolean captureImage(Path targetFile) {
         try {
-            // TODO: Make this a config parameter!
             TimeUnit.MILLISECONDS.sleep(250);
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             log.debug("Interrupted during camera sleep period.", e);
         }
         Optional<DataObject> dataObject = imageCaptureDevice.captureImage();

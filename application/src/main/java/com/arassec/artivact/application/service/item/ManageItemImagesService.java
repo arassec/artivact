@@ -20,7 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.LinkedList;
@@ -123,14 +122,10 @@ public class ManageItemImagesService implements ManageItemImagesUseCase {
     public void transferImageToMedia(String itemId, Asset image) {
         Path sourcePath = useProjectDirsUseCase.getImagesDir(itemId).resolve(image.getFileName());
         Path targetPath = getTransferTargetPath(itemId, image);
-        try {
-            Files.copy(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
-            Item item = loadItemUseCase.loadTranslatedRestricted(itemId);
-            item.getMediaContent().getImages().add(targetPath.getFileName().toString());
-            saveItemUseCase.save(item);
-        } catch (IOException e) {
-            throw new ArtivactException("Could not copy image!", e);
-        }
+        fileRepository.copy(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
+        Item item = loadItemUseCase.loadTranslatedRestricted(itemId);
+        item.getMediaContent().getImages().add(targetPath.getFileName().toString());
+        saveItemUseCase.save(item);
     }
 
     /**

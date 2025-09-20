@@ -22,15 +22,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -83,7 +80,7 @@ public class CreateItemModelService implements CreateItemModelUseCase {
      * @param creationImageSets The image-sets to use as input for model creation.
      * @param progressMonitor   The progress monitor which will be updated during model creation.
      */
-    private Optional<CreationModelSet> createModel(String itemId, List<CreationImageSet> creationImageSets, ProgressMonitor progressMonitor) {
+    public Optional<CreationModelSet> createModel(String itemId, List<CreationImageSet> creationImageSets, ProgressMonitor progressMonitor) {
         PeripheralConfiguration adapterConfiguration = loadAdapterConfigurationUseCase.loadPeripheralConfiguration();
 
         ModelCreatorPeripheral modelCreatorAdapter = adapters.stream()
@@ -111,7 +108,7 @@ public class CreateItemModelService implements CreateItemModelUseCase {
 
         Path sourceDir = result.resultDir();
 
-        if (!Files.exists(sourceDir)) {
+        if (!fileRepository.exists(sourceDir)) {
             log.info("No source directory for model creation at: {}. Model was probably not created...", sourceDir);
             return Optional.empty();
         }
@@ -127,31 +124,25 @@ public class CreateItemModelService implements CreateItemModelUseCase {
 
         fileRepository.createDirIfRequired(targetDir);
 
-        try (Stream<Path> stream = fileRepository.list(sourceDir).stream()) {
-            if (stream.findAny().isEmpty()) {
-                fileRepository.delete(targetDir);
-                throw new ArtivactException("No model files found in export directory: " + sourceDir);
-            }
+        List<Path> sourceFiles = fileRepository.list(sourceDir);
 
-            try (Stream<Path> sourceStream = Files.walk(sourceDir)) {
-                sourceStream.forEach(source -> {
-                    if (fileRepository.isDir(source)) {
-                        return;
-                    }
-                    var destination = Paths.get(targetDir.toString(), source.toString().substring(sourceDir.toString().length()));
-                    try {
-                        fileRepository.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
-                    } catch (ArtivactException e) {
-                        fileRepository.delete(targetDir);
-                        throw new ArtivactException("Could not copy model files!", e);
-                    }
-                });
-            }
-
-        } catch (IOException e) {
+        if (sourceFiles.stream().findAny().isEmpty()) {
             fileRepository.delete(targetDir);
-            throw new ArtivactException("Could not copy asset directory!", e);
+            throw new ArtivactException("No model files found in export directory: " + sourceDir);
         }
+
+        sourceFiles.forEach(source -> {
+            if (fileRepository.isDir(source)) {
+                return;
+            }
+            var destination = Paths.get(targetDir.toString(), source.toString().substring(sourceDir.toString().length()));
+            try {
+                fileRepository.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
+            } catch (ArtivactException e) {
+                fileRepository.delete(targetDir);
+                throw new ArtivactException("Could not copy model files!", e);
+            }
+        });
 
         // Remove the project root from the path: /PATH/TO/REMOVE/items/012/abc/012abc/models/001
         String directory = targetDir.subpath(targetDir.getNameCount() - 6, targetDir.getNameCount())

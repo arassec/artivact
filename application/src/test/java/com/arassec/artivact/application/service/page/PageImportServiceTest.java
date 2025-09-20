@@ -70,7 +70,7 @@ class PageImportServiceTest {
         PageContent pageContent = new PageContent();
         when(fileRepository.read(importContext.getImportDir().resolve(pageId + PAGE_EXCHANGE_FILE_SUFFIX)))
                 .thenReturn("page-content-json");
-        when(objectMapper.readValue(eq("page-content-json"), eq(PageContent.class))).thenReturn(pageContent);
+        when(objectMapper.readValue("page-content-json", PageContent.class)).thenReturn(pageContent);
 
         service.importPage(importContext, pageId, pageAlias);
 
@@ -90,7 +90,7 @@ class PageImportServiceTest {
 
         when(fileRepository.read(importContext.getImportDir().resolve(pageId + PAGE_EXCHANGE_FILE_SUFFIX)))
                 .thenReturn("page-content-json");
-        when(objectMapper.readValue(eq("page-content-json"), eq(PageContent.class))).thenReturn(pageContent);
+        when(objectMapper.readValue("page-content-json", PageContent.class)).thenReturn(pageContent);
 
         Path widgetSource = importContext.getImportDir().resolve(widget.getId());
         Path widgetTarget = Path.of("/widgets/widget1");
@@ -117,7 +117,7 @@ class PageImportServiceTest {
 
         when(fileRepository.read(importContext.getImportDir().resolve(pageId + PAGE_EXCHANGE_FILE_SUFFIX)))
                 .thenReturn("page-content-json");
-        when(objectMapper.readValue(eq("page-content-json"), eq(PageContent.class)))
+        when(objectMapper.readValue("page-content-json", PageContent.class))
                 .thenThrow(new com.fasterxml.jackson.core.JsonProcessingException("error") {
                 });
 
@@ -135,7 +135,7 @@ class PageImportServiceTest {
 
         when(fileRepository.read(importContext.getImportDir().resolve(pageId + PAGE_EXCHANGE_FILE_SUFFIX)))
                 .thenReturn("page-content-json");
-        when(objectMapper.readValue(eq("page-content-json"), eq(PageContent.class))).thenReturn(pageContent);
+        when(objectMapper.readValue("page-content-json", PageContent.class)).thenReturn(pageContent);
 
         service.importPage(importContext, pageId, null);
 

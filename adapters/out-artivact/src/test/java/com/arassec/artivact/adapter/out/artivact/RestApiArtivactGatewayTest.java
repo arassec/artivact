@@ -55,7 +55,9 @@ class RestApiArtivactGatewayTest {
             when(httpClientMock.execute(any(HttpPost.class), any(HttpClientResponseHandler.class)))
                     .thenThrow(IOException.class);
 
-            assertThrows(ArtivactException.class, () -> artivactGateway.importItem("removeServer", "apiKey", Path.of("item-export.zip")));
+            Path zipPath = Path.of("item-export.zip");
+
+            assertThrows(ArtivactException.class, () -> artivactGateway.importItem("removeServer", "apiKey", zipPath));
         }
     }
 

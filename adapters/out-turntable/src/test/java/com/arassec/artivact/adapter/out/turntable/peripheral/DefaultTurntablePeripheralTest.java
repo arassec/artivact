@@ -28,7 +28,7 @@ class DefaultTurntablePeripheralTest {
     /**
      * Tests rotating the turntable.
      * <p>
-     * TODO: Implement real test after final re-implementation with firmata4j!
+     * Real test will be implemented after final re-implementation with firmata4j!
      */
     @Test
     void testRotate() {

@@ -3,13 +3,13 @@ package com.arassec.artivact.application.service.item;
 import com.arassec.artivact.application.infrastructure.aspect.GenerateIds;
 import com.arassec.artivact.application.infrastructure.aspect.RestrictResult;
 import com.arassec.artivact.application.infrastructure.aspect.TranslateResult;
-import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.in.configuration.LoadPropertiesConfigurationUseCase;
 import com.arassec.artivact.application.port.in.configuration.LoadTagsConfigurationUseCase;
 import com.arassec.artivact.application.port.in.item.CreateItemUseCase;
 import com.arassec.artivact.application.port.in.item.DeleteItemUseCase;
 import com.arassec.artivact.application.port.in.item.LoadItemUseCase;
 import com.arassec.artivact.application.port.in.item.SaveItemUseCase;
+import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.in.search.ManageSearchIndexUseCase;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.application.port.out.repository.ItemRepository;
@@ -22,8 +22,6 @@ import com.arassec.artivact.domain.model.item.MediaContent;
 import com.arassec.artivact.domain.model.item.MediaCreationContent;
 import com.arassec.artivact.domain.model.misc.DirectoryDefinitions;
 import com.arassec.artivact.domain.model.tag.Tag;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -40,7 +38,10 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class ManageItemService implements CreateItemUseCase, LoadItemUseCase, SaveItemUseCase, DeleteItemUseCase {
+public class ManageItemService implements CreateItemUseCase,
+        LoadItemUseCase,
+        SaveItemUseCase,
+        DeleteItemUseCase {
 
     /**
      * Repository for items.
@@ -52,16 +53,9 @@ public class ManageItemService implements CreateItemUseCase, LoadItemUseCase, Sa
     /**
      * The application's {@link FileRepository}.
      */
-    @Getter
     private final FileRepository fileRepository;
 
     private final UseProjectDirsUseCase useProjectDirsUseCase;
-
-    /**
-     * The object mapper.
-     */
-    @Getter
-    private final ObjectMapper objectMapper;
 
     private final LoadTagsConfigurationUseCase loadTagsConfigurationUseCase;
 

@@ -70,7 +70,7 @@ public class BlenderModelEditorPeripheral extends BasePeripheralAdapter implemen
             arguments.add(modelPath.toAbsolutePath().toString());
         }
 
-        progressMonitor.updateLabelKey("editModelStart");
+        progressMonitor.updateLabelKey("start");
 
         osGateway.execute(command, arguments);
     }

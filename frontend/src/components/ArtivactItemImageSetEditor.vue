@@ -195,7 +195,9 @@
     <template v-slot:body>
       <q-card-section>
         <div class="row">
-          <q-spinner size="2em" class="q-mr-md col" />
+          <div>
+            <q-spinner size="2em" class="q-mr-md col" />
+          </div>
           <div>
             {{
               $t(

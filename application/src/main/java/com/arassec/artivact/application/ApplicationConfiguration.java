@@ -8,9 +8,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Spring configuration of the Artivact backend application.
@@ -51,6 +55,12 @@ public class ApplicationConfiguration {
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
         return objectMapper;
+    }
+
+    @Bean("backgroundOperationExecutorService")
+    @ConditionalOnMissingBean(ExecutorService.class)
+    public ExecutorService executorService() {
+        return Executors.newFixedThreadPool(1);
     }
 
 }

@@ -379,7 +379,7 @@ class FilesystemFileRepositoryTest {
     @Test
     void testListNamesWithoutScaledImages() {
         List<String> filenames = filesystemFileRepository.listNamesWithoutScaledImages(sourceDir);
-        assertThat(filenames.contains("ITEM_CARD-test-image.png")).isFalse();
+        assertThat(filenames).isNotEmpty().doesNotContain("ITEM_CARD-test-image.png");
 
         assertThat(filesystemFileRepository.listNamesWithoutScaledImages(Path.of("invalid-non-existing-path"))).isEmpty();
     }

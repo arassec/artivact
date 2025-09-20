@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 /**
  * Integration test for the  {@link DefaultTurntablePeripheral}.
  */
@@ -33,7 +35,7 @@ class DefaultTurntablePeripheralIntegrationTest {
 
         peripheral.rotate(1);
 
-        peripheral.teardown();
+        assertDoesNotThrow(peripheral::teardown);
     }
 
 }

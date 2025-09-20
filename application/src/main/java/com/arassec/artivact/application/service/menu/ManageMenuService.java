@@ -11,14 +11,12 @@ import com.arassec.artivact.application.port.in.menu.SaveMenuUseCase;
 import com.arassec.artivact.application.port.in.page.CreatePageUseCase;
 import com.arassec.artivact.application.port.in.page.DeletePageUseCase;
 import com.arassec.artivact.application.port.in.page.UpdatePageAliasUseCase;
-import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.application.port.out.repository.MenuRepository;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.configuration.MenuConfiguration;
 import com.arassec.artivact.domain.model.menu.Menu;
 import com.arassec.artivact.domain.model.page.Page;
 import jakarta.transaction.Transactional;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -46,12 +44,6 @@ public class ManageMenuService
      * Repository to configurations.
      */
     private final MenuRepository menuRepository;
-
-    /**
-     * The application's {@link FileRepository}.
-     */
-    @Getter
-    private final FileRepository fileRepository;
 
     private final UpdatePageAliasUseCase updatePageAliasUseCase;
 

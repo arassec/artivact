@@ -5,12 +5,9 @@ import com.arassec.artivact.application.infrastructure.aspect.RestrictResult;
 import com.arassec.artivact.application.infrastructure.aspect.TranslateResult;
 import com.arassec.artivact.application.port.in.configuration.*;
 import com.arassec.artivact.application.port.out.repository.ConfigurationRepository;
-import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.model.configuration.*;
 import com.arassec.artivact.domain.model.property.PropertyCategory;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
@@ -48,18 +45,6 @@ public class ManageConfigurationService
      * Spring's environment.
      */
     private final Environment environment;
-
-    /**
-     * The application's {@link FileRepository}.
-     */
-    @Getter
-    private final FileRepository fileRepository;
-
-    /**
-     * The application's object mapper.
-     */
-    @Getter
-    private final ObjectMapper objectMapper;
 
     /**
      * {@inheritDoc}

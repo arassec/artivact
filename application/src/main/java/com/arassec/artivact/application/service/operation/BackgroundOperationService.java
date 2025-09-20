@@ -6,10 +6,10 @@ import com.arassec.artivact.domain.model.misc.ProgressMonitor;
 import com.arassec.artivact.domain.model.operation.BackgroundOperation;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Service implementation of use cases related to background operations.
@@ -26,7 +26,16 @@ public class BackgroundOperationService implements RunBackgroundOperationUseCase
     /**
      * Executor service for background tasks.
      */
-    private final ExecutorService executorService = Executors.newFixedThreadPool(1);
+    private final ExecutorService executorService;
+
+    /**
+     * Creates a new instance.
+     *
+     * @param executorService The executor service to use for thread execution.
+     */
+    public BackgroundOperationService(@Qualifier("backgroundOperationExecutorService") ExecutorService executorService) {
+        this.executorService = executorService;
+    }
 
     /**
      * Cleans up the service.

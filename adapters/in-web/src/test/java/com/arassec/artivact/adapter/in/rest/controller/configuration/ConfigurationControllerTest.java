@@ -165,7 +165,7 @@ class ConfigurationControllerTest {
     }
 
     @Test
-    void testUploadFavicon() throws Exception {
+    void testUploadFavicon() {
         AppearanceConfiguration ac = new AppearanceConfiguration();
         when(loadAppearanceConfigurationUseCase.loadTranslatedAppearanceConfiguration()).thenReturn(ac);
         MockMultipartFile file = new MockMultipartFile("file", "favicon.ico", "image/x-icon", "ico".getBytes());
@@ -284,7 +284,7 @@ class ConfigurationControllerTest {
     }
 
     @Test
-    void testImportPropertiesConfiguration() throws Exception {
+    void testImportPropertiesConfiguration() {
         MockMultipartFile file = new MockMultipartFile("file", "props.json", "application/json", "json".getBytes());
         ResponseEntity<String> result = controller.importPropertiesConfiguration(file);
         assertThat(result.getBody()).isEqualTo("Properties imported.");
@@ -299,7 +299,7 @@ class ConfigurationControllerTest {
     }
 
     @Test
-    void testImportTagsConfiguration() throws Exception {
+    void testImportTagsConfiguration() {
         MockMultipartFile file = new MockMultipartFile("file", "tags.json", "application/json", "json".getBytes());
         ResponseEntity<String> result = controller.importTagsConfiguration(file);
         assertThat(result.getBody()).isEqualTo("Tags imported.");

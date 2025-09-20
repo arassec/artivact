@@ -16,7 +16,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 /**
@@ -51,10 +52,10 @@ class JdbcCollectionExportRepositoryTest {
     void testFindById() {
         CollectionExportEntity entity = new CollectionExportEntity();
         entity.setContentJson("{content-json}");
-        when(collectionExportEntityRepository.findById(eq("id"))).thenReturn(Optional.of(entity));
+        when(collectionExportEntityRepository.findById("id")).thenReturn(Optional.of(entity));
 
         CollectionExport collectionExport = new CollectionExport();
-        when(objectMapper.readValue(eq("{content-json}"), eq(CollectionExport.class))).thenReturn(collectionExport);
+        when(objectMapper.readValue("{content-json}", CollectionExport.class)).thenReturn(collectionExport);
 
         CollectionExport result = jdbcCollectionExportRepository.findById("id").orElseThrow(AssertionError::new);
 
@@ -78,9 +79,9 @@ class JdbcCollectionExportRepositoryTest {
         when(collectionExportEntityRepository.findAll()).thenReturn(List.of(entityOne, entityTwo));
 
         CollectionExport collectionExportOne = new CollectionExport();
-        when(objectMapper.readValue(eq("{content-json-one}"), eq(CollectionExport.class))).thenReturn(collectionExportOne);
+        when(objectMapper.readValue("{content-json-one}", CollectionExport.class)).thenReturn(collectionExportOne);
         CollectionExport collectionExportTwo = new CollectionExport();
-        when(objectMapper.readValue(eq("{content-json-two}"), eq(CollectionExport.class))).thenReturn(collectionExportTwo);
+        when(objectMapper.readValue("{content-json-two}", CollectionExport.class)).thenReturn(collectionExportTwo);
 
         List<CollectionExport> result = jdbcCollectionExportRepository.findAll();
 
@@ -153,7 +154,7 @@ class JdbcCollectionExportRepositoryTest {
 
         verify(collectionExportEntityRepository, times(2)).save(argCap.capture());
 
-        assertThat(argCap.getAllValues().get(0).getSortOrder()).isEqualTo(0);
+        assertThat(argCap.getAllValues().get(0).getSortOrder()).isZero();
         assertThat(argCap.getAllValues().get(1).getSortOrder()).isEqualTo(1);
     }
 

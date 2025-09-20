@@ -59,21 +59,21 @@ public class CaptureItemImageService implements CaptureItemImageUseCase {
      */
     @Override
     public String captureImage(String itemId, boolean removeBackground) {
-        PeripheralConfiguration adapterConfiguration = loadAdapterConfigurationUseCase.loadPeripheralConfiguration();
+        PeripheralConfiguration peripheralConfiguration = loadAdapterConfigurationUseCase.loadPeripheralConfiguration();
 
         ProgressMonitor progressMonitor = new ProgressMonitor("captureTempImage", "start");
 
-        CameraPeripheral cameraPeripheral = getPeripheral(adapterConfiguration.getCameraPeripheralImplementation(), CameraPeripheral.class);
+        CameraPeripheral cameraPeripheral = getPeripheral(peripheralConfiguration.getCameraPeripheralImplementation(), CameraPeripheral.class);
         log.debug("Initializing camera adapter for temp image capturing: {}", cameraPeripheral.getSupportedImplementation());
         cameraPeripheral.initialize(progressMonitor, PeripheralInitParams.builder()
-                .configuration(adapterConfiguration)
+                .configuration(peripheralConfiguration)
                 .build());
 
-        ImageManipulationPeripheral imageManipulationPeripheral = getPeripheral(adapterConfiguration.getImageManipulationPeripheralImplementation(), ImageManipulationPeripheral.class);
+        ImageManipulationPeripheral imageManipulationPeripheral = getPeripheral(peripheralConfiguration.getImageManipulationPeripheralImplementation(), ImageManipulationPeripheral.class);
         log.debug("Initializing image-manipulation adapter for temp image capturing: {}", imageManipulationPeripheral.getSupportedImplementation());
         imageManipulationPeripheral.initialize(progressMonitor, PeripheralInitParams.builder()
                 .projectRoot(useProjectDirsUseCase.getProjectRoot())
-                .configuration(adapterConfiguration)
+                .configuration(peripheralConfiguration)
                 .workDir(useProjectDirsUseCase.getImagesDir(itemId))
                 .build());
 
@@ -83,10 +83,8 @@ public class CaptureItemImageService implements CaptureItemImageUseCase {
         String filename = fileRepository.getAssetName(fileRepository.getNextAssetNumber(targetDir), "jpg");
         Path targetFile = targetDir.resolve(filename).toAbsolutePath();
 
-        if (cameraPeripheral.captureImage(targetFile)) {
-            if (removeBackground) {
-                imageManipulationPeripheral.removeBackground(targetFile);
-            }
+        if (cameraPeripheral.captureImage(targetFile) && removeBackground) {
+            imageManipulationPeripheral.removeBackground(targetFile);
         }
 
         cameraPeripheral.teardown();

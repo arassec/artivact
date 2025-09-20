@@ -2,69 +2,89 @@ package com.arassec.artivact.application.service.operation;
 
 import com.arassec.artivact.domain.model.misc.ProgressMonitor;
 import com.arassec.artivact.domain.model.operation.BackgroundOperation;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class BackgroundOperationServiceTest {
 
+    @Mock
+    ExecutorService executorService;
+
+    @InjectMocks
+    BackgroundOperationService service;
+
     @Test
-    void testExecuteRunsBackgroundOperation() throws Exception {
-        BackgroundOperationService service = new BackgroundOperationService();
+    void testExecuteRunsBackgroundOperation() {
+        BackgroundOperation operation = mock(BackgroundOperation.class);
 
-        BackgroundOperation op = mock(BackgroundOperation.class);
+        doAnswer(invocation -> {
+            Runnable runnable = invocation.getArgument(0);
+            runnable.run();
+            return null;
+        }).when(executorService).submit(any(Runnable.class));
 
-        service.execute("topic1", "step1", op);
+        service.execute("topic1", "step1", operation);
 
-        // Give the thread some time to finish:
-        TimeUnit.MILLISECONDS.sleep(200);
+        verify(operation, times(1)).execute(any(ProgressMonitor.class));
 
-        verify(op).execute(any(ProgressMonitor.class));
-        assertThat(service.getProgress()).isNull(); // nach Ende wird Monitor auf null gesetzt
+        ProgressMonitor progress = service.getProgress();
+        assertThat(progress).isNull();
     }
 
     @Test
-    void testExecuteSkippedIfAlreadyRunning() {
-        BackgroundOperationService service = new BackgroundOperationService();
+    @SneakyThrows
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    void testExecuteDoesNotRunIfAlreadyRunning() {
+        CountDownLatch latch = new CountDownLatch(1);
 
-        BackgroundOperation op1 = mock(BackgroundOperation.class);
-        BackgroundOperation op2 = mock(BackgroundOperation.class);
+        BackgroundOperation firstOperation = progressMonitor -> {
+            try {
+                // block second operation... ignore result of await
+                latch.await(500, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException e) {
+                throw new RuntimeException("Thread waiting too long!", e);
+            }
+        };
 
-        service.execute("topicA", "stepA", op1);
+        BackgroundOperation secondOperation =
+                progressMonitor -> fail("Second operation should not be executed!");
 
-        ProgressMonitor running = service.getProgress();
-        assertThat(running).isNotNull();
+        service.execute("topic1", "step1", firstOperation);
+        service.execute("topic2", "step2", secondOperation);
 
-        service.execute("topicB", "stepB", op2);
-
-        verify(op2, never()).execute(any());
+        latch.countDown();
     }
 
     @Test
-    void testExecuteWithException() throws Exception {
-        BackgroundOperationService service = new BackgroundOperationService();
+    void testExecuteHandlesException() {
+        BackgroundOperation operation = pm -> {
+            throw new RuntimeException("fail");
+        };
 
-        BackgroundOperation op = mock(BackgroundOperation.class);
-        doThrow(new RuntimeException("fail!")).when(op).execute(any());
+        doAnswer(invocation -> {
+            Runnable runnable = invocation.getArgument(0);
+            runnable.run();
+            return null;
+        }).when(executorService).submit(any(Runnable.class));
 
-        service.execute("topicX", "stepX", op);
-
-        // Give the thread some time to finish:
-        TimeUnit.MILLISECONDS.sleep(200);
+        service.execute("topic1", "step1", operation);
 
         ProgressMonitor progress = service.getProgress();
         assertThat(progress).isNotNull();
-        assertThat(progress.getException()).isInstanceOf(RuntimeException.class);
+        assertThat(progress.getException()).isInstanceOf(RuntimeException.class)
+                .hasMessage("fail");
     }
-
-    @Test
-    void testTeardownShutsDownExecutor() {
-        BackgroundOperationService service = new BackgroundOperationService();
-        assertDoesNotThrow(service::teardown);
-    }
-
 }

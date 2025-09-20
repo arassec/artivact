@@ -93,24 +93,8 @@ public class DefaultTurntablePeripheral extends BasePeripheralAdapter implements
         SerialPort[] serialPorts = SerialPort.getCommPorts();
 
         for (SerialPort port : serialPorts) {
-            String systemPortName = port.getSystemPortName();
-
-            log.trace("Checking serial port for artivact turntable {} - {} - {}", systemPortName,
-                    port.getDescriptivePortName(), port.getPortDescription());
-
-            // Check if VID/PID matches Arduino Nano Every:
-            if ((port.getVendorID() == 0x2341 || port.getVendorID() == 0x2A03)
-                    && (port.getProductID() == 0x0058 || port.getProductID() == 0x0059)) {
-                try {
-                    ioDevice = new FirmataDevice("/dev/" + systemPortName);
-                    ioDevice.start();
-                    ioDevice.ensureInitializationIsDone();
-                } catch (InterruptedException | IOException e) {
-                    if (e instanceof InterruptedException) {
-                        Thread.currentThread().interrupt();
-                    }
-                    log.debug("Arduino device found, but not accessible with firmata4j.", e);
-                }
+            if (checkArduinoAtPort(port)) {
+                break;
             }
         }
 
@@ -145,7 +129,8 @@ public class DefaultTurntablePeripheral extends BasePeripheralAdapter implements
                 for (int i = 0; i < motorPins.length; i++) {
                     motorPins[i].setValue(sequence[i]);
                 }
-                Thread.sleep(2); // Some time is needed to actually set the pin value on the Arduino!
+                // Some time is needed to actually set the pin value on the Arduino!
+                TimeUnit.MILLISECONDS.sleep(5);
             }
 
             // Deactivate all pins:
@@ -157,10 +142,10 @@ public class DefaultTurntablePeripheral extends BasePeripheralAdapter implements
                 TimeUnit.MILLISECONDS.sleep(turntableDelay);
             }
 
-        } catch (InterruptedException | IOException e) {
-            if (e instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
-            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new ArtivactException("Interrupted during turntable rotation!", e);
+        } catch (IOException e) {
             throw new ArtivactException("Error during turntable rotation!", e);
         }
     }
@@ -179,6 +164,37 @@ public class DefaultTurntablePeripheral extends BasePeripheralAdapter implements
             throw new ArtivactException("Error during turntable reset!", e);
         }
         super.teardown();
+    }
+
+    /**
+     * Checks for a typical arduino signature and that firmata is available on the other side.
+     *
+     * @param port The port to check.
+     * @return {@code true} if an arduino with firmata is listening on the port, {@code false} otherwise.
+     */
+    private boolean checkArduinoAtPort(SerialPort port) {
+        String systemPortName = port.getSystemPortName();
+
+        log.trace("Checking serial port for artivact turntable {} - {} - {}", systemPortName,
+                port.getDescriptivePortName(), port.getPortDescription());
+
+        // Check if VID/PID matches Arduino Nano Every:
+        if ((port.getVendorID() == 0x2341 || port.getVendorID() == 0x2A03)
+                && (port.getProductID() == 0x0058 || port.getProductID() == 0x0059)) {
+            try {
+                ioDevice = new FirmataDevice("/dev/" + systemPortName);
+                ioDevice.start();
+                ioDevice.ensureInitializationIsDone();
+                return true;
+            } catch (InterruptedException | IOException e) {
+                if (e instanceof InterruptedException) {
+                    Thread.currentThread().interrupt();
+                }
+                log.debug("Arduino device found, but not accessible with firmata4j.", e);
+            }
+        }
+
+        return false;
     }
 
 }

@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-public class ArtivactServerApplicationTest {
+class ArtivactServerApplicationTest {
 
     /**
      * The spring application context.

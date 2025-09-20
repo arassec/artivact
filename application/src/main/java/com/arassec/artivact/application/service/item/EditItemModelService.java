@@ -59,7 +59,7 @@ public class EditItemModelService implements EditItemModelUseCase {
      * @param progressMonitor The progress monitor to show status updates to the user.
      * @param creationModel   The model to open.
      */
-    private void editModel(ProgressMonitor progressMonitor, CreationModelSet creationModel) {
+    public void editModel(ProgressMonitor progressMonitor, CreationModelSet creationModel) {
         PeripheralConfiguration adapterConfiguration = loadAdapterConfigurationUseCase.loadPeripheralConfiguration();
 
         ModelEditorPeripheral modelEditorAdapter = peripheralAdapters.stream()
