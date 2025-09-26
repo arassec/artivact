@@ -88,6 +88,28 @@
             </q-item-section>
           </q-item>
           <q-item
+            data-test="scan-item-button"
+            clickable
+            v-close-popup
+            @click="createItemAndStartScanning"
+            class="menu-entry"
+            v-if="
+              userdataStore.isUserOrAdmin && profilesStore.isDesktopModeEnabled
+            "
+          >
+            <q-item-section
+              ><label class="menu-label">
+                <q-icon
+                  name="3d_rotation"
+                  size="xs"
+                  color="primary"
+                  class="q-mr-sm"
+                ></q-icon>
+                {{ $t('ArtivactSettingsBar.scanItem') }}</label
+              >
+            </q-item-section>
+          </q-item>
+          <q-item
             data-test="import-item-button"
             @click="showImportItemModal = true"
             clickable
@@ -644,6 +666,7 @@ import { QUploader, useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { useProfilesStore } from '../stores/profiles';
 import ArtivactDialog from './ArtivactDialog.vue';
+import { useWizzardStore } from '../stores/wizzard';
 
 const { locale } = useI18n({ useScope: 'global' });
 
@@ -654,6 +677,7 @@ const i18n = useI18n();
 const userdataStore = useUserdataStore();
 const localeStore = useLocaleStore();
 const profilesStore = useProfilesStore();
+const wizzardStore = useWizzardStore();
 
 const accountsMenuOpen = ref(false);
 const itemMenuOpen = ref(false);
@@ -695,6 +719,33 @@ function gotoBatchPage() {
 }
 
 function createItem() {
+  api
+    .post('/api/item')
+    .then((response) => {
+      route.push('/administration/configuration/item/' + response.data);
+      quasar.notify({
+        color: 'positive',
+        position: 'bottom',
+        message: i18n.t('Common.messages.creating.success', {
+          item: i18n.t('Common.items.item'),
+        }),
+        icon: 'check',
+      });
+    })
+    .catch(() => {
+      quasar.notify({
+        color: 'negative',
+        position: 'bottom',
+        message: i18n.t('Common.messages.creating.failed', {
+          item: i18n.t('Common.items.item'),
+        }),
+        icon: 'report_problem',
+      });
+    });
+}
+
+function createItemAndStartScanning() {
+  wizzardStore.setStartScanning(true);
   api
     .post('/api/item')
     .then((response) => {

@@ -738,6 +738,7 @@ export default {
     default: 'Standard',
     itemSettings: 'Objekt-Einstellungen',
     createItem: 'Objekt erzeugen',
+    scanItem: 'Objekt scannen',
     importItem: 'Objekt importieren',
     license: 'Lizenz',
     appearance: 'Darstellung',

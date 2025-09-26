@@ -747,6 +747,7 @@ export default {
     default: 'Default',
     itemSettings: 'Item Settings',
     createItem: 'Create Item',
+    scanItem: 'Scan Item',
     importItem: 'Import Item',
     license: 'License',
     appearance: 'Appearance',

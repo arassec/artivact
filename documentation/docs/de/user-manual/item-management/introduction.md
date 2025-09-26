@@ -20,6 +20,12 @@ Das Menü bietet verschiedene Optionen zur Verwaltung von Objekten:
 Ein Klick auf diesen Menüeintrag erstellt ein neues, leeres Objekt und öffnet direkt den Editor für dieses Objekt.  
 Das Objekt wird beim Erstellen automatisch gespeichert.
 
+## Object scannen <Badge type="warning" text="desktop"/>
+
+Führt dieselbe Aktion aus wie "Objekt erstellen", allerdings springt der Objekteditor direkt in den Tab zum Scannen
+von Objekten. Dieser Menüeintrag ist eine Abkürzung um beim häufigen Scannen von Sammlungsobjekten Klickarbeit zu
+sparen.
+
 ## Objekt importieren
 
 Ermöglicht den Import eines zuvor exportierten Objekts.  

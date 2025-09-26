@@ -20,6 +20,11 @@ The menu offers different options to manage items:
 Clicking this menu entry creates a new, empty item and jumps directly into the editor for this item.
 The item is saved automatically when created.
 
+## Scan Item <Badge type="warning" text="desktop"/>
+
+Same as 'Create Item' above, but the item editor jumps into the tab for scanning directly. It is a shortcut to save a
+few clicks when scanning a new item.
+
 ## Import Item
 
 Lets you import a previously exported item. A dialog will pop up that let's you choose the ZIP file of the previously

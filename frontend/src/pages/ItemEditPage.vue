@@ -260,6 +260,7 @@ import ArtivactItemImageEditor from '../components/ArtivactItemImageEditor.vue';
 import ArtivactItemImageSetEditor from '../components/ArtivactItemImageSetEditor.vue';
 import ArtivactItemModelSetEditor from '../components/ArtivactItemModelSetEditor.vue';
 import { useProfilesStore } from '../stores/profiles';
+import { useWizzardStore } from '../stores/wizzard';
 
 const quasar = useQuasar();
 const route = useRoute();
@@ -270,6 +271,7 @@ const localeStore = useLocaleStore();
 const breadcrumbsStore = useBreadcrumbsStore();
 const userdataStore = useUserdataStore();
 const profilesStore = useProfilesStore();
+const wizzardStore = useWizzardStore();
 
 const itemDataRef = ref<ItemDetails>();
 const propertiesDataRef = ref();
@@ -318,6 +320,9 @@ function loadItemData(itemId: string | string[]) {
     .then((response) => {
       itemDataRef.value = response.data;
       originalItemJson = JSON.stringify(response.data);
+      if (wizzardStore.startScanning) {
+        tabRef.value = 'creation';
+      }
     })
     .catch(() => {
       quasar.notify({
