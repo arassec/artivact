@@ -15,9 +15,6 @@ hero:
     - theme: alt
       text: User Manual
       link: /user-manual/introduction/about
-    - theme: alt
-      text: Tutorials
-      link: /tutorials/artivact-as-scanner/introduction
       
 features:
   - title: Create
@@ -31,7 +28,7 @@ features:
   - title: Experience
     icon:
       src: /artivact-experience.png
-    details: Use Artivact to create and experience your virtual exhibitions in the metaverse.
+    details: Use Artivact to experience your virtual exhibitions in the metaverse with Artivact XR.
 
 ---
 

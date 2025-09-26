@@ -1,20 +1,18 @@
-# Artivact als Web-Server
+# Artivact als Webserver
 
-## Über Artivact
+## Über
 
-Artivact kann als Web-Server betrieben werden, um virtuelle Ausstellungsstücke per Browser zu erstellen und zu
-verwalten.
+Artivact kann als Webserver genutzt werden, um deine Sammlung virtueller Objekte zu verwalten und zu präsentieren.
 
-Die Anwendung stellt ein einfaches Content-Management-System bereit, um Webseiten per Browser zu erzeugen.
-Die verfügbaren Widgets, die Bausteine der einzelnen Webseiten, legen ihren Fokus auf die Präsentation der virtuellen
-Sammlung.
+Es stellt ein einfaches Content-Management-System zur Verfügung, um Webseiten zu erstellen.  
+Die verfügbaren Widgets, die Bausteine der Seiten, sind speziell darauf ausgerichtet, deine virtuelle Sammlung
+darzustellen.
 
-## Features
+## Funktionen
 
-Artivact im Web-Server-Modus stellt die folgende Funktionalität bereit:
+Artivact im Server-Modus bietet die folgenden Funktionen:
 
-- Ein einfaches Content-Management-System zur Organisation und Präsentation der Sammlung.
-- Management und Verwaltung von virtuellen Ausstellungsstücken via Browser.
-- Administrator- und Benutzerkonten zur gemeinsamen Arbeit an der Sammlung.
-- Synchronisation mit der Desktop-Variante der Anwendung für den einfachen Upload von neu erstellten
-  Ausstellungsstücken.
+- Content-Management-System zur Organisation und Präsentation deiner Sammlung.
+- Verwaltung und Kuratierung virtueller Objekte über das Web.
+- Administrator- und Benutzerkonten zur Zusammenarbeit an Sammlungen.
+- Synchronisation mit Desktop-Installationen von Artivact für einfaches Hochladen von Objekten.

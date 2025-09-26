@@ -2,7 +2,7 @@
   <h2 class="av-text-h2">
     {{ $t('Common.items.images') }}
     <q-btn
-      data-test="item-creation-camera-button"
+      data-test="item-creation-image-button"
       text-color="primary"
       round
       dense

@@ -1,16 +1,15 @@
 # Widgets
 
-## Available Widgets
+## Verfügbare Widgets
 
-The following widgets can currently be used to compose pages of:
+Die folgenden Widgets können derzeit verwendet werden, um Seiten zu gestalten:
 
-| Widget         | Description                                                                                                                |
-|:---------------|:---------------------------------------------------------------------------------------------------------------------------|
-| Page Title     | A page title spanning an optional image across the browser windows and a bold, central title text.                         |
-| Text           | A heading with text content. Markdown is supported to further structure and format the text content.                       |
-| Image and Text | A two column widget with an image on the left and a heading with text content on the right.                                |
-| Item Search    | A widget providing input for an item search. If a search term is configured, the search result will directly be displayed. |
-| Item Carousel  | A widget showing items from an item search in a carousel. The search term must be configured.                              |
-| Info Box       | An info box containing a heading and text content. Can be colored in green, red and yellow.                                |
-| Avatar         | A central image, rounded, with an optional subtext.                                                                        |
-| Space          | A widget to add extra space between two other widgets.                                                                     |
+| Widget        | Beschreibung                                                                                                                               |
+|:--------------|:-------------------------------------------------------------------------------------------------------------------------------------------|
+| Avatar        | Ein zentrales, rundes Bild mit optionalem Untertext.                                                                                       |
+| Buttons       | Eine Liste von Buttons, die neue Seiten öffnen. Jeder Button kann individuell gestaltet werden.                                            |
+| Bildergalerie | Ein Widget, das ein oder mehrere Bilder sowie optionalen Text enthält. Die Position von Bild(en) und Text kann konfiguriert werden.        |
+| Info-Box      | Eine Info-Box mit Überschrift und Textinhalt. Kann in den Farben Grün, Rot und Gelb dargestellt werden.                                    |
+| Objektsuche   | Ein Widget, das Eingaben für eine Objektsuche bereitstellt. Wenn ein Suchbegriff konfiguriert ist, wird das Suchergebnis direkt angezeigt. |
+| Seitentitel   | Ein Seitentitel mit optionalem Bild über das Browserfenster und einem fettgedruckten, zentralen Titeltext.                                 |
+| Text          | Eine Überschrift mit Textinhalt. Markdown wird unterstützt, um den Text weiter zu strukturieren und zu formatieren.                        |

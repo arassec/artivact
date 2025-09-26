@@ -525,9 +525,16 @@
 
     <!-- MENU MANAGEMENT -->
     <!-- Menu with entries to create or import menus -->
-    <q-btn flat v-if="userdataStore.isAdmin">
+    <q-btn
+      flat
+      v-if="userdataStore.isAdmin"
+      data-test="add-menu-button"
+      :disable="
+        localeStore.selectedLocale !== null && !profilesStore.isE2eModeEnabled
+      "
+    >
       <q-icon name="add" color="white"></q-icon>
-      <q-menu>
+      <q-menu data-test="add-menu-menu">
         <q-list>
           <q-item
             data-test="create-menu-button"

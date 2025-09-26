@@ -1,117 +1,101 @@
-# Peripheriegeräte-Konfiguration <Badge type="warning" text="desktop"/>
+# Peripherie-Konfiguration <Badge type="warning" text="desktop"/>
 
 ## Konfiguration
 
-Über die Peripheriegeräte-Konfiguration kann die Drittanbietersoftware konfiguriert werden, um aus Artivact einen
-3D-Scanner zu machen.
+Die Peripherie-Konfiguration fügt Artivact externe Drittanbieter-Software zur Erstellung von 3D-Modellen hinzu.
 
-Diese ist nur in der Desktop-Variante im Einstellungen-Menü verfügbar:
+Sie ist nur in der Desktop-Version verfügbar.
 
-![peripherals menu](/assets/user-manual/settings/peripherals/en/peripherals-menu.png)
+Die Seite zeigt Konfigurationsoptionen für jeden externen Bestandteil der 3D-Modellerstellung:
 
-Die Seite bietet die Konfigurationsoptionen für die Drittanbietersoftware:
+![peripherals-configuration](./assets/peripherals/peripherals-configuration.png)
 
-![peripherals overview](/assets/user-manual/settings/peripherals/en/peripherals-overview.png)
+## Drehteller
 
-## Turntable
-
-::: warning Linux Systems
-Linux users have to be in the **dialout** group in order to use the Artivact turntable!
+::: warning Linux-Systeme
+Linux-Nutzer müssen Mitglied der **dialout**-Gruppe sein, um den Artivact-Drehteller verwenden zu können!
 :::
 
-After [assembly of the turntable](/tutorials/artivact-as-scanner/artivact-turntable), you can connect it to your PC via
-USB and configure it in Artivact.
+Nach dem Zusammenbau des Drehtellers können Sie ihn über USB mit Ihrem PC verbinden und in Artivact konfigurieren.
 
-|       Selection        |   Configuration Value    |
-|:----------------------:|:------------------------:| 
-| ``Artivact Turntable`` | Artivact's DIY turntable | 
+|         Auswahl         |    Konfigurationswert    |
+|:-----------------------:|:------------------------:| 
+| ``Artivact Drehteller`` | Artivacts DIY-Drehteller | 
 
-## Camera
+## Kamera
 
-For automatic image capturing, you need to attach your camera to your PC using USB and install Software to control it
-remotely. Currently, [DigiCamControl](https://digicamcontrol.com/) for Windows systems and [gphoto2](http://gphoto.org/)
-for Linux systems are supported.
+Für die automatische Bilderfassung müssen Sie Ihre Kamera per USB an den PC anschließen und das Picture Transfer
+Protocol (PTP) aktivieren.  
+Wenn die Kamera nicht mit dem eingebauten Standard-Connector funktioniert, können Sie zusätzliche Software installieren,
+um sie remote zu steuern.  
+Derzeit werden als Fallback [DigiCamControl](https://digicamcontrol.com/) für Windows und [gphoto2](http://gphoto.org/)
+für Linux unterstützt.
 
 ### DigiCamControl
 
-::: tip Supported Version
-DigiCamControl integration has been tested for Version **2.1**.
+::: tip Unterstützte Version
+Die DigiCamControl-Integration wurde mit Version **2.1** getestet.
 :::
 
-|          Selection          | Configuration Value                                                                                              |                            Example                             |
-|:---------------------------|:-----------------------------------------------------------------------------------------------------------------|:--------------------------------------------------------------|
-|     ``DigiCamControl``      | The application's executable                                                                                     | ``C:/Program Files (x86)/digiCamControl/CameraControlCmd.exe`` |
-| ``DigiCamControl (Remote)`` | The application's web endpoint, if the [web interface](https://digicamcontrol.com/doc/userguide/web) is enabled. |                   ``http://localhost:5513/``                   |
-
-"DigiCamControl (Remote)" provides better performance, but needs configuration in DigiCamControl to work.
-The embedded web server needs to be activated by the
-user: [DigiCamControl Webserver Configuration](https://digicamcontrol.com/doc/userguide/settings#webserver)
+| Auswahl            | Konfigurationswert                  | Beispiel                                                       |
+|:-------------------|:------------------------------------|:---------------------------------------------------------------|
+| ``DigiCamControl`` | Die ausführbare Datei der Anwendung | ``C:/Program Files (x86)/digiCamControl/CameraControlCmd.exe`` |
 
 ### gphoto2
 
-::: tip Supported Version
-gphoto2 integration has been tested for Version **2.5**.
+::: tip Unterstützte Version
+Die gphoto2-Integration wurde mit Version **2.5** getestet.
 :::
 
-|  Selection  | Configuration Value          |       Example        |
-|:-----------|:-----------------------------|:--------------------|
-| ``gphoto2`` | The application's executable | ``/usr/bin/gphoto2`` |
+| Auswahl     | Konfigurationswert                  | Beispiel             |
+|:------------|:------------------------------------|:---------------------|
+| ``gphoto2`` | Die ausführbare Datei der Anwendung | ``/usr/bin/gphoto2`` |
 
-## Background Removal
+## Hintergrundentfernung
 
-Artivact can use the free and open-source tool [rembg](https://github.com/danielgatis/rembg) by Daniel Gatis to
-automatically remove the backgrounds of images.
+Artivact kann den Hintergrund aufgenommener Bilder automatisch entfernen.  
+Hierfür werden Open-Source-Neuronale Netze zur Erkennung markanter Objekte verwendet. Die Standardkonfiguration liefert
+in der Regel akzeptable Ergebnisse.
 
-### rembg
+Für schärfere oder bessere Resultate können neue Netzwerke heruntergeladen, im Projektverzeichnis ``./utils/onnx/``
+abgelegt und hier konfiguriert werden.
 
-::: tip Supported Version
-rembg integration has been tested for Version **2.0**.
-:::
+Das freie Open-Source-Tool [rembg](https://github.com/danielgatis/rembg) von Daniel Gatis bietet eine Sammlung von
+Netzwerken sowie einen Vergleich auf seiner GitHub-Seite.
 
-The software has to be installed using the provided Docker image:
+## Modellerstellung
 
-```
-docker run -d -p 7000:7000 --name=rembg --restart=always danielgatis/rembg s
-```
-
-Please refer to the official [Docker documentation](https://docs.docker.com/manuals/) for further information on how to
-use docker on your system.
-
-After installation, it can be configured in Artivact.
-
-|     Selection      | Configuration Value                                |               Example                |
-|:------------------|:---------------------------------------------------|:------------------------------------|
-| ``rembg (Remote)`` | The application's web endpoint, exposed by Docker. | ``http://localhost:7000/api/remove`` |
-
-## Model Creator
-
-Model creation with photogrammetry is supported by Artivact through external programs.
+Die Modellerstellung mit Photogrammetrie wird von Artivact über externe Programme unterstützt.
 
 ### Meshroom
 
-::: tip Supported Version
-Meshroom integration has been tested for Version **2023.3**.
+::: tip Unterstützte Version
+Die Meshroom-Integration wurde mit Version **2025.1** getestet.
 :::
 
 ### Metashape
 
-::: tip Supported Version
-Metashape integration has been tested for Version **2.1**
+::: tip Unterstützte Version
+Die Metashape-Integration wurde mit Version **2.2** getestet.
 :::
 
-## Model Editor
+### RealityScan
 
-Model editing is supported by Artivact through an external application: Blender 3D.
+::: tip Unterstützte Version
+Die RealityScan-Integration wurde mit Version **2.0** getestet.
+:::
+
+## Modelleditor
+
+Die Modellbearbeitung wird von Artivact über eine externe Anwendung unterstützt: Blender 3D.
 
 ### Blender 3D
 
-::: tip Supported Version
-Blender integration has been tested for Versions **3** and **4**.
+::: tip Unterstützte Version
+Die Blender-Integration wurde mit Version **4** getestet.
 :::
 
-For model editing, Blender 3D can be opened from within Artivact.
-The selected model-set, containing an OBJ 3D model from the previous steps, will automatically be imported.
+Für die Modellbearbeitung kann Blender 3D direkt aus Artivact gestartet werden.  
+Das ausgewählte Modell-Set, das ein OBJ-3D-Modell aus den vorherigen Schritten enthält, wird automatisch importiert.
 
-The final 3D model should be exported as GLTF/GLB file into the default folder suggested by Blender.
-
-It can then finally be transferred to the virtual items media section and used from there on.
+Das finale 3D-Modell sollte als GLTF/GLB-Datei in den von Blender vorgeschlagenen Standardordner exportiert

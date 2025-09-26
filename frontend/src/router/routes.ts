@@ -43,6 +43,13 @@ const routes: RouteRecordRaw[] = [
           profilesStore.setDesktopModeEnabled(profiles.desktop || profiles.e2e);
           profilesStore.setServerModeEnabled(!profiles.desktop || profiles.e2e);
 
+          if (
+            !profilesStore.isE2eModeEnabled &&
+            localeStore.selectedLocale !== null
+          ) {
+            localeStore.setSelectedLocale(null);
+          }
+
           if (profiles.desktop || profiles.e2e) {
             const postdata = new URLSearchParams();
             postdata.append('username', 'desktop');

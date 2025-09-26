@@ -1,16 +1,16 @@
-# Artivact's Content Management System
+# Artivacts Content-Management-System
 
-## Introduction
+## Einführung
 
-Artivact provides a basic CMS to manage your collection.
+Artivact stellt ein einfaches Content-Management-System (CMS) zur Verwaltung deiner Sammlung bereit.
 
-The core concepts are:
+Die Kernkonzepte sind:
 
-- The user defines the menu structure in the top navigation.
-- Each menu entry can either directly open a page, or contain a list of menu entries.
-- Menu entries each open a different page.
+- Der Benutzer definiert die Menüstruktur in der oberen Navigation.
+- Jeder Menüeintrag kann entweder direkt eine Seite öffnen oder eine Liste von Untermenüeinträgen enthalten.
+- Jeder Menüeintrag öffnet eine andere Seite.
 
-Pages are built using Widgets. Those are small building blocks of a page, which can e.g. show the results of an item
-search or a page header.
+Seiten werden mit Widgets erstellt. Dies sind kleine Bausteine einer Seite, die z.B. die Ergebnisse einer Objektsuche
+oder einen Seitenkopf anzeigen können.
 
-Thus, you can individually define how you want to manage your collection.
+Auf diese Weise kannst du individuell festlegen, wie du deine Sammlung verwalten möchtest.

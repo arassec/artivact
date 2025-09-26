@@ -1,27 +1,26 @@
-# Artivact's Account Management <Badge type="warning" text="server"/>
+# Artivacts Kontoverwaltung <Badge type="warning" text="server"/>
 
-## Accounts
+## Konten
 
-Artivact supports accounts to collaborate on collection management.
-Account management can be opened by clicking the button in the top navigation:
+Artivact unterstützt Konten, um gemeinsam an der Verwaltung von Sammlungen zu arbeiten.  
+Die Kontoverwaltung kann durch Klicken des Buttons in der oberen Navigation geöffnet werden:
 ![account-settings-button](../introduction/assets/about/account-settings-button.png)
 
-Users are able to manage their own account settings, especially the password, by opening the ``Account`` page.
-Administrators can manage all system accounts by opening the ``Accounts`` page.
+Benutzer können ihre eigenen Kontoeinstellungen, insbesondere das Passwort, auf der Seite ``Account`` verwalten.  
+Administratoren können alle Systemkonten auf der Seite ``Accounts`` verwalten.
 
-Accounts required at least a ``username`` and ``password`` to be able to log in.
+Konten benötigen mindestens einen ``Benutzernamen`` und ein ``Passwort``, um sich anmelden zu können.
 
-Additionally, the following information can be provided:
+Zusätzlich können folgende Informationen angegeben werden:
 
-- E-Mail: An optional e-mail address of the user which is currently only saved in the system.
-- The user's assigned roles as described below.
+- E-Mail: Eine optionale E-Mail-Adresse des Benutzers, die derzeit nur im System gespeichert wird.
+- Die dem Benutzer zugewiesenen Rollen, wie unten beschrieben.
 
+## Rollen
 
-## Roles
+Es gibt zwei Rollen, die die Rechte eines Benutzers in der Anwendung erhöhen:
 
-There are two roles available, that increase a user's rights in the application:
-
-- User:
-  - Users have the right to create and edit items in Artivact.
+- Benutzer:
+    - Benutzer haben das Recht, Objekte und Seiten in Artivact zu erstellen und zu bearbeiten.
 - Administrator:
-  - Administrators have all user rights and can additionally configure system settings and accounts.
+    - Administratoren besitzen alle Benutzerrechte und können zusätzlich Systemeinstellungen und Konten konfigurieren.

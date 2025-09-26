@@ -11,6 +11,7 @@
         >
           <!-- DELETE ITEM BUTTON -->
           <q-btn
+            data-test="delete-item-button"
             round
             color="primary"
             icon="delete"
@@ -23,7 +24,7 @@
           </q-btn>
           <!-- DOWNLOAD BUTTON -->
           <q-btn
-            data-test="download-button"
+            data-test="download-item-button"
             round
             color="primary"
             icon="download"
@@ -36,6 +37,7 @@
           </q-btn>
           <!-- SYNC UP BUTTON -->
           <q-btn
+            data-test="sync-item-button"
             round
             :disable="!applicationSettingsStore.syncAvailable"
             color="primary"
@@ -51,7 +53,13 @@
           <router-link
             :to="'/administration/configuration/item/' + itemDataDetailsRef.id"
           >
-            <q-btn round color="primary" icon="edit" class="main-nav-button">
+            <q-btn
+              data-test="edit-item-button"
+              round
+              color="primary"
+              icon="edit"
+              class="main-nav-button"
+            >
               <q-tooltip>{{
                 $t('ItemDetailsPage.button.tooltip.edit')
               }}</q-tooltip>

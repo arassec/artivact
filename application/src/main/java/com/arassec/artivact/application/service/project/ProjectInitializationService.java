@@ -175,7 +175,7 @@ public class ProjectInitializationService {
 
             log.info("");
             log.info("##############################################################");
-            log.info("Initial user created: {} / {}", INITIAL_USERNAME, initialPassword);
+            log.info("Initial user created: {} / {}", INITIAL_USERNAME, password);
             log.info("##############################################################");
             log.info("");
         }
@@ -195,7 +195,11 @@ public class ProjectInitializationService {
             if (checkRuntimeConfigurationUseCase.isDesktopProfileEnabled() || checkRuntimeConfigurationUseCase.isE2eProfileEnabled()) {
                 appearanceConfiguration.setIndexPageId(INITIAL_INDEX_PAGE_ID);
             }
-            appearanceConfiguration.setAvailableLocales("");
+            if (checkRuntimeConfigurationUseCase.isE2eProfileEnabled()) {
+                appearanceConfiguration.setAvailableLocales("de");
+            } else {
+                appearanceConfiguration.setAvailableLocales("");
+            }
             appearanceConfiguration.setLicense(new License());
 
             ColorTheme colorTheme = new ColorTheme();

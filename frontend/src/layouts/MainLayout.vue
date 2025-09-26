@@ -1,6 +1,10 @@
 <template>
   <q-layout view="hHh lpR fFf" data-test="artivact-main-layout">
-    <q-header elevated class="bg-primary page-header" height-hint="98">
+    <q-header
+      :elevated="!profilesStore.isE2eModeEnabled"
+      class="bg-primary page-header"
+      height-hint="98"
+    >
       <q-toolbar class="q-pl-xs page-toolbar">
         <q-toolbar-title class="q-mt-xs q-mb-xs">
           <artivact-menu-bar />
@@ -14,18 +18,27 @@
 
         <router-link
           to="/user-login"
-          v-if="!userdataStore.authenticated && profilesStore.isServerModeEnabled"
+          v-if="
+            !userdataStore.authenticated && profilesStore.isServerModeEnabled
+          "
           class="menu-entry-link q-mt-xs q-mb-xs"
         >
-          <q-btn data-test="login-button"
-            flat color="white" icon="login" size="md">
-            <q-tooltip>{{$t("MainLayout.login")}}</q-tooltip>
+          <q-btn
+            data-test="login-button"
+            flat
+            color="white"
+            icon="login"
+            size="md"
+          >
+            <q-tooltip>{{ $t('MainLayout.login') }}</q-tooltip>
           </q-btn>
         </router-link>
 
         <router-link
           to="/"
-          v-if="userdataStore.authenticated && profilesStore.isServerModeEnabled"
+          v-if="
+            userdataStore.authenticated && profilesStore.isServerModeEnabled
+          "
           class="menu-entry-link"
         >
           <q-btn
@@ -40,14 +53,14 @@
             <label class="q-mr-sm cursor-pointer">
               {{ userdataStore.username }}
             </label>
-            <q-tooltip>{{$t("MainLayout.logout")}}</q-tooltip>
+            <q-tooltip>{{ $t('MainLayout.logout') }}</q-tooltip>
           </q-btn>
         </router-link>
       </q-toolbar>
     </q-header>
 
     <q-page-container>
-      <q-page class="bg-accent">
+      <q-page class="bg-accent" data-test="artivact-main-page">
         <router-view :key="$route.fullPath" />
       </q-page>
     </q-page-container>
@@ -57,15 +70,15 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useQuasar } from 'quasar';
-import { api } from 'boot/axios';
-import { useUserdataStore } from 'stores/userdata';
-import { useLocaleStore } from 'stores/locale';
-import { useMenuStore } from 'stores/menu';
-import ArtivactMenuBar from 'components/ArtivactMenuBar.vue';
-import ArtivactSettingsBar from 'components/ArtivactSettingsBar.vue';
+import { api } from '../boot/axios';
+import { useUserdataStore } from '../stores/userdata';
+import { useLocaleStore } from '../stores/locale';
+import { useMenuStore } from '../stores/menu';
+import ArtivactMenuBar from '../components/ArtivactMenuBar.vue';
+import ArtivactSettingsBar from '../components/ArtivactSettingsBar.vue';
 import { useI18n } from 'vue-i18n';
-import { useProfilesStore } from 'stores/profiles';
-import { useApplicationSettingsStore } from 'stores/application-settings';
+import { useProfilesStore } from '../stores/profiles';
+import { useApplicationSettingsStore } from '../stores/application-settings';
 
 const quasar = useQuasar();
 const i18n = useI18n();
@@ -92,7 +105,9 @@ function loadMenus() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.menus') }),
+        message: i18n.t('Common.messages.loading.failed', {
+          item: i18n.t('Common.items.menus'),
+        }),
         icon: 'report_problem',
       });
     });
@@ -156,5 +171,4 @@ onMounted(() => {
 .cursor-pointer {
   cursor: pointer;
 }
-
 </style>

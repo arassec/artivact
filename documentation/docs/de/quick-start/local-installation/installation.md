@@ -1,19 +1,20 @@
-# Installation auf dem Desktop
+# Lokale Installation von Artivact
 
 ## Installation
 
-Die aktuellste Version kann von der Github-Projektseite geladen werden: [Artivact Releases](https://github.com/arassec/artivact/releases/latest). 
+Die neueste Version kann auf der [GitHub-Seite des Projekts](https://github.com/arassec/artivact/releases/latest)
+heruntergeladen werden.
 
-Die relevanten Dateien enthalten 'desktop' im Namen, z.B.
+Die herunterzuladenden Dateien enthalten „desktop“ im Namen, z. B.:
 
-- ```artivact-desktop-linux-v0.0.0.tar.gz``` für die Linux-Version.
-- ```artivact-desktop-windows-v0.0.0.zip``` für die Windows-Version.
+- ```artivact-desktop-linux-v##VERSION##.tar.gz``` für die Linux-Version.
+- ```artivact-desktop-windows-v##VERSION##.zip``` für die Windows-Version.
 
-Die Dateien können in ein beliebiges Verzeichnis entpackt werden, es ist keine Installation notwendig.
+Entpacke die Datei in ein Verzeichnis deiner Wahl.
 
 ## Start
 
-Die Anwendung kann über die Binärdatei im ausgepackten Verzeichnis gestartet werden:
+Die Anwendung kann über die ausführbare Datei im entpackten Verzeichnis gestartet werden:
 
 - ```Artivact``` für die Linux-Version.
 - ```Artivact.exe``` für die Windows-Version.

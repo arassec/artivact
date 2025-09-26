@@ -4,13 +4,11 @@
 
 Peripheral configuration adds the external 3rd party software to create 3D models to Artivact.
 
-It is only available in the desktop version under the Settings menu:
-
-![peripherals menu](/assets/user-manual/settings/peripherals/en/peripherals-menu.png)
+It is only available in the desktop version.
 
 The page shows configuration options for every external part of 3D model creation:
 
-![peripherals overview](/assets/user-manual/settings/peripherals/en/peripherals-overview.png)
+![peripherals-configuration](./assets/peripherals/peripherals-configuration.png)
 
 ## Turntable
 
@@ -18,8 +16,7 @@ The page shows configuration options for every external part of 3D model creatio
 Linux users have to be in the **dialout** group in order to use the Artivact turntable!
 :::
 
-After [assembly of the turntable](/tutorials/artivact-as-scanner/artivact-turntable), you can connect it to your PC via
-USB and configure it in Artivact.
+After assembly of the turntable, you can connect it to your PC via USB and configure it in Artivact.
 
 |       Selection        |   Configuration Value    |
 |:----------------------:|:------------------------:| 
@@ -27,9 +24,11 @@ USB and configure it in Artivact.
 
 ## Camera
 
-For automatic image capturing, you need to attach your camera to your PC using USB and install Software to control it
+For automatic image capturing, you need to attach your camera to your PC using USB and enable Picture Transfer
+Protocol (PTP) on it.
+If the camera is not working with the builtin default connector, you and install additional Software to control it
 remotely. Currently, [DigiCamControl](https://digicamcontrol.com/) for Windows systems and [gphoto2](http://gphoto.org/)
-for Linux systems are supported.
+for Linux systems are supported as fallback.
 
 ### DigiCamControl
 
@@ -37,14 +36,9 @@ for Linux systems are supported.
 DigiCamControl integration has been tested for Version **2.1**.
 :::
 
-| Selection                   | Configuration Value                                                                                              | Example                                                        |
-|:----------------------------|:-----------------------------------------------------------------------------------------------------------------|:---------------------------------------------------------------|
-| ``DigiCamControl``          | The application's executable                                                                                     | ``C:/Program Files (x86)/digiCamControl/CameraControlCmd.exe`` |
-| ``DigiCamControl (Remote)`` | The application's web endpoint, if the [web interface](https://digicamcontrol.com/doc/userguide/web) is enabled. | ``http://localhost:5513/``                                     |
-
-"DigiCamControl (Remote)" provides better performance, but needs configuration in DigiCamControl to work.
-The embedded web server needs to be activated by the
-user: [DigiCamControl Webserver Configuration](https://digicamcontrol.com/doc/userguide/settings#webserver)
+| Selection          | Configuration Value          | Example                                                        |
+|:-------------------|:-----------------------------|:---------------------------------------------------------------|
+| ``DigiCamControl`` | The application's executable | ``C:/Program Files (x86)/digiCamControl/CameraControlCmd.exe`` |
 
 ### gphoto2
 
@@ -58,29 +52,14 @@ gphoto2 integration has been tested for Version **2.5**.
 
 ## Background Removal
 
-Artivact can use the free and open-source tool [rembg](https://github.com/danielgatis/rembg) by Daniel Gatis to
-automatically remove the backgrounds of images.
+Artivact can automatically remove the background of captured images. For this, open-source neural networks for
+salient object detection are used. The default configuration should provide acceptable results.
 
-### rembg
+If sharper / better results are needed, you can download new networks, place them in the project's ``./utils/onnx/``
+directory and configure their parameters here.
 
-::: tip Supported Version
-rembg integration has been tested for Version **2.0**.
-:::
-
-The software has to be installed using the provided Docker image:
-
-```
-docker run -d -p 7000:7000 --name=rembg --restart=always danielgatis/rembg s
-```
-
-Please refer to the official [Docker documentation](https://docs.docker.com/manuals/) for further information on how to
-use docker on your system.
-
-After installation, it can be configured in Artivact.
-
-| Selection          | Configuration Value                                | Example                              |
-|:-------------------|:---------------------------------------------------|:-------------------------------------|
-| ``rembg (Remote)`` | The application's web endpoint, exposed by Docker. | ``http://localhost:7000/api/remove`` |
+The free and open-source tool [rembg](https://github.com/danielgatis/rembg) by Daniel Gatis offers a collection of
+networks and a comparison of them on his project's Github page.
 
 ## Model Creator
 
@@ -89,13 +68,19 @@ Model creation with photogrammetry is supported by Artivact through external pro
 ### Meshroom
 
 ::: tip Supported Version
-Meshroom integration has been tested for Version **2023.3**.
+Meshroom integration has been tested for Version **2025.1**.
 :::
 
 ### Metashape
 
 ::: tip Supported Version
-Metashape integration has been tested for Version **2.1**
+Metashape integration has been tested for Version **2.2**
+:::
+
+### RealityScan
+
+::: tip Supported Version
+RealityScan integration has been tested for Version **2.0**
 :::
 
 ## Model Editor
@@ -105,7 +90,7 @@ Model editing is supported by Artivact through an external application: Blender 
 ### Blender 3D
 
 ::: tip Supported Version
-Blender integration has been tested for Versions **3** and **4**.
+Blender integration has been tested for Versions **4**.
 :::
 
 For model editing, Blender 3D can be opened from within Artivact.

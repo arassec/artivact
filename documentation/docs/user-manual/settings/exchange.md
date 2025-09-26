@@ -13,7 +13,26 @@ Artivact:
 
 ## Content Exports
 
-Previously created content exports can be managed here. See [Menus](/user-manual/content-management/menus) for details
-on how to export content.
+Content exports of parts of or event your entire collection can be managed here.
 
-Available exports are listed and can be deleted by clicking on the ``trash`` icon of to the entry.
+Base for the content export is always a menu. The associated page and all the items shown on it will be included in the
+export.
+
+Additionally, the export configuration offers the following options:
+
+| Option                      | Description                                                                                                                                                         |
+|:----------------------------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------| 
+| Restrictions                | Content exports can be restricted to administrators and/or users.                                                                                                   | 
+| Title                       | A short title of the export which will be included in the export itself.                                                                                            | 
+| Short Description           | A short summary of the content export's contents.                                                                                                                   | 
+| Content                     | A longer, more detailed description of the export's contents.                                                                                                       | 
+| Optimize export size        | Optimized exports will contain a single 3D model for each item if available, or as fallback a single picture of the item, instead of all of the item's media files. | 
+| Exclude restricted elements | Excludes all restricted elements, widgets or items, from the export.                                                                                                | 
+
+## Content Imports
+
+Previously created content exports can be imported into Artivact. Two options are available for content import:
+
+- Complete Import: The content is imported including all items, pages and menus.
+- Import for Distribution: Only the content export file is imported for further distribution, without importing included
+  items, pages and menus.

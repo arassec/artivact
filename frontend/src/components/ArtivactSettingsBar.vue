@@ -60,6 +60,7 @@
         $t('ArtivactSettingsBar.itemSettings')
       }}</q-tooltip>
       <q-menu
+        data-test="item-settings-menu"
         anchor="bottom middle"
         self="top middle"
         @before-show="itemMenuOpen = true"
@@ -147,7 +148,7 @@
         @before-show="systemMenuOpen = true"
         @before-hide="systemMenuOpen = false"
       >
-        <q-list>
+        <q-list data-test="system-settings-menu">
           <q-item
             data-test="artivact-system-settings-properties"
             clickable
@@ -635,14 +636,14 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useUserdataStore } from 'stores/userdata';
-import { useLocaleStore } from 'stores/locale';
-import { api } from 'boot/axios';
+import { useUserdataStore } from '../stores/userdata';
+import { useLocaleStore } from '../stores/locale';
+import { api } from '../boot/axios';
 import { useRouter } from 'vue-router';
 import { QUploader, useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
-import { useProfilesStore } from 'stores/profiles';
-import ArtivactDialog from 'components/ArtivactDialog.vue';
+import { useProfilesStore } from '../stores/profiles';
+import ArtivactDialog from './ArtivactDialog.vue';
 
 const { locale } = useI18n({ useScope: 'global' });
 

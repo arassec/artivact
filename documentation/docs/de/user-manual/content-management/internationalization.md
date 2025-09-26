@@ -1,13 +1,14 @@
-# Internationalization (I18N)
+# Internationalisierung (I18N)
 
-## Configuration
+## Konfiguration
 
-Supported locales can be configured in the [Appearance Configuration](/user-manual/settings/appearance).
+Unterstützte Sprachen (Locales) können in der [Erscheinungsbild-Konfiguration](/user-manual/settings/appearance)
+eingestellt werden.
 
-A locale, to edit items and pages for, can be selected by the globe symbol:
+Eine Sprache, für die Objekte und Seiten bearbeitet werden sollen, kann über das Globus-Symbol ausgewählt werden:
 ![locale-selection-button](../introduction/assets/about/locale-selection-button.png)
 
-When selected, all text inputs are then edited for the selected locale.
+Nach der Auswahl werden alle Texteingaben für die gewählte Sprache bearbeitet.
 
-The default locale's value, which is used as fallback if the user's preferences don't match any supported locale, will
-be shown to the right of the input field.
+Der Wert der Standardsprache, der als Fallback verwendet wird, falls die Präferenzen des Benutzers keiner unterstützten
+Sprache entsprechen, wird rechts neben dem Eingabefeld angezeigt.

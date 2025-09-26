@@ -2,8 +2,12 @@
 
 ## About
 
-The core feature of Artivact on the Desktop is to create 3D models of your items using third party tools like
-photogrammetry software.
+Artivact can help you create and organize your collection. On the Desktop it is also able to create 3D models of your
+items using third party tools for photogrammetry.
+
+Using photogrammetry to create digital twins of real life items is a time-consuming and tedious task.
+It often leads to a ton of different files and directories in the filesystem and one can lose track of the progress
+easily.
 
 The process of model creation usually involves the following steps:
 
@@ -13,19 +17,15 @@ The process of model creation usually involves the following steps:
 - Sometimes editing the result in a model editor to finish it.
 - Export the model in the desired format.
 
-Artivact allows you to configure third party programs as well as a camera setup to speed up the whole process from
-picture taking to model creation and export drastically.
+Artivact allows you to configure third party programs as well as using a camera setup connected to your PC, thus
+speeding up the whole process from picture taking to model creation to export drastically.
 
 ## Features
 
-Using photogrammetry to create digital twins of real life items is a time-consuming and tedious task.
-It often leads to a ton of different files and directories in the filesystem and one can lose track of the progress
-easily.
+The desktop application provides the following features:
 
-The desktop application addresses these problems and provides the following features:
-
-- Easy and fast creation of 3D models by combining different tools in the process of model creation.
 - Flexible options to organize your collection and keep track of every virtual item.
+- Easy and fast creation of 3D models by combining different tools in the process of model creation.
 - Export of created items and their media files in a standard ZIP format.
 
 ## Third Party Software
@@ -36,26 +36,13 @@ them.
 
 The following software is currently supported.
 
-### Image Creation & Manipulation
-
-For automatic image creation using your PC the following software can be used from within Artivact:
-| Windows | Linux |
-| :-------------: | :-----------: |
-| [DigiCamControl](https://digicamcontrol.com/) ![DigiCamControl](/assets/logos/digicamcontrol-logo.png) | [gphoto2](http://gphoto.org/) ![gphoto2](/assets/logos/gphoto2-logo.png)|
-
-In order to create full 3D models it might be necessary to remove the background from images. To automate this, the
-following tool can be used:
-| Windows & Linux |
-| :-------------: |
-| [Rembg](https://github.com/danielgatis/rembg) |
-
 ### Model Creation
 
 The following photogrammetry tools are supported by Artivact. They are started from within the program, but must be
 operated by the user manually:
-| Windows & Linux | Windows & Linux |
-| :-------------: | :-----------: |
-| [Meshroom](https://alicevision.org/#meshroom) ![Meshroom](/assets/logos/meshroom-logo.png) | [Metashape](https://www.agisoft.com/) ![Metashape](/assets/logos/metashape-logo.png)|
+| Windows & Linux | Windows & Linux | Windows |
+| :-------------: | :-----------: | :-----------: |
+| [Meshroom](https://alicevision.org/#meshroom) ![Meshroom](/assets/logos/meshroom-logo.png) | [Metashape](https://www.agisoft.com/) ![Metashape](/assets/logos/metashape-logo.png)| [RealityScan](https://www.realityscan.com) ![RealityScan](/assets/logos/realityscan-logo.png) |
 
 ### Model Editing
 

@@ -6,7 +6,8 @@ Tags can be defined on the tags configuration page.
 
 They consist of a label and an optional URL.
 
-Assigned to an item, they are shown on the [item's details page](/user-manual/item-management/item-details) and can be
+Assigned to an item, they are shown on the [item's details page](/user-manual/item-management/item-details-page) and can
+be
 used e.g. to filter items in search queries.
 
 ## Import/Export

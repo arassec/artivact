@@ -1,66 +1,50 @@
-# Pages
+# Seiten
 
-## Page Mode
+## Seitenmodus
 
-After adding a page to a menu or menu entry, it can be opened by clicking on the menu (or menu entry).
+Nachdem eine Seite zu einem Menü oder Menüeintrag hinzugefügt wurde, kann sie durch Klicken auf das Menü (oder den
+Menüeintrag) geöffnet werden.
 
-Newly created pages are empty.
+Neu erstellte Seiten sind leer.
 
-![artivact-main-layout](./assets/pages/artivact-main-layout.png)
+Durch Klicken auf den Bearbeitungs-Button oben rechts, der nur für Administratoren und Benutzer angezeigt wird, kannst
+du in den Seitenbearbeitungsmodus wechseln:
+![edit-page-button](../item-management/assets/item-details-page/edit-item-button.png)
 
-By clicking on the edit button in the top right, which is only shown to administrators and users, you can switch to page
-edit mode:
-![edit-page-button](./assets/pages/edit-page-button.png)
+Änderungen an der Seite werden automatisch gespeichert.
 
-## Edit Mode
+Durch Klicken auf den Beenden-Button verlässt du den Seitenbearbeitungsmodus wieder:
+![close-page-edit-mode-button](../item-management/assets/item-editor/close-item-editor-button.png)
 
-### General Options
+## Bearbeitungsmodus
 
-In edit mode, new buttons are shown at the top of the page:
+### Seitenveröffentlichung <Badge type="warning" text="server"/>
 
-![artivact-main-layout-editmode](./assets/pages/artivact-main-layout-editmode.png)
+Im Server-Modus bearbeitet Artivact Seiten nicht direkt.  
+Um eine Seite zu ändern, ohne sie sofort für Benutzer zu veröffentlichen, wird der Arbeitsstand gespeichert, bis er vom
+Benutzer veröffentlicht wird.
 
-The buttons offer the following functionality:
+Im Bearbeitungsmodus werden daher neue Buttons oben auf der Seite angezeigt, die folgende Funktionen bieten:
 
-|                              Button                              | Description                                                                        |
-|:----------------------------------------------------------------:|:-----------------------------------------------------------------------------------|
-|      ![close-button](./assets/pages/close-button.png)      | Closes page edit mode without saving changes.                                      |
-| ![index-page-button](./assets/pages/index-page-button.png) | Defines this page as index page, which is loaded if no specific page is requested. |
-| ![add-widget-button](./assets/pages/add-widget-button.png) | Opens the dialog to add a widget to the page.                                      |
-|       ![save-button](./assets/pages/save-button.png)       | Saves the current page configuration.                                              |
+|                              Button                              | Beschreibung                                                                                          |
+|:----------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------|
+|     ![reset-wip-button](./assets/pages/reset-wip-button.png)     | Setzt alle Änderungen zurück und stellt die Seite auf die aktuell veröffentlichte Version wieder her. |
+|   ![publish-wip-button](./assets/pages/publish-wip-button.png)   | Veröffentlicht den aktuellen Arbeitsstand für die Öffentlichkeit.                                     |
+| ![edit-metadata-button](./assets/pages/edit-metadata-button.png) | Öffnet einen Dialog, um die Seiten-Metadaten zu bearbeiten, z.B. für Suchmaschinenoptimierung.        |
 
-### Adding Widgets
+### Hinzufügen von Widgets
 
-Widgets are added by clicking the respective button. A dialog opens and provides a selection of available widgets:
+Widgets werden hinzugefügt, indem auf den entsprechenden Button geklickt wird, entweder oben auf der Seite, wenn noch
+keine Widgets vorhanden sind, oder unterhalb eines bestehenden Widgets.  
+Ein Dialog öffnet sich und bietet eine Auswahl der verfügbaren Widgets.
 
-![add-widget-modal](./assets/pages/add-widget-modal.png)
+Siehe [Widgets](./widgets) für eine Übersicht der verfügbaren Widgets.
 
-See [Widgets](./widgets) for an overview of available widgets.
+### Bearbeiten von Widgets
 
-### Editing Widgets
+Nach dem Hinzufügen eines Widgets wird es auf der Seite direkt mit geöffnetem Editor angezeigt.
 
-After adding a widget, it is displayed on the page:
+Bei bestehenden Widgets kann der Editor geöffnet werden, indem man das Widget mit der Maus überfährt und darauf klickt.
 
-![artivact-main-layout-widget-added](./assets/pages/artivact-main-layout-widget-added.png)
-
-By hovering the widget with the mouse and right-clicking on it, a context menu to edit the widget is opened
-
-![widget-context-menu](./assets/pages/widget-context-menu.png)
-
-with the following options:
-
-| Option           | Description                                                                                       |
-|:-----------------|:--------------------------------------------------------------------------------------------------|
-| Edit Widget      | Opens a modal to configure the widget.                                                            |
-| Move Widget Up   | Moves the widget up one place.                                                                    |
-| Move Widget Down | Moves the widget down one place.                                                                  |
-| Delete Widget    | Deletes the widget directly (!) from the page. The widget is NOT deleted until the page is saved. |
-
-The modal to configure a widget is split into to parts. The upper part is a preview of the results, the lower part
-provides configuration options for the widget, depending on the type of the widget.
-
-As an example, here is the text widget's modal:
-
-![widget-editor-modal](./assets/pages/widget-editor-modal.png)
-
-When clicking the ``Apply`` button, the changes are taken over to the page and the modal closes.
+Widgets können auf der Seite per Drag & Drop mit dem Drag-Indikator-Button oben links an jedem Widget sortiert werden.  
+Darunter befindet sich ein Button, um ein Widget von der Seite zu löschen.

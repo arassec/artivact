@@ -1,45 +1,39 @@
-# Konfiguration der Anwendung
+# Konfiguration der Server-Anwendung
 
 ## Allgemein
 
-Artivact ist eine Java-Anwendung, die das Open-Source Framework [Spring](https://spring.io/) verwendet.
+Artivact ist in Java geschrieben und nutzt das beliebte Open-Source-[Spring Framework](https://spring.io/).
 
-Daher kann die Anwendung wie jede andere Spring-Boot-Anwendung auch konfiguriert werden, z.B. mittels JVM-Parametern
-oder einer application.properties Datei im Dateisystem.
+Daher kann es wie jede andere Spring-Boot-Anwendung konfiguriert werden – sei es über JVM-Parameter, eine
+`application.properties`-Datei im Stammverzeichnis oder jede andere von Spring unterstützte Methode.
 
 ## Das Projektverzeichnis
 
-Das Projektverzeichnis, das alle Dateien der Anwendung enthält, kann über folgenden Parameter konfiguriert werden:
+Das Stammverzeichnis des Projekts kann mit folgendem Parameter konfiguriert werden:
 
 ::: code-group
 
-```[Kommandozeilenparameter]
-$> java -jar artivact-server-v0.0.0.jar \
+```[Command line parameter]
+$> java -jar artivact-server-v##VERSION##.jar \
         -Dartivact.project.root=/opt/artivact-server/project-root
 ```
 
 ```[application.properties]
 artivact.project.root=/opt/artivact-server/project-root
 ```
-
 :::
 
-Das Standardprojektverzeichnis ``.avdata`` wird, ohne Konfigurationsänderung, im Ausführungsverzeichnis der Anwendung
-erstellt.
+## Datenbank-Konfiguration
 
-## Datenbankkonfiguration
-
-Artivact unterstützt *H2* und *PostgreSQL* Datenbanken.
-Die Anwendung verwendet eine H2 Datenbank im Dateisystem als Standard. 
-Diese wird im Ordner ``dbdata`` im Projektverzeichnis beim ersten Anwendungsstart erstellt.
-Für größere Installation und den produktiven Betrieb wird PostgreSQL empfohlen.
-
-Die Datenbank kann über die Standard-Spring-Mechanismen konfiguriert werden:
+Artivact unterstützt H2 und PostgreSQL Datenbanken.
+Standardmäßig wird eine eingebettete H2-Datenbank verwendet, die im Verzeichnis ``dbdata`` im Projektordner gespeichert
+wird.
+Du kannst die zu verwendende Datenbank über die standardmäßigen Spring-Mechanismen konfigurieren.
 
 ::: code-group
 
-```[Kommandozeilenparameter]
-$> java -jar artivact-server-v0.0.0.jar \
+```[Command line parameter]
+$> java -jar artivact-server-v##VERSION##.jar \
         -Dspring.datasource.url=jdbc:postgresql://localhost:5432/postgres \
         -Dspring.datasource.username=artivact \
         -Dspring.datasource.password=artivact \
@@ -52,14 +46,14 @@ spring.datasource.username=artivact
 spring.datasource.password=artivact
 spring.datasource.driver-class-name=org.postgresql.Driver
 ```
-
 :::
 
 ## Weitere Anpassungen
 
-Die folgenden Anpassungen können innerhalb der Anwendung per Weboberfläche vorgenommen werden:
+Folgendes (unter anderem) kann direkt in der Anwendung konfiguriert werden:
 
-- Administrator- und Benutzerkonten anlegen und pflegen
-- Das Erscheinungsbild der Anwendung wie das Farbschema, der Titel, Favicons etc.
-- Unterstützte Sprachen für I18N.
-- Eigenschaften, Tags sowie Lizenzangaben für Mediendaten von Ausstellungsstücken
+- Administrator- und Benutzerkonten.
+- Erscheinungsbild der Anwendung wie Farbthema, Titel, Favicons etc.
+- Unterstützte Sprachen für die Internationalisierung (I18N).
+- Eigenschaften von Objekten, Tags und Lizenzinformationen für Mediendateien.
+- 

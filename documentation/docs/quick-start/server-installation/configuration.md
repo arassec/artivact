@@ -12,7 +12,7 @@ The project root directory can be configured by the following parameter:
 
 ::: code-group
 ```[Command line parameter]
-$> java -jar artivact-server-v0.0.0.jar \
+$> java -jar artivact-server-v##VERSION##.jar \
         -Dartivact.project.root=/opt/artivact-server/project-root
 ```
 
@@ -24,13 +24,12 @@ artivact.project.root=/opt/artivact-server/project-root
 ## Database Configuration
 
 Artivact supports *H2* and *PostgreSQL* databases.
-It uses an embedded H2 database as default which will be stored in a dbdata directory in the project folder. 
-For production use, PostgreSQL is advised. 
+It uses an embedded H2 database as default which will be stored in a ``dbdata`` directory in the project folder.
 You can configure the Database to use by configuring it with standard Spring mechanisms.
 
 ::: code-group
 ```[Command line parameter]
-$> java -jar artivact-server-v0.0.0.jar \
+$> java -jar artivact-server-v##VERSION##.jar \
         -Dspring.datasource.url=jdbc:postgresql://localhost:5432/postgres \
         -Dspring.datasource.username=artivact \
         -Dspring.datasource.password=artivact \
@@ -47,7 +46,7 @@ spring.datasource.driver-class-name=org.postgresql.Driver
 
 ## Further Customization
 
-The following can be configured inside the application itself:
+The following, among other, can be configured inside the application itself:
 
 - Administrator and user accounts.
 - Application appearance like color theme, title, favicons, etc.

@@ -1,13 +1,17 @@
-# Item Properties
+# Sammlungsobjekt-Eigenschaften
 
-## Configuration
+## Konfiguration
 
-On the properties configuration page, item properties are defined and organized in categories.
+Auf der Seite zur Konfiguration der Eigenschaften werden die Eigenschaften von Sammlungsobjekten definiert und in
+Kategorien
+organisiert.
 
-The properties are shown on the [item's details page](/user-manual/item-management/item-details).
+Die konfigurierten Eigenschaften werden anschließend auf
+der [Detailseite des Sammlungsobjekts](/user-manual/item-management/item-details-page) angezeigt.
 
 ## Import/Export
 
-Properties can be exported as JSON file.
+Eigenschaften können als JSON-Datei exportiert werden.
 
-The same file can then be imported by another Artivact instance on the properties configuration page.  
+Die gleiche Datei kann anschließend von einer anderen Artivact-Instanz auf der Seite zur Eigenschaften-Konfiguration
+importiert werden.

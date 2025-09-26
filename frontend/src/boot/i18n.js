@@ -1,15 +1,24 @@
 import { createI18n } from 'vue-i18n';
 import messages from 'src/i18n';
+import { useLocaleStore } from 'src/stores/locale';
 
 export default ({ app }) => {
-  // Create I18n instance
   const i18n = createI18n({
-    locale: navigator.language.split('-')[0],
     legacy: false,
     globalInjection: true,
+    locale: 'en', // Default
     messages,
   });
 
-  // Tell app to use the I18n instance
+  const localeStore = useLocaleStore();
+  if (typeof navigator !== 'undefined') {
+    i18n.global.locale.value = (
+      navigator.languages?.[0] ||
+      navigator.language ||
+      null
+    ).split('-')[0];
+    localeStore.setSelectedLocale(i18n.global.locale.value);
+  }
+
   app.use(i18n);
 };

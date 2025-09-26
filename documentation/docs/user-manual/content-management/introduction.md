@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Artivact provides a basic CMS to manage your collection.
+Artivact provides a basic content management system (CMS) to manage your collection.
 
 The core concepts are:
 

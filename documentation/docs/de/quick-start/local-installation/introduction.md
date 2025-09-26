@@ -1,75 +1,53 @@
-# Artivact als Desktop-Anwendung
+# Artivact als lokale Anwendung
 
-## Über Artivact
+## Über
 
-Das Kernstück von Artivact auf dem Desktop ist die Erstellung von 3D-Modellen für virtuelle Ausstellungsstücke.
-Hierfür werden Anwendungen von Drittanbietern verwendet, z.B. Software für Fotogrammetrie oder zur Nutzung von
-Digitalkameras am PC.
+Artivact kann dir helfen, deine Sammlung zu erstellen und zu organisieren. Auf dem Desktop ist es außerdem in der Lage,
+mithilfe von Drittanbieter-Tools für Photogrammetrie 3D-Modelle deiner Objekte zu erzeugen.
 
-Der normale Ablauf zur Erzeugung von 3D-Modellen ist üblicherweise folgendermaßen:
+Die Nutzung von Photogrammetrie zur Erstellung digitaler Zwillinge realer Objekte ist ein zeitaufwändiger und mühsamer
+Prozess. Dabei entstehen oft unzählige Dateien und Verzeichnisse im Dateisystem, sodass man leicht den Überblick über
+den Fortschritt verlieren kann.
 
-- Es werden von Hand etliche Fotos des Ausstellungsstückes aus verschiedenen Perspektiven erzeugt.
-- Die Bilder müssen von der Kamera auf den PC übertragen werden.
-- Mithilfe von Fotogrammetrie-Software wird aus den Fotos ein 3D-Modell erstellt.
-- Manchmal muss das Modell mit einem 3D-Editor nachbearbeitet werden.
-- Das 3D-Modell muss im gewünschten Format exportiert werden.
+Der Prozess der Modellerstellung umfasst in der Regel die folgenden Schritte:
 
-Artivact ermöglicht die Konfiguration und "fließende" Nutzung der externen Programme sowie die Verwaltung der
-erzeugten Dateien um den Gesamtprozess erheblich zu beschleunigen.
+- Aufnahme vieler Bilder des Objekts aus verschiedenen Perspektiven.
+- Kopieren der Bilder von der Kamera auf den PC.
+- Nutzung der Fotos in einem Photogrammetrie-Tool zur Erstellung eines 3D-Modells.
+- Gelegentliches Bearbeiten des Ergebnisses in einem Modell-Editor, um es fertigzustellen.
+- Exportieren des Modells in das gewünschte Format.
 
-## Features
+Artivact ermöglicht die Konfiguration von Drittanbieterprogrammen sowie die Nutzung eines Kamerasetups, das mit deinem
+PC verbunden ist, und beschleunigt so den gesamten Prozess – vom Fotografieren bis zur Modellerstellung und zum Export
+– erheblich.
 
-Um mittels Fotogrammetrie digitale Doppelgänger von Ausstellungsstücken zu erzeugen ist ein hoher manueller
-notwendig, der Zeit kostet. Der Prozess führt häufig zu unzähligen Dateien und Verzeichnissen im Dateisystem des PCs,
-wodurch man schnell den Überblick über den Arbeitsfortschritt verliert.
+## Funktionen
 
-Die Desktop-Variante von Artivact adressiert dieses Problem mithilfe der folgenden Funktionen:
+Die Desktop-Anwendung bietet die folgenden Funktionen:
 
-- Einfache und schnelle Erzeugung von 3D-Modellen durch die effiziente Kombination verschiedener Tools.
-- Flexible Optionen zur Organisation und Verwaltung der erzeugten, digitalen Ausstellungsstücke.
-- Export der erzeugten Stücke und Mediendateien in einem standard ZIP-Format.
+- Flexible Möglichkeiten zur Organisation deiner Sammlung und zur Nachverfolgung jedes virtuellen Objekts.
+- Einfache und schnelle Erstellung von 3D-Modellen durch die Kombination verschiedener Werkzeuge im Erstellungsprozess.
+- Export erstellter Objekte und ihrer Mediendateien in einem standardisierten ZIP-Format.
 
-## Anwendungen von Drittanbietern
+## Drittanbieter-Software
 
-Artivact selbst ist keine Fotogrammetrie-Software.
-Es stellt eine Verwaltungsoberfläche für verschiedene Tools und deren Arbeitsergebnisse dar.
-Der Nutzer hat weiterhin die volle Kontrolle über die Anwendungen, kann dieser aber effizienter nutzen und die
-Ergebnisse leichter verwalten.
+Artivact selbst ist keine Photogrammetrie-Software. Es stellt ein Frontend für verschiedene im Prozess benötigte Tools
+bereit, ohne diese vor dem Benutzer zu verbergen. Der Benutzer behält die volle Kontrolle über die eingesetzten Tools,
+erhält jedoch Unterstützung bei deren Handhabung.
 
-Die folgenden Anwendungen werden aktuell unterstützt.
+Die folgende Software wird derzeit unterstützt.
 
-### Foto Erzeugung & Bearbeitung
+### Modellerstellung
 
-Zur möglichst automatischen Erzeugung von Fotos auf dem PC kann die folgende Software verwendet werden:
+Die folgenden Photogrammetrie-Tools werden von Artivact unterstützt. Sie werden aus dem Programm heraus gestartet,
+müssen aber vom Benutzer manuell bedient werden:
+| Windows & Linux | Windows & Linux | Windows |
+| :-------------: | :-------------: | :------: |
+| [Meshroom](https://alicevision.org/#meshroom) ![Meshroom](/assets/logos/meshroom-logo.png) | [Metashape](https://www.agisoft.com/) ![Metashape](/assets/logos/metashape-logo.png) | [RealityScan](https://www.realityscan.com) ![RealityScan](/assets/logos/realityscan-logo.png) |
 
-| Windows | Linux |
-| :-------------: | :-----------: |
-| [DigiCamControl](https://digicamcontrol.com/) ![DigiCamControl](/assets/logos/digicamcontrol-logo.png) | [gphoto2](http://gphoto.org/) ![gphoto2](/assets/logos/gphoto2-logo.png)|
+### Modellbearbeitung
 
-Eine, von der jeweiligen Software unterstützte, Kamera muss an den PC angeschlossen sein.
-
-Um ein vollständiges 3D-Modell zu erzeugen, kann es notwendig sein, die erzeugten Fotos freizustellen, d.h. den
-Bildhintergrund zu entfernen.
-Um dies zu automatisieren, kann das folgende Tool über Artivact verwendet werden:
-
-| Windows & Linux |
-| :-------------: |
-| [Rembg](https://github.com/danielgatis/rembg) |
-
-### 3D-Modell Erzeugung
-
-Die folgenden Fotogrammetrie-Anwendungen werden von Artivact unterstützt.
-Sie werden innerhalb der Anwendung gestartet, der Nutzer übernimmt dann die Steuerung und kehrt nach Abschluss der
-Nutzung wieder zu Artivact zurück.
-
-| Windows & Linux | Windows & Linux |
-| :-------------: | :-----------: |
-| [Meshroom](https://alicevision.org/#meshroom) ![Meshroom](/assets/logos/meshroom-logo.png) | [Metashape](https://www.agisoft.com/) ![Metashape](/assets/logos/metashape-logo.png)|
-
-### 3D-Modell Bearbeitung
-
-Um die per Fotogrammetrie erzeugten 3D-Modelle zu bearbeiten, kann das folgende Tool verwendet werden:
-
+Zur Bearbeitung des erstellten 3D-Modells kann folgendes Tool verwendet werden:
 | Windows & Linux |
 | :-------------: |
 | [Blender 3D](https://www.blender.org/) ![Blender 3D](/assets/logos/blender-logo.png) |

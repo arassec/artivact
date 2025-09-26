@@ -1,40 +1,37 @@
-# Artivact User Manual
+# Artivact Benutzerhandbuch
 
-## About
+## Über
 
-::: danger Work in progress
-The user manual is currently in creation and will be updated with future releases.
-:::
+Das Artivact Benutzerhandbuch beschreibt, wie die Anwendung genutzt werden kann, um virtuelle Sammlungen zu erstellen
+und zu verwalten.
 
-The Artivact user manual documents how to use the application to create and manage your virtual collections.
+Die Desktop- und Webserver-Variante der Anwendung unterscheiden sich leicht im Funktionsumfang.  
+Wenn eine Funktion nur für eine der Installationsvarianten gilt, wird dies in der Dokumentation durch eines der
+folgenden Badges gekennzeichnet:
 
-The desktop and web server variant of the application differ slightly in their feature sets.
-If a function only applies to one of the installation variants, this will be denoted in the documentation by one of the
-following badges:
+- <Badge type="warning" text="server"/> – Diese Funktionalität ist nur verfügbar, wenn Artivact im Webserver-Modus betrieben wird.
+- <Badge type="warning" text="desktop"/> – Diese Funktionalität ist nur verfügbar, wenn Artivact auf deinem lokalen Computer gestartet wird.
 
-- <Badge type="warning" text="server"/> - This functionality is only available, if Artivact is run in web server mode.
-- <Badge type="warning" text="desktop"/> - This functionality is only available, if Artivact is started on your local computer.
+## Der Hauptbildschirm
 
-## The Main Screen
+Nach dem ersten Start wird dem Benutzer der Hauptbildschirm angezeigt.  
+<Badge type="warning" text="desktop"/> Im Desktop-Modus ist dies die standardmäßige Willkommensseite.
 
-After first start, the main screen is shown to the user.
-At the top is the navigation and settings bar.
+![artivact-welcome-page](./assets/about/artivact-welcome-page.png)
 
-![artivact-main-layout](./assets/about/artivact-main-layout.png)
+Oben befindet sich die Navigations- und Einstellungsleiste.  
+Die folgenden Funktionen stehen von links nach rechts zur Verfügung:
 
-The following functions are available from left to right:
+|                                 Button                                 | Beschreibung                                                                                                                                                         |
+|:----------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|         ![add-menu-button](./assets/about/add-menu-button.png)         | Fügt ein neues Menü in der oberen Navigation hinzu. Siehe [Menüs](../content-management/menus) für Details.                                                          |
+| ![locale-selection-button](./assets/about/locale-selection-button.png) | Wählt die Sprache (Locale) für die Internationalisierung (I18N) aus. Siehe [I18N](../content-management/internationalization) für Details.                           |
+|    ![item-setting-button](./assets/about/item-settings-button.png)     | Öffnet das Objekte-Menü. Dort können neue Objekte erstellt oder vorhandene importiert werden. Siehe [Objektverwaltung](../item-management/introduction) für Details. |
+|  ![system-settings-button](./assets/about/system-settings-button.png)  | Öffnet das Menü für Systemeinstellungen. Siehe [Systemeinstellungen](../settings/properties) für Details.                                                            |
+| ![account-settings-button](./assets/about/account-settings-button.png) | <Badge type="warning" text="server"/> Öffnet das Menü für Kontoeinstellungen. Siehe [Kontoverwaltung](../account-management/accounts) für Details.                   |
+|    ![documentation-button](./assets/about/documentation-button.png)    | Öffnet diese Dokumentation innerhalb der Anwendung.                                                                                                                  |
+|           ![logout-button](./assets/about/logout-button.png)           | <Badge type="warning" text="server"/> Meldet den Benutzer aus der Anwendung ab.                                                                                      |
+|            ![login-button](./assets/about/login-button.png)            | <Badge type="warning" text="server"/> Öffnet die Anmeldeseite.                                                                                                       |
 
-|                                 Button                                 | Description                                                                                                                                                           |
-|:----------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-|         ![add-menu-button](./assets/about/add-menu-button.png)         | Adds a new menu to the top navigation. See [Menus](../content-management/menus) for details.                                                                          |
-| ![locale-selection-button](./assets/about/locale-selection-button.png) | Selects the locale for internationalization (I18N). See [I18N](../content-management/internationalization) for details.                                               |
-|    ![item-setting-button](./assets/about/item-settings-button.png)     | Opens the items menu. From there you can create new items or import existing ones. See [Create Items](../item-management/create-items) for details.                   |
-|  ![system-settings-button](./assets/about/system-settings-button.png)  | Opens the system settings menu. See [System Settings](../settings/properties) for details.                                                                            |
-| ![account-settings-button](./assets/about/account-settings-button.png) | <Badge type="warning" text="server"/> Opens the account settings menu. See [Account Management](../account-management/accounts) for details.                          |
-|    ![documentation-button](./assets/about/documentation-button.png)    | Opens this documentation from within the application.                                                                                                                 |
-|           ![logout-button](./assets/about/logout-button.png)           | <Badge type="warning" text="server"/> Logs the user out of the application.                                                                                           |
-|            ![login-button](./assets/about/login-button.png)            | <Badge type="warning" text="server"/> Opens the login page.                                                                                                           |
-
-Since there is no page currently defined, a default page is shown.
-
-You can use the plus button to add a new menu entry and define a page as described in the next chapter.
+Über den Plus-Button kann ein neuer Menüeintrag hinzugefügt und eine Seite definiert werden, wie im nächsten Kapitel
+beschrieben.

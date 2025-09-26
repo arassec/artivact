@@ -22,6 +22,6 @@ Additionally, the following information can be provided:
 There are two roles available, that increase a user's rights in the application:
 
 - User:
-  - Users have the right to create and edit items in Artivact.
+    - Users have the right to create and edit items and pages in Artivact.
 - Administrator:
   - Administrators have all user rights and can additionally configure system settings and accounts.

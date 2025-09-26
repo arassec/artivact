@@ -4,32 +4,35 @@ layout: home
 
 hero:
   name: "Artivact"
-  text: "Erstelle, präsentiere und erlebe virtuelle Sammlungen."
-  tagline: "Ein Open-Source-Tool zur Sammlungsverwaltung und -präsentation."
+  text: "Virtuelle Sammlungen erstellen, präsentieren und erleben."
+  tagline: "Ein Open-Source-Werkzeug zur Sammlungs-Verwaltung und -Präsentation."
   image:
     src: /artivact-logo-white.png
   actions:
     - theme: brand
-      text: Schnelleinstieg
-      link: /de/quick-start/local-installation/introduction
+      text: Schnellstart
+      link: /quick-start/local-installation/introduction
     - theme: alt
       text: Benutzerhandbuch
-      link: /de/user-manual/introduction/about
-    - theme: alt
-      text: Tutorials
-      link: /de/tutorials/artivact-as-scanner/introduction
+      link: /user-manual/introduction/about
 
 features:
-  - title: Erstelle
+  - title: Erstellen
     icon:
       src: /artivact-create.png
-    details: Auf deinem Computer installiert kann dir Artivact dabei helfen, deine Sammlung zu virtualisieren und zu verwalten.
-  - title: Präsentiere
+    details: Führe Artivact auf deinem lokalen Computer aus, um Sammlungsobjekte zu virtualisieren und zu verwalten.
+  - title: Präsentieren
     icon:
       src: /artivact-present.png
-    details: Artivact kann als Webserver betrieben werden um deine virtuelle Sammlung einfach im Netz zu präsentieren.
-  - title: Erlebe
+    details: Betreibe Artivact als Webserver, um deine virtuelle Sammlung online zu verwalten und zu präsentieren.
+  - title: Erleben
     icon:
       src: /artivact-experience.png
-    details: Mit Artivact kannst du virtuelle Ausstellungen im Metaversum erstellen und erleben.
+    details: Nutze Artivact, um deine virtuellen Ausstellungen im Metaverse mit Artivact XR zu erleben.
+
 ---
+
+## Erste Schritte
+
+Du kannst sofort mit Artivact loslegen, indem du die [Desktop-Version](quick-start/local-installation/installation.html)
+verwendest!

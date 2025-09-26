@@ -23,7 +23,10 @@
     <div class="col items-center sticky gt-sm" v-if="inEditModeRef">
       <div class="absolute-top-right q-ma-md">
         <q-btn
-          v-if="!profilesStore.isDesktopModeEnabled"
+          v-if="
+            !profilesStore.isDesktopModeEnabled ||
+            profilesStore.isE2eModeEnabled
+          "
           data-test="reset-wip-button"
           round
           color="primary"
@@ -34,7 +37,10 @@
           <q-tooltip>{{ $t('ArtivactPage.tooltip.resetWip') }}</q-tooltip>
         </q-btn>
         <q-btn
-          v-if="!profilesStore.isDesktopModeEnabled"
+          v-if="
+            !profilesStore.isDesktopModeEnabled ||
+            profilesStore.isE2eModeEnabled
+          "
           data-test="publish-wip-button"
           round
           color="primary"
@@ -45,7 +51,10 @@
           <q-tooltip>{{ $t('ArtivactPage.tooltip.publishWip') }}</q-tooltip>
         </q-btn>
         <q-btn
-          v-if="!profilesStore.isDesktopModeEnabled"
+          v-if="
+            !profilesStore.isDesktopModeEnabled ||
+            profilesStore.isE2eModeEnabled
+          "
           data-test="edit-metadata-button"
           round
           color="primary"
@@ -66,6 +75,19 @@
           <q-tooltip>{{ $t('Common.close') }}</q-tooltip>
         </q-btn>
       </div>
+    </div>
+
+    <div
+      class="full-width row justify-center"
+      v-if="inEditModeRef && pageContentRef.widgets.length == 0"
+    >
+      <q-btn
+        class="q-mt-md"
+        icon="add"
+        dense
+        round
+        @click="showAddWidgetDialogRef = true"
+      ></q-btn>
     </div>
 
     <Draggable

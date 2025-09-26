@@ -1,55 +1,54 @@
-# Menus
+# Menüs
 
-## Menu Management
+## Menüverwaltung
 
-You can add menus by left-clicking on the following button in the top bar:
-![add-menu-button](../introduction/assets/about/add-menu-button.png)
+Du kannst Menüs hinzufügen, indem du in der oberen Leiste auf den folgenden Button links klickst:
+![add-menu-button](./assets/menus/add-menu-button.png)
 
-A dialog opens, and you can configure the menu's name and restrictions, if the menu shouldn't be available to anyone:
+Menüs können nur hinzugefügt werden, wenn die Standardsprache (default locale) ausgewählt ist!
 
-![add-menu-modal](./assets/menus/add-menu-modal.png)
+Es öffnet sich ein Menü mit den folgenden Optionen:
+![add-menu-menu](./assets/menus/add-menu-menu.png)
 
-Additionally, you can provide a name and description for exports based on this menu.
-Exports of menus contain all pages of the menu and their contained items with media files.
+| Option           | Beschreibung                                              |
+|:-----------------|:----------------------------------------------------------|
+| Menü erstellen   | Öffnet einen Dialog, um ein neues Menü zu erstellen.      |
+| Menü importieren | Importiert ein zuvor exportiertes Menü in die Menüleiste. |
 
-After adding the menu, it will be shown in the menu bar.
-As long as there are no menu entries defined, or a page assigned to the menu, it will be shown in red and only to
-administrators.
+Der Dialog zum Erstellen/Bearbeiten eines Menüs bietet folgende Optionen:
 
-![artivact-menu-bar](./assets/menus/artivact-menu-bar.png)
+| Option             | Beschreibung                                                                                                                                                                               |
+|:-------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Menü               | Der Name des Menüs, der in der Menüleiste angezeigt wird.                                                                                                                                  |
+| Einschränkungen    | Menüs können auf Administratoren und/oder Benutzer beschränkt werden. Das Menü wird nur angezeigt, wenn der angemeldete Benutzer die entsprechende Rolle besitzt.                          |
+| Externe Seiten-URL | Ein Menü kann auf eine externe URL statt auf eine interne Seite verweisen.                                                                                                                 |
+| URL-Alias          | Wenn ein Menü auf eine Artivact-Seite zeigt und nicht auf eine externe URL, kann ein Alias definiert werden. Dieser Alias kann in der Browser-URL anstelle der Seiten-ID verwendet werden. |
+| Verstecktes Menü   | Ein Menü und seine zugehörige Seite können öffentlich zugänglich gemacht werden, d. h. ohne Einschränkungen, aber aus der Menüleiste ausgeblendet.                                         |
 
-By right-clicking on the menu a context menu opens
+Durch Rechtsklick auf das Menü öffnet sich ein Kontextmenü mit folgenden Optionen:
 
-![menu-context-menu](./assets/menus/menu-context-menu-Middle.png)
+| Option                  | Beschreibung                                                                                                                                |
+|:------------------------|:--------------------------------------------------------------------------------------------------------------------------------------------|
+| Menü bearbeiten         | Öffnet den Menü-Dialog und erlaubt die Änderung des Menü-Namens oder der Einschränkungen.                                                   |
+| Menü löschen            | Löscht das Menü sowie alle Einträge und zugehörigen Seiten!                                                                                 |
+| Seite hinzufügen        | Fügt dem Menü eine Seite hinzu. Bei Linksklick auf das Menü wird die Seite direkt geöffnet.                                                 |
+| Eintrag hinzufügen      | Fügt dem Menü einen Eintrag hinzu. Bei Linksklick auf das Menü öffnet sich der Eintrag und zeigt seine Untereinträge.                       |
+| Menü exportieren        | Exportiert die Seiten des Menüs und deren Inhalte einschließlich der Objekte mit Mediendateien in das ``exports``-Verzeichnis des Projekts. |
+| Nach links verschieben  | Verschiebt das Menü einen Schritt nach links.                                                                                               |
+| Nach rechts verschieben | Verschiebt das Menü einen Schritt nach rechts.                                                                                              |
 
-which offers the following options:
+## Menüeinträge
 
-| Option         | Description                                                                                                           |
-|:---------------|:----------------------------------------------------------------------------------------------------------------------|
-| Add Page       | Adds a page to the menu. When left-clicking the menu, the page will open directly.                                    |
-| Add Entry      | Adds an entry to the menu. When left-clicking the menu, it will open and show its menu entries.                       |
-| Edit Menu      | Opens the menu dialog and lets you change the menu's name or restrictions.                                            |
-| Delete Menu    | Deletes the menu and all its entries and associated pages!                                                            |
-| Export Content | Exports the menu's pages and their content including items with media files into the project's ``exports`` directory. |
-| Move Left      | Moves the menu one step to the left.                                                                                  |
-| Move Right     | Moves the menu one step to the right.                                                                                 |
+Menüs können Einträge enthalten.  
+Beim Hinzufügen eines Eintrags zu einem Menü öffnet sich derselbe Dialog wie bei Menüs, und ein Name sowie
+Einschränkungen für den Menüeintrag können angegeben werden.
 
-## Menu Entries
+Beim Rechtsklick auf einen bestehenden Menüeintrag öffnet sich ein Kontextmenü mit folgenden Optionen:
 
-Menus can have entries.
-When adding an entry to a menu, the same dialog as the one for menus opens, and a menu entry name and restrictions can
-be specified.
-
-When right-clicking on an existing menu entry, a context menu opens
-
-![menu-entry-context-menu](./assets/menus/menu-entry-context-menu-Beta.png)
-
-which offers the following options:
-
-| Option            | Description                                                                                                        |
-|:------------------|:-------------------------------------------------------------------------------------------------------------------|
-| Edit Menu Entry   | Opens the menu entry dialog and lets you change the menu entry's name or restrictions.                             |
-| Delete Menu Entry | Deletes the menu entry and its associated page!                                                                    |
-| Export Content    | Exports the menu's page and its content including items with media files into the project's ``exports`` directory. |
-| Move Up           | Moves the menu entry one step up.                                                                                  |
-| Move Down         | Moves the menu one step down.                                                                                      |
+| Option                 | Beschreibung                                                                                                                                 |
+|:-----------------------|:---------------------------------------------------------------------------------------------------------------------------------------------|
+| Menüeintrag bearbeiten | Öffnet den Dialog für den Menüeintrag und erlaubt die Änderung des Namens oder der Einschränkungen.                                          |
+| Menüeintrag löschen    | Löscht den Menüeintrag und die zugehörige Seite!                                                                                             |
+| Inhalt exportieren     | Exportiert die Seite des Menüeintrags und deren Inhalte einschließlich der Objekte mit Mediendateien in das Projekt-``exports``-Verzeichnis. |
+| Nach oben verschieben  | Verschiebt den Menüeintrag einen Schritt nach oben.                                                                                          |
+| Nach unten verschieben | Verschiebt den Menüeintrag einen Schritt nach unten.                                                                                         |

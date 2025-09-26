@@ -6,61 +6,41 @@ After adding a page to a menu or menu entry, it can be opened by clicking on the
 
 Newly created pages are empty.
 
-![artivact-main-layout](./assets/pages/artivact-main-layout.png)
-
 By clicking on the edit button in the top right, which is only shown to administrators and users, you can switch to page
 edit mode:
-![edit-page-button](./assets/pages/edit-page-button.png)
+![edit-page-button](../item-management/assets/item-details-page/edit-item-button.png)
+
+Changes to the page are saved automatically.
+
+By clicking on the exit button, you leave page edit mode again:
+![close-page-edit-mode-button](../item-management/assets/item-editor/close-item-editor-button.png)
 
 ## Edit Mode
 
-### General Options
+### Page Publishing <Badge type="warning" text="server"/>
 
-In edit mode, new buttons are shown at the top of the page:
+When run in server mode, artivact won't edit pages directly. In order to modify
+a page without publishing it to users immediately, the work-in-progress is saved until published by the user.
+Thus, in edit mode, new buttons are shown at the top of the page, which offer the following functionality:
 
-![artivact-main-layout-editmode](./assets/pages/artivact-main-layout-editmode.png)
-
-The buttons offer the following functionality:
-
-|                              Button                              | Description                                                                        |
-|:----------------------------------------------------------------:|:-----------------------------------------------------------------------------------|
-|      ![close-button](./assets/pages/close-button.png)      | Closes page edit mode without saving changes.                                      |
-| ![index-page-button](./assets/pages/index-page-button.png) | Defines this page as index page, which is loaded if no specific page is requested. |
-| ![add-widget-button](./assets/pages/add-widget-button.png) | Opens the dialog to add a widget to the page.                                      |
-|       ![save-button](./assets/pages/save-button.png)       | Saves the current page configuration.                                              |
+|                              Button                              | Description                                                                                 |
+|:----------------------------------------------------------------:|:--------------------------------------------------------------------------------------------|
+|     ![reset-wip-button](./assets/pages/reset-wip-button.png)     | Reverts all changes and resets the page to the currently published one.                     |
+|   ![publish-wip-button](./assets/pages/publish-wip-button.png)   | Publishes the current work-in-progress to the public.                                       |
+| ![edit-metadata-button](./assets/pages/edit-metadata-button.png) | Opens a dialog to edit page metadata which can be used e.g. for search engine optimization. |
 
 ### Adding Widgets
 
-Widgets are added by clicking the respective button. A dialog opens and provides a selection of available widgets:
-
-![add-widget-modal](./assets/pages/add-widget-modal.png)
+Widgets are added by clicking the respective button, either on top of the page if no widgets are defined or below an
+existing widget. A dialog opens and provides a selection of available widgets.
 
 See [Widgets](./widgets) for an overview of available widgets.
 
 ### Editing Widgets
 
-After adding a widget, it is displayed on the page:
+After adding a widget, it is displayed on the page with its editor opened directly.
 
-![artivact-main-layout-widget-added](./assets/pages/artivact-main-layout-widget-added.png)
+For existing widgets, the editor can be opened by hovering a widget with the mouse and clicking on it.
 
-By hovering the widget with the mouse and right-clicking on it, a context menu to edit the widget is opened
-
-![widget-context-menu](./assets/pages/widget-context-menu.png)
-
-with the following options:
-
-| Option           | Description                                                                                       |
-|:-----------------|:--------------------------------------------------------------------------------------------------|
-| Edit Widget      | Opens a modal to configure the widget.                                                            |
-| Move Widget Up   | Moves the widget up one place.                                                                    |
-| Move Widget Down | Moves the widget down one place.                                                                  |
-| Delete Widget    | Deletes the widget directly (!) from the page. The widget is NOT deleted until the page is saved. |
-
-The modal to configure a widget is split into to parts. The upper part is a preview of the results, the lower part
-provides configuration options for the widget, depending on the type of the widget.
-
-As an example, here is the text widget's modal:
-
-![widget-editor-modal](./assets/pages/widget-editor-modal.png)
-
-When clicking the ``Apply`` button, the changes are taken over to the page and the modal closes.
+Widgets can be sorted on the page with drag and drop using the drag-indicator button on the top left of each widget.
+Below that is a button to delete a widget from the page.

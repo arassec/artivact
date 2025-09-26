@@ -82,6 +82,7 @@
                             <target>
                                 <replace token="##VERSION##" value="${revision}" dir="target/classes/static/artivact/">
                                     <include name="**/*.html"/>
+                                    <include name="**/*.js"/>
                                 </replace>
                             </target>
                         </configuration>

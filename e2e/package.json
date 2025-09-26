@@ -1,9 +1,0 @@
-{
-  "scripts": {
-    "cypress:open": "cypress open",
-    "cypress:all-docs-tests": "cypress run --spec cypress/e2e/all-docs-tests.cy.js"
-  },
-  "devDependencies": {
-    "cypress": "^13.7.2"
-  }
-}

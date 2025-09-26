@@ -8,7 +8,7 @@ As such, the application is provided as self-contained JAR file.
 The latest release can be downloaded from the
 project's [GitHub page](https://github.com/arassec/artivact/releases/latest).
 
-The file to download contains 'server' in its name, e.g. ``artivact-server-v0.0.0.jar``
+The file to download contains 'server' in its name, e.g. ``artivact-server-v##VERSION##.jar``
 
 ## Startup
 
@@ -17,13 +17,14 @@ A Java JRE or JDK has to be installed in order to start the Artivact server.
 The application is then started simply by calling
 
 ```
-$> java -jar artivact-server-v0.0.0.jar
+$> java -jar artivact-server-v##VERSION##.jar
 ```
 
 on the command line.
 
 ::: info
 The directory containing the JAR file will be used to create the ``.avdata`` project home, unless configured otherwise.
+See [configuration](configuration) for details.
 :::
 
 During first start the initial administrator account ``admin`` will be created. 
@@ -46,7 +47,7 @@ Then create a directory and place the JAR in it:
 ```
 $> sudo useradd artivact
 $> sudo mkdir /opt/artivact-server
-$> sudo mv artivact-server-v0.0.0.jar /opt/artivact-server/
+$> sudo mv artivact-server-v##VERSION##.jar /opt/artivact-server/
 $> sudo chown -R artivact /opt/artivact-server/
 ```
 
@@ -59,7 +60,7 @@ After=syslog.target
 
 [Service]
 User=artivact
-ExecStart=/opt/artivact-server/artivact-server-v0.0.0.jar
+ExecStart=/opt/artivact-server/artivact-server-v##VERSION##.jar
 SuccessExitStatus=143
 
 [Install]

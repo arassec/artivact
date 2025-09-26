@@ -1,16 +1,18 @@
-# Item Tags
+# Objekt-Schlagworte
 
-## Configuration
+## Konfiguration
 
-Tags can be defined on the tags configuration page.
+Schlagworte können auf der Seite zur Schlagwort-Konfiguration definiert werden.
 
-They consist of a label and an optional URL.
+Sie bestehen aus einem Label und optional einer URL.
 
-Assigned to an item, they are shown on the [item's details page](/user-manual/item-management/item-details) and can be
-used e.g. to filter items in search queries.
+Wenn sie einem Sammlungsobjekt zugewiesen werden, werden sie auf
+der [Detailseite des Sammlungsobjekts](/user-manual/item-management/item-details-page) angezeigt und können z. B.
+genutzt werden, um Objekte in Suchabfragen zu filtern.
 
 ## Import/Export
 
-Properties can be exported as JSON file.
+Schlagworte können als JSON-Datei exportiert werden.
 
-The same file can then be imported by another Artivact instance on the properties configuration page.
+Die gleiche Datei kann anschließend von einer anderen Artivact-Instanz auf der Seite zur Schlagwort-Konfiguration
+importiert werden.
