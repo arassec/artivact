@@ -58,8 +58,8 @@ public class ConfigurationController extends BaseController {
     private final SaveAppearanceConfigurationUseCase saveAppearanceConfigurationUseCase;
     private final SaveTagsConfigurationUseCase saveTagsConfigurationUseCase;
     private final SaveExchangeConfigurationUseCase saveExchangeConfigurationUseCase;
-    private final SavePeripheralConfigurationUseCase saveAdapterConfigurationUseCase;
-    private final LoadPeripheralConfigurationUseCase loadAdapterConfigurationUseCase;
+    private final SavePeripheralConfigurationUseCase savePeripheralConfigurationUseCase;
+    private final LoadPeripheralConfigurationUseCase loadPeripheralConfigurationUseCase;
     private final CleanupExportFilesUseCase cleanupExportFilesUseCase;
     private final ImportPropertiesConfigurationUseCase importPropertiesConfigurationUseCase;
     private final ImportTagsConfigurationUseCase importTagsConfigurationUseCase;
@@ -292,8 +292,8 @@ public class ConfigurationController extends BaseController {
      * @return The current peripheral configuration.
      */
     @GetMapping(value = "/peripheral")
-    public PeripheralConfiguration getAdapterConfiguration() {
-        return loadAdapterConfigurationUseCase.loadPeripheralConfiguration();
+    public PeripheralsConfiguration getPeripheralsConfiguration() {
+        return loadPeripheralConfigurationUseCase.loadPeripheralConfiguration();
     }
 
     /**
@@ -302,8 +302,8 @@ public class ConfigurationController extends BaseController {
      * @param adapterConfiguration The configuration to save.
      */
     @PostMapping(value = "/peripheral")
-    public void saveAdapterConfiguration(@RequestBody PeripheralConfiguration adapterConfiguration) {
-        saveAdapterConfigurationUseCase.savePeripheralConfiguration(adapterConfiguration);
+    public void savePeripheralsConfiguration(@RequestBody PeripheralsConfiguration adapterConfiguration) {
+        savePeripheralConfigurationUseCase.savePeripheralConfiguration(adapterConfiguration);
     }
 
     /**

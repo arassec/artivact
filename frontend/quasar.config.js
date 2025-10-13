@@ -66,6 +66,8 @@ export default defineConfig((/* ctx */) => {
       viteVuePluginOptions: {
         template: {
           compilerOptions: {
+            target: 'ES2021',
+            lib: ['ES2021', 'DOM'],
             isCustomElement: (tag) => ['model-viewer'].includes(tag), // unused-warning is a false positive!
           },
         },

@@ -398,7 +398,7 @@
 
 <script setup lang="ts">
 import { api } from '../boot/axios';
-import { Asset, CapturePhotosParams, ImageSet } from './artivact-models';
+import { Asset, CaptureImageParams, ImageSet } from './artivact-models';
 import { useQuasar } from 'quasar';
 import { PropType, ref } from 'vue';
 import ArtivactDialog from '../components/ArtivactDialog.vue';
@@ -431,7 +431,7 @@ const capturePhotosParamsRef = ref({
   numPhotos: 36,
   useTurnTable: true,
   removeBackgrounds: true,
-} as CapturePhotosParams);
+} as CaptureImageParams);
 
 const showImageSetDetailsModalRef = ref(false);
 let selectedImageSet: ImageSet;

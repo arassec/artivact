@@ -55,7 +55,7 @@
 
         <dependency>
             <groupId>com.arassec.artivact.adapters</groupId>
-            <artifactId>out-image-manipulation</artifactId>
+            <artifactId>out-image-background-removal</artifactId>
             <version>${revision}</version>
         </dependency>
 

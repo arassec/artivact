@@ -1,6 +1,5 @@
 <template>
   <div :class="!restrictedItemRef ? 'q-mb-md' : ''">
-
     <!-- Input field -->
     <q-input
       :data-test="dataTest"
@@ -13,7 +12,10 @@
       class="no-scroll"
       :disable="disable"
     />
-    <div class="row full-width" v-if="translatableStringRef && localeStore.selectedLocale !== null">
+    <div
+      class="row full-width"
+      v-if="translatableStringRef && localeStore.selectedLocale !== null"
+    >
       <q-input
         :data-test="dataTest"
         outlined
@@ -58,8 +60,11 @@
         showDetailsRef = true;
         $emit('show-details');
       "
-      v-if="restrictedItemRef && !showDetailsRef">
-      <q-tooltip>{{ $t('ArtivactRestrictedTranslatableItemEditor.tooltip.more') }}</q-tooltip>
+      v-if="restrictedItemRef && !showDetailsRef"
+    >
+      <q-tooltip>{{
+        $t('ArtivactRestrictedTranslatableItemEditor.tooltip.more')
+      }}</q-tooltip>
     </q-btn>
     <q-btn
       rounded
@@ -72,8 +77,11 @@
         showDetailsRef = false;
         $emit('hide-details');
       "
-      v-if="restrictedItem && showDetailsRef">
-      <q-tooltip>{{ $t('ArtivactRestrictedTranslatableItemEditor.tooltip.less') }}</q-tooltip>
+      v-if="restrictedItem && showDetailsRef"
+    >
+      <q-tooltip>{{
+        $t('ArtivactRestrictedTranslatableItemEditor.tooltip.less')
+      }}</q-tooltip>
     </q-btn>
 
     <div v-if="restrictedItem" v-show="showDetailsRef">
@@ -89,17 +97,17 @@
       <!-- Slot for additional editors -->
       <slot></slot>
 
-      <div v-if="!showSeparator" class="q-mb-md"/>
+      <div v-if="!showSeparator" class="q-mb-md" />
     </div>
-    <q-separator class="q-mt-xs q-mb-lg" v-if="showSeparator"/>
+    <q-separator class="q-mt-xs q-mb-lg" v-if="showSeparator" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { PropType, ref, toRef } from 'vue';
-import ArtivactRestrictionsEditor from 'components/ArtivactRestrictionsEditor.vue';
-import { BaseRestrictedObject, TranslatableString } from 'components/artivact-models';
-import { useLocaleStore } from 'stores/locale';
+import ArtivactRestrictionsEditor from '../components/ArtivactRestrictionsEditor.vue';
+import { BaseRestrictedObject, TranslatableString } from './artivact-models';
+import { useLocaleStore } from '../stores/locale';
 
 const props = defineProps({
   label: {
@@ -127,13 +135,13 @@ const props = defineProps({
   },
   dataTest: {
     required: false,
-    type: String
+    type: String,
   },
   disable: {
     required: false,
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 });
 
 const localeStore = useLocaleStore();

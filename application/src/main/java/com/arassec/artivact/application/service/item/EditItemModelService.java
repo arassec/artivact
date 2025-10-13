@@ -7,12 +7,13 @@ import com.arassec.artivact.application.port.in.operation.RunBackgroundOperation
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.peripheral.ModelEditorPeripheral;
 import com.arassec.artivact.domain.exception.ArtivactException;
-import com.arassec.artivact.domain.model.configuration.PeripheralConfiguration;
+import com.arassec.artivact.domain.model.configuration.PeripheralsConfiguration;
 import com.arassec.artivact.domain.model.item.CreationModelSet;
 import com.arassec.artivact.domain.model.item.Item;
 import com.arassec.artivact.domain.model.misc.ProgressMonitor;
 import com.arassec.artivact.domain.model.peripheral.Peripheral;
 import com.arassec.artivact.domain.model.peripheral.PeripheralInitParams;
+import com.arassec.artivact.domain.model.peripheral.configs.PeripheralConfig;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -41,37 +42,44 @@ public class EditItemModelService implements EditItemModelUseCase {
     /**
      * Opens the item's model in an external 3D editor.
      *
-     * @param itemId        The item's ID.
-     * @param modelSetIndex The model-set index to open the model from.
+     * @param itemId              The item's ID.
+     * @param modelEditorConfigId The ID of the model editor configuration to use.
+     * @param modelSetIndex       The model-set index to open the model from.
      */
     @Override
-    public synchronized void editModel(String itemId, int modelSetIndex) {
+    public synchronized void editModel(String itemId, String modelEditorConfigId, int modelSetIndex) {
         runBackgroundOperationUseCase.execute("editModel", "start", progressMonitor -> {
             Item item = loadItemUseCase.loadTranslated(itemId);
             CreationModelSet creationModelSet = item.getMediaCreationContent().getModelSets().get(modelSetIndex);
-            editModel(progressMonitor, creationModelSet);
+            editModel(modelEditorConfigId, progressMonitor, creationModelSet);
         });
     }
 
     /**
      * Opens the selected model in the currently configured model-editor.
      *
-     * @param progressMonitor The progress monitor to show status updates to the user.
-     * @param creationModel   The model to open.
+     * @param modelEditorConfigId The ID of the model editor configuration to use.
+     * @param progressMonitor     The progress monitor to show status updates to the user.
+     * @param creationModel       The model to open.
      */
-    public void editModel(ProgressMonitor progressMonitor, CreationModelSet creationModel) {
-        PeripheralConfiguration adapterConfiguration = loadAdapterConfigurationUseCase.loadPeripheralConfiguration();
+    public void editModel(String modelEditorConfigId, ProgressMonitor progressMonitor, CreationModelSet creationModel) {
+        PeripheralsConfiguration adapterConfiguration = loadAdapterConfigurationUseCase.loadPeripheralConfiguration();
+
+        PeripheralConfig modelEditorConfig = adapterConfiguration.getModelEditorPeripheralConfigs().stream()
+                .filter(config -> config.getId().equals(modelEditorConfigId))
+                .findFirst()
+                .orElseThrow();
 
         ModelEditorPeripheral modelEditorAdapter = peripheralAdapters.stream()
                 .filter(ModelEditorPeripheral.class::isInstance)
                 .map(ModelEditorPeripheral.class::cast)
-                .filter(adapter -> adapter.supports(adapterConfiguration.getModelEditorPeripheralImplementation()))
+                .filter(adapter -> adapter.supports(modelEditorConfig.getPeripheralImplementation()))
                 .findAny()
                 .orElseThrow(() -> new ArtivactException("Could not detect selected model-editor adapter!"));
 
         modelEditorAdapter.initialize(progressMonitor, PeripheralInitParams.builder()
                 .projectRoot(useProjectDirsUseCase.getProjectRoot())
-                .configuration(adapterConfiguration)
+                .config(modelEditorConfig)
                 .build());
 
         modelEditorAdapter.open(creationModel);

@@ -25,12 +25,12 @@ import { useQuasar } from 'quasar';
 import { onMounted, ref, Ref } from 'vue';
 import ArtivactPeripheralsConfigurationEditor from '../components/ArtivactPeripheralsConfigurationEditor.vue';
 import { useI18n } from 'vue-i18n';
-import { PeripheralConfiguration } from '../components/artivact-models';
+import { PeripheralsConfiguration } from '../components/artivact-models';
 
 const quasar = useQuasar();
 const i18n = useI18n();
 
-const peripheralConfigurationRef: Ref<PeripheralConfiguration | null> =
+const peripheralConfigurationRef: Ref<PeripheralsConfiguration | null> =
   ref(null);
 
 function loadPeripheralConfiguration() {

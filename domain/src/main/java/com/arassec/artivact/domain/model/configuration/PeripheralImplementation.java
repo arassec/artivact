@@ -6,58 +6,33 @@ package com.arassec.artivact.domain.model.configuration;
 public enum PeripheralImplementation {
 
     /**
-     * Default turntable.
+     * Turntable controlled by Arduino with Firmata4J.
      */
-    DEFAULT_TURNTABLE_PERIPHERAL,
+    ARDUINO_TURNTABLE_PERIPHERAL,
 
     /**
-     * Default for background removal.
+     * Picture-Transfer-Protocol camera peripheral.
      */
-    DEFAULT_IMAGE_MANIPULATION_PERIPHERAL,
+    PTP_CAMERA_PERIPHERAL,
 
     /**
-     * Default camera peripheral.
+     * "Camera controlled by an external program" peripheral.
      */
-    DEFAULT_CAMERA_PERIPHERAL,
+    EXTERNAL_PROGRAM_CAMERA_PERIPHERAL,
 
     /**
-     * DigiCamControl peripheral.
+     * Image background removal with ONNX networks.
      */
-    DIGI_CAM_CONTROL_CAMERA_PERIPHERAL,
+    ONNX_IMAGE_BACKGROUND_REMOVAL_PERIPHERAL,
 
     /**
-     * gphoto2 peripheral.
+     * "External program for model creation" peripheral.
      */
-    GPHOTO_TWO_CAMERA_PERIPHERAL,
+    EXTERNAL_PROGRAM_MODEL_CREATOR_PERIPHERAL,
 
     /**
-     * Fallback model creator.
+     * "External program for model editing" peripheral.
      */
-    FALLBACK_MODEL_CREATOR_PERIPHERAL,
-
-    /**
-     * Meshroom peripheral.
-     */
-    MESHROOM_MODEL_CREATOR_PERIPHERAL,
-
-    /**
-     * Metashape peripheral.
-     */
-    METASHAPE_MODEL_CREATOR_PERIPHERAL,
-
-    /**
-     * RealityScan peripheral.
-     */
-    REALITY_SCAN_MODEL_CREATOR_PERIPHERAL,
-
-    /**
-     * Fallback model editor.
-     */
-    FALLBACK_MODEL_EDITOR_PERIPHERAL,
-
-    /**
-     * Blender 3D peripheral.
-     */
-    BLENDER_MODEL_EDITOR_PERIPHERAL
+    EXTERNAL_PROGRAM_MODEL_EDITOR_PERIPHERAL,
 
 }

@@ -14,8 +14,7 @@ import com.arassec.artivact.domain.model.appearance.ColorTheme;
 import com.arassec.artivact.domain.model.appearance.License;
 import com.arassec.artivact.domain.model.configuration.AppearanceConfiguration;
 import com.arassec.artivact.domain.model.configuration.ConfigurationType;
-import com.arassec.artivact.domain.model.configuration.PeripheralConfiguration;
-import com.arassec.artivact.domain.model.configuration.PeripheralImplementation;
+import com.arassec.artivact.domain.model.configuration.PeripheralsConfiguration;
 import com.arassec.artivact.domain.model.misc.FileModification;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
@@ -228,46 +227,48 @@ public class ProjectInitializationService {
      * Initializes the peripheral configuration.
      */
     private void initializePeripheralConfiguration() {
-        Optional<PeripheralConfiguration> configurationOptional =
-                configurationRepository.findByType(ConfigurationType.PERIPHERAL, PeripheralConfiguration.class);
+        Optional<PeripheralsConfiguration> configurationOptional =
+                configurationRepository.findByType(ConfigurationType.PERIPHERALS, PeripheralsConfiguration.class);
 
         if (configurationOptional.isEmpty()) {
             boolean windowsOs = System.getProperty("os.name").toLowerCase().contains("windows");
 
             //noinspection ExtractMethodRecommender
-            PeripheralConfiguration peripheralConfiguration = new PeripheralConfiguration();
+            PeripheralsConfiguration peripheralConfiguration = new PeripheralsConfiguration();
 
-            peripheralConfiguration.setImageManipulationPeripheralImplementation(PeripheralImplementation.DEFAULT_IMAGE_MANIPULATION_PERIPHERAL);
-            peripheralConfiguration.setCameraPeripheralImplementation(PeripheralImplementation.DEFAULT_CAMERA_PERIPHERAL);
-            peripheralConfiguration.setTurntablePeripheralImplementation(PeripheralImplementation.DEFAULT_TURNTABLE_PERIPHERAL);
-            peripheralConfiguration.setModelCreatorPeripheralImplementation(PeripheralImplementation.FALLBACK_MODEL_CREATOR_PERIPHERAL);
-            peripheralConfiguration.setModelEditorPeripheralImplementation(PeripheralImplementation.FALLBACK_MODEL_EDITOR_PERIPHERAL);
+            /* TODO!
+             peripheralConfiguration.setImageManipulationPeripheralImplementation(PeripheralImplementation.DEFAULT_IMAGE_MANIPULATION_PERIPHERAL);
+             peripheralConfiguration.setCameraPeripheralImplementation(PeripheralImplementation.DEFAULT_CAMERA_PERIPHERAL);
+             peripheralConfiguration.setTurntablePeripheralImplementation(PeripheralImplementation.DEFAULT_TURNTABLE_PERIPHERAL);
+             peripheralConfiguration.setModelCreatorPeripheralImplementation(PeripheralImplementation.FALLBACK_MODEL_CREATOR_PERIPHERAL);
+             peripheralConfiguration.setModelEditorPeripheralImplementation(PeripheralImplementation.FALLBACK_MODEL_EDITOR_PERIPHERAL);
 
-            peripheralConfiguration.getConfigValues().put(PeripheralImplementation.DEFAULT_TURNTABLE_PERIPHERAL, "100");
+             peripheralConfiguration.getConfigValues().put(PeripheralImplementation.DEFAULT_TURNTABLE_PERIPHERAL, "100");
 
-            peripheralConfiguration.getConfigValues().put(PeripheralImplementation.DEFAULT_IMAGE_MANIPULATION_PERIPHERAL, "silueta.onnx#input.1#320#320#5");
+             peripheralConfiguration.getConfigValues().put(PeripheralImplementation.DEFAULT_IMAGE_MANIPULATION_PERIPHERAL, "silueta.onnx#input.1#320#320#5");
 
-            peripheralConfiguration.getConfigValues().put(PeripheralImplementation.DEFAULT_CAMERA_PERIPHERAL, "");
-            peripheralConfiguration.getConfigValues().put(PeripheralImplementation.DIGI_CAM_CONTROL_CAMERA_PERIPHERAL, "C:/Program Files (x86)/digiCamControl/CameraControlCmd.exe");
-            peripheralConfiguration.getConfigValues().put(PeripheralImplementation.GPHOTO_TWO_CAMERA_PERIPHERAL, "/usr/bin/gphoto2");
+             peripheralConfiguration.getConfigValues().put(PeripheralImplementation.DEFAULT_CAMERA_PERIPHERAL, "");
+             peripheralConfiguration.getConfigValues().put(PeripheralImplementation.DIGI_CAM_CONTROL_CAMERA_PERIPHERAL, "C:/Program Files (x86)/digiCamControl/CameraControlCmd.exe");
+             peripheralConfiguration.getConfigValues().put(PeripheralImplementation.GPHOTO_TWO_CAMERA_PERIPHERAL, "/usr/bin/gphoto2");
 
-            peripheralConfiguration.getConfigValues().put(PeripheralImplementation.FALLBACK_MODEL_CREATOR_PERIPHERAL, "");
-            peripheralConfiguration.getConfigValues().put(PeripheralImplementation.FALLBACK_MODEL_EDITOR_PERIPHERAL, "");
+             peripheralConfiguration.getConfigValues().put(PeripheralImplementation.FALLBACK_MODEL_CREATOR_PERIPHERAL, "");
+             peripheralConfiguration.getConfigValues().put(PeripheralImplementation.FALLBACK_MODEL_EDITOR_PERIPHERAL, "");
 
-            if (windowsOs) {
-                peripheralConfiguration.getConfigValues().put(PeripheralImplementation.MESHROOM_MODEL_CREATOR_PERIPHERAL, "C:/Users/<USER>/Tools/Meshroom/Meshroom.exe");
-                peripheralConfiguration.getConfigValues().put(PeripheralImplementation.METASHAPE_MODEL_CREATOR_PERIPHERAL, "C:/Program Files/Agisoft/Metashape/metashape.exe");
-                peripheralConfiguration.getConfigValues().put(PeripheralImplementation.REALITY_SCAN_MODEL_CREATOR_PERIPHERAL, "C:/Program Files/Capturing Reality/RealityScan/RealityScan.exe");
+             if (windowsOs) {
+             peripheralConfiguration.getConfigValues().put(PeripheralImplementation.MESHROOM_MODEL_CREATOR_PERIPHERAL, "C:/Users/<USER>/Tools/Meshroom/Meshroom.exe");
+             peripheralConfiguration.getConfigValues().put(PeripheralImplementation.METASHAPE_MODEL_CREATOR_PERIPHERAL, "C:/Program Files/Agisoft/Metashape/metashape.exe");
+             peripheralConfiguration.getConfigValues().put(PeripheralImplementation.REALITY_SCAN_MODEL_CREATOR_PERIPHERAL, "C:/Program Files/Capturing Reality/RealityScan/RealityScan.exe");
 
-                peripheralConfiguration.getConfigValues().put(PeripheralImplementation.BLENDER_MODEL_EDITOR_PERIPHERAL, "C:/Users/<USER>/Tools/Blender/blender.exe");
-            } else {
-                peripheralConfiguration.getConfigValues().put(PeripheralImplementation.MESHROOM_MODEL_CREATOR_PERIPHERAL, "/home/<USER>/Tools/meshroom/Meshroom");
-                peripheralConfiguration.getConfigValues().put(PeripheralImplementation.METASHAPE_MODEL_CREATOR_PERIPHERAL, "/home/<USER>/Tools/metashape/metashape.sh");
+             peripheralConfiguration.getConfigValues().put(PeripheralImplementation.BLENDER_MODEL_EDITOR_PERIPHERAL, "C:/Users/<USER>/Tools/Blender/blender.exe");
+             } else {
+             peripheralConfiguration.getConfigValues().put(PeripheralImplementation.MESHROOM_MODEL_CREATOR_PERIPHERAL, "/home/<USER>/Tools/meshroom/Meshroom");
+             peripheralConfiguration.getConfigValues().put(PeripheralImplementation.METASHAPE_MODEL_CREATOR_PERIPHERAL, "/home/<USER>/Tools/metashape/metashape.sh");
 
-                peripheralConfiguration.getConfigValues().put(PeripheralImplementation.BLENDER_MODEL_EDITOR_PERIPHERAL, "/home/<USER>/Tools/blender/blender");
-            }
+             peripheralConfiguration.getConfigValues().put(PeripheralImplementation.BLENDER_MODEL_EDITOR_PERIPHERAL, "/home/<USER>/Tools/blender/blender");
+             }
+             **/
 
-            configurationRepository.saveConfiguration(ConfigurationType.PERIPHERAL, peripheralConfiguration);
+            configurationRepository.saveConfiguration(ConfigurationType.PERIPHERALS, peripheralConfiguration);
         }
     }
 

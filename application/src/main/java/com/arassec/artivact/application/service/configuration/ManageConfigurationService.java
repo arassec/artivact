@@ -14,6 +14,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -144,50 +145,46 @@ public class ManageConfigurationService
      * {@inheritDoc}
      */
     @Override
-    public PeripheralConfiguration loadPeripheralConfiguration() {
-        Optional<PeripheralConfiguration> configurationOptional =
-                configurationRepository.findByType(ConfigurationType.PERIPHERAL, PeripheralConfiguration.class);
+    public PeripheralsConfiguration loadPeripheralConfiguration() {
+        Optional<PeripheralsConfiguration> configurationOptional =
+                configurationRepository.findByType(ConfigurationType.PERIPHERALS, PeripheralsConfiguration.class);
 
-        PeripheralConfiguration peripheralConfiguration = configurationOptional.orElseGet(PeripheralConfiguration::new);
+        PeripheralsConfiguration peripheralsConfiguration = configurationOptional.orElseGet(PeripheralsConfiguration::new);
+        peripheralsConfiguration.setTurntablePeripheralConfigs(peripheralsConfiguration.getTurntablePeripheralConfigs().stream()
+                .filter(Objects::nonNull).toList());
+        peripheralsConfiguration.setCameraPeripheralConfigs(peripheralsConfiguration.getCameraPeripheralConfigs().stream()
+                .filter(Objects::nonNull).toList());
+        peripheralsConfiguration.setImageBackgroundRemovalPeripheralConfigs(peripheralsConfiguration.getImageBackgroundRemovalPeripheralConfigs().stream()
+                .filter(Objects::nonNull).toList());
+        peripheralsConfiguration.setModelCreatorPeripheralConfigs(peripheralsConfiguration.getModelCreatorPeripheralConfigs().stream()
+                .filter(Objects::nonNull).toList());
+        peripheralsConfiguration.setModelEditorPeripheralConfigs(peripheralsConfiguration.getModelEditorPeripheralConfigs().stream()
+                .filter(Objects::nonNull).toList());
 
         // Initialize available options for the current platform:
-        peripheralConfiguration.getAvailableTurntablePeripheralImplementations().add(PeripheralImplementation.DEFAULT_TURNTABLE_PERIPHERAL);
-        peripheralConfiguration.getAvailableImageManipulationPeripheralImplementations().add(PeripheralImplementation.DEFAULT_IMAGE_MANIPULATION_PERIPHERAL);
-        peripheralConfiguration.getAvailableCameraPeripheralImplementations().add(PeripheralImplementation.DEFAULT_CAMERA_PERIPHERAL);
+        peripheralsConfiguration.getAvailableTurntablePeripheralImplementations().add(PeripheralImplementation.ARDUINO_TURNTABLE_PERIPHERAL);
+        peripheralsConfiguration.getAvailableImageManipulatorPeripheralImplementations().add(PeripheralImplementation.ONNX_IMAGE_BACKGROUND_REMOVAL_PERIPHERAL);
+        peripheralsConfiguration.getAvailableCameraPeripheralImplementations().add(PeripheralImplementation.PTP_CAMERA_PERIPHERAL);
+        peripheralsConfiguration.getAvailableCameraPeripheralImplementations().add(PeripheralImplementation.EXTERNAL_PROGRAM_CAMERA_PERIPHERAL);
+        peripheralsConfiguration.getAvailableModelCreatorPeripheralImplementations().add(PeripheralImplementation.EXTERNAL_PROGRAM_MODEL_CREATOR_PERIPHERAL);
+        peripheralsConfiguration.getAvailableModelEditorPeripheralImplementations().add(PeripheralImplementation.EXTERNAL_PROGRAM_MODEL_EDITOR_PERIPHERAL);
 
-        boolean windowsOs = System.getProperty("os.name").toLowerCase().contains("windows");
-
-        if (windowsOs) {
-            peripheralConfiguration.getAvailableCameraPeripheralImplementations().add(PeripheralImplementation.DIGI_CAM_CONTROL_CAMERA_PERIPHERAL);
-        } else {
-            peripheralConfiguration.getAvailableCameraPeripheralImplementations().add(PeripheralImplementation.GPHOTO_TWO_CAMERA_PERIPHERAL);
-        }
-
-        peripheralConfiguration.getAvailableModelCreatorPeripheralImplementations().add(PeripheralImplementation.FALLBACK_MODEL_CREATOR_PERIPHERAL);
-        peripheralConfiguration.getAvailableModelCreatorPeripheralImplementations().add(PeripheralImplementation.MESHROOM_MODEL_CREATOR_PERIPHERAL);
-        peripheralConfiguration.getAvailableModelCreatorPeripheralImplementations().add(PeripheralImplementation.METASHAPE_MODEL_CREATOR_PERIPHERAL);
-        if (windowsOs) {
-            peripheralConfiguration.getAvailableModelCreatorPeripheralImplementations().add(PeripheralImplementation.REALITY_SCAN_MODEL_CREATOR_PERIPHERAL);
-        }
-
-        peripheralConfiguration.getAvailableModelEditorPeripheralImplementations().add(PeripheralImplementation.FALLBACK_MODEL_EDITOR_PERIPHERAL);
-        peripheralConfiguration.getAvailableModelEditorPeripheralImplementations().add(PeripheralImplementation.BLENDER_MODEL_EDITOR_PERIPHERAL);
-
-        return peripheralConfiguration;
+        return peripheralsConfiguration;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void savePeripheralConfiguration(PeripheralConfiguration peripheralConfiguration) {
+    @GenerateIds
+    public void savePeripheralConfiguration(PeripheralsConfiguration peripheralConfiguration) {
         // Available options are computed when loading and must not be saved:
-        peripheralConfiguration.setAvailableImageManipulationPeripheralImplementations(List.of());
+        peripheralConfiguration.setAvailableImageManipulatorPeripheralImplementations(List.of());
         peripheralConfiguration.setAvailableCameraPeripheralImplementations(List.of());
         peripheralConfiguration.setAvailableTurntablePeripheralImplementations(List.of());
         peripheralConfiguration.setAvailableModelCreatorPeripheralImplementations(List.of());
         peripheralConfiguration.setAvailableModelEditorPeripheralImplementations(List.of());
-        configurationRepository.saveConfiguration(ConfigurationType.PERIPHERAL, peripheralConfiguration);
+        configurationRepository.saveConfiguration(ConfigurationType.PERIPHERALS, peripheralConfiguration);
     }
 
     /**

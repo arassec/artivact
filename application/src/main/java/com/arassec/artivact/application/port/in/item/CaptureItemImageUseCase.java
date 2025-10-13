@@ -19,8 +19,8 @@ public interface CaptureItemImageUseCase {
     /**
      * Captures images using a peripheral adapter for the given item.
      *
-     * @param itemId              The item's ID.
-     * @param captureImagesParams Parameters for image capturing.
+     * @param itemId                      The item's ID.
+     * @param captureImagesParams         Parameters for image capturing.
      */
     void captureImages(String itemId, CaptureImagesParams captureImagesParams);
 

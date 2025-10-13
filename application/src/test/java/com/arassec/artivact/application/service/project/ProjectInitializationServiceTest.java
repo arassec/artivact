@@ -11,7 +11,7 @@ import com.arassec.artivact.application.port.out.repository.PageRepository;
 import com.arassec.artivact.domain.model.account.Account;
 import com.arassec.artivact.domain.model.configuration.AppearanceConfiguration;
 import com.arassec.artivact.domain.model.configuration.ConfigurationType;
-import com.arassec.artivact.domain.model.configuration.PeripheralConfiguration;
+import com.arassec.artivact.domain.model.configuration.PeripheralsConfiguration;
 import com.arassec.artivact.domain.model.page.Page;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -121,7 +121,7 @@ class ProjectInitializationServiceTest {
 
         service.initialize();
 
-        verify(configurationRepository).saveConfiguration(eq(ConfigurationType.PERIPHERAL), any());
+        verify(configurationRepository).saveConfiguration(eq(ConfigurationType.PERIPHERALS), any());
     }
 
     @Test
@@ -131,7 +131,7 @@ class ProjectInitializationServiceTest {
         when(loadAccountUseCase.loadAll()).thenReturn(Collections.emptyList());
         when(configurationRepository.findByType(ConfigurationType.APPEARANCE, AppearanceConfiguration.class))
                 .thenReturn(Optional.empty());
-        when(configurationRepository.findByType(ConfigurationType.PERIPHERAL, PeripheralConfiguration.class))
+        when(configurationRepository.findByType(ConfigurationType.PERIPHERALS, PeripheralsConfiguration.class))
                 .thenReturn(Optional.empty());
         when(pageRepository.findAll()).thenReturn(Collections.emptyList());
 

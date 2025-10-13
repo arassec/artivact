@@ -1,7 +1,9 @@
 package com.arassec.artivact.application;
 
-import com.arassec.artivact.application.infrastructure.deserializer.WidgetDeserializer;
+import com.arassec.artivact.application.infrastructure.mapper.PeripheralConfigDeserializer;
+import com.arassec.artivact.application.infrastructure.mapper.WidgetDeserializer;
 import com.arassec.artivact.domain.model.page.Widget;
+import com.arassec.artivact.domain.model.peripheral.configs.PeripheralConfig;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -42,6 +44,7 @@ public class ApplicationConfiguration {
     public ObjectMapper objectMapper() {
         var artivactMapperModule = new SimpleModule();
         artivactMapperModule.addDeserializer(Widget.class, new WidgetDeserializer());
+        artivactMapperModule.addDeserializer(PeripheralConfig.class, new PeripheralConfigDeserializer());
 
         ObjectMapper objectMapper = new ObjectMapper();
 

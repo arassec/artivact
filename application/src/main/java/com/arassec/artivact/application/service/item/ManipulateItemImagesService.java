@@ -6,14 +6,15 @@ import com.arassec.artivact.application.port.in.item.ManipulateItemImagesUseCase
 import com.arassec.artivact.application.port.in.item.SaveItemUseCase;
 import com.arassec.artivact.application.port.in.operation.RunBackgroundOperationUseCase;
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
-import com.arassec.artivact.application.port.out.peripheral.ImageManipulationPeripheral;
+import com.arassec.artivact.application.port.out.peripheral.ImageManipulatorPeripheral;
 import com.arassec.artivact.domain.exception.ArtivactException;
-import com.arassec.artivact.domain.model.configuration.PeripheralConfiguration;
+import com.arassec.artivact.domain.model.configuration.PeripheralsConfiguration;
 import com.arassec.artivact.domain.model.item.CreationImageSet;
 import com.arassec.artivact.domain.model.item.Item;
 import com.arassec.artivact.domain.model.misc.ProgressMonitor;
 import com.arassec.artivact.domain.model.peripheral.Peripheral;
 import com.arassec.artivact.domain.model.peripheral.PeripheralInitParams;
+import com.arassec.artivact.domain.model.peripheral.configs.PeripheralConfig;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -42,11 +43,11 @@ public class ManipulateItemImagesService implements ManipulateItemImagesUseCase 
     private final List<Peripheral> peripheralAdapters;
 
     @Override
-    public synchronized void removeBackgrounds(String itemId, int imageSetIndex) {
+    public synchronized void removeBackgrounds(String itemId, String imageManipulatorConfigId, int imageSetIndex) {
         runBackgroundOperationUseCase.execute("manipulateImage", "backgroundRemovalStart", progressMonitor -> {
             Item item = loadItemUseCase.loadTranslated(itemId);
 
-            List<Path> imagesWithoutBackground = removeBackgrounds(itemId, item.getMediaCreationContent().getImageSets().get(imageSetIndex), progressMonitor);
+            List<Path> imagesWithoutBackground = removeBackgrounds(itemId, imageManipulatorConfigId, item.getMediaCreationContent().getImageSets().get(imageSetIndex), progressMonitor);
 
             if (!imagesWithoutBackground.isEmpty()) {
                 item.getMediaCreationContent().getImageSets().add(CreationImageSet.builder()
@@ -71,19 +72,24 @@ public class ManipulateItemImagesService implements ManipulateItemImagesUseCase 
      * @param progressMonitor  The progress monitor which is updated during processing.
      * @return List of paths of newly created images without background.
      */
-    private List<Path> removeBackgrounds(String itemId, CreationImageSet creationImageSet, ProgressMonitor progressMonitor) {
-        PeripheralConfiguration adapterConfiguration = loadAdapterConfigurationUseCase.loadPeripheralConfiguration();
+    private List<Path> removeBackgrounds(String itemId, String imageManipulatorConfigId, CreationImageSet creationImageSet, ProgressMonitor progressMonitor) {
+        PeripheralsConfiguration peripheralsConfiguration = loadAdapterConfigurationUseCase.loadPeripheralConfiguration();
 
-        ImageManipulationPeripheral imageManipulationAdapter = peripheralAdapters.stream()
-                .filter(ImageManipulationPeripheral.class::isInstance)
-                .map(ImageManipulationPeripheral.class::cast)
-                .filter(adapter -> adapter.supports(adapterConfiguration.getImageManipulationPeripheralImplementation()))
+        PeripheralConfig imageManipulatorPeripheralConfig = peripheralsConfiguration.getImageBackgroundRemovalPeripheralConfigs().stream()
+                .filter(config -> config.getId().equals(imageManipulatorConfigId))
+                .findFirst()
+                .orElseThrow();
+
+        ImageManipulatorPeripheral imageManipulationAdapter = peripheralAdapters.stream()
+                .filter(ImageManipulatorPeripheral.class::isInstance)
+                .map(ImageManipulatorPeripheral.class::cast)
+                .filter(adapter -> adapter.supports(imageManipulatorPeripheralConfig.getPeripheralImplementation()))
                 .findAny()
                 .orElseThrow(() -> new ArtivactException("Could not detect image-manipulation adapter!"));
 
         imageManipulationAdapter.initialize(progressMonitor, PeripheralInitParams.builder()
                 .projectRoot(useProjectDirsUseCase.getProjectRoot())
-                .configuration(adapterConfiguration)
+                .config(imageManipulatorPeripheralConfig)
                 .workDir(useProjectDirsUseCase.getImagesDir(itemId))
                 .build());
 

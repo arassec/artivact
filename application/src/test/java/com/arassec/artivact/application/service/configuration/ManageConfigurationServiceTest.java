@@ -161,38 +161,24 @@ class ManageConfigurationServiceTest {
     }
 
     @Test
-    void testLoadPeripheralConfigurationWindows() {
-        System.setProperty("os.name", "Windows 10");
-        PeripheralConfiguration config = new PeripheralConfiguration();
-        when(configurationRepository.findByType(ConfigurationType.PERIPHERAL, PeripheralConfiguration.class))
+    void testLoadPeripheralConfiguration() {
+        PeripheralsConfiguration config = new PeripheralsConfiguration();
+        when(configurationRepository.findByType(ConfigurationType.PERIPHERALS, PeripheralsConfiguration.class))
                 .thenReturn(Optional.of(config));
 
         var result = service.loadPeripheralConfiguration();
 
         assertThat(result.getAvailableCameraPeripheralImplementations())
-                .contains(PeripheralImplementation.DIGI_CAM_CONTROL_CAMERA_PERIPHERAL);
-    }
-
-    @Test
-    void testLoadPeripheralConfigurationNonWindows() {
-        System.setProperty("os.name", "Linux");
-        PeripheralConfiguration config = new PeripheralConfiguration();
-        when(configurationRepository.findByType(ConfigurationType.PERIPHERAL, PeripheralConfiguration.class))
-                .thenReturn(Optional.of(config));
-
-        var result = service.loadPeripheralConfiguration();
-
-        assertThat(result.getAvailableCameraPeripheralImplementations())
-                .contains(PeripheralImplementation.GPHOTO_TWO_CAMERA_PERIPHERAL);
+                .contains(PeripheralImplementation.EXTERNAL_PROGRAM_CAMERA_PERIPHERAL);
     }
 
     @Test
     void testSavePeripheralConfiguration() {
-        PeripheralConfiguration config = new PeripheralConfiguration();
+        PeripheralsConfiguration config = new PeripheralsConfiguration();
 
         service.savePeripheralConfiguration(config);
 
-        verify(configurationRepository).saveConfiguration(ConfigurationType.PERIPHERAL, config);
+        verify(configurationRepository).saveConfiguration(ConfigurationType.PERIPHERALS, config);
         assertThat(config.getAvailableCameraPeripheralImplementations()).isEmpty();
     }
 
