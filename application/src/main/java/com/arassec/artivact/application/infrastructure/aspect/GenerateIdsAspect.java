@@ -74,7 +74,9 @@ public class GenerateIdsAspect {
                 } else if (Collection.class.isAssignableFrom(field.getType())) {
                     field.setAccessible(true);
                     Collection<?> collection = (Collection<?>) field.get(object);
-                    collection.forEach(this::generateIdsIfRequired);
+                    if (collection != null && !collection.isEmpty()) {
+                        collection.forEach(this::generateIdsIfRequired);
+                    }
                 }
             } catch (IllegalAccessException e) {
                 throw new ArtivactException("Could not generate IDs for IdentifiedItem!", e);

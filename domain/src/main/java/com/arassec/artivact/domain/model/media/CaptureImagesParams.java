@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Parameters for photo capturing.
+ * Parameters for iamge capturing.
  */
 @Data
 @Builder
@@ -28,5 +28,11 @@ public class CaptureImagesParams {
      * Set to {@code true} if backgrounds should automatically be removed from captured images.
      */
     private boolean removeBackgrounds;
+
+    private String cameraPeripheralConfigId;
+
+    private String turntablePeripheralConfigId;
+
+    private String imageBackgroundRemovalPeripheralConfigId;
 
 }

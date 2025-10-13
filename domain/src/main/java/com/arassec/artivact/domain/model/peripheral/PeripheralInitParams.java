@@ -1,6 +1,6 @@
 package com.arassec.artivact.domain.model.peripheral;
 
-import com.arassec.artivact.domain.model.configuration.PeripheralConfiguration;
+import com.arassec.artivact.domain.model.peripheral.configs.PeripheralConfig;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -26,6 +26,6 @@ public class PeripheralInitParams {
     /**
      * The peripheral configuration.
      */
-    private PeripheralConfiguration configuration;
+    private PeripheralConfig config;
 
 }

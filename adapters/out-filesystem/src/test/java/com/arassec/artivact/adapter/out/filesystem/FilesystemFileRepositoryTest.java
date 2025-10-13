@@ -2,7 +2,6 @@ package com.arassec.artivact.adapter.out.filesystem;
 
 import com.arassec.artivact.adapter.out.filesystem.repository.FilesystemFileRepository;
 import com.arassec.artivact.domain.exception.ArtivactException;
-import com.arassec.artivact.domain.model.misc.FileModification;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,7 +42,7 @@ class FilesystemFileRepositoryTest {
     /**
      * File to use during tests.
      */
-    private final Path sourceFile = Path.of("src/test/resources/filesystem-file-repository-test.txt.tpl");
+    private final Path sourceFile = Path.of("src/test/resources/filesystem-file-repository-test.txt");
 
     /**
      * Image to use during tests.
@@ -92,7 +91,7 @@ class FilesystemFileRepositoryTest {
     void testUpdateProjectDirectoryServerMode() {
         when(environment.matchesProfiles("desktop", "e2e")).thenReturn(false);
 
-        filesystemFileRepository.updateProjectDirectory(targetDir, null, null, List.of());
+        filesystemFileRepository.updateProjectDirectory(targetDir, null, null);
 
         try (Stream<Path> files = Files.list(targetDir)) {
             assertTrue(files.toList().isEmpty());
@@ -109,15 +108,11 @@ class FilesystemFileRepositoryTest {
 
         filesystemFileRepository.updateProjectDirectory(targetDir,
                 targetDir.resolve("invalid"),
-                Path.of("src/test/resources/"),
-                List.of(new FileModification(
-                        "filesystem-file-repository-test.txt",
-                        "##REPLACEMENT##",
-                        "FilesystemFileRepositoryTest"))
+                Path.of("src/test/resources/")
         );
 
-        assertTrue(Files.exists(targetDir.resolve("filesystem-file-repository-test.txt.tpl")));
-        assertEquals("FilesystemFileRepositoryTest", Files.readString(targetDir.resolve("filesystem-file-repository-test.txt")));
+        assertTrue(Files.exists(targetDir.resolve("filesystem-file-repository-test.txt")));
+        assertEquals("test file", Files.readString(targetDir.resolve("filesystem-file-repository-test.txt")));
     }
 
     /**
@@ -285,7 +280,7 @@ class FilesystemFileRepositoryTest {
     void testCopyToOutputStream() {
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
             filesystemFileRepository.copy(sourceFile, bos);
-            assertEquals("##REPLACEMENT##", bos.toString());
+            assertEquals("test file", bos.toString());
         }
     }
 
@@ -498,7 +493,7 @@ class FilesystemFileRepositoryTest {
     void testSize() {
         assertThat(filesystemFileRepository.size(null)).isZero();
         assertThat(filesystemFileRepository.size(Path.of("INVALID"))).isZero();
-        assertThat(filesystemFileRepository.size(sourceFile)).isEqualTo(15);
+        assertThat(filesystemFileRepository.size(sourceFile)).isEqualTo(9);
         assertThat(filesystemFileRepository.size(sourceImage)).isEqualTo(17613);
     }
 
@@ -541,7 +536,7 @@ class FilesystemFileRepositoryTest {
      */
     @Test
     void testRead() {
-        assertThat(filesystemFileRepository.read(sourceFile)).isEqualTo("##REPLACEMENT##");
+        assertThat(filesystemFileRepository.read(sourceFile)).isEqualTo("test file");
     }
 
     /**
@@ -562,7 +557,7 @@ class FilesystemFileRepositoryTest {
     @SneakyThrows
     void testReadStream() {
         String sourceFileContent = StreamUtils.copyToString(filesystemFileRepository.readStream(sourceFile), Charset.defaultCharset());
-        assertThat(sourceFileContent).isEqualTo("##REPLACEMENT##");
+        assertThat(sourceFileContent).isEqualTo("test file");
     }
 
     /**
@@ -584,7 +579,7 @@ class FilesystemFileRepositoryTest {
     @Test
     void testReadBytes() {
         byte[] sourceFileContent = filesystemFileRepository.readBytes(sourceFile);
-        assertThat(new String(sourceFileContent)).isEqualTo("##REPLACEMENT##");
+        assertThat(new String(sourceFileContent)).isEqualTo("test file");
     }
 
     /**

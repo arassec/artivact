@@ -4,6 +4,7 @@ import com.arassec.artivact.adapter.in.rest.controller.BaseController;
 import com.arassec.artivact.application.port.in.item.*;
 import com.arassec.artivact.domain.model.item.Asset;
 import com.arassec.artivact.domain.model.media.CaptureImagesParams;
+import com.arassec.artivact.domain.model.media.CreateModelParams;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
@@ -35,7 +36,7 @@ public class ItemMediaCreationController extends BaseController {
     private final EditItemModelUseCase editItemModelUseCase;
 
     /**
-     * Starts capturing images into a new image-set of an item.
+     * Captures a single image to directly import into the item's media files.
      *
      * @param itemId              The item's ID.
      * @param captureImagesparams Configuration parameters for image capturing.
@@ -43,7 +44,7 @@ public class ItemMediaCreationController extends BaseController {
     @PostMapping("/capture-image")
     public String captureImage(@PathVariable String itemId,
                                @RequestBody CaptureImagesParams captureImagesparams) {
-        return captureImagesUseCase.captureImage(itemId, captureImagesparams.isRemoveBackgrounds());
+        return captureImagesUseCase.captureImage(itemId, captureImagesparams);
     }
 
     /**
@@ -66,8 +67,9 @@ public class ItemMediaCreationController extends BaseController {
      */
     @PostMapping("/remove-backgrounds")
     public void removeBackgrounds(@PathVariable String itemId,
+                                  @RequestParam String imageManipulatorPeripheralConfigId,
                                   @RequestParam int imageSetIndex) {
-        manipulateImagesUseCase.removeBackgrounds(itemId, imageSetIndex);
+        manipulateImagesUseCase.removeBackgrounds(itemId, imageManipulatorPeripheralConfigId, imageSetIndex);
     }
 
     /**
@@ -87,19 +89,23 @@ public class ItemMediaCreationController extends BaseController {
      * @param itemId The item's ID.
      */
     @PostMapping("/create-model-set")
-    public void createModelSet(@PathVariable String itemId) {
-        createItemModelUseCase.createModel(itemId);
+    public void createModelSet(@PathVariable String itemId,
+                               @RequestBody CreateModelParams createModelParams) {
+        createItemModelUseCase.createModel(itemId, createModelParams);
     }
 
     /**
      * Starts editing an item's 3D model with an external editor.
      *
-     * @param itemId        The item's ID.
-     * @param modelSetIndex The model-set index containing the model to edit.
+     * @param itemId                        The item's ID.
+     * @param modelSetIndex                 The model-set index containing the model to edit.
+     * @param modelEditorPeripheralConfigId ID of the model editor peripheral to use.
      */
     @PostMapping("/edit-model/{modelSetIndex}")
-    public void openModelEditor(@PathVariable String itemId, @PathVariable int modelSetIndex) {
-        editItemModelUseCase.editModel(itemId, modelSetIndex);
+    public void openModelEditor(@PathVariable String itemId,
+                                @PathVariable int modelSetIndex,
+                                @RequestParam String modelEditorPeripheralConfigId) {
+        editItemModelUseCase.editModel(itemId, modelEditorPeripheralConfigId, modelSetIndex);
     }
 
     /**

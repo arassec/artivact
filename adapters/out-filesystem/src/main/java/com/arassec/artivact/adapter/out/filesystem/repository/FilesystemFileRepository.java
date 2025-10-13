@@ -4,7 +4,6 @@ import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.item.ImageSize;
 import com.arassec.artivact.domain.model.misc.DirectoryDefinitions;
-import com.arassec.artivact.domain.model.misc.FileModification;
 import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -60,7 +59,7 @@ public class FilesystemFileRepository implements FileRepository {
      * {@inheritDoc}
      */
     @Override
-    public void updateProjectDirectory(Path projectRoot, Path projectSetupDir, Path projectSetupDirFallback, List<FileModification> fileModifications) {
+    public void updateProjectDirectory(Path projectRoot, Path projectSetupDir, Path projectSetupDirFallback) {
 
         if (!environment.matchesProfiles("desktop", "e2e")) {
             return;
@@ -87,20 +86,6 @@ public class FilesystemFileRepository implements FileRepository {
         } catch (IOException e) {
             throw new ArtivactException("Could not update project files!", e);
         }
-
-        fileModifications.forEach(fileModification -> {
-            try {
-                Path file = projectRoot.resolve(fileModification.file());
-                if (!Files.exists(file)) {
-                    Path templateFile = projectRoot.resolve(fileModification.file() + ".tpl");
-                    String fileContent = Files.readString(templateFile);
-                    fileContent = fileContent.replace(fileModification.placeholder(), fileModification.replacement());
-                    Files.writeString(file, fileContent, StandardOpenOption.CREATE_NEW);
-                }
-            } catch (IOException e) {
-                throw new ArtivactException("Could not update project file!", e);
-            }
-        });
     }
 
     /**

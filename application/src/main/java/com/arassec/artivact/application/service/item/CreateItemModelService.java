@@ -9,14 +9,16 @@ import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.peripheral.ModelCreatorPeripheral;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.exception.ArtivactException;
-import com.arassec.artivact.domain.model.configuration.PeripheralConfiguration;
+import com.arassec.artivact.domain.model.configuration.PeripheralsConfiguration;
 import com.arassec.artivact.domain.model.item.CreationImageSet;
 import com.arassec.artivact.domain.model.item.CreationModelSet;
 import com.arassec.artivact.domain.model.item.Item;
+import com.arassec.artivact.domain.model.media.CreateModelParams;
 import com.arassec.artivact.domain.model.misc.ProgressMonitor;
 import com.arassec.artivact.domain.model.peripheral.ModelCreationResult;
 import com.arassec.artivact.domain.model.peripheral.Peripheral;
 import com.arassec.artivact.domain.model.peripheral.PeripheralInitParams;
+import com.arassec.artivact.domain.model.peripheral.configs.PeripheralConfig;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,15 +50,15 @@ public class CreateItemModelService implements CreateItemModelUseCase {
     private final LoadPeripheralConfigurationUseCase loadAdapterConfigurationUseCase;
 
     /**
-     * List of all available adapters.
+     * List of all available peripherals.
      */
-    private final List<Peripheral> adapters;
+    private final List<Peripheral> peripherals;
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public synchronized void createModel(String itemId) {
+    public synchronized void createModel(String itemId, CreateModelParams createModelParams) {
         runBackgroundOperationUseCase.execute("createModel", "start", progressMonitor -> {
             Item item = loadItemUseCase.loadTranslated(itemId);
 
@@ -64,7 +66,7 @@ public class CreateItemModelService implements CreateItemModelUseCase {
                     .filter(CreationImageSet::isModelInput)
                     .toList();
 
-            Optional<CreationModelSet> modelSetOptional = createModel(itemId, modelInputImageSets, progressMonitor);
+            Optional<CreationModelSet> modelSetOptional = createModel(itemId, createModelParams, modelInputImageSets, progressMonitor);
 
             if (modelSetOptional.isPresent()) {
                 item.getMediaCreationContent().getModelSets().add(modelSetOptional.get());
@@ -77,21 +79,27 @@ public class CreateItemModelService implements CreateItemModelUseCase {
      * Creates a 3D model using the currently configured model-creator adapter.
      *
      * @param itemId            The ID of the item to create a model for.
+     * @param createModelParams Parameters for model creation.
      * @param creationImageSets The image-sets to use as input for model creation.
      * @param progressMonitor   The progress monitor which will be updated during model creation.
      */
-    public Optional<CreationModelSet> createModel(String itemId, List<CreationImageSet> creationImageSets, ProgressMonitor progressMonitor) {
-        PeripheralConfiguration adapterConfiguration = loadAdapterConfigurationUseCase.loadPeripheralConfiguration();
+    public Optional<CreationModelSet> createModel(String itemId, CreateModelParams createModelParams, List<CreationImageSet> creationImageSets, ProgressMonitor progressMonitor) {
+        PeripheralsConfiguration peripheralsConfiguration = loadAdapterConfigurationUseCase.loadPeripheralConfiguration();
 
-        ModelCreatorPeripheral modelCreatorAdapter = adapters.stream()
+        PeripheralConfig modelCreatorConfig = peripheralsConfiguration.getModelCreatorPeripheralConfigs().stream()
+                .filter(config -> config.getId().equals(createModelParams.getModelCreatorPeripheralConfigId()))
+                .findFirst()
+                .orElseThrow();
+
+        ModelCreatorPeripheral modelCreatorAdapter = peripherals.stream()
                 .filter(ModelCreatorPeripheral.class::isInstance)
                 .map(ModelCreatorPeripheral.class::cast)
-                .filter(adapter -> adapter.supports(adapterConfiguration.getModelCreatorPeripheralImplementation()))
+                .filter(adapter -> adapter.supports(modelCreatorConfig.getPeripheralImplementation()))
                 .findAny()
                 .orElseThrow(() -> new ArtivactException("Could not detect selected model-creator adapter!"));
 
         modelCreatorAdapter.initialize(progressMonitor, PeripheralInitParams.builder()
-                .configuration(adapterConfiguration)
+                .config(modelCreatorConfig)
                 .workDir(useProjectDirsUseCase.getTempDir())
                 .projectRoot(useProjectDirsUseCase.getProjectRoot())
                 .build());

@@ -2,6 +2,7 @@
   <h2 class="av-text-h2">
     {{ $t('Common.items.images') }}
     <q-btn
+      :disable="!peripheralsConfigStore.isCameraSet"
       data-test="item-creation-image-button"
       text-color="primary"
       round
@@ -9,13 +10,14 @@
       flat
       color="accent"
       icon="image"
-      @click="captureSinglePhoto()"
+      @click="showCaptureSinglePhotoParamsModalRef = true"
     >
       <q-tooltip>{{
         $t('ItemImageSetEditor.tooltip.directCapture')
       }}</q-tooltip>
     </q-btn>
     <q-btn
+      :disable="!peripheralsConfigStore.isCameraSet"
       data-test="item-creation-camera-button"
       text-color="primary"
       round
@@ -116,14 +118,17 @@
           <q-tooltip>{{ $t('ItemImageSetEditor.tooltip.details') }}</q-tooltip>
         </q-btn>
         <q-btn
-          :disable="imageSet.images.length === 0"
+          :disable="
+            imageSet.images.length === 0 ||
+            !peripheralsConfigStore.isImageBackgroundRemovalSet
+          "
           icon="content_cut"
           round
           dense
           flat
           size="md"
           color="primary"
-          @click="removeBackgrounds(index)"
+          @click="showRemoveBackgrounds(index)"
           v-if="!imageSet.backgroundRemoved"
         >
           <q-tooltip>{{
@@ -183,6 +188,65 @@
     </template>
   </artivact-dialog>
 
+  <!-- SINGLE PHOTO PARAMETERS DIALOG -->
+  <artivact-dialog :dialog-model="showCaptureSinglePhotoParamsModalRef">
+    <template v-slot:header>
+      {{ $t('ItemImageSetEditor.dialog.captureSinglePhotoParams.heading') }}
+    </template>
+
+    <template v-slot:body>
+      <q-card-section>
+        <q-select
+          :disable="availableCamerasRef.length == 1"
+          class="q-mb-md"
+          outlined
+          v-model="selectedCameraRef"
+          :options="availableCamerasRef"
+          :option-label="(opt) => (opt.label ? opt.label : opt)"
+          :label="$t('ItemImageSetEditor.label.selectCamera')"
+        />
+        <template v-if="peripheralsConfigStore.isImageBackgroundRemovalSet">
+          <q-checkbox
+            :disable="!peripheralsConfigStore.isImageBackgroundRemovalSet"
+            v-model="capturePhotosParamsRef.removeBackgrounds"
+            class="full-width q-mb-md"
+            name="removeBackgrounds"
+            :label="$t('ItemImageSetEditor.label.backgrounds')"
+          />
+          <q-select
+            :disable="
+              availableImageBackgroundRemoverRef.length == 1 ||
+              !capturePhotosParamsRef.removeBackgrounds
+            "
+            class="q-mb-md"
+            outlined
+            v-model="selectedImageBackgroundRemoverRef"
+            :options="availableImageBackgroundRemoverRef"
+            :option-label="(opt) => (opt.label ? opt.label : opt)"
+            :label="$t('ItemImageSetEditor.label.selectImageBackgroundRemover')"
+          />
+        </template>
+      </q-card-section>
+    </template>
+
+    <template v-slot:cancel>
+      <q-btn
+        color="primary"
+        :label="$t('Common.cancel')"
+        @click="showCaptureSinglePhotoParamsModalRef = false"
+      />
+    </template>
+
+    <template v-slot:approve>
+      <q-btn
+        color="primary"
+        :label="$t('ItemImageSetEditor.startCapturing')"
+        icon="image"
+        @click="captureSinglePhoto()"
+      />
+    </template>
+  </artivact-dialog>
+
   <!-- SINGLE PHOTO CAPTURE IN PROGRESS -->
   <artivact-dialog
     :dialog-model="showCaptureSinglePhotoModalRef"
@@ -210,7 +274,7 @@
     </template>
   </artivact-dialog>
 
-  <!-- CAPTURE PHOTOS -->
+  <!-- CAPTURE PHOTOS PARAMETERS DIALOG -->
   <artivact-dialog :dialog-model="showCapturePhotosModalRef">
     <template v-slot:header>
       {{ $t('ItemImageSetEditor.captureParameters') }}
@@ -218,6 +282,15 @@
 
     <template v-slot:body>
       <q-card-section>
+        <q-select
+          :disable="availableCamerasRef.length == 1"
+          class="q-mb-md"
+          outlined
+          v-model="selectedCameraRef"
+          :options="availableCamerasRef"
+          :option-label="(opt) => (opt.label ? opt.label : opt)"
+          :label="$t('ItemImageSetEditor.label.selectCamera')"
+        />
         <q-input
           outlined
           v-model="capturePhotosParamsRef.numPhotos"
@@ -226,18 +299,48 @@
           name="numPhotos"
           :label="$t('ItemImageSetEditor.label.numPhotos')"
         />
-        <q-checkbox
-          v-model="capturePhotosParamsRef.useTurnTable"
-          class="full-width q-mb-sm"
-          name="useTurntable"
-          :label="$t('ItemImageSetEditor.label.turntable')"
-        />
-        <q-checkbox
-          v-model="capturePhotosParamsRef.removeBackgrounds"
-          class="full-width"
-          name="removeBackgrounds"
-          :label="$t('ItemImageSetEditor.label.backgrounds')"
-        />
+        <template v-if="peripheralsConfigStore.isTurnTableSet">
+          <q-checkbox
+            :disable="!peripheralsConfigStore.isTurnTableSet"
+            v-model="capturePhotosParamsRef.useTurnTable"
+            class="full-width q-mb-sm"
+            name="useTurntable"
+            :label="$t('ItemImageSetEditor.label.turntable')"
+          />
+          <q-select
+            :disable="
+              availableTurntablesRef.length == 1 ||
+              !capturePhotosParamsRef.useTurnTable
+            "
+            class="q-mb-md"
+            outlined
+            v-model="selectedTurntableRef"
+            :options="availableTurntablesRef"
+            :option-label="(opt) => (opt.label ? opt.label : opt)"
+            :label="$t('ItemImageSetEditor.label.selectTurntable')"
+          />
+        </template>
+        <template v-if="peripheralsConfigStore.isImageBackgroundRemovalSet">
+          <q-checkbox
+            :disable="!peripheralsConfigStore.isImageBackgroundRemovalSet"
+            v-model="capturePhotosParamsRef.removeBackgrounds"
+            class="full-width"
+            name="removeBackgrounds"
+            :label="$t('ItemImageSetEditor.label.backgrounds')"
+          />
+          <q-select
+            :disable="
+              availableImageBackgroundRemoverRef.length == 1 ||
+              !capturePhotosParamsRef.removeBackgrounds
+            "
+            class="q-mb-md"
+            outlined
+            v-model="selectedImageBackgroundRemoverRef"
+            :options="availableImageBackgroundRemoverRef"
+            :option-label="(opt) => (opt.label ? opt.label : opt)"
+            :label="$t('ItemImageSetEditor.label.selectImageBackgroundRemover')"
+          />
+        </template>
       </q-card-section>
     </template>
 
@@ -255,6 +358,44 @@
         :label="$t('ItemImageSetEditor.startCapturing')"
         icon="camera"
         @click="capturePhotos"
+      />
+    </template>
+  </artivact-dialog>
+
+  <!-- REMOVE BACKGROUND PARAMETERS DIALOG -->
+  <artivact-dialog :dialog-model="showRemoveBackgroundParamsModalRef">
+    <template v-slot:header>
+      {{ $t('ItemImageSetEditor.dialog.removeBackground.heading') }}
+    </template>
+
+    <template v-slot:body>
+      <q-card-section>
+        <q-select
+          :disable="availableImageBackgroundRemoverRef.length == 1"
+          class="q-mb-md"
+          outlined
+          v-model="selectedImageBackgroundRemoverRef"
+          :options="availableImageBackgroundRemoverRef"
+          :option-label="(opt) => (opt.label ? opt.label : opt)"
+          :label="$t('ItemImageSetEditor.label.selectImageBackgroundRemover')"
+        />
+      </q-card-section>
+    </template>
+
+    <template v-slot:cancel>
+      <q-btn
+        color="primary"
+        :label="$t('Common.cancel')"
+        @click="showRemoveBackgroundParamsModalRef = false"
+      />
+    </template>
+
+    <template v-slot:approve>
+      <q-btn
+        color="primary"
+        :label="$t('ItemImageSetEditor.dialog.removeBackground.approve')"
+        icon="content_cut"
+        @click="removeBackgrounds()"
       />
     </template>
   </artivact-dialog>
@@ -398,15 +539,18 @@
 
 <script setup lang="ts">
 import { api } from '../boot/axios';
-import { Asset, CapturePhotosParams, ImageSet } from './artivact-models';
+import {
+  Asset,
+  CaptureImageParams,
+  ImageSet,
+  SelectboxModel,
+} from './artivact-models';
 import { useQuasar } from 'quasar';
-import { PropType, ref } from 'vue';
+import { onMounted, PropType, Ref, ref } from 'vue';
 import ArtivactDialog from '../components/ArtivactDialog.vue';
 import ArtivactOperationInProgressDialog from '../components/ArtivactOperationInProgressDialog.vue';
 import { useI18n } from 'vue-i18n';
-
-const quasar = useQuasar();
-const i18n = useI18n();
+import { usePeripheralsConfigStore } from '../stores/peripherals';
 
 const props = defineProps({
   itemId: {
@@ -426,20 +570,43 @@ const emit = defineEmits<{
   (e: 'save-item'): void;
 }>();
 
+const quasar = useQuasar();
+const i18n = useI18n();
+
+const peripheralsConfigStore = usePeripheralsConfigStore();
+
+const availableTurntablesRef: Ref<SelectboxModel[]> = ref(
+  [] as SelectboxModel[],
+);
+const selectedTurntableRef = ref(null);
+const availableCamerasRef: Ref<SelectboxModel[]> = ref([] as SelectboxModel[]);
+const selectedCameraRef = ref(null);
+const availableImageBackgroundRemoverRef: Ref<SelectboxModel[]> = ref(
+  [] as SelectboxModel[],
+);
+const selectedImageBackgroundRemoverRef = ref(null);
+
 const showCapturePhotosModalRef = ref(false);
 const capturePhotosParamsRef = ref({
   numPhotos: 36,
-  useTurnTable: true,
-  removeBackgrounds: true,
-} as CapturePhotosParams);
+  useTurnTable: peripheralsConfigStore.isTurnTableSet,
+  removeBackgrounds: peripheralsConfigStore.isImageBackgroundRemovalSet,
+  cameraPeripheralConfigId: null,
+  turntablePeripheralConfigId: null,
+  imageBackgroundRemovalPeripheralConfigId: null,
+} as CaptureImageParams);
 
 const showImageSetDetailsModalRef = ref(false);
 let selectedImageSet: ImageSet;
 
+const selectedImageSetIndexRef = ref(null);
+
 const showUploadFilesModalRef = ref(false);
 const showOperationInProgressModalRef = ref(false);
+const showCaptureSinglePhotoParamsModalRef = ref(false);
 const showCaptureSinglePhotoModalRef = ref(false);
 const showTransferPhotoToMediaModalRef = ref(false);
+const showRemoveBackgroundParamsModalRef = ref(false);
 
 const tempImageFilenameRef = ref(null);
 
@@ -486,7 +653,12 @@ function showImageDetails(imageSet: ImageSet) {
 }
 
 function captureSinglePhoto() {
+  showCaptureSinglePhotoParamsModalRef.value = false;
   showCaptureSinglePhotoModalRef.value = true;
+  capturePhotosParamsRef.value.cameraPeripheralConfigId =
+    selectedCameraRef.value.value;
+  capturePhotosParamsRef.value.imageBackgroundRemovalPeripheralConfigId =
+    selectedImageBackgroundRemoverRef.value.value;
   api
     .post(
       '/api/item/' + props.itemId + '/media-creation/capture-image',
@@ -495,11 +667,12 @@ function captureSinglePhoto() {
     .then((response) => {
       if (response) {
         tempImageFilenameRef.value = response.data;
-        showCaptureSinglePhotoModalRef.value = false;
         showTransferPhotoToMediaModalRef.value = true;
       }
+      showCaptureSinglePhotoModalRef.value = false;
     })
     .catch(() => {
+      showCaptureSinglePhotoModalRef.value = false;
       quasar.notify({
         color: 'negative',
         position: 'bottom',
@@ -524,6 +697,12 @@ function deleteTempImage() {
 }
 
 function capturePhotos() {
+  capturePhotosParamsRef.value.cameraPeripheralConfigId =
+    selectedCameraRef.value.value;
+  capturePhotosParamsRef.value.imageBackgroundRemovalPeripheralConfigId =
+    selectedImageBackgroundRemoverRef.value.value;
+  capturePhotosParamsRef.value.turntablePeripheralConfigId =
+    selectedTurntableRef.value.value;
   api
     .post(
       '/api/item/' + props.itemId + '/media-creation/capture-images',
@@ -545,13 +724,25 @@ function capturePhotos() {
     });
 }
 
-function removeBackgrounds(imageSetIndex: number) {
+function showRemoveBackgrounds(imageSetIndex: number) {
+  selectedImageSetIndexRef.value = imageSetIndex;
+  if (availableImageBackgroundRemoverRef.value.length > 1) {
+    showRemoveBackgroundParamsModalRef.value = true;
+  } else {
+    removeBackgrounds();
+  }
+}
+
+function removeBackgrounds() {
+  showRemoveBackgroundParamsModalRef.value = false;
   api
     .post(
       '/api/item/' +
         props.itemId +
         '/media-creation/remove-backgrounds?imageSetIndex=' +
-        imageSetIndex,
+        selectedImageSetIndexRef.value +
+        '&imageManipulatorPeripheralConfigId=' +
+        selectedImageBackgroundRemoverRef.value.value,
     )
     .then((response) => {
       if (response) {
@@ -693,6 +884,62 @@ function operationFinished() {
   emit('update-item');
   showOperationInProgressModalRef.value = false;
 }
+
+function createPeripheralsOptions() {
+  availableTurntablesRef.value = [] as SelectboxModel[];
+  if (peripheralsConfigStore.isTurnTableSet) {
+    peripheralsConfigStore.config.turntablePeripheralConfigs.forEach(
+      (config) => {
+        availableTurntablesRef.value.push({
+          label: config.label,
+          value: config.id,
+          disable: false,
+        });
+      },
+    );
+    selectedTurntableRef.value =
+      availableTurntablesRef.value.find(
+        (opt) => opt.value === peripheralsConfigStore.favouriteTurnTable,
+      ) ?? availableTurntablesRef.value[0];
+  }
+
+  availableCamerasRef.value = [] as SelectboxModel[];
+  if (peripheralsConfigStore.isCameraSet) {
+    peripheralsConfigStore.config.cameraPeripheralConfigs.forEach((config) => {
+      availableCamerasRef.value.push({
+        label: config.label,
+        value: config.id,
+        disable: false,
+      });
+    });
+    selectedCameraRef.value =
+      availableCamerasRef.value.find(
+        (opt) => opt.value === peripheralsConfigStore.favouriteCamera,
+      ) ?? availableCamerasRef.value[0];
+  }
+
+  availableImageBackgroundRemoverRef.value = [] as SelectboxModel[];
+  if (peripheralsConfigStore.isImageBackgroundRemovalSet) {
+    peripheralsConfigStore.config.imageBackgroundRemovalPeripheralConfigs.forEach(
+      (config) => {
+        availableImageBackgroundRemoverRef.value.push({
+          label: config.label,
+          value: config.id,
+          disable: false,
+        });
+      },
+    );
+    selectedImageBackgroundRemoverRef.value =
+      availableImageBackgroundRemoverRef.value.find(
+        (opt) =>
+          opt.value === peripheralsConfigStore.favouriteImageBackgroundRemoval,
+      ) ?? availableImageBackgroundRemoverRef.value[0];
+  }
+}
+
+onMounted(() => {
+  createPeripheralsOptions();
+});
 </script>
 
 <style scoped>

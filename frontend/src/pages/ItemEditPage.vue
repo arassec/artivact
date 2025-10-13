@@ -239,7 +239,7 @@
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
 import { computed, onMounted, ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router';
 import { api } from '../boot/axios';
 import ArtivactContent from '../components/ArtivactContent.vue';
 import ArtivactRestrictionsEditor from '../components/ArtivactRestrictionsEditor.vue';
@@ -261,6 +261,7 @@ import ArtivactItemImageSetEditor from '../components/ArtivactItemImageSetEditor
 import ArtivactItemModelSetEditor from '../components/ArtivactItemModelSetEditor.vue';
 import { useProfilesStore } from '../stores/profiles';
 import { useWizzardStore } from '../stores/wizzard';
+import { usePeripheralsConfigStore } from '../stores/peripherals';
 
 const quasar = useQuasar();
 const route = useRoute();
@@ -272,6 +273,7 @@ const breadcrumbsStore = useBreadcrumbsStore();
 const userdataStore = useUserdataStore();
 const profilesStore = useProfilesStore();
 const wizzardStore = useWizzardStore();
+const peripheralsConfigStore = usePeripheralsConfigStore();
 
 const itemDataRef = ref<ItemDetails>();
 const propertiesDataRef = ref();
@@ -400,6 +402,26 @@ function loadTagsData() {
     });
 }
 
+function loadPeripheralConfiguration() {
+  if (profilesStore.isDesktopModeEnabled || profilesStore.isE2eModeEnabled) {
+    api
+      .get('/api/configuration/peripheral')
+      .then((response) => {
+        peripheralsConfigStore.setPeripheralsConfig(response.data);
+      })
+      .catch(() => {
+        quasar.notify({
+          color: 'negative',
+          position: 'bottom',
+          message: i18n.t('Common.messages.loading.failed', {
+            item: i18n.t('Common.items.configuration.peripherals'),
+          }),
+          icon: 'report_problem',
+        });
+      });
+  }
+}
+
 function removeTag(tag: Tag) {
   if (itemDataRef.value) {
     itemDataRef.value.tags = (itemDataRef.value?.tags as Tag[]).filter(
@@ -465,10 +487,16 @@ function exitEditMode() {
   saveItemIfNecessary(true);
 }
 
+onBeforeRouteLeave((to, from, next) => {
+  saveItemIfNecessary(false);
+  next();
+});
+
 onMounted(() => {
   loadPropertiesData();
   loadTagsData();
   loadItemData(route.params.itemId);
+  loadPeripheralConfiguration();
 });
 </script>
 

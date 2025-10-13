@@ -1,7 +1,6 @@
 package com.arassec.artivact.application.port.out.repository;
 
 import com.arassec.artivact.domain.model.item.ImageSize;
-import com.arassec.artivact.domain.model.misc.FileModification;
 import org.springframework.core.io.FileSystemResource;
 
 import java.io.InputStream;
@@ -24,9 +23,8 @@ public interface FileRepository {
      * @param projectRoot             The project's root directory.
      * @param projectSetupDir         The project-setup directory containing files to copy.
      * @param projectSetupDirFallback Fallback project-setup directory to use if projectSetupDir does not exist.
-     * @param fileModifications       List of file modifications to perform during project setup.
      */
-    void updateProjectDirectory(Path projectRoot, Path projectSetupDir, Path projectSetupDirFallback, List<FileModification> fileModifications);
+    void updateProjectDirectory(Path projectRoot, Path projectSetupDir, Path projectSetupDirFallback);
 
     /**
      * Empties the given directory.

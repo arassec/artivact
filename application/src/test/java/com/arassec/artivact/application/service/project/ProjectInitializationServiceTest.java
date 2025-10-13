@@ -11,7 +11,6 @@ import com.arassec.artivact.application.port.out.repository.PageRepository;
 import com.arassec.artivact.domain.model.account.Account;
 import com.arassec.artivact.domain.model.configuration.AppearanceConfiguration;
 import com.arassec.artivact.domain.model.configuration.ConfigurationType;
-import com.arassec.artivact.domain.model.configuration.PeripheralConfiguration;
 import com.arassec.artivact.domain.model.page.Page;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -101,7 +100,7 @@ class ProjectInitializationServiceTest {
         verify(fileRepository).createDirIfRequired(projectRoot.resolve("widgets"));
         verify(fileRepository).createDirIfRequired(projectRoot.resolve("searchIndex"));
 
-        verify(fileRepository).updateProjectDirectory(eq(projectRoot), any(), any(), any());
+        verify(fileRepository).updateProjectDirectory(eq(projectRoot), any(), any());
     }
 
     @Test
@@ -115,23 +114,11 @@ class ProjectInitializationServiceTest {
     }
 
     @Test
-    void testInitializePeripheralConfigurationCreatesDefaultConfiguration() {
-        when(configurationRepository.findByType(ConfigurationType.APPEARANCE, AppearanceConfiguration.class))
-                .thenReturn(Optional.empty());
-
-        service.initialize();
-
-        verify(configurationRepository).saveConfiguration(eq(ConfigurationType.PERIPHERAL), any());
-    }
-
-    @Test
     void testInitializeWelcomePageUsesFallbackIfNotExistsInProjectRoot() {
         when(checkRuntimeConfigurationUseCase.isDesktopProfileEnabled()).thenReturn(true);
 
         when(loadAccountUseCase.loadAll()).thenReturn(Collections.emptyList());
         when(configurationRepository.findByType(ConfigurationType.APPEARANCE, AppearanceConfiguration.class))
-                .thenReturn(Optional.empty());
-        when(configurationRepository.findByType(ConfigurationType.PERIPHERAL, PeripheralConfiguration.class))
                 .thenReturn(Optional.empty());
         when(pageRepository.findAll()).thenReturn(Collections.emptyList());
 

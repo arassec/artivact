@@ -4,6 +4,7 @@ export default {
     save: 'Save',
     apply: 'Apply',
     close: 'Close',
+    ok: 'OK',
     username: 'Username',
     password: 'Password',
     passwordRepeat: 'Password (repeat)',
@@ -24,6 +25,12 @@ export default {
       deleting: {
         success: '{item} deleted',
         failed: "Deleting '{item}' failed",
+      },
+    },
+    dialogs: {
+      unsavedChanges: {
+        heading: 'Unsaved Changes!',
+        body: 'Unsaved changes will be lost. Continue anyway?',
       },
     },
     items: {
@@ -649,49 +656,89 @@ export default {
     },
   },
 
+  ArtivactPeripheralConfigEditor: {
+    heading: {
+      turntable: 'Drehteller-Konfiguration',
+      camera: 'Camera Configuration',
+      backgroundRemoval: 'Background Removal',
+      modelCreator: '3D Model-Creator',
+      modelEditor: '3D Model-Editor',
+    },
+    label: {
+      default: 'Peripheral',
+      label: 'Peripheral Label *',
+      favourite: 'Favourite Option?',
+      implementation: 'Implementation to use',
+    },
+    turntable: {
+      delay: 'Turntable delay in milliseconds',
+      delayDescription:
+        'This configuration delays further processing after a turntable rotation. This ensures that the object has come to a complete stop before an image is captured.',
+    },
+    camera: {
+      argumentsDescription:
+        'The arguments must include the placeholder "$_targetFile_$" to specify the location where the captured image should be saved. Artivact expects the image to be available there after the capture.',
+      delay: 'Delay in milliseconds',
+      delayDescription:
+        'Delays the image capture. This can be used if older cameras have issues with capturing images too quickly, or if the object is to be rotated manually.',
+    },
+    background: {
+      argumentsDescription:
+        'The path to the ONNX file can use the placeholder "$_projectDir_$" to refer to the project directory, e.g. "$_projectDir_$/utils/onnx/silueta.onnx".',
+    },
+    onnx: {
+      onnxModelFile: 'ONNX File *',
+      inputParameterName: 'Input Parameter Name *',
+      imageWidth: 'Input Image Width *',
+      imageHeight: 'Input Image Height *',
+      numThreads: 'Number of Threads *',
+    },
+    externalProgram: {
+      command: 'Executable',
+      arguments: 'Arguments',
+    },
+    modelCreator: {
+      description:
+        'The placeholder $_projectDir_$ can be used to refer to the project directory. A 3D model that is found in the result directory after the photogrammetry process is completed will be imported automatically.',
+      openInputDirInOs:
+        'Additionally open image input directory on program start?',
+      resultDir: 'Result directory',
+    },
+    modelEditor: {
+      description:
+        'The placeholder $_projectDir_$ can be used to reference the project directory. The placeholder $_modelDir_$ can be used to reference the directory where the 3D model is located.',
+    },
+  },
+
+  ArtivactPeripheralConfigOverview: {},
+
   ArtivactPeripheralsConfigurationEditor: {
     description:
-      'Configures the peripherals for 3D model creation of the Artivact application. Fallback-Options can be used if the peripheral or external software can not be used at all.',
+      'Configures the peripherals for 3D model creation of the Artivact application.',
     turntable: {
       heading: 'Turntable Configuration',
       description:
-        'Automatic rotation of captured items via turntables can be configured here. Currently only the open source Artivact turntable is supported. If you use a turntable manually you can configure the fallback option and set a delay to give you time to rotate the turntable by hand.',
-      label: 'Turntable to use',
-      delay: 'Turntable delay in milliseconds',
+        'Automatic rotation of captured items via turntables can be configured here. Currently only DIY turntables using Arduino via USB, like the Artivact open-source turntable, are supported. More infos are available in the documentation.',
     },
     camera: {
       heading: 'Camera Configuration',
       description:
-        'Images are captured with third party applications, which can be configured here. On Windows, DigiCamControl is supported. On Linux, gphoto2 must be used.',
-      label: 'Photo-Capture Software to use',
-      digiCamControlExe: 'DigiCamControl Executable',
-      digiCamControlUrl: 'DigiCamControl Webserver URL',
-      gphotoExe: 'gphoto2 Executable',
+        'Cameras for image capturing can be configured here. The built-in Picture-Transfer-Protocol implementation should support all cameras connected via USB that implement that protocol. If a camera is not supported, third party applications like "DigiCamControl" for Windows or "gphoto2" for Linux can be used.',
     },
     background: {
       heading: 'Background Removal',
       description:
-        'Automatic background removal of captured images is implemented using open-source neural networks for salient object detection. You can find out more in the documentation. The default configuration is:',
-      defaultConfiguration: 'silueta.onnx#input.1#320#320#5',
-      label: 'Background-Removal Software to use',
-      default: 'Configuration String',
+        'Automatic background removal of captured images is implemented using open-source neural networks for salient object detection. The network files must be provided in ONNX format. You can find out more in the documentation.',
     },
     creator: {
       heading: '3D Model-Creator',
       description:
-        'For 3D model creation currently "Metashape", "Meshroom" and "RealityScan" are supported.',
-      label: 'Photogrammetry Software to use',
-      meshroom: 'Meshroom Executable',
-      metashape: 'Metashape Executable',
-      RealityScan:
-        'RealityScan Executable. Append "#headless#12345" to run in headless mode and limit faces to 12345.',
+        'For 3D model creation, external photogrammetry software can be configured here.',
     },
     editor: {
       heading: '3D Model-Editor',
       description:
-        'For editing created 3D models, Blender3D can be configured here.',
-      label: '3D Model Editor to use',
-      blender: 'Blender3D Executable',
+        'For editing created 3D models, external programs can be configured here.',
     },
   },
 
@@ -770,6 +817,7 @@ export default {
     tooltip: {
       delete: 'Delete Tag',
     },
+    defaultTagLabel: 'Default tag for new items?',
     url: 'URL',
     addTag: 'Add Tag',
     newTag: 'New Tag',
@@ -815,8 +863,13 @@ export default {
       delay: 'Turntable Delay',
       backgrounds: 'Remove image backgrounds?',
       add: 'Add',
+      selectTurntable: 'Select Turntable',
+      selectCamera: 'Select Camera',
+      selectImageBackgroundRemover: 'Select Background Remover',
+      selectModelCreator: 'Select Model Creator',
+      selectModelEditor: 'Select Model Editor',
     },
-    captureParameters: 'Photo-Capture Parameters',
+    captureParameters: 'Capture Image Set',
     startCapturing: 'Start Capturing',
     transferPhotoToMedia: 'Add Photo to Media?',
     dialog: {
@@ -835,9 +888,24 @@ export default {
           'Are you sure you want to delete this Image-Set and all its files? This action cannot be undone!',
         approve: 'Delete Image-Set',
       },
+      captureSinglePhotoParams: {
+        heading: 'Capture Single Photo',
+      },
       captureSinglePhotoInProgress: {
         heading: 'Capturing Photo',
         description: 'Capturing single photo to import as item media.',
+      },
+      removeBackground: {
+        heading: 'Remove Image Background',
+        approve: 'Start',
+      },
+      createModel: {
+        heading: 'Create Model',
+        approve: 'Start',
+      },
+      editModel: {
+        heading: 'Edit Model',
+        approve: 'Start',
       },
     },
     messages: {
@@ -1071,17 +1139,12 @@ export default {
   BUTTONS: 'Buttons',
   BUTTONS_DESCRIPTION: 'A grid of one or more configurable buttons.',
 
-  DEFAULT_TURNTABLE_PERIPHERAL: 'Default',
-  DEFAULT_IMAGE_MANIPULATION_PERIPHERAL: 'Default',
-  DEFAULT_CAMERA_PERIPHERAL: 'Default',
-  DIGI_CAM_CONTROL_CAMERA_PERIPHERAL: 'DigiCamControl',
-  GPHOTO_TWO_CAMERA_PERIPHERAL: 'gphoto2',
-  FALLBACK_MODEL_CREATOR_PERIPHERAL: 'Fallback',
-  MESHROOM_MODEL_CREATOR_PERIPHERAL: 'Meshroom',
-  METASHAPE_MODEL_CREATOR_PERIPHERAL: 'Metashape',
-  REALITY_SCAN_MODEL_CREATOR_PERIPHERAL: 'RealityScan',
-  FALLBACK_MODEL_EDITOR_PERIPHERAL: 'Fallback',
-  BLENDER_MODEL_EDITOR_PERIPHERAL: 'Blender3D',
+  ARDUINO_TURNTABLE_PERIPHERAL: 'Arduino DIY Turntable',
+  PTP_CAMERA_PERIPHERAL: 'USB Camera (Picture-Transfer-Protocol)',
+  EXTERNAL_PROGRAM_CAMERA_PERIPHERAL: 'External Program',
+  ONNX_IMAGE_BACKGROUND_REMOVAL_PERIPHERAL: 'ONNX Background Removal',
+  EXTERNAL_PROGRAM_MODEL_CREATOR_PERIPHERAL: 'External Program',
+  EXTERNAL_PROGRAM_MODEL_EDITOR_PERIPHERAL: 'External Program',
 
   DELETE_ITEM: 'Delete item',
   ADD_TAG_TO_ITEM: 'Add tag',

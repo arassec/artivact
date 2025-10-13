@@ -153,31 +153,25 @@ export interface ApplicationSettings {
 }
 
 export enum PeripheralImplementation {
-  DEFAULT_IMAGE_MANIPULATION_PERIPHERAL = 'DEFAULT_IMAGE_MANIPULATION_PERIPHERAL',
-  DEFAULT_CAMERA_PERIPHERAL='DEFAULT_CAMERA_PERIPHERAL',
-  DIGI_CAM_CONTROL_CAMERA_PERIPHERAL='DIGI_CAM_CONTROL_CAMERA_PERIPHERAL',
-  GPHOTO_TWO_CAMERA_PERIPHERAL='GPHOTO_TWO_CAMERA_PERIPHERAL',
-  DEFAULT_TURNTABLE_PERIPHERAL='DEFAULT_TURNTABLE_PERIPHERAL',
-  FALLBACK_MODEL_CREATOR_PERIPHERAL='FALLBACK_MODEL_CREATOR_PERIPHERAL',
-  MESHROOM_MODEL_CREATOR_PERIPHERAL='MESHROOM_MODEL_CREATOR_PERIPHERAL',
-  METASHAPE_MODEL_CREATOR_PERIPHERAL='METASHAPE_MODEL_CREATOR_PERIPHERAL',
-  REALITY_SCAN_MODEL_CREATOR_PERIPHERAL = 'REALITY_SCAN_MODEL_CREATOR_PERIPHERAL',
-  FALLBACK_MODEL_EDITOR_PERIPHERAL='FALLBACK_MODEL_EDITOR_PERIPHERAL',
-  BLENDER_MODEL_EDITOR_PERIPHERAL='BLENDER_MODEL_EDITOR_PERIPHERAL'
+  ARDUINO_TURNTABLE_PERIPHERAL = 'ARDUINO_TURNTABLE_PERIPHERAL',
+  PTP_CAMERA_PERIPHERAL = 'PTP_CAMERA_PERIPHERAL',
+  EXTERNAL_PROGRAM_CAMERA_PERIPHERAL = 'EXTERNAL_PROGRAM_CAMERA_PERIPHERAL',
+  ONNX_IMAGE_BACKGROUND_REMOVAL_PERIPHERAL = 'ONNX_IMAGE_BACKGROUND_REMOVAL_PERIPHERAL',
+  EXTERNAL_PROGRAM_MODEL_CREATOR_PERIPHERAL = 'EXTERNAL_PROGRAM_MODEL_CREATOR_PERIPHERAL',
+  EXTERNAL_PROGRAM_MODEL_EDITOR_PERIPHERAL = 'EXTERNAL_PROGRAM_MODEL_EDITOR_PERIPHERAL',
 }
 
-export interface PeripheralConfiguration {
-  imageManipulationPeripheralImplementation: PeripheralImplementation;
-  availableImageManipulationPeripheralImplementations: PeripheralImplementation[];
-  cameraPeripheralImplementation: PeripheralImplementation;
-  availableCameraPeripheralImplementations: PeripheralImplementation[];
-  turntablePeripheralImplementation: PeripheralImplementation;
+export interface PeripheralsConfiguration {
+  turntablePeripheralConfigs: PeripheralConfig[];
   availableTurntablePeripheralImplementations: PeripheralImplementation[];
-  modelCreatorPeripheralImplementation: PeripheralImplementation;
+  cameraPeripheralConfigs: PeripheralConfig[];
+  availableCameraPeripheralImplementations: PeripheralImplementation[];
+  imageBackgroundRemovalPeripheralConfigs: PeripheralConfig[];
+  availableImageBackgroundRemovalPeripheralImplementations: PeripheralImplementation[];
+  modelCreatorPeripheralConfigs: PeripheralConfig[];
   availableModelCreatorPeripheralImplementations: PeripheralImplementation[];
-  modelEditorPeripheralImplementation: PeripheralImplementation;
+  modelEditorPeripheralConfigs: PeripheralConfig[];
   availableModelEditorPeripheralImplementations: PeripheralImplementation[];
-  configValues: Record<string, unknown>;
 }
 
 export interface Tag extends BaseTranslatableRestrictedObject {
@@ -217,10 +211,17 @@ export interface WidgetPageContainer {
   [key: string]: number
 }
 
-export interface CapturePhotosParams {
+export interface CaptureImageParams {
   numPhotos: number;
   useTurnTable: boolean;
   removeBackgrounds: boolean;
+  cameraPeripheralConfigId: string;
+  turntablePeripheralConfigId: string;
+  imageBackgroundRemovalPeripheralConfigId: string;
+}
+
+export interface CreateModelParams {
+  modelCreatorPeripheralConfigId: string;
 }
 
 export interface OperationProgress {
@@ -283,4 +284,39 @@ export interface ButtonConfig {
 export interface PageIdAndAlias {
   id: string;
   alias: string;
+}
+
+export interface PeripheralConfig {
+  id: string;
+  peripheralImplementation: PeripheralImplementation;
+  label: string;
+  favourite: boolean;
+}
+
+export interface ArduinoTurntablePeripheralConfig extends PeripheralConfig {
+  delayInMilliseconds: number;
+}
+
+export interface OnnxBackgroundRemovalPeripheralConfig
+  extends PeripheralConfig {
+  onnxModelFile: string;
+  inputParameterName: string;
+  imageWidth: number;
+  imageHeight: number;
+  numThreads: number;
+}
+
+export interface PtpCameraPeripheralConfig extends PeripheralConfig {
+  delayInMilliseconds: number;
+}
+
+export interface ExternalProgramPeripheralConfig extends PeripheralConfig {
+  command: string;
+  arguments: string;
+}
+
+export interface ModelCreatorPeripheralConfig
+  extends ExternalProgramPeripheralConfig {
+  openInputDirInOs: boolean;
+  resultDir: string;
 }

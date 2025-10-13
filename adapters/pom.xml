@@ -24,7 +24,7 @@
         <module>out-camera</module>
         <module>out-database</module>
         <module>out-filesystem</module>
-        <module>out-image-manipulation</module>
+        <module>out-image-background-removal</module>
         <module>out-model-creator</module>
         <module>out-model-editor</module>
         <module>out-os</module>

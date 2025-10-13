@@ -24,8 +24,11 @@
               color="white"
               icon="delete"
               size="md"
-              @click="deleteTag(index)">
-              <q-tooltip>{{ $t('ArtivactTagsConfigurationEditor.tooltip.delete') }}</q-tooltip>
+              @click="deleteTag(index)"
+            >
+              <q-tooltip>{{
+                $t('ArtivactTagsConfigurationEditor.tooltip.delete')
+              }}</q-tooltip>
             </q-btn>
           </q-item-section>
         </template>
@@ -46,7 +49,7 @@
               class="q-mb-sm"
             />
             <q-checkbox
-              label="Default tag for new items?"
+              :label="$t('ArtivactTagsConfigurationEditor.defaultTagLabel')"
               v-model="tagEntry.defaultTag"
             ></q-checkbox>
           </q-card-section>
@@ -56,16 +59,20 @@
 
     <div class="row">
       <q-space></q-space>
-      <q-btn :label="$t('ArtivactTagsConfigurationEditor.addTag')" @click="addTag" color="primary" />
+      <q-btn
+        :label="$t('ArtivactTagsConfigurationEditor.addTag')"
+        @click="addTag"
+        color="primary"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {PropType, toRef} from 'vue';
-import {Tag, TagsConfiguration} from 'components/artivact-models';
+import { PropType, toRef } from 'vue';
+import { Tag, TagsConfiguration } from 'components/artivact-models';
 import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
-import {useI18n} from 'vue-i18n';
+import { useI18n } from 'vue-i18n';
 
 const i18n = useI18n();
 
