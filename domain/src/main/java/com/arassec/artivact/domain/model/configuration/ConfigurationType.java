@@ -23,7 +23,7 @@ public enum ConfigurationType {
     /**
      * Peripheral configuration.
      */
-    PERIPHERAL,
+    PERIPHERALS,
 
     /**
      * Exchange configuration for item syncing.

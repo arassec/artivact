@@ -72,10 +72,10 @@ class ConfigurationControllerTest {
     private SaveExchangeConfigurationUseCase saveExchangeConfigurationUseCase;
 
     @Mock
-    private SavePeripheralConfigurationUseCase saveAdapterConfigurationUseCase;
+    private SavePeripheralConfigurationUseCase savePeripheralConfigurationUseCase;
 
     @Mock
-    private LoadPeripheralConfigurationUseCase loadAdapterConfigurationUseCase;
+    private LoadPeripheralConfigurationUseCase loadPeripheralConfigurationUseCase;
 
     @Mock
     private CleanupExportFilesUseCase cleanupExportFilesUseCase;
@@ -256,17 +256,17 @@ class ConfigurationControllerTest {
     }
 
     @Test
-    void testGetAdapterConfiguration() {
-        PeripheralConfiguration pc = new PeripheralConfiguration();
-        when(loadAdapterConfigurationUseCase.loadPeripheralConfiguration()).thenReturn(pc);
-        assertThat(controller.getAdapterConfiguration()).isEqualTo(pc);
+    void testGetPeripheralsConfiguration() {
+        PeripheralsConfiguration pc = new PeripheralsConfiguration();
+        when(loadPeripheralConfigurationUseCase.loadPeripheralConfiguration()).thenReturn(pc);
+        assertThat(controller.getPeripheralsConfiguration()).isEqualTo(pc);
     }
 
     @Test
-    void testSaveAdapterConfiguration() {
-        PeripheralConfiguration pc = new PeripheralConfiguration();
-        controller.saveAdapterConfiguration(pc);
-        verify(saveAdapterConfigurationUseCase).savePeripheralConfiguration(pc);
+    void testSavePeripheralsConfiguration() {
+        PeripheralsConfiguration pc = new PeripheralsConfiguration();
+        controller.savePeripheralsConfiguration(pc);
+        verify(savePeripheralConfigurationUseCase).savePeripheralConfiguration(pc);
     }
 
     @Test

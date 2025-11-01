@@ -2,6 +2,7 @@
   <h2 class="av-text-h2">
     {{ $t('Common.items.models') }}
     <q-btn
+      :disable="!peripheralsConfigStore.isModelCreatorSet"
       data-test="item-creation-create-model-button"
       text-color="primary"
       round
@@ -9,7 +10,7 @@
       flat
       color="accent"
       icon="add_circle"
-      @click="createModel"
+      @click="showCreateModel()"
     >
       <q-tooltip>{{ $t('ItemModelSetEditor.tooltip.create') }}</q-tooltip>
     </q-btn>
@@ -67,7 +68,7 @@
           flat
           size="md"
           color="primary"
-          @click="showModelSetDetails(modelSet, index)"
+          @click="showModelSetDetails(index)"
         >
           <q-tooltip>{{ $t('ItemModelSetEditor.tooltip.details') }}</q-tooltip>
         </q-btn>
@@ -85,13 +86,14 @@
           }}</q-tooltip>
         </q-btn>
         <q-btn
+          :disable="!peripheralsConfigStore.isModelEditorSet"
           icon="edit"
           round
           dense
           flat
           size="md"
           color="primary"
-          @click="editModel(index)"
+          @click="showEditModel(index)"
         >
           <q-tooltip>{{ $t('ItemModelSetEditor.tooltip.edit') }}</q-tooltip>
         </q-btn>
@@ -110,6 +112,80 @@
       </q-card-actions>
     </q-card>
   </div>
+
+  <!-- CREATE MODEL PARAMETERS DIALOG -->
+  <artivact-dialog :dialog-model="showCreateModelParamsModalRef">
+    <template v-slot:header>
+      {{ $t('ItemImageSetEditor.dialog.createModel.heading') }}
+    </template>
+
+    <template v-slot:body>
+      <q-card-section>
+        <q-select
+          :disable="availableModelCreatorRef.length == 1"
+          class="q-mb-md"
+          outlined
+          v-model="selectedModelCreatorRef"
+          :options="availableModelCreatorRef"
+          :option-label="(opt) => (opt.label ? opt.label : opt)"
+          :label="$t('ItemImageSetEditor.label.selectModelCreator')"
+        />
+      </q-card-section>
+    </template>
+
+    <template v-slot:cancel>
+      <q-btn
+        color="primary"
+        :label="$t('Common.cancel')"
+        @click="showCreateModelParamsModalRef = false"
+      />
+    </template>
+
+    <template v-slot:approve>
+      <q-btn
+        color="primary"
+        :label="$t('ItemImageSetEditor.dialog.createModel.approve')"
+        @click="createModel()"
+      />
+    </template>
+  </artivact-dialog>
+
+  <!-- EDIT MODEL PARAMETERS DIALOG -->
+  <artivact-dialog :dialog-model="showEditModelParamsModalRef">
+    <template v-slot:header>
+      {{ $t('ItemImageSetEditor.dialog.editModel.heading') }}
+    </template>
+
+    <template v-slot:body>
+      <q-card-section>
+        <q-select
+          :disable="availableModelEditorRef.length == 1"
+          class="q-mb-md"
+          outlined
+          v-model="selectedModelEditorRef"
+          :options="availableModelEditorRef"
+          :option-label="(opt) => (opt.label ? opt.label : opt)"
+          :label="$t('ItemImageSetEditor.label.selectModelEditor')"
+        />
+      </q-card-section>
+    </template>
+
+    <template v-slot:cancel>
+      <q-btn
+        color="primary"
+        :label="$t('Common.cancel')"
+        @click="showEditModelParamsModalRef = false"
+      />
+    </template>
+
+    <template v-slot:approve>
+      <q-btn
+        color="primary"
+        :label="$t('ItemImageSetEditor.dialog.editModel.approve')"
+        @click="editModel()"
+      />
+    </template>
+  </artivact-dialog>
 
   <!-- MODEL-SET DETAILS -->
   <artivact-dialog
@@ -147,7 +223,7 @@
                   flat
                   size="md"
                   color="primary"
-                  @click="transferModel(file, selectedModelSetIndex)"
+                  @click="transferModel(file, selectedModelSetIndexRef)"
                 >
                   <q-tooltip>{{
                     $t('ItemModelSetEditor.dialog.details.transfer')
@@ -200,16 +276,19 @@
 </template>
 
 <script setup lang="ts">
-import { PropType, ref } from 'vue';
-import { Asset, ModelSet } from './artivact-models';
+import { onMounted, PropType, Ref, ref } from 'vue';
+import {
+  Asset,
+  CreateModelParams,
+  ModelSet,
+  SelectboxModel,
+} from './artivact-models';
 import { api } from '../boot/axios';
 import { useQuasar } from 'quasar';
 import ArtivactDialog from '../components/ArtivactDialog.vue';
 import ArtivactOperationInProgressDialog from '../components/ArtivactOperationInProgressDialog.vue';
 import { useI18n } from 'vue-i18n';
-
-const quasar = useQuasar();
-const i18n = useI18n();
+import { usePeripheralsConfigStore } from '../stores/peripherals';
 
 const props = defineProps({
   itemId: {
@@ -227,16 +306,37 @@ const emit = defineEmits<{
   (e: 'update-item'): void;
 }>();
 
-const showOperationInProgressModalRef = ref(false);
+const quasar = useQuasar();
+const i18n = useI18n();
 
+const peripheralsConfigStore = usePeripheralsConfigStore();
+
+const availableModelCreatorRef: Ref<SelectboxModel[]> = ref(
+  [] as SelectboxModel[],
+);
+const selectedModelCreatorRef = ref(null);
+const availableModelEditorRef: Ref<SelectboxModel[]> = ref(
+  [] as SelectboxModel[],
+);
+const selectedModelEditorRef = ref(null);
+
+const showOperationInProgressModalRef = ref(false);
+const showCreateModelParamsModalRef = ref(false);
+
+const selectedModelSetIndexRef = ref(null);
+
+const showEditModelParamsModalRef = ref(false);
 const showModelSetDetailsModalRef = ref(false);
 let modelSetFiles: Asset[];
-let selectedModelSetIndex: number;
 
 const confirmDeleteRef = ref(false);
 
-function showModelSetDetails(modelSet: ModelSet, modelSetIndex: number) {
-  selectedModelSetIndex = modelSetIndex;
+const createModelParams = ref({
+  modelCreatorPeripheralConfigId: null,
+} as CreateModelParams);
+
+function showModelSetDetails(modelSetIndex: number) {
+  selectedModelSetIndexRef.value = modelSetIndex;
   api
     .get(
       '/api/item/' +
@@ -260,9 +360,23 @@ function showModelSetDetails(modelSet: ModelSet, modelSetIndex: number) {
     });
 }
 
+function showCreateModel() {
+  if (availableModelCreatorRef.value.length > 1) {
+    showCreateModelParamsModalRef.value = true;
+  } else {
+    createModel();
+  }
+}
+
 function createModel() {
+  showCreateModelParamsModalRef.value = false;
+  createModelParams.value.modelCreatorPeripheralConfigId =
+    selectedModelCreatorRef.value.value;
   api
-    .post('/api/item/' + props.itemId + '/media-creation/create-model-set')
+    .post(
+      '/api/item/' + props.itemId + '/media-creation/create-model-set',
+      createModelParams.value,
+    )
     .then((response) => {
       if (response) {
         showOperationInProgressModalRef.value = true;
@@ -291,9 +405,26 @@ function openModelsDir() {
     });
 }
 
-function editModel(index: number) {
+function showEditModel(index: number) {
+  selectedModelSetIndexRef.value = index;
+  if (availableModelEditorRef.value.length > 1) {
+    showEditModelParamsModalRef.value = true;
+  } else {
+    editModel();
+  }
+}
+
+function editModel() {
+  showEditModelParamsModalRef.value = false;
   api
-    .post('/api/item/' + props.itemId + '/media-creation/edit-model/' + index)
+    .post(
+      '/api/item/' +
+        props.itemId +
+        '/media-creation/edit-model/' +
+        selectedModelSetIndexRef.value +
+        '?modelEditorPeripheralConfigId=' +
+        selectedModelEditorRef.value.value,
+    )
     .then((response) => {
       if (response) {
         showOperationInProgressModalRef.value = true;
@@ -355,7 +486,7 @@ function transferModel(file: Asset, modelSetIndex: number) {
 }
 
 function showDeleteModelSetConfirm(modelSetIndex: number) {
-  selectedModelSetIndex = modelSetIndex;
+  selectedModelSetIndexRef.value = modelSetIndex;
   confirmDeleteRef.value = true;
 }
 
@@ -366,7 +497,7 @@ function deleteModelSet() {
       '/api/item/' +
         props.itemId +
         '/media-creation/model-set/' +
-        selectedModelSetIndex,
+        selectedModelSetIndexRef.value,
     )
     .then((response) => {
       if (response) {
@@ -393,6 +524,46 @@ function operationFinished() {
   emit('update-item');
   showOperationInProgressModalRef.value = false;
 }
+
+function createPeripheralsOptions() {
+  availableModelCreatorRef.value = [] as SelectboxModel[];
+  if (peripheralsConfigStore.isModelCreatorSet) {
+    peripheralsConfigStore.config.modelCreatorPeripheralConfigs.forEach(
+      (config) => {
+        availableModelCreatorRef.value.push({
+          label: config.label,
+          value: config.id,
+          disable: false,
+        });
+      },
+    );
+    selectedModelCreatorRef.value =
+      availableModelCreatorRef.value.find(
+        (opt) => opt.value === peripheralsConfigStore.favouriteModelCreator,
+      ) ?? availableModelCreatorRef.value[0];
+  }
+
+  availableModelEditorRef.value = [] as SelectboxModel[];
+  if (peripheralsConfigStore.isModelEditorSet) {
+    peripheralsConfigStore.config.modelEditorPeripheralConfigs.forEach(
+      (config) => {
+        availableModelEditorRef.value.push({
+          label: config.label,
+          value: config.id,
+          disable: false,
+        });
+      },
+    );
+    selectedModelEditorRef.value =
+      availableModelEditorRef.value.find(
+        (opt) => opt.value === peripheralsConfigStore.favouriteModelEditor,
+      ) ?? availableModelEditorRef.value[0];
+  }
+}
+
+onMounted(() => {
+  createPeripheralsOptions();
+});
 </script>
 
 <style scoped>

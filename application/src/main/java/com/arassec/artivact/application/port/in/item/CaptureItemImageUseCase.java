@@ -10,11 +10,11 @@ public interface CaptureItemImageUseCase {
     /**
      * Captures a single image to the item's image directory.
      *
-     * @param itemId           The item's ID.
-     * @param removeBackground Set to {@code true}, to remove the images background.
+     * @param itemId              The item's ID.
+     * @param captureImagesParams Parameters for image capturing.
      * @return The captured image's filename.
      */
-    String captureImage(String itemId, boolean removeBackground);
+    String captureImage(String itemId, CaptureImagesParams captureImagesParams);
 
     /**
      * Captures images using a peripheral adapter for the given item.

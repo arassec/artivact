@@ -2,8 +2,9 @@ export default {
   Common: {
     cancel: 'Abbrechen',
     save: 'Speichern',
-    apply: 'Anwenden',
+    apply: 'Übernehmen',
     close: 'Schließen',
+    ok: 'OK',
     username: 'Benutzername',
     password: 'Passwort',
     passwordRepeat: 'Passwort (wdh.)',
@@ -24,6 +25,12 @@ export default {
       deleting: {
         success: '{item} gelöscht',
         failed: "Löschen von '{item}' fehlgeschlagen",
+      },
+    },
+    dialogs: {
+      unsavedChanges: {
+        heading: 'Ungesicherte Änderungen!',
+        body: 'Ungesicherte Änderungen gehen verloren. Trotzdem fortfahren?',
       },
     },
     items: {
@@ -640,49 +647,89 @@ export default {
     },
   },
 
+  ArtivactPeripheralConfigEditor: {
+    heading: {
+      turntable: 'Turntable Configuration',
+      camera: 'Kamera-Konfiguration',
+      backgroundRemoval: 'Automatisches Freistellen',
+      modelCreator: '3D-Modell Erstellung',
+      modelEditor: '3D-Modell Bearbeitung',
+    },
+    label: {
+      default: 'Peripheriegerät',
+      label: 'Bezeichnung des Peripheriegeräts *',
+      favourite: 'Bevorzugte Auswahl?',
+      implementation: 'Zu verwendende Implementierung',
+    },
+    turntable: {
+      delay: 'Drehteller Verzögerung in Millisekunden',
+      delayDescription:
+        'Diese Konfiguration verzögert die weitere Verarbeitung nach einer Drehteller-Rotation. Dadurch kann sicher gestellt werden, dass das Objekt zum stillstand gekommen ist, bevor ein Bild aufgenommen wird.',
+    },
+    camera: {
+      argumentsDescription:
+        'Die Argumente müssen den Platzhalter "$_targetFile_$" verwenden, um den Speicherort des aufgenommenen Bildes zu konfigurieren. Artivact erwartet das Bild dort nach der Aufnahme.',
+      delay: 'Verzögerung in Millisekunden',
+      delayDescription:
+        'Verzögert die Aufnahme des Bildes. Dies kann verwendet werden wenn ältere Kameras Probleme mit zu schneller Bildaufnahme haben, oder das Objekt von Hand rotiert werden soll.',
+    },
+    background: {
+      argumentsDescription:
+        'Der Pfad zur ONNX Datei kann den Platzhalter "$_projectDir_$" verwenden, um das Projektverzeichnis zu referenzieren. Beispiel: "$_projectDir_$/utils/onnx/silueta.onnx"',
+    },
+    onnx: {
+      onnxModelFile: 'ONNX Datei *',
+      inputParameterName: 'Name des Eingabeparameters *',
+      imageWidth: 'Breite des Eingabebildes *',
+      imageHeight: 'Höher des Eingabebildes *',
+      numThreads: 'Anzahl Threads *',
+    },
+    externalProgram: {
+      command: 'Programm',
+      arguments: 'Argumente',
+    },
+    modelCreator: {
+      description:
+        'Der Platzhalter "$_projectDir_$" kann verwenden werden, um das Projektverzeichnis zu referenzieren. Ein 3D Modell, was nach Abschluss des Photogrammetrieprozesses im Ergebnisverzeichnis gefunden wird, wird automatisch importiert.',
+      openInputDirInOs:
+        'Eingabeverzeichnis mit Bildern bei Programmstart zusätzlich öffnen?',
+      resultDir: 'Ergebnisverzeichnis',
+    },
+    modelEditor: {
+      description:
+        'Der Platzhalter "$_projectDir_$" kann verwenden werden, um das Projektverzeichnis zu referenzieren. Der Platzhalter "$_modelDir_$" kann verwenden werden, um das Verzeichnis, in dem das 3D-Modell liegt, zu referenzieren.',
+    },
+  },
+
+  ArtivactPeripheralConfigOverview: {},
+
   ArtivactPeripheralsConfigurationEditor: {
     description:
-      'Konfiguriert Peripheriegeräte und -Software für die Erstellung von 3D-Modellen aus der Anwendung heraus. Fallback-Optionen können verwendet werden, sollten Geräte nicht vorhanden oder Software nicht installiert sein.',
+      'Konfiguriert Peripheriegeräte und -Software für die Erstellung von 3D-Modellen aus der Anwendung heraus.',
     turntable: {
       heading: 'Drehteller-Konfiguration',
       description:
-        'Hier kann ein automatischer Drehteller für die Erzeugung von Bildern von Objekten aus verschiedenen Winkeln konfiguriert werden. Soll ein manueller Drehteller verwendet werden, kann die Fallback-Option mit einer Verzögerung konfiguriert werden, um den Drehteller zwischen der Erstellung von Fotos von Hand zu bedienen.',
-      label: 'Verwendeter Drehteller',
-      delay: 'Drehteller Verzögerung in Millisekunden',
+        'Hier können automatische Drehteller für die Erzeugung von Bildern von Objekten aus verschiedenen Blickwinkeln konfiguriert werden. Aktuell werden nur Do-it-Yourself-Drehteller, die über einen Arduino mittels USB gesteuert werden, unterstützt. Der Artivact Open-Source Drehteller ist ein Beispiel dafür. Mehr Infos finden sich in der Dokumentation.',
     },
     camera: {
       heading: 'Kamera-Konfiguration',
       description:
-        "Bilder werden mithilfe von Drittanbietersoftware erstellt. Auf Windows-Systemen steht die Open-Source-Software 'DigiCamControl' zur Verfügung, unter Linux-Systemen kann 'gphoto2' verwendet werden.",
-      label: 'Foto-Software',
-      digiCamControlExe: 'DigiCamControl Exe-Datei',
-      digiCamControlUrl: 'DigiCamControl Webserver URL',
-      gphotoExe: 'gphoto2 Exe-Datei',
+        'Kameras zur Bildaufnahme können hier konfiguriert werden. Die integrierte Picture-Transfer-Protocol (PTP)-Implementierung sollte alle über USB angeschlossenen Kameras unterstützen, die dieses Protokoll verwenden. Falls eine Kamera nicht unterstützt wird, können Drittanbieteranwendungen wie „DigiCamControl“ für Windows oder „gphoto2“ für Linux konfiguriert werden.',
     },
     background: {
       heading: 'Automatisches Freistellen',
       description:
-        'Automatisches Freistellen der erzeugten Bilder wird mit Open-Source Neuronalen Netzwerken zur Erkennung von Objekten implementiert. Mehr Infos finden sich in der Dokumentation. Die Standardkonfiguration ist:',
-      defaultConfiguration: 'silueta.onnx#input.1#320#320#5',
-      label: 'Software zum automatischen Freistellen',
-      default: 'Konfiguration',
+        'Automatisches Freistellen der erzeugten Bilder wird mit Open-Source Neuronalen Netzwerken zur Erkennung von Objekten implementiert. Die Netzwerke müssen im ONNX-Dateiformat vorliegen. Mehr Infos finden sich in der Dokumentation.',
     },
     creator: {
       heading: '3D-Modell Erstellung',
       description:
-        'Zum erstellen von 3D-Modellen wird Photogrammetrie-Software verwendet. Momentan werden "Metashape", "Meshroom" und "RealityScan" unterstützt.',
-      label: 'Photogrammetrie-Software',
-      meshroom: 'Meshroom Exe-Datei',
-      metashape: 'Metashape Exe-Datei',
-      RealityScan:
-        'RealityScan Exe-Datei. "#headless#12345" anhängen für Hintergrundverarbeitung und Face-Limit von 12345.',
+        'Zum erstellen von 3D-Modellen kann hier externe Photogrammetrie-Software konfiguriert werden.',
     },
     editor: {
       heading: '3D-Modell Bearbeitung',
       description:
-        'Zur Bearbeitung von 3D-Modellen kann die Open-Source-Software Blender3D konfiguriert werden.',
-      label: '3D-Modell Editor',
-      blender: 'Blender3D Exe-Datei',
+        'Zur Bearbeitung von 3D-Modellen können hier externe Programme konfiguriert werden.',
     },
   },
 
@@ -761,6 +808,7 @@ export default {
     tooltip: {
       delete: 'Tag löschen',
     },
+    defaultTagLabel: 'Standard-Tag für neue Sammlungsobjekte?',
     url: 'URL',
     addTag: 'Tag hinzufügen',
     newTag: 'Neues Tag',
@@ -806,8 +854,13 @@ export default {
       delay: 'Drehteller Verzögerung',
       backgrounds: 'Bilder freistellen?',
       add: 'übernehmen',
+      selectTurntable: 'Drehteller wählen',
+      selectCamera: 'Kamera wählen',
+      selectImageBackgroundRemover: 'Werkzeug wählen',
+      selectModelCreator: 'Werkzeug wählen',
+      selectModelEditor: 'Editor wählen',
     },
-    captureParameters: 'Aufnahme-Parameter',
+    captureParameters: 'Bilderserie Aufnehmen',
     startCapturing: 'Aufnahmen starten',
     transferPhotoToMedia: 'Foto in Medien übernehmen?',
     dialog: {
@@ -830,6 +883,18 @@ export default {
         heading: 'Fotoaufnahme',
         description:
           'Es wird ein einzelnes Foto erstellt, um es in die Objekt-Medien zu übernehmen.',
+      },
+      removeBackground: {
+        heading: 'Bilder Freistellen',
+        approve: 'Start',
+      },
+      createModel: {
+        heading: '3D Modell Erstellen',
+        approve: 'Start',
+      },
+      editModel: {
+        heading: '3D Modell Bearbeiten',
+        approve: 'Start',
       },
     },
     messages: {
@@ -1069,17 +1134,12 @@ export default {
   BUTTONS_DESCRIPTION:
     'Ein Raster mit einem oder mehreren konfigurierbaren Buttons.',
 
-  DEFAULT_TURNTABLE_PERIPHERAL: 'Standard',
-  DEFAULT_IMAGE_MANIPULATION_PERIPHERAL: 'Standard',
-  DEFAULT_CAMERA_PERIPHERAL: 'Standard',
-  DIGI_CAM_CONTROL_CAMERA_PERIPHERAL: 'DigiCamControl',
-  GPHOTO_TWO_CAMERA_PERIPHERAL: 'gphoto2',
-  FALLBACK_MODEL_CREATOR_PERIPHERAL: 'Fallback',
-  MESHROOM_MODEL_CREATOR_PERIPHERAL: 'Meshroom',
-  METASHAPE_MODEL_CREATOR_PERIPHERAL: 'Metashape',
-  REALITY_SCAN_MODEL_CREATOR_PERIPHERAL: 'RealityScan',
-  FALLBACK_MODEL_EDITOR_PERIPHERAL: 'Fallback',
-  BLENDER_MODEL_EDITOR_PERIPHERAL: 'Blender3D',
+  ARDUINO_TURNTABLE_PERIPHERAL: 'Arduino DIY Drehteller',
+  PTP_CAMERA_PERIPHERAL: 'USB Kamera (Picture-Transfer-Protocol)',
+  EXTERNAL_PROGRAM_CAMERA_PERIPHERAL: 'Externes Programm',
+  ONNX_IMAGE_BACKGROUND_REMOVAL_PERIPHERAL: 'ONNX Freistellen',
+  EXTERNAL_PROGRAM_MODEL_CREATOR_PERIPHERAL: 'Externes Programm',
+  EXTERNAL_PROGRAM_MODEL_EDITOR_PERIPHERAL: 'Externes Programm',
 
   DELETE_ITEM: 'Objekt löschen',
   ADD_TAG_TO_ITEM: 'Tag hinzufügen',

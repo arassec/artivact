@@ -7,18 +7,19 @@ import com.arassec.artivact.application.port.in.item.SaveItemUseCase;
 import com.arassec.artivact.application.port.in.operation.RunBackgroundOperationUseCase;
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.peripheral.CameraPeripheral;
-import com.arassec.artivact.application.port.out.peripheral.ImageManipulationPeripheral;
+import com.arassec.artivact.application.port.out.peripheral.ImageManipulatorPeripheral;
 import com.arassec.artivact.application.port.out.peripheral.TurntablePeripheral;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.exception.ArtivactException;
-import com.arassec.artivact.domain.model.configuration.PeripheralConfiguration;
 import com.arassec.artivact.domain.model.configuration.PeripheralImplementation;
+import com.arassec.artivact.domain.model.configuration.PeripheralsConfiguration;
 import com.arassec.artivact.domain.model.item.CreationImageSet;
 import com.arassec.artivact.domain.model.item.Item;
 import com.arassec.artivact.domain.model.media.CaptureImagesParams;
 import com.arassec.artivact.domain.model.misc.ProgressMonitor;
 import com.arassec.artivact.domain.model.peripheral.Peripheral;
 import com.arassec.artivact.domain.model.peripheral.PeripheralInitParams;
+import com.arassec.artivact.domain.model.peripheral.configs.PeripheralConfig;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,24 +59,37 @@ public class CaptureItemImageService implements CaptureItemImageUseCase {
      * {@inheritDoc
      */
     @Override
-    public String captureImage(String itemId, boolean removeBackground) {
-        PeripheralConfiguration peripheralConfiguration = loadAdapterConfigurationUseCase.loadPeripheralConfiguration();
+    public String captureImage(String itemId, CaptureImagesParams captureImagesParams) {
+        PeripheralsConfiguration peripheralsConfiguration = loadAdapterConfigurationUseCase.loadPeripheralConfiguration();
 
         ProgressMonitor progressMonitor = new ProgressMonitor("captureTempImage", "start");
 
-        CameraPeripheral cameraPeripheral = getPeripheral(peripheralConfiguration.getCameraPeripheralImplementation(), CameraPeripheral.class);
-        log.debug("Initializing camera adapter for temp image capturing: {}", cameraPeripheral.getSupportedImplementation());
+        PeripheralConfig cameraPeripheralConfig = peripheralsConfiguration.getCameraPeripheralConfigs().stream()
+                .filter(config -> config.getId().equals(captureImagesParams.getCameraPeripheralConfigId()))
+                .findFirst()
+                .orElseThrow();
+
+        CameraPeripheral cameraPeripheral = getPeripheral(cameraPeripheralConfig.getPeripheralImplementation(), CameraPeripheral.class);
+        log.debug("Initializing camera peripheral for temp image capturing: {}", cameraPeripheral.getSupportedImplementation());
         cameraPeripheral.initialize(progressMonitor, PeripheralInitParams.builder()
-                .configuration(peripheralConfiguration)
+                .config(cameraPeripheralConfig)
                 .build());
 
-        ImageManipulationPeripheral imageManipulationPeripheral = getPeripheral(peripheralConfiguration.getImageManipulationPeripheralImplementation(), ImageManipulationPeripheral.class);
-        log.debug("Initializing image-manipulation adapter for temp image capturing: {}", imageManipulationPeripheral.getSupportedImplementation());
-        imageManipulationPeripheral.initialize(progressMonitor, PeripheralInitParams.builder()
-                .projectRoot(useProjectDirsUseCase.getProjectRoot())
-                .configuration(peripheralConfiguration)
-                .workDir(useProjectDirsUseCase.getImagesDir(itemId))
-                .build());
+        ImageManipulatorPeripheral imageManipulatorPeripheral = null;
+        if (captureImagesParams.isRemoveBackgrounds()) {
+            PeripheralConfig imageManipulatorPeripheralConfig = peripheralsConfiguration.getImageBackgroundRemovalPeripheralConfigs().stream()
+                    .filter(config -> config.getId().equals(captureImagesParams.getImageBackgroundRemovalPeripheralConfigId()))
+                    .findFirst()
+                    .orElseThrow();
+
+            imageManipulatorPeripheral = getPeripheral(imageManipulatorPeripheralConfig.getPeripheralImplementation(), ImageManipulatorPeripheral.class);
+            log.debug("Initializing image-manipulation peripheral for temp image capturing: {}", imageManipulatorPeripheral.getSupportedImplementation());
+            imageManipulatorPeripheral.initialize(progressMonitor, PeripheralInitParams.builder()
+                    .projectRoot(useProjectDirsUseCase.getProjectRoot())
+                    .config(imageManipulatorPeripheralConfig)
+                    .workDir(useProjectDirsUseCase.getImagesDir(itemId))
+                    .build());
+        }
 
         Path targetDir = useProjectDirsUseCase.getImagesDir(itemId);
         fileRepository.createDirIfRequired(targetDir);
@@ -83,16 +97,18 @@ public class CaptureItemImageService implements CaptureItemImageUseCase {
         String filename = fileRepository.getAssetName(fileRepository.getNextAssetNumber(targetDir), "jpg");
         Path targetFile = targetDir.resolve(filename).toAbsolutePath();
 
-        if (cameraPeripheral.captureImage(targetFile) && removeBackground) {
-            imageManipulationPeripheral.removeBackground(targetFile);
+        boolean imageCaptured = cameraPeripheral.captureImage(targetFile);
+
+        if (imageCaptured && captureImagesParams.isRemoveBackgrounds() && imageManipulatorPeripheral != null) {
+            imageManipulatorPeripheral.removeBackground(targetFile);
         }
 
         cameraPeripheral.teardown();
-        imageManipulationPeripheral.teardown();
 
-        if (removeBackground) {
+        if (captureImagesParams.isRemoveBackgrounds() && imageManipulatorPeripheral != null) {
+            imageManipulatorPeripheral.teardown();
             fileRepository.delete(targetFile);
-            return imageManipulationPeripheral.getModifiedImages().getFirst().getFileName().toString();
+            return imageManipulatorPeripheral.getModifiedImages().getFirst().getFileName().toString();
         }
 
         return targetFile.getFileName().toString();
@@ -126,33 +142,53 @@ public class CaptureItemImageService implements CaptureItemImageUseCase {
         Path targetDir = useProjectDirsUseCase.getImagesDir(itemId);
         fileRepository.createDirIfRequired(targetDir);
 
-        PeripheralConfiguration adapterConfiguration = loadAdapterConfigurationUseCase.loadPeripheralConfiguration();
+        PeripheralsConfiguration peripheralsConfiguration = loadAdapterConfigurationUseCase.loadPeripheralConfiguration();
 
         boolean useTurnTable = captureImagesParams.isUseTurnTable();
         boolean removeBackgrounds = captureImagesParams.isRemoveBackgrounds();
         int numPhotos = captureImagesParams.getNumPhotos();
 
-        TurntablePeripheral turntablePeripheral = getPeripheral(adapterConfiguration.getTurntablePeripheralImplementation(), TurntablePeripheral.class);
+        TurntablePeripheral turntablePeripheral = null;
         if (useTurnTable) {
+            PeripheralConfig turntablePeripheralConfig = peripheralsConfiguration.getTurntablePeripheralConfigs().stream()
+                    .filter(config -> config.getId().equals(captureImagesParams.getTurntablePeripheralConfigId()))
+                    .findFirst()
+                    .orElseThrow();
+
+            turntablePeripheral = getPeripheral(turntablePeripheralConfig.getPeripheralImplementation(), TurntablePeripheral.class);
             log.debug("Initializing turntable adapter for image capturing: {}", turntablePeripheral.getSupportedImplementation());
             turntablePeripheral.initialize(progressMonitor, PeripheralInitParams.builder()
-                    .configuration(adapterConfiguration)
+                    .config(turntablePeripheralConfig)
                     .build());
         }
 
-        CameraPeripheral cameraPeripheral = getPeripheral(adapterConfiguration.getCameraPeripheralImplementation(), CameraPeripheral.class);
+        PeripheralConfig cameraPeripheralConfig = peripheralsConfiguration.getCameraPeripheralConfigs().stream()
+                .filter(config -> config.getId().equals(captureImagesParams.getCameraPeripheralConfigId()))
+                .findFirst()
+                .orElseThrow();
+
+        CameraPeripheral cameraPeripheral = getPeripheral(cameraPeripheralConfig.getPeripheralImplementation(), CameraPeripheral.class);
         log.debug("Initializing camera adapter for image capturing: {}", cameraPeripheral.getSupportedImplementation());
         cameraPeripheral.initialize(progressMonitor, PeripheralInitParams.builder()
-                .configuration(adapterConfiguration)
+                .config(cameraPeripheralConfig)
                 .build());
 
-        ImageManipulationPeripheral imageManipulationPeripheral = getPeripheral(adapterConfiguration.getImageManipulationPeripheralImplementation(), ImageManipulationPeripheral.class);
-        log.debug("Initializing image-manipulation adapter for image capturing: {}", imageManipulationPeripheral.getSupportedImplementation());
-        imageManipulationPeripheral.initialize(progressMonitor, PeripheralInitParams.builder()
-                .projectRoot(useProjectDirsUseCase.getProjectRoot())
-                .configuration(adapterConfiguration)
-                .workDir(useProjectDirsUseCase.getImagesDir(itemId))
-                .build());
+        ImageManipulatorPeripheral imageManipulatorPeripheral = null;
+        if (removeBackgrounds) {
+            PeripheralConfig imageManipulatorPeripheralConfig = peripheralsConfiguration.getImageBackgroundRemovalPeripheralConfigs().stream()
+                    .filter(config -> config.getId().equals(captureImagesParams.getImageBackgroundRemovalPeripheralConfigId()))
+                    .findFirst()
+                    .orElseThrow();
+
+            imageManipulatorPeripheral = getPeripheral(imageManipulatorPeripheralConfig.getPeripheralImplementation(), ImageManipulatorPeripheral.class);
+            log.debug("Initializing image-manipulation adapter for image capturing: {}", imageManipulatorPeripheral.getSupportedImplementation());
+            imageManipulatorPeripheral.initialize(progressMonitor, PeripheralInitParams.builder()
+                    .projectRoot(useProjectDirsUseCase.getProjectRoot())
+                    .config(imageManipulatorPeripheralConfig)
+                    .workDir(useProjectDirsUseCase.getImagesDir(itemId))
+                    .build());
+        }
+
 
         log.debug("Starting capturing of images.");
 
@@ -177,7 +213,7 @@ public class CaptureItemImageService implements CaptureItemImageUseCase {
 
             if (removeBackgrounds) {
                 log.debug("Removing Background of captured image: {}", targetFile);
-                imageManipulationPeripheral.removeBackground(targetFile);
+                imageManipulatorPeripheral.removeBackground(targetFile);
             }
 
             if (useTurnTable) {
@@ -195,24 +231,28 @@ public class CaptureItemImageService implements CaptureItemImageUseCase {
                 .toList());
         result.add(creationImageSet);
 
-        // Teardown adapters:
+        // Teardown peripherals:
         if (useTurnTable) {
             turntablePeripheral.teardown();
         }
         cameraPeripheral.teardown();
-        imageManipulationPeripheral.teardown();
+        if (removeBackgrounds) {
+            imageManipulatorPeripheral.teardown();
+        }
 
         // Add manipulated images to active item:
-        List<Path> imagesWithoutBackground = imageManipulationPeripheral.getModifiedImages();
-        if (removeBackgrounds && !imagesWithoutBackground.isEmpty()) {
-            creationImageSet = CreationImageSet.builder()
-                    .backgroundRemoved(true)
-                    .modelInput(true)
-                    .build();
-            creationImageSet.getFiles().addAll(imagesWithoutBackground.stream()
-                    .map(image -> image.getFileName().toString())
-                    .toList());
-            result.add(creationImageSet);
+        if (removeBackgrounds) {
+            List<Path> imagesWithoutBackground = imageManipulatorPeripheral.getModifiedImages();
+            if (!imagesWithoutBackground.isEmpty()) {
+                creationImageSet = CreationImageSet.builder()
+                        .backgroundRemoved(true)
+                        .modelInput(true)
+                        .build();
+                creationImageSet.getFiles().addAll(imagesWithoutBackground.stream()
+                        .map(image -> image.getFileName().toString())
+                        .toList());
+                result.add(creationImageSet);
+            }
         }
 
         return result;
