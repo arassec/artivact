@@ -4,7 +4,6 @@ import ai.onnxruntime.OrtEnvironment;
 import ai.onnxruntime.OrtException;
 import ai.onnxruntime.OrtSession;
 import com.arassec.artivact.domain.model.misc.ProgressMonitor;
-import com.arassec.artivact.domain.model.peripheral.PeripheralInitParams;
 import com.arassec.artivact.domain.model.peripheral.configs.OnnxBackgroundRemovalPeripheralConfig;
 import org.junit.jupiter.api.Test;
 
@@ -34,11 +33,22 @@ class OnnxBackgroundRemoverTest {
         Path filePath = Path.of("src/test/resources/background-test.jpg");
         ProgressMonitor progressMonitor = new ProgressMonitor("OnnxBackgroundRemoverTest", "test");
 
+        OnnxBackgroundRemoverParams params = getOnnxBackgroundRemoverParams();
+
+        OnnxBackgroundRemover backgroundRemover = new OnnxBackgroundRemover(params, result, filePath, progressMonitor);
+
+        backgroundRemover.run();
+
+        Path resultImage = Path.of("target/background-test.png");
+
+        assertThat(resultImage).exists();
+        assertThat(Files.size(resultImage)).isGreaterThan(0);
+    }
+
+    private OnnxBackgroundRemoverParams getOnnxBackgroundRemoverParams() throws OrtException {
         OnnxBackgroundRemoverParams params = new OnnxBackgroundRemoverParams(
-                PeripheralInitParams.builder()
-                        .config(new OnnxBackgroundRemovalPeripheralConfig("silueta.onnx", "input.1", 320, 320, 5))
-                        .workDir(Path.of("target"))
-                        .build()
+                new OnnxBackgroundRemovalPeripheralConfig("silueta.onnx", "input.1", 320, 320, 5),
+                Path.of("target")
         );
 
         OrtEnvironment environment = OrtEnvironment.getEnvironment();
@@ -52,14 +62,7 @@ class OnnxBackgroundRemoverTest {
         params.setEnvironment(environment);
         params.setSession(session);
 
-        OnnxBackgroundRemover backgroundRemover = new OnnxBackgroundRemover(params, result, filePath, progressMonitor);
-
-        backgroundRemover.run();
-
-        Path resultImage = Path.of("target/background-test.png");
-
-        assertThat(resultImage).exists();
-        assertThat(Files.size(resultImage)).isGreaterThan(0);
+        return params;
     }
 
 }

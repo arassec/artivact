@@ -2,6 +2,7 @@ package com.arassec.artivact.domain.model.peripheral;
 
 import com.arassec.artivact.domain.model.configuration.PeripheralImplementation;
 import com.arassec.artivact.domain.model.misc.ProgressMonitor;
+import com.arassec.artivact.domain.model.peripheral.configs.PeripheralConfig;
 
 /**
  * Defines access to a peripheral device or software.
@@ -39,5 +40,13 @@ public interface Peripheral {
      * This method has to be called after the peripheral has been used!
      */
     void teardown();
+
+    /**
+     * Returns the status of the peripheral.
+     *
+     * @param peripheralConfig Configuration of the peripheral.
+     * @return The {@link PeripheralStatus}.
+     */
+    PeripheralStatus getStatus(PeripheralConfig peripheralConfig);
 
 }

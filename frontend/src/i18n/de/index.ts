@@ -5,6 +5,7 @@ export default {
     apply: 'Übernehmen',
     close: 'Schließen',
     ok: 'OK',
+    test: 'Test',
     username: 'Benutzername',
     password: 'Passwort',
     passwordRepeat: 'Passwort (wdh.)',
@@ -1104,6 +1105,14 @@ export default {
       export: 'Erzeuge Sammlungsexportdatei...',
       failed: 'Sammlungsexport fehlgeschlagen!',
     },
+  },
+
+  PeripheralStatus: {
+    AVAILABLE: 'Das Peripheriegerät steht zur Verfügung.',
+    ERROR: 'Das Peripheriegerät steht nicht zur Verfügung.',
+    DISCONNECTED: 'Das Peripheriegerät scheint nicht verbunden zu sein.',
+    NOT_EXECUTABLE: 'Das konfigurierte Programm ist nicht ausführbar.',
+    FILE_DOESNT_EXIST: 'Die konfigurierte Datei existiert nicht.',
   },
 
   ROLE_ADMIN: 'Admin',

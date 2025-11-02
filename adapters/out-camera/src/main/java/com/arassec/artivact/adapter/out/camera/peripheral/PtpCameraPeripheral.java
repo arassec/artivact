@@ -6,8 +6,10 @@ import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.configuration.PeripheralImplementation;
 import com.arassec.artivact.domain.model.misc.ProgressMonitor;
-import com.arassec.artivact.domain.model.peripheral.BasePeripheralAdapter;
+import com.arassec.artivact.domain.model.peripheral.BasePeripheral;
 import com.arassec.artivact.domain.model.peripheral.PeripheralInitParams;
+import com.arassec.artivact.domain.model.peripheral.PeripheralStatus;
+import com.arassec.artivact.domain.model.peripheral.configs.PeripheralConfig;
 import com.arassec.artivact.domain.model.peripheral.configs.PtpCameraPeripheralConfig;
 import com.arassec.jptp.core.datatype.complex.DataObject;
 import com.arassec.jptp.core.datatype.complex.DeviceInfo;
@@ -29,7 +31,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 @Getter
 @RequiredArgsConstructor
-public class PtpCameraPeripheral extends BasePeripheralAdapter implements CameraPeripheral {
+public class PtpCameraPeripheral extends BasePeripheral implements CameraPeripheral {
 
     /**
      * Image capture device.
@@ -58,7 +60,7 @@ public class PtpCameraPeripheral extends BasePeripheralAdapter implements Camera
      * {@inheritDoc}
      */
     @Override
-    public void initialize(ProgressMonitor progressMonitor, PeripheralInitParams initParams) {
+    public synchronized void initialize(ProgressMonitor progressMonitor, PeripheralInitParams initParams) {
         super.initialize(progressMonitor, initParams);
         delayInMilliseconds = ((PtpCameraPeripheralConfig) initParams.getConfig()).getDelayInMilliseconds();
         if (delayInMilliseconds <= 0) {
@@ -96,9 +98,24 @@ public class PtpCameraPeripheral extends BasePeripheralAdapter implements Camera
      * {@inheritDoc}
      */
     @Override
-    public void teardown() {
+    public synchronized void teardown() {
         super.teardown();
         imageCaptureDevice.teardown();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PeripheralStatus getStatus(PeripheralConfig peripheralConfig) {
+        if (inUse.get()) {
+            return PeripheralStatus.AVAILABLE;
+        }
+        if (imageCaptureDevice.initialize(Duration.ofSeconds(15), Duration.ofSeconds(15))) {
+            imageCaptureDevice.teardown();
+            return PeripheralStatus.AVAILABLE;
+        }
+        return PeripheralStatus.DISCONNECTED;
     }
 
 }

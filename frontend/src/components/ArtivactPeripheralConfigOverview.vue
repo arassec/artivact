@@ -6,6 +6,28 @@
       {{ peripheralConfigRef.label }}
     </div>
     <div>
+      <q-icon
+        v-if="peripheralStatusRef == 'AVAILABLE'"
+        name="done"
+        size="sm"
+        color="positive"
+        class="q-ml-xs"
+      >
+        <q-tooltip>{{
+          $t('PeripheralStatus.' + peripheralStatusRef)
+        }}</q-tooltip>
+      </q-icon>
+      <q-icon
+        v-if="peripheralStatusRef != 'AVAILABLE'"
+        name="bolt"
+        size="sm"
+        color="negative"
+        class="q-ml-xs"
+      >
+        <q-tooltip>{{
+          $t('PeripheralStatus.' + peripheralStatusRef)
+        }}</q-tooltip>
+      </q-icon>
       <q-btn
         class="q-ma-xs"
         round
@@ -37,9 +59,14 @@ const props = defineProps({
     required: true,
     type: Object as PropType<PeripheralConfig | null>,
   },
+  peripheralStatus: {
+    required: false,
+    type: String,
+  },
 });
 
 const peripheralConfigRef = toRef(props, 'peripheralConfig');
+const peripheralStatusRef = toRef(props, 'peripheralStatus');
 </script>
 
 <style scoped>

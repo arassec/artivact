@@ -4,9 +4,11 @@ import com.arassec.artivact.application.port.out.peripheral.TurntablePeripheral;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.configuration.PeripheralImplementation;
 import com.arassec.artivact.domain.model.misc.ProgressMonitor;
-import com.arassec.artivact.domain.model.peripheral.BasePeripheralAdapter;
+import com.arassec.artivact.domain.model.peripheral.BasePeripheral;
 import com.arassec.artivact.domain.model.peripheral.PeripheralInitParams;
+import com.arassec.artivact.domain.model.peripheral.PeripheralStatus;
 import com.arassec.artivact.domain.model.peripheral.configs.ArduinoTurntablePeripheralConfig;
+import com.arassec.artivact.domain.model.peripheral.configs.PeripheralConfig;
 import com.fazecast.jSerialComm.SerialPort;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Component
 @Getter
-public class ArduinoTurntablePeripheral extends BasePeripheralAdapter implements TurntablePeripheral {
+public class ArduinoTurntablePeripheral extends BasePeripheral implements TurntablePeripheral {
 
     /**
      * Pins which are connected to IN1-IN4 on the ULN2003.
@@ -68,7 +70,7 @@ public class ArduinoTurntablePeripheral extends BasePeripheralAdapter implements
      * {@inheritDoc}
      */
     @Override
-    public void initialize(ProgressMonitor progressMonitor, PeripheralInitParams initParams) {
+    public synchronized void initialize(ProgressMonitor progressMonitor, PeripheralInitParams initParams) {
         super.initialize(progressMonitor, initParams);
 
         log.trace("Initialize default turntable");
@@ -149,7 +151,7 @@ public class ArduinoTurntablePeripheral extends BasePeripheralAdapter implements
      * {@inheritDoc}
      */
     @Override
-    public void teardown() {
+    public synchronized void teardown() {
         try {
             if (ioDevice != null) {
                 ioDevice.stop();
@@ -159,6 +161,32 @@ public class ArduinoTurntablePeripheral extends BasePeripheralAdapter implements
             throw new ArtivactException("Error during turntable reset!", e);
         }
         super.teardown();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PeripheralStatus getStatus(PeripheralConfig peripheralConfig) {
+        if (inUse.get()) {
+            return PeripheralStatus.AVAILABLE;
+        }
+
+        SerialPort[] serialPorts = SerialPort.getCommPorts();
+        for (SerialPort port : serialPorts) {
+            if (checkArduinoAtPort(port)) {
+                try {
+                    ioDevice.stop();
+                } catch (IOException e) {
+                    log.warn("Error during stopping a turntable!", e);
+                    return PeripheralStatus.ERROR;
+                }
+                ioDevice = null;
+                return PeripheralStatus.AVAILABLE;
+            }
+        }
+
+        return PeripheralStatus.DISCONNECTED;
     }
 
     /**

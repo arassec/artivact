@@ -32,7 +32,7 @@ public class ManageConfigurationService
         LoadExchangeConfigurationUseCase,
         LoadAppearanceConfigurationUseCase,
         SaveAppearanceConfigurationUseCase,
-        LoadPeripheralConfigurationUseCase,
+        LoadPeripheralsConfigurationUseCase,
         SavePeripheralConfigurationUseCase,
         SaveExchangeConfigurationUseCase,
         CheckRuntimeConfigurationUseCase {

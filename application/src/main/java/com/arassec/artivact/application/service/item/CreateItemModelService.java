@@ -1,6 +1,6 @@
 package com.arassec.artivact.application.service.item;
 
-import com.arassec.artivact.application.port.in.configuration.LoadPeripheralConfigurationUseCase;
+import com.arassec.artivact.application.port.in.configuration.LoadPeripheralsConfigurationUseCase;
 import com.arassec.artivact.application.port.in.item.CreateItemModelUseCase;
 import com.arassec.artivact.application.port.in.item.LoadItemUseCase;
 import com.arassec.artivact.application.port.in.item.SaveItemUseCase;
@@ -47,7 +47,7 @@ public class CreateItemModelService implements CreateItemModelUseCase {
 
     private final FileRepository fileRepository;
 
-    private final LoadPeripheralConfigurationUseCase loadAdapterConfigurationUseCase;
+    private final LoadPeripheralsConfigurationUseCase loadAdapterConfigurationUseCase;
 
     /**
      * List of all available peripherals.

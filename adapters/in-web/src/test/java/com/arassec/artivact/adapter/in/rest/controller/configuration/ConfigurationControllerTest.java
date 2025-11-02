@@ -75,7 +75,7 @@ class ConfigurationControllerTest {
     private SavePeripheralConfigurationUseCase savePeripheralConfigurationUseCase;
 
     @Mock
-    private LoadPeripheralConfigurationUseCase loadPeripheralConfigurationUseCase;
+    private LoadPeripheralsConfigurationUseCase loadPeripheralConfigurationUseCase;
 
     @Mock
     private CleanupExportFilesUseCase cleanupExportFilesUseCase;

@@ -2,7 +2,6 @@ package com.arassec.artivact.adapter.out.image.background.removal.peripheral.onn
 
 import ai.onnxruntime.OrtEnvironment;
 import ai.onnxruntime.OrtSession;
-import com.arassec.artivact.domain.model.peripheral.PeripheralInitParams;
 import com.arassec.artivact.domain.model.peripheral.configs.OnnxBackgroundRemovalPeripheralConfig;
 import lombok.Data;
 
@@ -57,11 +56,10 @@ public class OnnxBackgroundRemoverParams {
     /**
      * Creates new parameters for background removal.
      *
-     * @param initParams Init parameters.
+     * @param config    Peripheral configuration parameters.
+     * @param targetDir The target dir for the modified images.
      */
-    public OnnxBackgroundRemoverParams(PeripheralInitParams initParams) {
-
-        OnnxBackgroundRemovalPeripheralConfig config = ((OnnxBackgroundRemovalPeripheralConfig) initParams.getConfig());
+    public OnnxBackgroundRemoverParams(OnnxBackgroundRemovalPeripheralConfig config, Path targetDir) {
 
         onnxModelFileName = config.getOnnxModelFile();
         onnxInputParameterName = config.getInputParameterName();
@@ -70,7 +68,7 @@ public class OnnxBackgroundRemoverParams {
 
         numThreads = config.getNumThreads();
 
-        targetDir = initParams.getWorkDir();
+        this.targetDir = targetDir;
     }
 
 }

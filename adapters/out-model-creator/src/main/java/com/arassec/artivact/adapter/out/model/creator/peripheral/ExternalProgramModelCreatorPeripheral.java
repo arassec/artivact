@@ -6,9 +6,12 @@ import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.model.configuration.PeripheralImplementation;
 import com.arassec.artivact.domain.model.item.CreationImageSet;
 import com.arassec.artivact.domain.model.misc.ProgressMonitor;
-import com.arassec.artivact.domain.model.peripheral.BasePeripheralAdapter;
+import com.arassec.artivact.domain.model.peripheral.BasePeripheral;
 import com.arassec.artivact.domain.model.peripheral.ModelCreationResult;
+import com.arassec.artivact.domain.model.peripheral.PeripheralStatus;
+import com.arassec.artivact.domain.model.peripheral.configs.ExternalProgramPeripheralConfig;
 import com.arassec.artivact.domain.model.peripheral.configs.ModelCreatorPeripheralConfig;
+import com.arassec.artivact.domain.model.peripheral.configs.PeripheralConfig;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -25,7 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Component
 @Getter
 @RequiredArgsConstructor
-public class ExternalProgramModelCreatorPeripheral extends BasePeripheralAdapter implements ModelCreatorPeripheral {
+public class ExternalProgramModelCreatorPeripheral extends BasePeripheral implements ModelCreatorPeripheral {
 
     /**
      * The file repository.
@@ -43,6 +46,22 @@ public class ExternalProgramModelCreatorPeripheral extends BasePeripheralAdapter
     @Override
     public PeripheralImplementation getSupportedImplementation() {
         return PeripheralImplementation.EXTERNAL_PROGRAM_MODEL_CREATOR_PERIPHERAL;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PeripheralStatus getStatus(PeripheralConfig peripheralConfig) {
+        if (inUse.get()) {
+            return PeripheralStatus.AVAILABLE;
+        }
+
+        if (osGateway.isExecutable(((ExternalProgramPeripheralConfig) peripheralConfig).getCommand())) {
+            return PeripheralStatus.AVAILABLE;
+        }
+
+        return PeripheralStatus.NOT_EXECUTABLE;
     }
 
     /**

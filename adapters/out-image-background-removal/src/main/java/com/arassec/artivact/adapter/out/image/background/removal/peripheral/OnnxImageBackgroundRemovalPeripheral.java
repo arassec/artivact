@@ -6,15 +6,21 @@ import ai.onnxruntime.OrtException;
 import ai.onnxruntime.OrtSession;
 import com.arassec.artivact.adapter.out.image.background.removal.peripheral.onnx.OnnxBackgroundRemover;
 import com.arassec.artivact.adapter.out.image.background.removal.peripheral.onnx.OnnxBackgroundRemoverParams;
+import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.peripheral.ImageManipulatorPeripheral;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.configuration.PeripheralImplementation;
 import com.arassec.artivact.domain.model.misc.ProgressMonitor;
-import com.arassec.artivact.domain.model.peripheral.BasePeripheralAdapter;
+import com.arassec.artivact.domain.model.peripheral.BasePeripheral;
 import com.arassec.artivact.domain.model.peripheral.PeripheralInitParams;
+import com.arassec.artivact.domain.model.peripheral.PeripheralStatus;
+import com.arassec.artivact.domain.model.peripheral.configs.OnnxBackgroundRemovalPeripheralConfig;
+import com.arassec.artivact.domain.model.peripheral.configs.PeripheralConfig;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
@@ -35,7 +41,8 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @Component
-public class OnnxImageBackgroundRemovalPeripheral extends BasePeripheralAdapter implements ImageManipulatorPeripheral {
+@RequiredArgsConstructor
+public class OnnxImageBackgroundRemovalPeripheral extends BasePeripheral implements ImageManipulatorPeripheral {
 
     /**
      * An executor service to remove backgrounds multithreaded.
@@ -58,6 +65,11 @@ public class OnnxImageBackgroundRemovalPeripheral extends BasePeripheralAdapter 
     protected OrtSession session;
 
     /**
+     * Use case to get project directories.
+     */
+    private final UseProjectDirsUseCase useProjectDirsUseCase;
+
+    /**
      * Parameters for the background remover thread.
      */
     private OnnxBackgroundRemoverParams onnxParams;
@@ -74,13 +86,14 @@ public class OnnxImageBackgroundRemovalPeripheral extends BasePeripheralAdapter 
      * {@inheritDoc}
      */
     @Override
-    public void initialize(ProgressMonitor progressMonitor, PeripheralInitParams initParams) {
+    public synchronized void initialize(ProgressMonitor progressMonitor, PeripheralInitParams initParams) {
         super.initialize(progressMonitor, initParams);
 
-        onnxParams = new OnnxBackgroundRemoverParams(initParams);
+        onnxParams = new OnnxBackgroundRemoverParams(((OnnxBackgroundRemovalPeripheralConfig) initParams.getConfig()), initParams.getWorkDir());
 
         if (environment == null) {
-            setupEnvironment(initParams, onnxParams);
+            setupEnvironment(onnxParams.getOnnxModelFileName()
+                    .replace("{projectDir}", initParams.getProjectRoot().toAbsolutePath().toString()));
         }
 
         onnxParams.setEnvironment(environment);
@@ -121,7 +134,7 @@ public class OnnxImageBackgroundRemovalPeripheral extends BasePeripheralAdapter 
      * {@inheritDoc}
      */
     @Override
-    public void teardown() {
+    public synchronized void teardown() {
         executorService.shutdown();
 
         boolean shutdown = false;
@@ -139,6 +152,26 @@ public class OnnxImageBackgroundRemovalPeripheral extends BasePeripheralAdapter 
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PeripheralStatus getStatus(PeripheralConfig peripheralConfig) {
+        if (inUse.get()) {
+            return PeripheralStatus.AVAILABLE;
+        }
+        OnnxBackgroundRemovalPeripheralConfig config = (OnnxBackgroundRemovalPeripheralConfig) peripheralConfig;
+
+        Path onnxFile = Path.of(config.getOnnxModelFile()
+                .replace("{projectDir}", useProjectDirsUseCase.getProjectRoot().toAbsolutePath().toString()));
+
+        if (!Files.exists(onnxFile)) {
+            return PeripheralStatus.FILE_DOESNT_EXIST;
+        }
+
+        return PeripheralStatus.AVAILABLE;
+    }
+
+    /**
      * Called to actually remove the background from the given image.
      *
      * @param filePath The path to the image to remove the background from.
@@ -151,7 +184,7 @@ public class OnnxImageBackgroundRemovalPeripheral extends BasePeripheralAdapter 
     /**
      * Creates the ONNX environment.
      */
-    private void setupEnvironment(PeripheralInitParams initParams, OnnxBackgroundRemoverParams onnxParams) {
+    private void setupEnvironment(String modelPath) {
         try {
             environment = OrtEnvironment.getEnvironment();
 
@@ -159,8 +192,7 @@ public class OnnxImageBackgroundRemovalPeripheral extends BasePeripheralAdapter 
             sessionOptions.setInterOpNumThreads(4);
             sessionOptions.addCPU(true);
 
-            session = environment.createSession(onnxParams.getOnnxModelFileName()
-                    .replace("{projectDir}", initParams.getProjectRoot().toAbsolutePath().toString()), sessionOptions);
+            session = environment.createSession(modelPath, sessionOptions);
         } catch (OrtException e) {
             throw new ArtivactException("Could not create ONNX environment!", e);
         }

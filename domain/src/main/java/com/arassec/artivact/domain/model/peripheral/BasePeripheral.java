@@ -3,10 +3,17 @@ package com.arassec.artivact.domain.model.peripheral;
 import com.arassec.artivact.domain.model.configuration.PeripheralImplementation;
 import com.arassec.artivact.domain.model.misc.ProgressMonitor;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * Base class for adapter implementations.
  */
-public abstract class BasePeripheralAdapter implements Peripheral {
+public abstract class BasePeripheral implements Peripheral {
+
+    /**
+     * Saves if the peripheral is currently in use.
+     */
+    protected final AtomicBoolean inUse = new AtomicBoolean(false);
 
     /**
      * The progress monitor to give feedback about the adapter status to the user.
@@ -30,17 +37,19 @@ public abstract class BasePeripheralAdapter implements Peripheral {
      * {@inheritDoc}
      */
     @Override
-    public void initialize(ProgressMonitor progressMonitor, PeripheralInitParams initParams) {
+    public synchronized void initialize(ProgressMonitor progressMonitor, PeripheralInitParams initParams) {
         this.progressMonitor = progressMonitor;
         this.initParams = initParams;
+        this.inUse.set(true);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void teardown() {
+    public synchronized void teardown() {
         this.initParams = null;
+        this.inUse.set(false);
     }
 
 }

@@ -4,8 +4,10 @@ import com.arassec.artivact.application.port.out.gateway.OsGateway;
 import com.arassec.artivact.application.port.out.peripheral.ModelEditorPeripheral;
 import com.arassec.artivact.domain.model.configuration.PeripheralImplementation;
 import com.arassec.artivact.domain.model.item.CreationModelSet;
-import com.arassec.artivact.domain.model.peripheral.BasePeripheralAdapter;
+import com.arassec.artivact.domain.model.peripheral.BasePeripheral;
+import com.arassec.artivact.domain.model.peripheral.PeripheralStatus;
 import com.arassec.artivact.domain.model.peripheral.configs.ExternalProgramPeripheralConfig;
+import com.arassec.artivact.domain.model.peripheral.configs.PeripheralConfig;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,12 +22,7 @@ import java.util.Arrays;
 @Component
 @Getter
 @RequiredArgsConstructor
-public class ExternalProgramModelEditorPeripheral extends BasePeripheralAdapter implements ModelEditorPeripheral {
-
-    /**
-     * The directory containing blender python scripts.
-     */
-    private static final String BLENDER_DIR = "utils/Blender";
+public class ExternalProgramModelEditorPeripheral extends BasePeripheral implements ModelEditorPeripheral {
 
     /**
      * Gateway to the operating system.
@@ -38,6 +35,22 @@ public class ExternalProgramModelEditorPeripheral extends BasePeripheralAdapter 
     @Override
     public PeripheralImplementation getSupportedImplementation() {
         return PeripheralImplementation.EXTERNAL_PROGRAM_MODEL_EDITOR_PERIPHERAL;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PeripheralStatus getStatus(PeripheralConfig peripheralConfig) {
+        if (inUse.get()) {
+            return PeripheralStatus.AVAILABLE;
+        }
+
+        if (osGateway.isExecutable(((ExternalProgramPeripheralConfig) peripheralConfig).getCommand())) {
+            return PeripheralStatus.AVAILABLE;
+        }
+
+        return PeripheralStatus.NOT_EXECUTABLE;
     }
 
     /**

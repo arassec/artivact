@@ -1,6 +1,6 @@
 package com.arassec.artivact.application.service.item;
 
-import com.arassec.artivact.application.port.in.configuration.LoadPeripheralConfigurationUseCase;
+import com.arassec.artivact.application.port.in.configuration.LoadPeripheralsConfigurationUseCase;
 import com.arassec.artivact.application.port.in.item.LoadItemUseCase;
 import com.arassec.artivact.application.port.in.item.ManipulateItemImagesUseCase;
 import com.arassec.artivact.application.port.in.item.SaveItemUseCase;
@@ -35,7 +35,7 @@ public class ManipulateItemImagesService implements ManipulateItemImagesUseCase 
 
     private final SaveItemUseCase saveItemUseCase;
 
-    private final LoadPeripheralConfigurationUseCase loadAdapterConfigurationUseCase;
+    private final LoadPeripheralsConfigurationUseCase loadAdapterConfigurationUseCase;
 
     /**
      * List of all available adapters.

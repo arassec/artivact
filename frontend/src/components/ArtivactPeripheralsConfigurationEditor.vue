@@ -16,6 +16,15 @@
           <q-item-section class="list-entry-label">
             {{ $t('ArtivactPeripheralsConfigurationEditor.turntable.heading') }}
           </q-item-section>
+          <q-item-section side>
+            <q-icon
+              v-if="!allTurntablesAvailable"
+              name="bolt"
+              size="sm"
+              color="negative"
+              class="q-ml-xs"
+            />
+          </q-item-section>
         </template>
         <q-card>
           <q-card-section>
@@ -31,6 +40,7 @@
                 peripheralConfig, index
               ) in peripheralConfigurationRef.turntablePeripheralConfigs"
               :peripheral-config="peripheralConfig"
+              :peripheral-status="peripheralStatus(peripheralConfig.id).value"
               @delete-config="deleteTurntableConfig(index)"
               @edit-config="editTurntableConfig(index)"
             ></artivact-peripheral-config-overview>
@@ -59,6 +69,15 @@
           <q-item-section class="list-entry-label">
             {{ $t('ArtivactPeripheralsConfigurationEditor.camera.heading') }}
           </q-item-section>
+          <q-item-section side>
+            <q-icon
+              v-if="!allCamerasAvailable"
+              name="bolt"
+              size="sm"
+              color="negative"
+              class="q-ml-xs"
+            />
+          </q-item-section>
         </template>
         <q-card>
           <q-card-section>
@@ -72,6 +91,7 @@
                 peripheralConfig, index
               ) in peripheralConfigurationRef.cameraPeripheralConfigs"
               :peripheral-config="peripheralConfig"
+              :peripheral-status="peripheralStatus(peripheralConfig.id).value"
               @delete-config="deleteCameraConfig(index)"
               @edit-config="editCameraConfig(index)"
             ></artivact-peripheral-config-overview>
@@ -102,6 +122,15 @@
               $t('ArtivactPeripheralsConfigurationEditor.background.heading')
             }}
           </q-item-section>
+          <q-item-section side>
+            <q-icon
+              v-if="!allImageBackgroundRemoversAvailable"
+              name="bolt"
+              size="sm"
+              color="negative"
+              class="q-ml-xs"
+            />
+          </q-item-section>
         </template>
         <q-card>
           <q-card-section>
@@ -117,6 +146,7 @@
                 peripheralConfig, index
               ) in peripheralConfigurationRef.imageBackgroundRemovalPeripheralConfigs"
               :peripheral-config="peripheralConfig"
+              :peripheral-status="peripheralStatus(peripheralConfig.id).value"
               @delete-config="deleteBackgroundRemovalConfig(index)"
               @edit-config="editBackgroundRemovalConfig(index)"
             ></artivact-peripheral-config-overview>
@@ -145,6 +175,15 @@
           <q-item-section class="list-entry-label">
             {{ $t('ArtivactPeripheralsConfigurationEditor.creator.heading') }}
           </q-item-section>
+          <q-item-section side>
+            <q-icon
+              v-if="!allModelCreatorsAvailable"
+              name="bolt"
+              size="sm"
+              color="negative"
+              class="q-ml-xs"
+            />
+          </q-item-section>
         </template>
         <q-card>
           <q-card-section>
@@ -158,6 +197,7 @@
                 peripheralConfig, index
               ) in peripheralConfigurationRef.modelCreatorPeripheralConfigs"
               :peripheral-config="peripheralConfig"
+              :peripheral-status="peripheralStatus(peripheralConfig.id).value"
               @delete-config="deleteModelCreatorConfig(index)"
               @edit-config="editModelCreatorConfig(index)"
             ></artivact-peripheral-config-overview>
@@ -186,6 +226,15 @@
           <q-item-section class="list-entry-label">
             {{ $t('ArtivactPeripheralsConfigurationEditor.editor.heading') }}
           </q-item-section>
+          <q-item-section side>
+            <q-icon
+              v-if="!allModelEditorsAvailable"
+              name="bolt"
+              size="sm"
+              color="negative"
+              class="q-ml-xs"
+            />
+          </q-item-section>
         </template>
         <q-card>
           <q-card-section>
@@ -199,6 +248,7 @@
                 peripheralConfig, index
               ) in peripheralConfigurationRef.modelEditorPeripheralConfigs"
               :peripheral-config="peripheralConfig"
+              :peripheral-status="peripheralStatus(peripheralConfig.id).value"
               @delete-config="deleteModelEditorConfig(index)"
               @edit-config="editModelEditorConfig(index)"
             ></artivact-peripheral-config-overview>
@@ -223,6 +273,11 @@
     :peripheral-config="curPeripheralConfigRef"
     :available-options="availableTurntableOptions"
     :show-cancel-button="curPeripheralConfigIndexRef == null"
+    :peripheral-status="
+      curPeripheralConfigRef && peripheralConfigurationRef
+        ? peripheralStatusOverviewRef[curPeripheralConfigRef.id]
+        : null
+    "
     @cancel="showTurntablePeripheralConfigEditorRef = false"
     @save="saveTurntableConfig()"
   >
@@ -236,6 +291,11 @@
     :peripheral-config="curPeripheralConfigRef"
     :available-options="availableCameraOptions"
     :show-cancel-button="curPeripheralConfigIndexRef == null"
+    :peripheral-status="
+      curPeripheralConfigRef && peripheralConfigurationRef
+        ? peripheralStatusOverviewRef[curPeripheralConfigRef.id]
+        : null
+    "
     @cancel="showCameraPeripheralConfigEditorRef = false"
     @save="saveCameraConfig()"
   >
@@ -249,6 +309,11 @@
     :peripheral-config="curPeripheralConfigRef"
     :available-options="availableBackgroundRemovalOptions"
     :show-cancel-button="curPeripheralConfigIndexRef == null"
+    :peripheral-status="
+      curPeripheralConfigRef && peripheralConfigurationRef
+        ? peripheralStatusOverviewRef[curPeripheralConfigRef.id]
+        : null
+    "
     @cancel="showBackgroundRemovalPeripheralConfigEditorRef = false"
     @save="saveBackgroundRemovalConfig()"
   >
@@ -262,6 +327,11 @@
     :peripheral-config="curPeripheralConfigRef"
     :available-options="availableModelCreatorOptions"
     :show-cancel-button="curPeripheralConfigIndexRef == null"
+    :peripheral-status="
+      curPeripheralConfigRef && peripheralConfigurationRef
+        ? peripheralStatusOverviewRef[curPeripheralConfigRef.id]
+        : null
+    "
     @cancel="showModelCreatorPeripheralConfigEditorRef = false"
     @save="saveModelCreatorConfig()"
   >
@@ -275,6 +345,11 @@
     :peripheral-config="curPeripheralConfigRef"
     :available-options="availableModelEditorOptions"
     :show-cancel-button="curPeripheralConfigIndexRef == null"
+    :peripheral-status="
+      curPeripheralConfigRef && peripheralConfigurationRef
+        ? peripheralStatusOverviewRef[curPeripheralConfigRef.id]
+        : null
+    "
     @cancel="showModelEditorPeripheralConfigEditorRef = false"
     @save="saveModelEditorConfig()"
   >
@@ -285,7 +360,7 @@
 </template>
 
 <script setup lang="ts">
-import { PropType, ref, toRef } from 'vue';
+import { computed, PropType, ref, toRef } from 'vue';
 import {
   PeripheralConfig,
   PeripheralImplementation,
@@ -301,11 +376,17 @@ const props = defineProps({
     required: true,
     type: Object as PropType<PeripheralsConfiguration | null>,
   },
+  peripheralStatusOverview: {
+    required: true,
+    type: Object,
+  },
 });
 
 const i18n = useI18n();
 
 const peripheralConfigurationRef = toRef(props, 'peripheralConfiguration');
+const peripheralStatusOverviewRef = toRef(props, 'peripheralStatusOverview');
+
 const curPeripheralConfigRef = ref(null);
 const curPeripheralConfigIndexRef = ref(null);
 
@@ -314,6 +395,16 @@ const showCameraPeripheralConfigEditorRef = ref(false);
 const showBackgroundRemovalPeripheralConfigEditorRef = ref(false);
 const showModelCreatorPeripheralConfigEditorRef = ref(false);
 const showModelEditorPeripheralConfigEditorRef = ref(false);
+
+const emit = defineEmits<{
+  (e: 'update-config-status'): void;
+}>();
+
+const peripheralStatus = (id: string) =>
+  computed(() => {
+    const overview = peripheralStatusOverviewRef.value;
+    return overview && id in overview ? overview[id] : null;
+  });
 
 function addTurntableConfig() {
   curPeripheralConfigRef.value = {
@@ -348,6 +439,7 @@ function saveTurntableConfig() {
   }
   showTurntablePeripheralConfigEditorRef.value = false;
   curPeripheralConfigRef.value = null;
+  emit('update-config-status');
 }
 
 function addCameraConfig() {
@@ -383,6 +475,7 @@ function saveCameraConfig() {
   }
   showCameraPeripheralConfigEditorRef.value = false;
   curPeripheralConfigRef.value = null;
+  emit('update-config-status');
 }
 
 function addBackgroundRemovalConfig() {
@@ -423,6 +516,7 @@ function saveBackgroundRemovalConfig() {
   }
   showBackgroundRemovalPeripheralConfigEditorRef.value = false;
   curPeripheralConfigRef.value = null;
+  emit('update-config-status');
 }
 
 function addModelCreatorConfig() {
@@ -461,6 +555,7 @@ function saveModelCreatorConfig() {
   }
   showModelCreatorPeripheralConfigEditorRef.value = false;
   curPeripheralConfigRef.value = null;
+  emit('update-config-status');
 }
 
 function addModelEditorConfig() {
@@ -499,6 +594,7 @@ function saveModelEditorConfig() {
   }
   showModelEditorPeripheralConfigEditorRef.value = false;
   curPeripheralConfigRef.value = null;
+  emit('update-config-status');
 }
 
 function isDisabled(
@@ -516,6 +612,49 @@ function isDisabled(
   }
 
   return true;
+}
+
+const allTurntablesAvailable = computed(() => {
+  return allAvailable(
+    peripheralConfigurationRef.value.turntablePeripheralConfigs,
+  );
+});
+
+const allCamerasAvailable = computed(() => {
+  return allAvailable(peripheralConfigurationRef.value.cameraPeripheralConfigs);
+});
+
+const allImageBackgroundRemoversAvailable = computed(() => {
+  return allAvailable(
+    peripheralConfigurationRef.value.imageBackgroundRemovalPeripheralConfigs,
+  );
+});
+
+const allModelCreatorsAvailable = computed(() => {
+  return allAvailable(
+    peripheralConfigurationRef.value.modelCreatorPeripheralConfigs,
+  );
+});
+
+const allModelEditorsAvailable = computed(() => {
+  return allAvailable(
+    peripheralConfigurationRef.value.modelEditorPeripheralConfigs,
+  );
+});
+
+function allAvailable(peripheralConfigs: PeripheralConfig[]): boolean {
+  let result = true;
+  if (peripheralStatusOverviewRef.value) {
+    peripheralConfigs.forEach((config) => {
+      if (
+        config.id in peripheralStatusOverviewRef.value &&
+        !(peripheralStatusOverviewRef.value[config.id] == 'AVAILABLE')
+      ) {
+        result = false;
+      }
+    });
+  }
+  return result;
 }
 
 const availableTurntableOptions: SelectboxModel[] = [

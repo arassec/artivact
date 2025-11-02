@@ -3,8 +3,10 @@ package com.arassec.artivact.adapter.out.camera.peripheral;
 import com.arassec.artivact.application.port.out.gateway.OsGateway;
 import com.arassec.artivact.application.port.out.peripheral.CameraPeripheral;
 import com.arassec.artivact.domain.model.configuration.PeripheralImplementation;
-import com.arassec.artivact.domain.model.peripheral.BasePeripheralAdapter;
+import com.arassec.artivact.domain.model.peripheral.BasePeripheral;
+import com.arassec.artivact.domain.model.peripheral.PeripheralStatus;
 import com.arassec.artivact.domain.model.peripheral.configs.ExternalProgramPeripheralConfig;
+import com.arassec.artivact.domain.model.peripheral.configs.PeripheralConfig;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +22,7 @@ import java.util.Arrays;
 @Component
 @Getter
 @RequiredArgsConstructor
-public class ExternalProgramCameraPeripheral extends BasePeripheralAdapter implements CameraPeripheral {
+public class ExternalProgramCameraPeripheral extends BasePeripheral implements CameraPeripheral {
 
     /**
      * Gateway to the operating system.
@@ -33,6 +35,22 @@ public class ExternalProgramCameraPeripheral extends BasePeripheralAdapter imple
     @Override
     public PeripheralImplementation getSupportedImplementation() {
         return PeripheralImplementation.EXTERNAL_PROGRAM_CAMERA_PERIPHERAL;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PeripheralStatus getStatus(PeripheralConfig peripheralConfig) {
+        if (inUse.get()) {
+            return PeripheralStatus.AVAILABLE;
+        }
+
+        if (osGateway.isExecutable(((ExternalProgramPeripheralConfig) peripheralConfig).getCommand())) {
+            return PeripheralStatus.AVAILABLE;
+        }
+
+        return PeripheralStatus.NOT_EXECUTABLE;
     }
 
     /**

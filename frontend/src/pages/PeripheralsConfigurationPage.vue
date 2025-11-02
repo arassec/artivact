@@ -5,8 +5,10 @@
         {{ $t('PeripheralsConfigurationPage.heading') }}
       </h1>
       <artivact-peripherals-configuration-editor
+        v-if="peripheralConfigurationRef && peripheralStatusOverviewRef"
         :peripheral-configuration="peripheralConfigurationRef"
-        v-if="peripheralConfigurationRef"
+        :peripheral-status-overview="peripheralStatusOverviewRef"
+        @update-config-status="testPeripheralConfiguration()"
       />
       <q-btn
         :label="$t('Common.save')"
@@ -68,6 +70,8 @@ const toRouteRef = ref(null);
 const showUnsavedChangesWarningRef = ref(false);
 const checkUnsavedChangesRef = ref(true);
 
+const peripheralStatusOverviewRef = ref(null);
+
 function loadPeripheralConfiguration() {
   api
     .get('/api/configuration/peripheral')
@@ -77,6 +81,7 @@ function loadPeripheralConfiguration() {
       peripheralsConfigStore.setPeripheralsConfig(
         peripheralConfigurationRef.value,
       );
+      testPeripheralConfiguration();
     })
     .catch(() => {
       quasar.notify({
@@ -90,6 +95,17 @@ function loadPeripheralConfiguration() {
     });
 }
 
+function testPeripheralConfiguration() {
+  api
+    .post(
+      '/api/configuration/peripheral/test-all',
+      peripheralConfigurationRef.value,
+    )
+    .then((response) => {
+      peripheralStatusOverviewRef.value = response.data;
+    });
+}
+
 function savePeripheralConfiguration() {
   api
     .post('/api/configuration/peripheral', peripheralConfigurationRef.value)
@@ -100,6 +116,7 @@ function savePeripheralConfiguration() {
       originalConfigRef.value = JSON.stringify(
         peripheralConfigurationRef.value,
       );
+      testPeripheralConfiguration();
       quasar.notify({
         color: 'positive',
         position: 'bottom',

@@ -1,6 +1,6 @@
 package com.arassec.artivact.application.service.item;
 
-import com.arassec.artivact.application.port.in.configuration.LoadPeripheralConfigurationUseCase;
+import com.arassec.artivact.application.port.in.configuration.LoadPeripheralsConfigurationUseCase;
 import com.arassec.artivact.application.port.in.item.EditItemModelUseCase;
 import com.arassec.artivact.application.port.in.item.LoadItemUseCase;
 import com.arassec.artivact.application.port.in.operation.RunBackgroundOperationUseCase;
@@ -31,7 +31,7 @@ public class EditItemModelService implements EditItemModelUseCase {
 
     private final LoadItemUseCase loadItemUseCase;
 
-    private final LoadPeripheralConfigurationUseCase loadAdapterConfigurationUseCase;
+    private final LoadPeripheralsConfigurationUseCase loadAdapterConfigurationUseCase;
 
     /**
      * List of all available peripheral adapters.

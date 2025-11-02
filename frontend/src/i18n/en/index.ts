@@ -5,6 +5,7 @@ export default {
     apply: 'Apply',
     close: 'Close',
     ok: 'OK',
+    test: 'Test',
     username: 'Username',
     password: 'Password',
     passwordRepeat: 'Password (repeat)',
@@ -1114,6 +1115,14 @@ export default {
       export: 'Building collection export file...',
       failed: 'Operation failed!',
     },
+  },
+
+  PeripheralStatus: {
+    AVAILABLE: 'The peripheral is available.',
+    ERROR: 'The peripheral is not available.',
+    DISCONNECTED: 'The peripheral seems to be disconnected.',
+    NOT_EXECUTABLE: 'The configured executable is not available.',
+    FILE_DOESNT_EXIST: 'The configured file does not exist.',
   },
 
   ROLE_ADMIN: 'Admin',

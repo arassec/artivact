@@ -9,6 +9,8 @@ import org.apache.commons.exec.Executor;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 /**
@@ -56,6 +58,14 @@ public class OperatingSystemAdapter implements OsGateway {
         }
 
         log.debug("Executed command finished (success={}).", executionSuccessful);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isExecutable(String command) {
+        return Files.isExecutable(Path.of(command));
     }
 
 }

@@ -15,4 +15,12 @@ public interface OsGateway {
      */
     void execute(String command, List<String> arguments);
 
+    /**
+     * Returns whether the provided command is executable or not.
+     *
+     * @param command The command to check.
+     * @return {@code true}, if the command can be executed by the current user, {@code false} otherwise.
+     */
+    boolean isExecutable(String command);
+
 }

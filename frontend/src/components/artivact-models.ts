@@ -320,3 +320,11 @@ export interface ModelCreatorPeripheralConfig
   openInputDirInOs: boolean;
   resultDir: string;
 }
+
+export enum PeripheralStatus {
+  AVAILABLE = 'AVAILABLE',
+  ERROR = 'ERROR',
+  DISCONNECTED = 'DISCONNECTED',
+  NOT_EXECUTABLE = 'NOT_EXECUTABLE',
+  FILE_DOESNT_EXIST = 'FILE_DOESNT_EXIST',
+}

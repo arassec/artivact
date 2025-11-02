@@ -10,6 +10,8 @@ import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.Roles;
 import com.arassec.artivact.domain.model.configuration.*;
 import com.arassec.artivact.domain.model.misc.ExchangeDefinitions;
+import com.arassec.artivact.domain.model.peripheral.PeripheralStatus;
+import com.arassec.artivact.domain.model.peripheral.configs.PeripheralConfig;
 import com.arassec.artivact.domain.model.property.PropertyCategory;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 
 /**
  * REST-Controller for configuration handling.
@@ -59,10 +62,11 @@ public class ConfigurationController extends BaseController {
     private final SaveTagsConfigurationUseCase saveTagsConfigurationUseCase;
     private final SaveExchangeConfigurationUseCase saveExchangeConfigurationUseCase;
     private final SavePeripheralConfigurationUseCase savePeripheralConfigurationUseCase;
-    private final LoadPeripheralConfigurationUseCase loadPeripheralConfigurationUseCase;
+    private final LoadPeripheralsConfigurationUseCase loadPeripheralConfigurationUseCase;
     private final CleanupExportFilesUseCase cleanupExportFilesUseCase;
     private final ImportPropertiesConfigurationUseCase importPropertiesConfigurationUseCase;
     private final ImportTagsConfigurationUseCase importTagsConfigurationUseCase;
+    private final TestPeripheralConfigurationUseCase testPeripheralConfigurationUseCase;
 
     /**
      * Returns the current appearance configuration.
@@ -297,13 +301,33 @@ public class ConfigurationController extends BaseController {
     }
 
     /**
-     * Saves the given adapter configuration
+     * Saves the given peripheral configuration
      *
-     * @param adapterConfiguration The configuration to save.
+     * @param peripheralConfiguration The configuration to save.
      */
     @PostMapping(value = "/peripheral")
-    public void savePeripheralsConfiguration(@RequestBody PeripheralsConfiguration adapterConfiguration) {
-        savePeripheralConfigurationUseCase.savePeripheralConfiguration(adapterConfiguration);
+    public void savePeripheralsConfiguration(@RequestBody PeripheralsConfiguration peripheralConfiguration) {
+        savePeripheralConfigurationUseCase.savePeripheralConfiguration(peripheralConfiguration);
+    }
+
+    /**
+     * Tests the given peripheral configuration
+     *
+     * @param peripheralConfig The configuration to test.
+     */
+    @PostMapping(value = "/peripheral/test")
+    public PeripheralStatus testSinglePeripheralsConfiguration(@RequestBody PeripheralConfig peripheralConfig) {
+        return testPeripheralConfigurationUseCase.testConfig(peripheralConfig);
+    }
+
+    /**
+     * Tests the given peripheral configuration
+     *
+     * @param peripheralConfiguration The configuration to test.
+     */
+    @PostMapping(value = "/peripheral/test-all")
+    public Map<String, PeripheralStatus> testAllPeripheralsConfiguration(@RequestBody PeripheralsConfiguration peripheralConfiguration) {
+        return testPeripheralConfigurationUseCase.testConfigs(peripheralConfiguration);
     }
 
     /**

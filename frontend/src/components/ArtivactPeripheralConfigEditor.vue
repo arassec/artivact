@@ -402,12 +402,46 @@
       </q-card-section>
     </template>
 
-    <template v-slot:cancel v-if="showCancelButton">
+    <template v-slot:cancel>
       <q-btn
-        :label="$t('Common.cancel')"
+        :label="$t('Common.test')"
         color="primary"
-        @click="$emit('cancel')"
+        @click="testPeripheralConfiguration()"
       />
+      <div
+        class="q-ml-sm"
+        v-if="
+          !peripheralStatusRef &&
+          defaultPeripheralStatusRef &&
+          defaultPeripheralStatusRef != 'AVAILABLE'
+        "
+      >
+        <q-icon name="bolt" size="sm" color="negative"></q-icon>
+        {{ $t('PeripheralStatus.' + defaultPeripheralStatusRef) }}
+      </div>
+      <div
+        class="q-ml-sm"
+        v-if="
+          !peripheralStatusRef &&
+          defaultPeripheralStatusRef &&
+          defaultPeripheralStatusRef == 'AVAILABLE'
+        "
+      >
+        <q-icon name="check" size="sm" color="positive"></q-icon>
+      </div>
+      <div
+        class="q-ml-sm"
+        v-if="peripheralStatusRef && peripheralStatusRef != 'AVAILABLE'"
+      >
+        <q-icon name="bolt" size="sm" color="negative"></q-icon>
+        {{ $t('PeripheralStatus.' + peripheralStatusRef) }}
+      </div>
+      <div
+        class="q-ml-sm"
+        v-if="peripheralStatusRef && peripheralStatusRef == 'AVAILABLE'"
+      >
+        <q-icon name="check" size="sm" color="positive"></q-icon>
+      </div>
     </template>
     <template v-slot:approve>
       <q-btn
@@ -421,7 +455,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, PropType, toRef } from 'vue';
+import { computed, PropType, ref, toRef } from 'vue';
 import {
   ArduinoTurntablePeripheralConfig,
   ExternalProgramPeripheralConfig,
@@ -434,6 +468,7 @@ import {
 } from './artivact-models';
 import ArtivactDialog from './ArtivactDialog.vue';
 import { Platform } from 'quasar';
+import { api } from '../boot/axios';
 
 const props = defineProps({
   dialogModel: {
@@ -451,10 +486,25 @@ const props = defineProps({
     required: true,
     type: Object as PropType<SelectboxModel[]>,
   },
+  peripheralStatus: {
+    required: false,
+    type: String,
+  },
 });
 
 const peripheralConfigRef = toRef(props, 'peripheralConfig');
 const availableOptionsRef = toRef(props, 'availableOptions');
+const defaultPeripheralStatusRef = toRef(props, 'peripheralStatus');
+
+const peripheralStatusRef = ref(null);
+
+function testPeripheralConfiguration() {
+  api
+    .post('/api/configuration/peripheral/test', peripheralConfigRef.value)
+    .then((response) => {
+      peripheralStatusRef.value = response.data;
+    });
+}
 
 function fillGphotoTwo() {
   let config = peripheralConfigRef.value as ExternalProgramPeripheralConfig;
@@ -494,7 +544,7 @@ function fillMeshroom(headless: boolean) {
     if (Platform.is.win) {
       config.command = 'C:/Users/<USER>/Tools/Meshroom/Meshroom.exe';
     } else if (Platform.is.linux) {
-      config.command = '/home/<USER>/Tools/meshroom/Meshroom';
+      config.command = '/home/<USER>/Tools/Meshroom/Meshroom';
     }
     config.arguments =
       '-i {projectDir}/temp/\n-p photogrammetry\n{projectDir}/utils/Meshroom/artivact-meshroom-workflow.mg';
