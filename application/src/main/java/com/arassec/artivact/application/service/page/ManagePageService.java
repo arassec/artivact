@@ -685,7 +685,7 @@ public class ManagePageService
         if (targetSize != null) {
             return fileRepository.loadImage(root, id, filename, targetSize, imagesSubDir);
         }
-        return new FileSystemResource(fileRepository.getSubdirFilePath(root, id, WIDGET_WIP_DIR).resolve(filename));
+        return new FileSystemResource(fileRepository.getSubdirFilePath(root, id, imagesSubDir).resolve(filename));
     }
 
     /**

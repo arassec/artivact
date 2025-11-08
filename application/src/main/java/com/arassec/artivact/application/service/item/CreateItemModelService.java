@@ -136,7 +136,8 @@ public class CreateItemModelService implements CreateItemModelUseCase {
 
         if (sourceFiles.stream().findAny().isEmpty()) {
             fileRepository.delete(targetDir);
-            throw new ArtivactException("No model files found in export directory: " + sourceDir);
+            log.debug("No model files found in export directory: {}", sourceDir);
+            return Optional.empty();
         }
 
         sourceFiles.forEach(source -> {

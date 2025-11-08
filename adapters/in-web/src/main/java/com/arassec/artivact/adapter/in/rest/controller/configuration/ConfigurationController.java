@@ -306,8 +306,8 @@ public class ConfigurationController extends BaseController {
      * @param peripheralConfiguration The configuration to save.
      */
     @PostMapping(value = "/peripheral")
-    public void savePeripheralsConfiguration(@RequestBody PeripheralsConfiguration peripheralConfiguration) {
-        savePeripheralConfigurationUseCase.savePeripheralConfiguration(peripheralConfiguration);
+    public PeripheralsConfiguration savePeripheralsConfiguration(@RequestBody PeripheralsConfiguration peripheralConfiguration) {
+        return savePeripheralConfigurationUseCase.savePeripheralConfiguration(peripheralConfiguration);
     }
 
     /**

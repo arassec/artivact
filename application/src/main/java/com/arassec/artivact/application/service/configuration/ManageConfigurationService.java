@@ -177,7 +177,7 @@ public class ManageConfigurationService
      */
     @Override
     @GenerateIds
-    public void savePeripheralConfiguration(PeripheralsConfiguration peripheralConfiguration) {
+    public PeripheralsConfiguration savePeripheralConfiguration(PeripheralsConfiguration peripheralConfiguration) {
         // Available options are computed when loading and must not be saved:
         peripheralConfiguration.setAvailableImageManipulatorPeripheralImplementations(List.of());
         peripheralConfiguration.setAvailableCameraPeripheralImplementations(List.of());
@@ -185,6 +185,8 @@ public class ManageConfigurationService
         peripheralConfiguration.setAvailableModelCreatorPeripheralImplementations(List.of());
         peripheralConfiguration.setAvailableModelEditorPeripheralImplementations(List.of());
         configurationRepository.saveConfiguration(ConfigurationType.PERIPHERALS, peripheralConfiguration);
+
+        return peripheralConfiguration;
     }
 
     /**

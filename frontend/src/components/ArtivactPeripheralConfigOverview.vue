@@ -7,7 +7,7 @@
     </div>
     <div>
       <q-icon
-        v-if="peripheralStatusRef == 'AVAILABLE'"
+        v-if="peripheralStatusRef && peripheralStatusRef == 'AVAILABLE'"
         name="done"
         size="sm"
         color="positive"
@@ -18,7 +18,7 @@
         }}</q-tooltip>
       </q-icon>
       <q-icon
-        v-if="peripheralStatusRef != 'AVAILABLE'"
+        v-if="peripheralStatusRef && peripheralStatusRef != 'AVAILABLE'"
         name="bolt"
         size="sm"
         color="negative"

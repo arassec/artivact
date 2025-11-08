@@ -9,6 +9,6 @@ public interface SavePeripheralConfigurationUseCase {
      *
      * @param peripheralConfiguration The configuration to save.
      */
-    void savePeripheralConfiguration(PeripheralsConfiguration peripheralConfiguration);
+    PeripheralsConfiguration savePeripheralConfiguration(PeripheralsConfiguration peripheralConfiguration);
 
 }

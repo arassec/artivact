@@ -78,6 +78,7 @@ public class ExternalProgramModelCreatorPeripheral extends BasePeripheral implem
         ModelCreatorPeripheralConfig config = ((ModelCreatorPeripheralConfig) initParams.getConfig());
         Path resultDir = Path.of(config.getResultDir().replace("{projectDir}", initParams.getProjectRoot().toAbsolutePath().toString()));
 
+        fileRepository.emptyDir(resultDir);
         fileRepository.createDirIfRequired(resultDir);
 
         if (config.isOpenInputDirInOs()) {

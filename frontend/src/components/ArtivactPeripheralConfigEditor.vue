@@ -404,6 +404,7 @@
 
     <template v-slot:cancel>
       <q-btn
+        :disable="!formValid"
         :label="$t('Common.test')"
         color="primary"
         @click="testPeripheralConfiguration()"
@@ -445,6 +446,12 @@
     </template>
     <template v-slot:approve>
       <q-btn
+        v-if="showCancelButton"
+        :label="$t('Common.cancel')"
+        color="primary"
+        @click="$emit('cancel')"
+      />
+      <q-btn
         :disable="!formValid"
         :label="$t('Common.apply')"
         color="primary"
@@ -455,7 +462,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, PropType, ref, toRef } from 'vue';
+import { computed, onMounted, PropType, ref, toRef } from 'vue';
 import {
   ArduinoTurntablePeripheralConfig,
   ExternalProgramPeripheralConfig,
@@ -646,6 +653,10 @@ const formValid = computed(() => {
     }
   }
   return true;
+});
+
+onMounted(() => {
+  peripheralStatusRef.value = null;
 });
 </script>
 

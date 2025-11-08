@@ -8,7 +8,6 @@
         v-if="peripheralConfigurationRef && peripheralStatusOverviewRef"
         :peripheral-configuration="peripheralConfigurationRef"
         :peripheral-status-overview="peripheralStatusOverviewRef"
-        @update-config-status="testPeripheralConfiguration()"
       />
       <q-btn
         :label="$t('Common.save')"
@@ -109,11 +108,10 @@ function testPeripheralConfiguration() {
 function savePeripheralConfiguration() {
   api
     .post('/api/configuration/peripheral', peripheralConfigurationRef.value)
-    .then(() => {
+    .then((response) => {
+      peripheralConfigurationRef.value = response.data;
+      originalConfigRef.value = JSON.stringify(response.data);
       peripheralsConfigStore.setPeripheralsConfig(
-        peripheralConfigurationRef.value,
-      );
-      originalConfigRef.value = JSON.stringify(
         peripheralConfigurationRef.value,
       );
       testPeripheralConfiguration();
