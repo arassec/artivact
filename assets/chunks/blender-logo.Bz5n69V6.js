@@ -1,0 +1,1 @@
+const s="/artivact/assets/meshroom-logo.DrJIkqak.png",t="/artivact/assets/metashape-logo.BG2fZ-Yz.png",a="/artivact/assets/realityscan-logo.FbJSQSZl.png",o="/artivact/assets/blender-logo.JQifl2yw.png";export{s as _,t as a,a as b,o as c};
