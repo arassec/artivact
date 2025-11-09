@@ -18,6 +18,7 @@ import org.firmata4j.firmata.FirmataDevice;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -187,6 +188,39 @@ public class ArduinoTurntablePeripheral extends BasePeripheral implements Turnta
         }
 
         return PeripheralStatus.DISCONNECTED;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<PeripheralConfig> scanPeripherals() {
+        if (inUse.get()) {
+            return List.of();
+        }
+
+        SerialPort[] serialPorts = SerialPort.getCommPorts();
+        for (SerialPort port : serialPorts) {
+            if (checkArduinoAtPort(port)) {
+                try {
+                    ioDevice.stop();
+                } catch (IOException e) {
+                    log.warn("Error during turntable scan!", e);
+                    return List.of();
+                }
+                ioDevice = null;
+
+                ArduinoTurntablePeripheralConfig arduinoTurntablePeripheralConfig = new ArduinoTurntablePeripheralConfig();
+                arduinoTurntablePeripheralConfig.setPeripheralImplementation(PeripheralImplementation.ARDUINO_TURNTABLE_PERIPHERAL);
+                arduinoTurntablePeripheralConfig.setLabel("Arduino Turntable");
+                arduinoTurntablePeripheralConfig.setFavourite(true);
+                arduinoTurntablePeripheralConfig.setDelayInMilliseconds(100);
+
+                return List.of(arduinoTurntablePeripheralConfig);
+            }
+        }
+
+        return List.of();
     }
 
     /**

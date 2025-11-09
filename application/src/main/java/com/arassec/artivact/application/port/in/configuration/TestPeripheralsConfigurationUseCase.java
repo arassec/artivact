@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * Use case to test an unsaved peripheral configuration.
  */
-public interface TestPeripheralConfigurationUseCase {
+public interface TestPeripheralsConfigurationUseCase {
 
     /**
      * Tests the supplied peripheral config.

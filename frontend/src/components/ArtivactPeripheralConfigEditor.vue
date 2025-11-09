@@ -553,8 +553,7 @@ function fillMeshroom(headless: boolean) {
     } else if (Platform.is.linux) {
       config.command = '/home/<USER>/Tools/Meshroom/Meshroom';
     }
-    config.arguments =
-      '-i {projectDir}/temp/\n-p photogrammetry\n{projectDir}/utils/Meshroom/artivact-meshroom-workflow.mg';
+    config.arguments = '-i {projectDir}/temp/\n-p photogrammetry';
   }
 }
 

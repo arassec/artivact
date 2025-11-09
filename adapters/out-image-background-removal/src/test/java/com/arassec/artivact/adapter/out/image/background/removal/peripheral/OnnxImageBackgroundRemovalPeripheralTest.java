@@ -1,6 +1,7 @@
 package com.arassec.artivact.adapter.out.image.background.removal.peripheral;
 
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
+import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.model.configuration.PeripheralImplementation;
 import com.arassec.artivact.domain.model.misc.ProgressMonitor;
 import com.arassec.artivact.domain.model.peripheral.PeripheralInitParams;
@@ -24,7 +25,7 @@ class OnnxImageBackgroundRemovalPeripheralTest {
      * Peripheral under test.
      */
     private final OnnxImageBackgroundRemovalPeripheral defaultImageManipulationPeripheral =
-            new OnnxImageBackgroundRemovalPeripheral(mock(UseProjectDirsUseCase.class));
+            new OnnxImageBackgroundRemovalPeripheral(mock(FileRepository.class), mock(UseProjectDirsUseCase.class));
 
     /**
      * Tests the supported peripheral implementation.

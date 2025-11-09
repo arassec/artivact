@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -116,6 +117,30 @@ public class PtpCameraPeripheral extends BasePeripheral implements CameraPeriphe
             return PeripheralStatus.AVAILABLE;
         }
         return PeripheralStatus.DISCONNECTED;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<PeripheralConfig> scanPeripherals() {
+        if (inUse.get()) {
+            return List.of();
+        }
+
+        if (imageCaptureDevice.initialize(Duration.ofSeconds(15), Duration.ofSeconds(15))) {
+            imageCaptureDevice.teardown();
+
+            PtpCameraPeripheralConfig peripheralConfig = new PtpCameraPeripheralConfig();
+            peripheralConfig.setPeripheralImplementation(PeripheralImplementation.PTP_CAMERA_PERIPHERAL);
+            peripheralConfig.setFavourite(true);
+            peripheralConfig.setLabel("PTP Camera");
+            peripheralConfig.setDelayInMilliseconds(250);
+
+            return List.of(peripheralConfig);
+        }
+
+        return List.of();
     }
 
 }

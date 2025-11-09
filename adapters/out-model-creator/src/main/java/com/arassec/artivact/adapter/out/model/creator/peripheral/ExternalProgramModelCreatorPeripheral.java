@@ -18,8 +18,10 @@ import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -62,6 +64,97 @@ public class ExternalProgramModelCreatorPeripheral extends BasePeripheral implem
         }
 
         return PeripheralStatus.NOT_EXECUTABLE;
+    }
+
+    @Override
+    public List<PeripheralConfig> scanPeripherals() {
+        List<PeripheralConfig> peripheralConfigs = new ArrayList<>();
+
+        if (inUse.get()) {
+            return peripheralConfigs;
+        }
+
+        Path home = Path.of(System.getProperty("user.home"));
+
+        Optional<Path> optionalMeshroom = osGateway.scanForDirectory(home, 5, "Meshroom-2025");
+        if (optionalMeshroom.isPresent()) {
+            ModelCreatorPeripheralConfig peripheralConfig = new ModelCreatorPeripheralConfig();
+            peripheralConfig.setLabel("Meshroom 2025");
+            peripheralConfig.setPeripheralImplementation(PeripheralImplementation.EXTERNAL_PROGRAM_MODEL_CREATOR_PERIPHERAL);
+            peripheralConfig.setCommand(optionalMeshroom.get().resolve("Meshroom").toAbsolutePath().toString());
+            peripheralConfig.setArguments("-i {projectDir}/temp/\n-p photogrammetry");
+            peripheralConfig.setResultDir("{projectDir}/temp/export/");
+
+            peripheralConfigs.add(peripheralConfig);
+
+            peripheralConfig = new ModelCreatorPeripheralConfig();
+            peripheralConfig.setLabel("Meshroom 2025 (Batch)");
+            peripheralConfig.setPeripheralImplementation(PeripheralImplementation.EXTERNAL_PROGRAM_MODEL_CREATOR_PERIPHERAL);
+            peripheralConfig.setCommand(optionalMeshroom.get().resolve("meshroom_batch").toAbsolutePath().toString());
+            peripheralConfig.setArguments("-i {projectDir}/temp/\n-p photogrammetry\n-o {projectDir}/temp/export/");
+            peripheralConfig.setResultDir("{projectDir}/temp/export/");
+
+            peripheralConfigs.add(peripheralConfig);
+        }
+
+        if (osGateway.isLinux()) {
+            Optional<Path> optionalMetashape = osGateway.scanForDirectory(home, 5, "metashape-2.2");
+            if (optionalMetashape.isPresent()) {
+                ModelCreatorPeripheralConfig peripheralConfig = new ModelCreatorPeripheralConfig();
+                peripheralConfig.setLabel("Metashape 2.2");
+                peripheralConfig.setPeripheralImplementation(PeripheralImplementation.EXTERNAL_PROGRAM_MODEL_CREATOR_PERIPHERAL);
+                peripheralConfig.setCommand(optionalMetashape.get().resolve("metashape").toAbsolutePath().toString());
+                peripheralConfig.setOpenInputDirInOs(true);
+                peripheralConfig.setArguments("");
+                peripheralConfig.setResultDir("{projectDir}/temp/export/");
+                peripheralConfigs.add(peripheralConfig);
+            }
+        }
+
+        if (osGateway.isWindows()) {
+            Path metashape = Path.of("C:\\Program Files\\Agisoft\\Metashape\\metashape.exe");
+            if (osGateway.isExecutable(metashape.toAbsolutePath().toString())) {
+                ModelCreatorPeripheralConfig peripheralConfig = new ModelCreatorPeripheralConfig();
+                peripheralConfig.setLabel("Metashape");
+                peripheralConfig.setPeripheralImplementation(PeripheralImplementation.EXTERNAL_PROGRAM_MODEL_CREATOR_PERIPHERAL);
+                peripheralConfig.setCommand(metashape.toAbsolutePath().toString());
+                peripheralConfig.setOpenInputDirInOs(true);
+                peripheralConfig.setArguments("");
+                peripheralConfig.setResultDir("{projectDir}/temp/export/");
+                peripheralConfigs.add(peripheralConfig);
+            }
+
+            Path realityScan = Path.of("C:\\Program Files\\Epic Games\\RealityScan_2.0\\RealityScan.exe");
+            if (osGateway.isExecutable(realityScan.toAbsolutePath().toString())) {
+                ModelCreatorPeripheralConfig peripheralConfig = new ModelCreatorPeripheralConfig();
+                peripheralConfig.setLabel("RealityScan 2.0");
+                peripheralConfig.setPeripheralImplementation(PeripheralImplementation.EXTERNAL_PROGRAM_MODEL_CREATOR_PERIPHERAL);
+                peripheralConfig.setCommand(realityScan.toAbsolutePath().toString());
+                peripheralConfig.setArguments("-addFolder {projectDir}/temp/\n-save {projectDir}/temp/MyProject.rcproj");
+                peripheralConfig.setResultDir("{projectDir}/temp/export/");
+                peripheralConfigs.add(peripheralConfig);
+
+                peripheralConfig = new ModelCreatorPeripheralConfig();
+                peripheralConfig.setLabel("RealityScan (Headless)");
+                peripheralConfig.setPeripheralImplementation(PeripheralImplementation.EXTERNAL_PROGRAM_MODEL_CREATOR_PERIPHERAL);
+                peripheralConfig.setCommand(realityScan.toAbsolutePath().toString());
+                peripheralConfig.setArguments("-addFolder {projectDir}/temp/" +
+                        "\n-save {projectDir}/temp/MyProject.rcproj" +
+                        "\n-headless" +
+                        "\n-align" +
+                        "\n-setReconstructionRegionAuto" +
+                        "\n-calculateNormalModel" +
+                        "\n-simplify 200000" +
+                        "\n-smooth\n" +
+                        "-calculateTexture" +
+                        "\n-exportSelectedModel {projectDir}/temp/export/RealityScanExport.obj" +
+                        "\n-quit");
+                peripheralConfig.setResultDir("{projectDir}/temp/export/");
+                peripheralConfigs.add(peripheralConfig);
+            }
+        }
+
+        return peripheralConfigs;
     }
 
     /**

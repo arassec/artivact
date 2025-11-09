@@ -8,6 +8,7 @@ import com.arassec.artivact.adapter.out.image.background.removal.peripheral.onnx
 import com.arassec.artivact.adapter.out.image.background.removal.peripheral.onnx.OnnxBackgroundRemoverParams;
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.peripheral.ImageManipulatorPeripheral;
+import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.configuration.PeripheralImplementation;
 import com.arassec.artivact.domain.model.misc.ProgressMonitor;
@@ -44,10 +45,12 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class OnnxImageBackgroundRemovalPeripheral extends BasePeripheral implements ImageManipulatorPeripheral {
 
+    private final FileRepository fileRepository;
+
     /**
      * An executor service to remove backgrounds multithreaded.
      */
-    protected ExecutorService executorService;
+    private ExecutorService executorService;
 
     /**
      * The result list containing paths to the processed image files without a background.
@@ -57,12 +60,12 @@ public class OnnxImageBackgroundRemovalPeripheral extends BasePeripheral impleme
     /**
      * The ONNX runtime environment.
      */
-    protected OrtEnvironment environment;
+    private OrtEnvironment environment;
 
     /**
      * The ONNX runtime session.
      */
-    protected OrtSession session;
+    private OrtSession session;
 
     /**
      * Use case to get project directories.
@@ -169,6 +172,27 @@ public class OnnxImageBackgroundRemovalPeripheral extends BasePeripheral impleme
         }
 
         return PeripheralStatus.AVAILABLE;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<PeripheralConfig> scanPeripherals() {
+        Path onnxFile = useProjectDirsUseCase.getProjectRoot().resolve("utils/onnx/silueta.onnx");
+        if (fileRepository.exists(onnxFile)) {
+            OnnxBackgroundRemovalPeripheralConfig peripheralConfig = new OnnxBackgroundRemovalPeripheralConfig();
+            peripheralConfig.setPeripheralImplementation(PeripheralImplementation.ONNX_IMAGE_BACKGROUND_REMOVAL_PERIPHERAL);
+            peripheralConfig.setLabel("Silueta");
+            peripheralConfig.setFavourite(true);
+            peripheralConfig.setOnnxModelFile("{projectDir}/utils/onnx/silueta.onnx");
+            peripheralConfig.setInputParameterName("input.1");
+            peripheralConfig.setImageWidth(320);
+            peripheralConfig.setImageHeight(320);
+            peripheralConfig.setNumThreads(5);
+            return List.of(peripheralConfig);
+        }
+        return List.of();
     }
 
     /**

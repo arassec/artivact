@@ -9,9 +9,12 @@ import org.apache.commons.exec.Executor;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Implements the {@link OsGateway} port.
@@ -66,6 +69,51 @@ public class OperatingSystemAdapter implements OsGateway {
     @Override
     public boolean isExecutable(String command) {
         return Files.isExecutable(Path.of(command));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<Path> scanForDirectory(Path startDir, int maxDepth, String dirNamePrefix) {
+
+        AtomicReference<Path> result = new AtomicReference<>();
+
+        try {
+
+
+            Files.walkFileTree(startDir, EnumSet.noneOf(FileVisitOption.class), maxDepth, new SimpleFileVisitor<>() {
+
+                @Override
+                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
+                    if (dir.getFileName().toString().startsWith(dirNamePrefix) && !Files.isSymbolicLink(dir)) {
+                        result.set(dir);
+                        return FileVisitResult.TERMINATE;
+                    }
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        } catch (IOException e) {
+            log.warn("Error during command scanning!", e);
+        }
+
+        return Optional.ofNullable(result.get());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isWindows() {
+        return System.getProperty("os.name").toLowerCase().contains("win");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isLinux() {
+        return System.getProperty("os.name").toLowerCase().contains("linux");
     }
 
 }

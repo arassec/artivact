@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Camera peripheral that uses an external program to capture images..
@@ -51,6 +52,42 @@ public class ExternalProgramCameraPeripheral extends BasePeripheral implements C
         }
 
         return PeripheralStatus.NOT_EXECUTABLE;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<PeripheralConfig> scanPeripherals() {
+        if (inUse.get()) {
+            return List.of();
+        }
+
+        if (osGateway.isLinux()) {
+            // Search for GPhoto2
+            Path command = Path.of("/usr/bin/gphoto2");
+            if (osGateway.isExecutable(command.toString())) {
+                ExternalProgramPeripheralConfig peripheralConfig = new ExternalProgramPeripheralConfig();
+                peripheralConfig.setPeripheralImplementation(PeripheralImplementation.EXTERNAL_PROGRAM_CAMERA_PERIPHERAL);
+                peripheralConfig.setLabel("gphoto2 Camera");
+                peripheralConfig.setCommand(command.toAbsolutePath().toString());
+                peripheralConfig.setArguments("--filename {targetFile}\n--capture-image-and-download");
+                return List.of(peripheralConfig);
+            }
+        } else if (osGateway.isWindows()) {
+            // Search for DigiCamControl
+            Path command = Path.of("C:\\Program Files (x86)\\digiCamControl\\digiCamControl.exe");
+            if (osGateway.isExecutable(command.toString())) {
+                ExternalProgramPeripheralConfig peripheralConfig = new ExternalProgramPeripheralConfig();
+                peripheralConfig.setPeripheralImplementation(PeripheralImplementation.EXTERNAL_PROGRAM_CAMERA_PERIPHERAL);
+                peripheralConfig.setLabel("DigiCamControl Camera");
+                peripheralConfig.setCommand(command.toAbsolutePath().toString());
+                peripheralConfig.setArguments("/filename {targetFile}\n/capture");
+                return List.of(peripheralConfig);
+            }
+        }
+
+        return List.of();
     }
 
     /**

@@ -4,6 +4,8 @@ import com.arassec.artivact.domain.model.configuration.PeripheralImplementation;
 import com.arassec.artivact.domain.model.misc.ProgressMonitor;
 import com.arassec.artivact.domain.model.peripheral.configs.PeripheralConfig;
 
+import java.util.List;
+
 /**
  * Defines access to a peripheral device or software.
  */
@@ -48,5 +50,12 @@ public interface Peripheral {
      * @return The {@link PeripheralStatus}.
      */
     PeripheralStatus getStatus(PeripheralConfig peripheralConfig);
+
+    /**
+     * Scans for peripherals and returns found configurations.
+     *
+     * @return List of available peripherals.
+     */
+    List<PeripheralConfig> scanPeripherals();
 
 }

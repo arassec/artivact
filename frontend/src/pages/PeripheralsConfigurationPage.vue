@@ -10,6 +10,12 @@
         :peripheral-status-overview="peripheralStatusOverviewRef"
       />
       <q-btn
+        :label="$t('PeripheralsConfigurationPage.scanPeripherals')"
+        color="primary"
+        class="q-mb-lg"
+        @click="scanPeripherals()"
+      />
+      <q-btn
         :label="$t('Common.save')"
         color="primary"
         class="q-mb-lg float-right"
@@ -40,6 +46,15 @@
         <q-btn :label="$t('Common.ok')" color="primary" @click="leavePage" />
       </template>
     </artivact-dialog>
+
+    <!-- LONG-RUNNING OPERATION -->
+    <artivact-operation-in-progress-dialog
+      v-if="showOperationInProgressModalRef == true"
+      :dialog-model="showOperationInProgressModalRef"
+      @close-dialog="scanFinished()"
+      :success-message="'PeripheralsConfigurationPage.messages.scan.success'"
+      :error-message="'PeripheralsConfigurationPage.messages.scan.failed'"
+    />
   </ArtivactContent>
 </template>
 
@@ -54,6 +69,7 @@ import { PeripheralsConfiguration } from '../components/artivact-models';
 import { usePeripheralsConfigStore } from '../stores/peripherals';
 import { onBeforeRouteLeave, useRouter } from 'vue-router';
 import ArtivactDialog from '../components/ArtivactDialog.vue';
+import ArtivactOperationInProgressDialog from '../components/ArtivactOperationInProgressDialog.vue';
 
 const quasar = useQuasar();
 const i18n = useI18n();
@@ -70,6 +86,8 @@ const showUnsavedChangesWarningRef = ref(false);
 const checkUnsavedChangesRef = ref(true);
 
 const peripheralStatusOverviewRef = ref(null);
+
+const showOperationInProgressModalRef = ref(false);
 
 function loadPeripheralConfiguration() {
   api
@@ -103,6 +121,27 @@ function testPeripheralConfiguration() {
     .then((response) => {
       peripheralStatusOverviewRef.value = response.data;
     });
+}
+
+function scanPeripherals() {
+  api
+    .post('/api/configuration/peripheral/scan')
+    .then(() => {
+      showOperationInProgressModalRef.value = true;
+    })
+    .catch(() => {
+      quasar.notify({
+        color: 'negative',
+        position: 'bottom',
+        message: i18n.t('PeripheralsConfigurationPage.messages.scan.failed'),
+        icon: 'report_problem',
+      });
+    });
+}
+
+function scanFinished() {
+  showOperationInProgressModalRef.value = false;
+  loadPeripheralConfiguration();
 }
 
 function savePeripheralConfiguration() {

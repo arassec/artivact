@@ -1,6 +1,6 @@
 package com.arassec.artivact.application.service.configuration;
 
-import com.arassec.artivact.application.port.in.configuration.TestPeripheralConfigurationUseCase;
+import com.arassec.artivact.application.port.in.configuration.TestPeripheralsConfigurationUseCase;
 import com.arassec.artivact.application.port.out.peripheral.TurntablePeripheral;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.configuration.PeripheralImplementation;
@@ -21,7 +21,7 @@ import java.util.Objects;
  */
 @Service
 @RequiredArgsConstructor
-public class TestPeripheralConfigurationService implements TestPeripheralConfigurationUseCase {
+public class TestPeripheralsConfigurationService implements TestPeripheralsConfigurationUseCase {
 
     /**
      * List of all available adapters.

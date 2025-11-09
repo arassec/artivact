@@ -66,7 +66,8 @@ public class ConfigurationController extends BaseController {
     private final CleanupExportFilesUseCase cleanupExportFilesUseCase;
     private final ImportPropertiesConfigurationUseCase importPropertiesConfigurationUseCase;
     private final ImportTagsConfigurationUseCase importTagsConfigurationUseCase;
-    private final TestPeripheralConfigurationUseCase testPeripheralConfigurationUseCase;
+    private final TestPeripheralsConfigurationUseCase testPeripheralConfigurationUseCase;
+    private final ScanPeripheralsConfigurationUseCase scanPeripheralConfigurationUseCase;
 
     /**
      * Returns the current appearance configuration.
@@ -328,6 +329,14 @@ public class ConfigurationController extends BaseController {
     @PostMapping(value = "/peripheral/test-all")
     public Map<String, PeripheralStatus> testAllPeripheralsConfiguration(@RequestBody PeripheralsConfiguration peripheralConfiguration) {
         return testPeripheralConfigurationUseCase.testConfigs(peripheralConfiguration);
+    }
+
+    /**
+     * Scans for peripherals.
+     */
+    @PostMapping(value = "/peripheral/scan")
+    public void scanPeripheralsConfiguration() {
+        scanPeripheralConfigurationUseCase.scanPeripheralsConfiguration();
     }
 
     /**

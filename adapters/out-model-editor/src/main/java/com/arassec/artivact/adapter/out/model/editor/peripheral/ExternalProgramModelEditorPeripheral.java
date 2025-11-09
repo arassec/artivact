@@ -13,7 +13,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Adapter that starts the open source tool "Blender 3D" for model editing.
@@ -51,6 +54,40 @@ public class ExternalProgramModelEditorPeripheral extends BasePeripheral impleme
         }
 
         return PeripheralStatus.NOT_EXECUTABLE;
+    }
+
+    @Override
+    public List<PeripheralConfig> scanPeripherals() {
+        if (inUse.get()) {
+            return List.of();
+        }
+
+        if (osGateway.isLinux()) {
+            Path home = Path.of(System.getProperty("user.home"));
+            Optional<Path> optionalBlender = osGateway.scanForDirectory(home, 5, "blender-4.5");
+            if (optionalBlender.isPresent()) {
+                ExternalProgramPeripheralConfig peripheralConfig = new ExternalProgramPeripheralConfig();
+                peripheralConfig.setPeripheralImplementation(PeripheralImplementation.EXTERNAL_PROGRAM_MODEL_EDITOR_PERIPHERAL);
+                peripheralConfig.setLabel("Blender 4.5");
+                peripheralConfig.setCommand(optionalBlender.get().resolve("blender").toAbsolutePath().toString());
+                peripheralConfig.setArguments("--python {projectDir}/utils/Blender/blender-artivact-import.py\n-- {modelDir}");
+                peripheralConfig.setFavourite(true);
+                return List.of(peripheralConfig);
+            }
+        } else if (osGateway.isWindows()) {
+            Path blenderPath = Path.of("C:\\Program Files\\Blender Foundation\\Blender 4.5\\blender.exe");
+            if (osGateway.isExecutable(blenderPath.toAbsolutePath().toString())) {
+                ExternalProgramPeripheralConfig peripheralConfig = new ExternalProgramPeripheralConfig();
+                peripheralConfig.setPeripheralImplementation(PeripheralImplementation.EXTERNAL_PROGRAM_MODEL_EDITOR_PERIPHERAL);
+                peripheralConfig.setLabel("Blender 4.5");
+                peripheralConfig.setCommand(blenderPath.toAbsolutePath().toString());
+                peripheralConfig.setArguments("--python {projectDir}/utils/Blender/blender-artivact-import.py\n-- {modelDir}");
+                peripheralConfig.setFavourite(true);
+                return List.of(peripheralConfig);
+            }
+        }
+
+        return List.of();
     }
 
     /**
