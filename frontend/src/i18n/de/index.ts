@@ -299,6 +299,13 @@ export default {
 
   PeripheralsConfigurationPage: {
     heading: 'Peripherie-Konfiguration',
+    scanPeripherals: 'Peripheriegeräte scannen',
+    messages: {
+      scan: {
+        success: 'Scan erfolgreich',
+        failed: 'Scan fehlgeschlagen',
+      },
+    },
   },
 
   PropertiesConfigurationPage: {
@@ -707,6 +714,8 @@ export default {
   ArtivactPeripheralsConfigurationEditor: {
     description:
       'Konfiguriert Peripheriegeräte und -Software für die Erstellung von 3D-Modellen aus der Anwendung heraus.',
+    scanPeripheralsDescription:
+      'Sie können unten auf die Schaltfläche "Peripheriegeräte scannen" klicken, um angeschlossene Geräte automatisch zu erkennen. Artivact versucht dann, verbundene USB-Geräte wie Drehteller oder Kameras sowie installierte und unterstützte Software zu finden. Wenn bestimmte Software nicht gefunden wird, kann das an unbekannten Installationspfaden oder ungetesteten Softwareversionen liegen. Sie können die Konfiguration bei Bedarf auch manuell vornehmen.',
     turntable: {
       heading: 'Drehteller-Konfiguration',
       description:
@@ -1104,6 +1113,15 @@ export default {
     collectionExport: {
       export: 'Erzeuge Sammlungsexportdatei...',
       failed: 'Sammlungsexport fehlgeschlagen!',
+    },
+    scanPeripherals: {
+      init: 'Scanne Peripheriekonfigurationen...',
+      scanTurntables: 'Suche Drehteller-Konfigurationen...',
+      scanCameras: 'Suche Kamera-Konfigurationen...',
+      scanImageBackroundRemovers:
+        'Suche Konfigurationen zum Entfernen von Bildhintergründen...',
+      scanModelCreators: 'Suche nach Photogrammetrie-Software...',
+      scanModelEditors: 'Suche nach 3D-Editoren...',
     },
   },
 

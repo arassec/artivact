@@ -47,7 +47,7 @@ export const usePeripheralsConfigStore = defineStore('peripheralsConfig', {
         return (
           state.config.cameraPeripheralConfigs.find(
             (config) => config.favourite,
-          )?.id ?? state.config.turntablePeripheralConfigs[0].id
+          )?.id ?? state.config.cameraPeripheralConfigs[0].id
         );
       }
       return null;

@@ -3,19 +3,26 @@ import { defineStore } from 'pinia';
 export const useWizzardStore = defineStore('wizzard', {
   state: () => ({
     wizzardData: {
-      startScanning: null as boolean | null,
+      scanItem: null as boolean | null,
+      scanPeripherals: null as boolean | null,
     },
   }),
 
   getters: {
-    startScanning(state) {
-      return state.wizzardData.startScanning;
+    scanItem(state) {
+      return state.wizzardData.scanItem;
+    },
+    scanPeripherals(state) {
+      return state.wizzardData.scanPeripherals;
     },
   },
 
   actions: {
-    setStartScanning(startScanning: boolean | null) {
-      this.wizzardData.startScanning = startScanning;
+    setScanItem(scanItem: boolean | null) {
+      this.wizzardData.scanItem = scanItem;
+    },
+    setScanPeripherals(scanPeripherals: boolean | null) {
+      this.wizzardData.scanPeripherals = scanPeripherals;
     },
   },
 });

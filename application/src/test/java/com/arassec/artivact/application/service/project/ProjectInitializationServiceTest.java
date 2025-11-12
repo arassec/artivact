@@ -123,12 +123,12 @@ class ProjectInitializationServiceTest {
         when(pageRepository.findAll()).thenReturn(Collections.emptyList());
 
         // Simulate welcome page missing in projectRoot but exists in fallback
-        when(fileRepository.exists(projectRoot.resolve("utils/Setup/welcome-page.artivact.content.zip"))).thenReturn(false);
-        when(fileRepository.exists(ProjectInitializationService.PROJECT_SETUP_DIR_FALLBACK.resolve("utils/Setup/welcome-page.artivact.content.zip"))).thenReturn(true);
+        when(fileRepository.exists(projectRoot.resolve("utils/Setup/welcome.artivact.collection.zip"))).thenReturn(false);
+        when(fileRepository.exists(ProjectInitializationService.PROJECT_SETUP_DIR_FALLBACK.resolve("utils/Setup/welcome.artivact.collection.zip"))).thenReturn(true);
 
         service.initialize();
 
-        verify(importMenuUseCase).importMenu(ProjectInitializationService.PROJECT_SETUP_DIR_FALLBACK.resolve("utils/Setup/welcome-page.artivact.content.zip"));
+        verify(importMenuUseCase).importMenu(ProjectInitializationService.PROJECT_SETUP_DIR_FALLBACK.resolve("utils/Setup/welcome.artivact.collection.zip"));
     }
 
     @Test

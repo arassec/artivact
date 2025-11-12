@@ -60,7 +60,7 @@ public class ProjectInitializationService {
     /**
      * Path to the welcome page export file.
      */
-    private static final String WELCOME_EXPORT_PATH = "utils/Setup/welcome-page.artivact.content.zip";
+    private static final String WELCOME_EXPORT_PATH = "utils/Setup/welcome.artivact.collection.zip";
 
     private final UseProjectDirsUseCase useProjectDirsUseCase;
 

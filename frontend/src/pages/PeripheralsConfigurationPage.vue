@@ -70,10 +70,13 @@ import { usePeripheralsConfigStore } from '../stores/peripherals';
 import { onBeforeRouteLeave, useRouter } from 'vue-router';
 import ArtivactDialog from '../components/ArtivactDialog.vue';
 import ArtivactOperationInProgressDialog from '../components/ArtivactOperationInProgressDialog.vue';
+import { useWizzardStore } from '../stores/wizzard';
 
 const quasar = useQuasar();
 const i18n = useI18n();
 const router = useRouter();
+
+const wizzardStore = useWizzardStore();
 
 const peripheralsConfigStore = usePeripheralsConfigStore();
 
@@ -194,7 +197,12 @@ onBeforeRouteLeave((to, from, next) => {
 });
 
 onMounted(() => {
-  loadPeripheralConfiguration();
+  if (wizzardStore.scanPeripherals) {
+    wizzardStore.setScanPeripherals(false);
+    scanPeripherals();
+  } else {
+    loadPeripheralConfiguration();
+  }
 });
 </script>
 

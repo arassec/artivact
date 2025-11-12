@@ -322,7 +322,8 @@ function loadItemData(itemId: string | string[]) {
     .then((response) => {
       itemDataRef.value = response.data;
       originalItemJson = JSON.stringify(response.data);
-      if (wizzardStore.startScanning) {
+      if (wizzardStore.scanItem) {
+        wizzardStore.setScanItem(false);
         tabRef.value = 'creation';
       }
     })

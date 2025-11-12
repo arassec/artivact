@@ -76,7 +76,7 @@ public class ExternalProgramCameraPeripheral extends BasePeripheral implements C
             }
         } else if (osGateway.isWindows()) {
             // Search for DigiCamControl
-            Path command = Path.of("C:\\Program Files (x86)\\digiCamControl\\digiCamControl.exe");
+            Path command = Path.of("C:\\Program Files (x86)\\digiCamControl\\CameraControl.exe");
             if (osGateway.isExecutable(command.toString())) {
                 ExternalProgramPeripheralConfig peripheralConfig = new ExternalProgramPeripheralConfig();
                 peripheralConfig.setPeripheralImplementation(PeripheralImplementation.EXTERNAL_PROGRAM_CAMERA_PERIPHERAL);

@@ -157,6 +157,10 @@ const routes: RouteRecordRaw[] = [
         path: '/administration/configuration/exchange',
         component: () => import('../pages/ExchangeConfigurationPage.vue'),
       },
+      {
+        path: '/wizzard/:action',
+        component: () => import('../pages/WizzardPage.vue'),
+      },
     ],
   },
 

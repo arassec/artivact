@@ -17,9 +17,24 @@
       v-if="translatableStringRef && localeStore.selectedLocale !== null"
     >
       <q-input
+        v-if="
+          translatableStringRef.translations &&
+          localeStore.selectedLocale in translatableStringRef.translations
+        "
         :data-test="dataTest"
         outlined
         v-model="translatableStringRef.translations[localeStore.selectedLocale]"
+        :label="label"
+        :type="textarea ? 'textarea' : 'text'"
+        :autogrow="textarea"
+        class="no-scroll column col-grow"
+        :disable="disable"
+      />
+      <q-input
+        v-else
+        :data-test="dataTest"
+        outlined
+        v-model="translatableStringRef.value"
         :label="label"
         :type="textarea ? 'textarea' : 'text'"
         :autogrow="textarea"

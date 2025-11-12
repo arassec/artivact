@@ -671,7 +671,7 @@ import { useWizzardStore } from '../stores/wizzard';
 const { locale } = useI18n({ useScope: 'global' });
 
 const quasar = useQuasar();
-const route = useRouter();
+const router = useRouter();
 const i18n = useI18n();
 
 const userdataStore = useUserdataStore();
@@ -687,42 +687,42 @@ const localeMenuOpen = ref(false);
 const showImportItemModal = ref(false);
 
 function gotoPropertiesConfigurationPage() {
-  route.push('/administration/configuration/properties');
+  router.push('/administration/configuration/properties');
 }
 
 function gotoTagsConfigurationPage() {
-  route.push('/administration/configuration/tags');
+  router.push('/administration/configuration/tags');
 }
 
 function gotoAppearanceConfigurationPage() {
-  route.push('/administration/configuration/appearance');
+  router.push('/administration/configuration/appearance');
 }
 
 function gotoPeripheralsConfigurationPage() {
-  route.push('/administration/configuration/peripherals');
+  router.push('/administration/configuration/peripherals');
 }
 
 function gotoExchangeConfigurationPage() {
-  route.push('/administration/configuration/exchange');
+  router.push('/administration/configuration/exchange');
 }
 
 function gotoAccountPage() {
-  route.push('/account');
+  router.push('/account');
 }
 
 function gotoAccountsPage() {
-  route.push('/administration/accounts');
+  router.push('/administration/accounts');
 }
 
 function gotoBatchPage() {
-  route.push('/administration/batch');
+  router.push('/administration/batch');
 }
 
 function createItem() {
   api
     .post('/api/item')
     .then((response) => {
-      route.push('/administration/configuration/item/' + response.data);
+      router.push('/administration/configuration/item/' + response.data);
       quasar.notify({
         color: 'positive',
         position: 'bottom',
@@ -745,30 +745,7 @@ function createItem() {
 }
 
 function createItemAndStartScanning() {
-  wizzardStore.setStartScanning(true);
-  api
-    .post('/api/item')
-    .then((response) => {
-      route.push('/administration/configuration/item/' + response.data);
-      quasar.notify({
-        color: 'positive',
-        position: 'bottom',
-        message: i18n.t('Common.messages.creating.success', {
-          item: i18n.t('Common.items.item'),
-        }),
-        icon: 'check',
-      });
-    })
-    .catch(() => {
-      quasar.notify({
-        color: 'negative',
-        position: 'bottom',
-        message: i18n.t('Common.messages.creating.failed', {
-          item: i18n.t('Common.items.item'),
-        }),
-        icon: 'report_problem',
-      });
-    });
+  router.push('/wizzard/scanItem');
 }
 
 function changeLocale(selectedLocale: string | null) {

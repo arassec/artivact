@@ -302,6 +302,13 @@ export default {
 
   PeripheralsConfigurationPage: {
     heading: 'Peripherals Configuration',
+    scanPeripherals: 'Scan Peripherals',
+    messages: {
+      scan: {
+        success: 'Scan successful',
+        failed: 'Scan failed',
+      },
+    },
   },
 
   PropertiesConfigurationPage: {
@@ -716,6 +723,8 @@ export default {
   ArtivactPeripheralsConfigurationEditor: {
     description:
       'Configures the peripherals for 3D model creation of the Artivact application.',
+    scanPeripheralsDescription:
+      'You can click the "Scan Peripherals" button below to automatically detect peripherals. Artivact will then try to find connected USB devices, such as turntables or cameras, as well as any installed and supported software. If some software is not found, this may be due to unknown installation paths or untested software versions. You can still configure it manually if needed.',
     turntable: {
       heading: 'Turntable Configuration',
       description:
@@ -1114,6 +1123,15 @@ export default {
     collectionExport: {
       export: 'Building collection export file...',
       failed: 'Operation failed!',
+    },
+    scanPeripherals: {
+      init: 'Scanning peripherals...',
+      scanTurntables: 'Scanning for turntables...',
+      scanCameras: 'Scanning for cameras...',
+      scanImageBackroundRemovers:
+        'Scanning for image background removal support...',
+      scanModelCreators: 'Scanning for photogrammetry software...',
+      scanModelEditors: 'Scanning for 3D model editors...',
     },
   },
 

@@ -1,7 +1,12 @@
 <template>
   <div v-if="peripheralConfigurationRef">
-    <div class="q-mb-lg">
+    <div class="q-mb-md">
       {{ $t('ArtivactPeripheralsConfigurationEditor.description') }}
+    </div>
+    <div class="q-mb-lg">
+      {{
+        $t('ArtivactPeripheralsConfigurationEditor.scanPeripheralsDescription')
+      }}
     </div>
 
     <q-list bordered class="rounded-borders q-mb-lg">
