@@ -11,12 +11,15 @@ import com.arassec.artivact.domain.model.peripheral.configs.PeripheralConfig;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * Adapter that starts the open source tool "Blender 3D" for model editing.
@@ -31,6 +34,7 @@ public class ExternalProgramModelEditorPeripheral extends BasePeripheral impleme
      * Gateway to the operating system.
      */
     private final OsGateway osGateway;
+    private final MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter;
 
     /**
      * {@inheritDoc}
@@ -58,36 +62,18 @@ public class ExternalProgramModelEditorPeripheral extends BasePeripheral impleme
 
     @Override
     public List<PeripheralConfig> scanPeripherals() {
+        List<PeripheralConfig> peripheralConfigs = new ArrayList<>();
+
         if (inUse.get()) {
-            return List.of();
+            return peripheralConfigs;
         }
 
-        if (osGateway.isLinux()) {
-            Path home = Path.of(System.getProperty("user.home"));
-            Optional<Path> optionalBlender = osGateway.scanForDirectory(home, 5, "blender-4.5");
-            if (optionalBlender.isPresent()) {
-                ExternalProgramPeripheralConfig peripheralConfig = new ExternalProgramPeripheralConfig();
-                peripheralConfig.setPeripheralImplementation(PeripheralImplementation.EXTERNAL_PROGRAM_MODEL_EDITOR_PERIPHERAL);
-                peripheralConfig.setLabel("Blender 4.5");
-                peripheralConfig.setCommand(optionalBlender.get().resolve("blender").toAbsolutePath().toString());
-                peripheralConfig.setArguments("--python {projectDir}/utils/Blender/blender-artivact-import.py\n-- {modelDir}");
-                peripheralConfig.setFavourite(true);
-                return List.of(peripheralConfig);
-            }
-        } else if (osGateway.isWindows()) {
-            Path blenderPath = Path.of("C:\\Program Files\\Blender Foundation\\Blender 4.5\\blender.exe");
-            if (osGateway.isExecutable(blenderPath.toAbsolutePath().toString())) {
-                ExternalProgramPeripheralConfig peripheralConfig = new ExternalProgramPeripheralConfig();
-                peripheralConfig.setPeripheralImplementation(PeripheralImplementation.EXTERNAL_PROGRAM_MODEL_EDITOR_PERIPHERAL);
-                peripheralConfig.setLabel("Blender 4.5");
-                peripheralConfig.setCommand(blenderPath.toAbsolutePath().toString());
-                peripheralConfig.setArguments("--python {projectDir}/utils/Blender/blender-artivact-import.py\n-- {modelDir}");
-                peripheralConfig.setFavourite(true);
-                return List.of(peripheralConfig);
-            }
-        }
-
-        return List.of();
+        return Stream.of("4.5", "5.0")
+                .map(this::scanBlender)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(config -> (PeripheralConfig) config)
+                .toList();
     }
 
     /**
@@ -111,6 +97,40 @@ public class ExternalProgramModelEditorPeripheral extends BasePeripheral impleme
         progressMonitor.updateLabelKey("start");
 
         osGateway.execute(command, Arrays.asList(arguments));
+    }
+
+    /**
+     * Scans for Blender 3D as model editor.
+     *
+     * @param version The blender version to search for, e.g. '4.5' or '5.0'.
+     * @return A Blender peripheral configuration if available.
+     */
+    private Optional<ExternalProgramPeripheralConfig> scanBlender(String version) {
+        if (osGateway.isLinux()) {
+            Path home = Path.of(System.getProperty("user.home"));
+            Optional<Path> optionalBlender = osGateway.scanForDirectory(home, 5, "blender-" + version);
+            if (optionalBlender.isPresent()) {
+                ExternalProgramPeripheralConfig peripheralConfig = new ExternalProgramPeripheralConfig();
+                peripheralConfig.setPeripheralImplementation(PeripheralImplementation.EXTERNAL_PROGRAM_MODEL_EDITOR_PERIPHERAL);
+                peripheralConfig.setLabel("Blender " + version);
+                peripheralConfig.setCommand(optionalBlender.get().resolve("blender").toAbsolutePath().toString());
+                peripheralConfig.setArguments("--python {projectDir}/utils/Blender/blender-artivact-import.py\n-- {modelDir}");
+                peripheralConfig.setFavourite(true);
+                return Optional.of(peripheralConfig);
+            }
+        } else if (osGateway.isWindows()) {
+            Path blenderPath = Path.of("C:\\Program Files\\Blender Foundation\\Blender " + version + "\\blender.exe");
+            if (osGateway.isExecutable(blenderPath.toAbsolutePath().toString())) {
+                ExternalProgramPeripheralConfig peripheralConfig = new ExternalProgramPeripheralConfig();
+                peripheralConfig.setPeripheralImplementation(PeripheralImplementation.EXTERNAL_PROGRAM_MODEL_EDITOR_PERIPHERAL);
+                peripheralConfig.setLabel("Blender " + version);
+                peripheralConfig.setCommand(blenderPath.toAbsolutePath().toString());
+                peripheralConfig.setArguments("--python {projectDir}/utils/Blender/blender-artivact-import.py\n-- {modelDir}");
+                peripheralConfig.setFavourite(true);
+                return Optional.of(peripheralConfig);
+            }
+        }
+        return Optional.empty();
     }
 
 }

@@ -12,8 +12,16 @@
       <q-btn
         :label="$t('PeripheralsConfigurationPage.scanPeripherals')"
         color="primary"
-        class="q-mb-lg"
         @click="scanPeripherals()"
+      />
+      <q-btn
+        color="primary"
+        flat
+        dense
+        round
+        class="q-ml-sm"
+        icon="question_mark"
+        @click="showScanDescriptionRef = true"
       />
       <q-btn
         :label="$t('Common.save')"
@@ -22,6 +30,81 @@
         @click="savePeripheralConfiguration()"
       />
     </div>
+
+    <artivact-dialog :dialog-model="showScanDescriptionRef"
+                     :show-close-button="true"
+                     :hide-buttons="true"
+                     :min-width="50"
+                     @close-dialog="showScanDescriptionRef = false">
+      <template #header>
+        {{ $t('PeripheralsConfigurationPage.dialogs.scanDescription.heading') }}
+      </template>
+
+      <template #body>
+        <q-card-section>
+          {{ $t('PeripheralsConfigurationPage.dialogs.scanDescription.description') }}
+        </q-card-section>
+        <q-card-section>
+          <b>{{ $t('PeripheralsConfigurationPage.dialogs.scanDescription.turntables.heading') }}</b>
+          <ul>
+            <li>
+              {{ $t('PeripheralsConfigurationPage.dialogs.scanDescription.turntables.arduino') }}
+            </li>
+          </ul>
+        </q-card-section>
+        <q-card-section>
+          <b>{{ $t('PeripheralsConfigurationPage.dialogs.scanDescription.cameras.heading') }}</b>
+          <ul>
+            <li>
+              {{ $t('PeripheralsConfigurationPage.dialogs.scanDescription.cameras.ptp') }}
+            </li>
+            <li v-if="Platform.is.linux">
+              {{ $t('PeripheralsConfigurationPage.dialogs.scanDescription.cameras.gphoto') }}
+            </li>
+            <li v-if="Platform.is.win">
+              {{ $t('PeripheralsConfigurationPage.dialogs.scanDescription.cameras.digiCamControl') }}
+            </li>
+          </ul>
+        </q-card-section>
+        <q-card-section>
+          <b>{{ $t('PeripheralsConfigurationPage.dialogs.scanDescription.imageBackgroundRemoval.heading') }}</b>
+          <ul>
+            <li>
+              {{ $t('PeripheralsConfigurationPage.dialogs.scanDescription.imageBackgroundRemoval.default') }}
+            </li>
+          </ul>
+        </q-card-section>
+        <q-card-section>
+          <b>{{ $t('PeripheralsConfigurationPage.dialogs.scanDescription.modelCreation.heading') }}</b>
+          <ul>
+            <li>
+              {{ $t('PeripheralsConfigurationPage.dialogs.scanDescription.modelCreation.meshroom') }}
+            </li>
+            <li v-if="Platform.is.linux">
+              {{ $t('PeripheralsConfigurationPage.dialogs.scanDescription.modelCreation.metashapeLinux') }}
+            </li>
+            <li v-if="Platform.is.win">
+              {{ $t('PeripheralsConfigurationPage.dialogs.scanDescription.modelCreation.metashapeWindows') }}
+            </li>
+            <li v-if="Platform.is.win">
+              {{ $t('PeripheralsConfigurationPage.dialogs.scanDescription.modelCreation.realityScanWindows') }}
+            </li>
+          </ul>
+        </q-card-section>
+        <q-card-section>
+          <b>{{ $t('PeripheralsConfigurationPage.dialogs.scanDescription.modelEditing.heading') }}</b>
+          <ul>
+            <li v-if="Platform.is.linux">
+              {{ $t('PeripheralsConfigurationPage.dialogs.scanDescription.modelEditing.blenderLinux') }}
+            </li>
+            <li v-if="Platform.is.win">
+              {{ $t('PeripheralsConfigurationPage.dialogs.scanDescription.modelEditing.blenderWindows') }}
+            </li>
+          </ul>
+        </q-card-section>
+      </template>
+
+    </artivact-dialog>
 
     <artivact-dialog :dialog-model="showUnsavedChangesWarningRef" :warn="true">
       <template #header>
@@ -43,7 +126,7 @@
       </template>
 
       <template #approve>
-        <q-btn :label="$t('Common.ok')" color="primary" @click="leavePage" />
+        <q-btn :label="$t('Common.ok')" color="primary" @click="leavePage"/>
       </template>
     </artivact-dialog>
 
@@ -60,24 +143,23 @@
 
 <script setup lang="ts">
 import ArtivactContent from '../components/ArtivactContent.vue';
-import { api } from '../boot/axios';
-import { useQuasar } from 'quasar';
-import { onMounted, ref, Ref } from 'vue';
+import {api} from '../boot/axios';
+import {Platform, useQuasar} from 'quasar';
+import {onMounted, ref, Ref} from 'vue';
 import ArtivactPeripheralsConfigurationEditor from '../components/ArtivactPeripheralsConfigurationEditor.vue';
-import { useI18n } from 'vue-i18n';
-import { PeripheralsConfiguration } from '../components/artivact-models';
-import { usePeripheralsConfigStore } from '../stores/peripherals';
-import { onBeforeRouteLeave, useRouter } from 'vue-router';
+import {useI18n} from 'vue-i18n';
+import {PeripheralsConfiguration} from '../components/artivact-models';
+import {usePeripheralsConfigStore} from '../stores/peripherals';
+import {onBeforeRouteLeave, useRouter} from 'vue-router';
 import ArtivactDialog from '../components/ArtivactDialog.vue';
 import ArtivactOperationInProgressDialog from '../components/ArtivactOperationInProgressDialog.vue';
-import { useWizzardStore } from '../stores/wizzard';
+import {useWizzardStore} from '../stores/wizzard';
 
 const quasar = useQuasar();
 const i18n = useI18n();
 const router = useRouter();
 
 const wizzardStore = useWizzardStore();
-
 const peripheralsConfigStore = usePeripheralsConfigStore();
 
 const peripheralConfigurationRef: Ref<PeripheralsConfiguration | null> =
@@ -91,6 +173,8 @@ const checkUnsavedChangesRef = ref(true);
 const peripheralStatusOverviewRef = ref(null);
 
 const showOperationInProgressModalRef = ref(false);
+
+const showScanDescriptionRef = ref(false);
 
 function loadPeripheralConfiguration() {
   api
