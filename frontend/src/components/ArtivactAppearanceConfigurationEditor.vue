@@ -280,10 +280,10 @@
                 )
               }}
               <strong>{{
-                $t(
-                  'ArtivactAppearanceConfigurationEditor.list.favicon.description',
-                )
-              }}</strong>
+                  $t(
+                    'ArtivactAppearanceConfigurationEditor.list.favicon.description',
+                  )
+                }}</strong>
               {{
                 $t(
                   'ArtivactAppearanceConfigurationEditor.list.favicon.descriptionSuffix',
@@ -334,7 +334,7 @@
                   'ArtivactAppearanceConfigurationEditor.list.license.description',
                 )
               }}
-              <br class="q-mb-sm" />
+              <br class="q-mb-sm"/>
               {{
                 $t(
                   'ArtivactAppearanceConfigurationEditor.list.license.descriptionSuffix',
@@ -345,10 +345,10 @@
 
           <q-card-section>
             <label>{{
-              $t(
-                'ArtivactAppearanceConfigurationEditor.list.license.card.prefixDescription',
-              )
-            }}</label>
+                $t(
+                  'ArtivactAppearanceConfigurationEditor.list.license.card.prefixDescription',
+                )
+              }}</label>
             <artivact-restricted-translatable-item-editor
               :locales="localeStore.locales"
               :translatable-string="appearanceConfigurationRef.license.prefix"
@@ -360,10 +360,10 @@
               :show-separator="false"
             />
             <label>{{
-              $t(
-                'ArtivactAppearanceConfigurationEditor.list.license.card.licenseDescription',
-              )
-            }}</label>
+                $t(
+                  'ArtivactAppearanceConfigurationEditor.list.license.card.licenseDescription',
+                )
+              }}</label>
             <artivact-restricted-translatable-item-editor
               :locales="localeStore.locales"
               :translatable-string="
@@ -377,10 +377,10 @@
               :show-separator="false"
             />
             <label>{{
-              $t(
-                'ArtivactAppearanceConfigurationEditor.list.license.card.suffixDescription',
-              )
-            }}</label>
+                $t(
+                  'ArtivactAppearanceConfigurationEditor.list.license.card.suffixDescription',
+                )
+              }}</label>
             <artivact-restricted-translatable-item-editor
               :locales="localeStore.locales"
               :translatable-string="appearanceConfigurationRef.license.suffix"
@@ -392,10 +392,10 @@
               :show-separator="false"
             />
             <label>{{
-              $t(
-                'ArtivactAppearanceConfigurationEditor.list.license.card.urlDescription',
-              )
-            }}</label>
+                $t(
+                  'ArtivactAppearanceConfigurationEditor.list.license.card.urlDescription',
+                )
+              }}</label>
             <q-input
               outlined
               v-model="appearanceConfigurationRef.license.licenseUrl"
@@ -413,15 +413,15 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, PropType, ref, Ref, toRef } from 'vue';
-import { AppearanceConfiguration, SelectboxModel } from './artivact-models';
+import {onMounted, PropType, ref, Ref, toRef} from 'vue';
+import {AppearanceConfiguration, SelectboxModel} from './artivact-models';
 import ArtivactThemeColorEditor from '../components/ArtivactThemeColorEditor.vue';
-import { QUploader, useQuasar } from 'quasar';
-import { useI18n } from 'vue-i18n';
-import { useProfilesStore } from '../stores/profiles';
+import {QUploader, useQuasar} from 'quasar';
+import {useI18n} from 'vue-i18n';
+import {useProfilesStore} from '../stores/profiles';
 import ArtivactRestrictedTranslatableItemEditor from '../components/ArtivactRestrictedTranslatableItemEditor.vue';
-import { useLocaleStore } from '../stores/locale';
-import { useMenuStore } from '../stores/menu';
+import {useLocaleStore} from '../stores/locale';
+import {useMenuStore} from '../stores/menu';
 
 const props = defineProps({
   appearanceConfiguration: {

@@ -82,8 +82,9 @@
           @click="openModelDir(index)"
         >
           <q-tooltip>{{
-            $t('ItemModelSetEditor.tooltip.openModel')
-          }}</q-tooltip>
+              $t('ItemModelSetEditor.tooltip.openModel')
+            }}
+          </q-tooltip>
         </q-btn>
         <q-btn
           :disable="!peripheralsConfigStore.isModelEditorSet"
@@ -97,7 +98,7 @@
         >
           <q-tooltip>{{ $t('ItemModelSetEditor.tooltip.edit') }}</q-tooltip>
         </q-btn>
-        <q-space />
+        <q-space/>
         <q-btn
           icon="delete"
           round
@@ -226,10 +227,11 @@
                   @click="transferModel(file, selectedModelSetIndexRef)"
                 >
                   <q-tooltip>{{
-                    $t('ItemModelSetEditor.dialog.details.transfer')
-                  }}</q-tooltip>
+                      $t('ItemModelSetEditor.dialog.details.transfer')
+                    }}
+                  </q-tooltip>
                 </q-btn>
-                <q-space />
+                <q-space/>
               </div>
             </q-card-actions>
           </q-card>
@@ -276,19 +278,14 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, PropType, Ref, ref } from 'vue';
-import {
-  Asset,
-  CreateModelParams,
-  ModelSet,
-  SelectboxModel,
-} from './artivact-models';
-import { api } from '../boot/axios';
-import { useQuasar } from 'quasar';
+import {onMounted, PropType, Ref, ref} from 'vue';
+import {Asset, CreateModelParams, ModelSet, SelectboxModel,} from './artivact-models';
+import {api} from '../boot/axios';
+import {useQuasar} from 'quasar';
 import ArtivactDialog from '../components/ArtivactDialog.vue';
 import ArtivactOperationInProgressDialog from '../components/ArtivactOperationInProgressDialog.vue';
-import { useI18n } from 'vue-i18n';
-import { usePeripheralsConfigStore } from '../stores/peripherals';
+import {useI18n} from 'vue-i18n';
+import {usePeripheralsConfigStore} from '../stores/peripherals';
 
 const props = defineProps({
   itemId: {
@@ -340,9 +337,9 @@ function showModelSetDetails(modelSetIndex: number) {
   api
     .get(
       '/api/item/' +
-        props.itemId +
-        '/media-creation/model-set-files/' +
-        modelSetIndex,
+      props.itemId +
+      '/media-creation/model-set-files/' +
+      modelSetIndex,
     )
     .then((response) => {
       if (response) {
@@ -419,11 +416,11 @@ function editModel() {
   api
     .post(
       '/api/item/' +
-        props.itemId +
-        '/media-creation/edit-model/' +
-        selectedModelSetIndexRef.value +
-        '?modelEditorPeripheralConfigId=' +
-        selectedModelEditorRef.value.value,
+      props.itemId +
+      '/media-creation/edit-model/' +
+      selectedModelSetIndexRef.value +
+      '?modelEditorPeripheralConfigId=' +
+      selectedModelEditorRef.value.value,
     )
     .then((response) => {
       if (response) {
@@ -459,9 +456,9 @@ function transferModel(file: Asset, modelSetIndex: number) {
   api
     .put(
       '/api/item/' +
-        props.itemId +
-        '/media-creation/transfer-model/' +
-        modelSetIndex,
+      props.itemId +
+      '/media-creation/transfer-model/' +
+      modelSetIndex,
       file,
     )
     .then((response) => {
@@ -495,9 +492,9 @@ function deleteModelSet() {
   api
     .delete(
       '/api/item/' +
-        props.itemId +
-        '/media-creation/model-set/' +
-        selectedModelSetIndexRef.value,
+      props.itemId +
+      '/media-creation/model-set/' +
+      selectedModelSetIndexRef.value,
     )
     .then((response) => {
       if (response) {

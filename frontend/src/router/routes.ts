@@ -1,11 +1,11 @@
-import { RouteRecordRaw } from 'vue-router';
-import { api } from '../boot/axios';
-import { setCssVar, useQuasar } from 'quasar';
-import { useUserdataStore } from '../stores/userdata';
-import { Profiles } from '../components/artivact-models';
-import { useProfilesStore } from '../stores/profiles';
-import { useApplicationSettingsStore } from '../stores/application-settings';
-import { useLocaleStore } from '../stores/locale';
+import {RouteRecordRaw} from 'vue-router';
+import {api} from '../boot/axios';
+import {setCssVar, useQuasar} from 'quasar';
+import {useUserdataStore} from '../stores/userdata';
+import {Profiles} from '../components/artivact-models';
+import {useProfilesStore} from '../stores/profiles';
+import {useApplicationSettingsStore} from '../stores/application-settings';
+import {useLocaleStore} from '../stores/locale';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -108,7 +108,7 @@ const routes: RouteRecordRaw[] = [
         });
     },
     children: [
-      { path: '', component: () => import('../pages/IndexPage.vue') },
+      {path: '', component: () => import('../pages/IndexPage.vue')},
       {
         path: '/page/:pageId?',
         component: () => import('../pages/EditablePage.vue'),

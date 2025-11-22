@@ -59,13 +59,13 @@
 </template>
 
 <script setup lang="ts">
-import { PropType, toRef } from 'vue';
+import {PropType, toRef} from 'vue';
 import ArtivactContent from '../../components/ArtivactContent.vue';
-import { TranslatableString } from '../artivact-models';
-import { useLocaleStore } from '../../stores/locale';
+import {TranslatableString} from '../artivact-models';
+import {useLocaleStore} from '../../stores/locale';
 import ArtivactRestrictionsEditor from '../ArtivactRestrictionsEditor.vue';
 import ArtivactRestrictedTranslatableItemEditor from '../ArtivactRestrictedTranslatableItemEditor.vue';
-import { useUserdataStore } from '../../stores/userdata';
+import {useUserdataStore} from '../../stores/userdata';
 
 const props = defineProps({
   inEditMode: {

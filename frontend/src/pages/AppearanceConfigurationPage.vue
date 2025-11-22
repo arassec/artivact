@@ -1,7 +1,7 @@
 <template>
   <ArtivactContent>
     <div class="full-width">
-      <h1 class="av-text-h1">{{$t('AppearanceConfigurationPage.heading')}}</h1>
+      <h1 class="av-text-h1">{{ $t('AppearanceConfigurationPage.heading') }}</h1>
       <artivact-appearance-configuration-editor
         :appearance-configuration="appearanceConfigurationRef"
         @color-changed="updateColor"
@@ -20,14 +20,14 @@
 
 <script setup lang="ts">
 import ArtivactContent from 'components/ArtivactContent.vue';
-import { api } from 'boot/axios';
-import { setCssVar, useQuasar } from 'quasar';
-import { onMounted, ref, Ref } from 'vue';
-import { AppearanceConfiguration } from 'components/artivact-models';
+import {api} from 'boot/axios';
+import {setCssVar, useQuasar} from 'quasar';
+import {onMounted, ref, Ref} from 'vue';
+import {AppearanceConfiguration} from 'components/artivact-models';
 import ArtivactAppearanceConfigurationEditor from 'components/ArtivactAppearanceConfigurationEditor.vue';
-import { useLocaleStore } from 'stores/locale';
-import { useI18n } from 'vue-i18n';
-import { useApplicationSettingsStore } from 'stores/application-settings';
+import {useLocaleStore} from 'stores/locale';
+import {useI18n} from 'vue-i18n';
+import {useApplicationSettingsStore} from 'stores/application-settings';
 
 const quasar = useQuasar();
 const i18n = useI18n();
@@ -48,7 +48,7 @@ function loadAppearanceConfiguration() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.configuration.appearance')}),
+        message: i18n.t('Common.messages.loading.failed', {item: i18n.t('Common.items.configuration.appearance')}),
         icon: 'report_problem',
       });
     });
@@ -75,7 +75,7 @@ function saveAppearanceConfiguration() {
             quasar.notify({
               color: 'negative',
               position: 'bottom',
-              message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.locales')}),
+              message: i18n.t('Common.messages.loading.failed', {item: i18n.t('Common.items.locales')}),
               icon: 'report_problem',
             });
           });
@@ -108,13 +108,16 @@ function saveAppearanceConfiguration() {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: i18n.t('Common.messages.saving.success', { item: i18n.t('Common.items.configuration.appearance')}),
+        message: i18n.t('Common.messages.saving.success', {item: i18n.t('Common.items.configuration.appearance')}),
         icon: 'check',
         attrs: {
           'data-test': 'artivact-notify-success'
         },
         actions: [
-          { icon: 'close', color: 'white', round: true, flat: true, handler: () => { /* ... */ } }
+          {
+            icon: 'close', color: 'white', round: true, flat: true, handler: () => { /* ... */
+            }
+          }
         ],
         timeout: 15000
       });
@@ -123,7 +126,7 @@ function saveAppearanceConfiguration() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.saving.failed', { item: i18n.t('Common.items.configuration.appearance')}),
+        message: i18n.t('Common.messages.saving.failed', {item: i18n.t('Common.items.configuration.appearance')}),
         icon: 'report_problem'
       });
     });

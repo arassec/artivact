@@ -9,7 +9,7 @@
     @stop-editing="editingRef = false"
   >
     <template v-slot:widget-content>
-      <q-space />
+      <q-space/>
       <div class="row full-width">
         <div
           v-for="(buttonConfig, index) in widgetDataRef.buttonConfigs"
@@ -20,7 +20,7 @@
           <artivact-button :config="buttonConfig" :disabled="inEditMode"/>
         </div>
       </div>
-      <q-space />
+      <q-space/>
     </template>
 
     <template v-slot:widget-editor>
@@ -62,7 +62,7 @@
               </q-item-section>
             </template>
 
-            <artivact-button-editor :config="buttonConfig" class="q-mt-md" />
+            <artivact-button-editor :config="buttonConfig" class="q-mt-md"/>
           </q-expansion-item>
         </q-list>
 

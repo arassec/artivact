@@ -1,8 +1,8 @@
 import * as electron from 'electron';
-import { app, BrowserWindow } from 'electron';
+import {app, BrowserWindow} from 'electron';
 import path from 'node:path';
 import os from 'node:os';
-import { fileURLToPath } from 'node:url';
+import {fileURLToPath} from 'node:url';
 import * as http from 'http';
 import * as child_process from 'node:child_process';
 
@@ -74,9 +74,10 @@ async function waitForBackend() {
     }
   }
 }
+
 // Artivact: ---
 
-async function createWindow () {
+async function createWindow() {
   /**
    * Initial window options
    */

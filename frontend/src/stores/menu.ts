@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia';
+import {defineStore} from 'pinia';
 import {Menu} from 'components/artivact-models';
 
 export const useMenuStore = defineStore('menu', {
@@ -7,13 +7,13 @@ export const useMenuStore = defineStore('menu', {
   }),
 
   getters: {
-    menus (state) {
+    menus(state) {
       return state.availableMenus;
     }
   },
 
   actions: {
-    setAvailableMenus (availableMenus: Menu[]) {
+    setAvailableMenus(availableMenus: Menu[]) {
       this.availableMenus.length = 0;
       availableMenus.forEach(availableMenu => {
         this.availableMenus.push(availableMenu);

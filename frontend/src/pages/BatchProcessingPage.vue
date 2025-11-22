@@ -81,7 +81,7 @@
   </artivact-content>
 
   <artivact-content>
-    <q-separator />
+    <q-separator/>
 
     <div class="full-width q-mt-lg">
       <q-btn
@@ -139,7 +139,7 @@
 import ArtivactContent from '../components/ArtivactContent.vue';
 import ArtivactOperationInProgressDialog from '../components/ArtivactOperationInProgressDialog.vue';
 import ArtivactDialog from '../components/ArtivactDialog.vue';
-import { onMounted, Ref, ref } from 'vue';
+import {onMounted, Ref, ref} from 'vue';
 import {
   BaseTranslatableRestrictedObject,
   BatchProcessingParameters,
@@ -148,11 +148,11 @@ import {
   TagsConfiguration,
   TranslatableString,
 } from '../components/artivact-models';
-import { api } from '../boot/axios';
-import { useQuasar } from 'quasar';
-import { useI18n } from 'vue-i18n';
+import {api} from '../boot/axios';
+import {useQuasar} from 'quasar';
+import {useI18n} from 'vue-i18n';
 import ArtivactItemSearchWidget from '../components/widgets/ArtivactItemSearchWidget.vue';
-import { ItemSearchWidget } from '../components/widgets/artivact-widget-models';
+import {ItemSearchWidget} from '../components/widgets/artivact-widget-models';
 
 const quasar = useQuasar();
 const i18n = useI18n();

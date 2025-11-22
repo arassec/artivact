@@ -1,8 +1,8 @@
-import { createI18n } from 'vue-i18n';
+import {createI18n} from 'vue-i18n';
 import messages from 'src/i18n';
-import { useLocaleStore } from 'src/stores/locale';
+import {useLocaleStore} from 'src/stores/locale';
 
-export default ({ app }) => {
+export default ({app}) => {
   const i18n = createI18n({
     legacy: false,
     globalInjection: true,

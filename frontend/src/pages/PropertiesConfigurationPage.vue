@@ -54,7 +54,7 @@
           :locales="localeStore.locales"
         />
 
-        <q-separator class="q-mt-md q-mb-md" />
+        <q-separator class="q-mt-md q-mb-md"/>
 
         <q-btn
           data-test="save-properties-button"
@@ -105,13 +105,13 @@
 </template>
 
 <script setup lang="ts">
-import { useQuasar } from 'quasar';
-import { onMounted, ref } from 'vue';
-import { api } from '../boot/axios';
+import {useQuasar} from 'quasar';
+import {onMounted, ref} from 'vue';
+import {api} from '../boot/axios';
 import ArtivactContent from '../components/ArtivactContent.vue';
-import { useLocaleStore } from '../stores/locale';
+import {useLocaleStore} from '../stores/locale';
 import ArtivactPropertiesConfigurationEditor from '../components/ArtivactPropertiesConfigurationEditor.vue';
-import { useI18n } from 'vue-i18n';
+import {useI18n} from 'vue-i18n';
 
 const quasar = useQuasar();
 const i18n = useI18n();

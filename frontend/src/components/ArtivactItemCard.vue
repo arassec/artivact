@@ -3,8 +3,8 @@
     <router-link :to="'/item/' + artivactCardData.itemId" @click="addAnchorToBreadcrumbs">
       <q-card class="bg-info card">
         <q-img v-if="artivactCardData.imageUrl"
-          :src="artivactCardData.imageUrl + '?imageSize=ITEM_CARD'"
-          class="card-image"
+               :src="artivactCardData.imageUrl + '?imageSize=ITEM_CARD'"
+               class="card-image"
         >
           <div class="absolute-bottom text-h6" v-if="artivactCardData.title">
             {{
@@ -34,8 +34,8 @@
   <template v-else>
     <q-card class="bg-info card">
       <q-img v-if="artivactCardData.imageUrl"
-        :src="artivactCardData.imageUrl + '?imageSize=ITEM_CARD'"
-        class="card-image"
+             :src="artivactCardData.imageUrl + '?imageSize=ITEM_CARD'"
+             class="card-image"
       >
         <div class="absolute-bottom text-h6" v-if="artivactCardData.title">
           {{ artivactCardData.title ? translate(artivactCardData.title) : "?" }}

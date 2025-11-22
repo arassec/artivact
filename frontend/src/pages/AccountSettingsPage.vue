@@ -2,12 +2,12 @@
   <ArtivactContent>
     <div class="col">
       <div>
-        <h1 class="av-text-h1">{{$t('AccountSettingsPage.heading')}}</h1>
-        <div class="q-mb-lg">{{$t('AccountSettingsPage.description')}}</div>
+        <h1 class="av-text-h1">{{ $t('AccountSettingsPage.heading') }}</h1>
+        <div class="q-mb-lg">{{ $t('AccountSettingsPage.description') }}</div>
 
         <q-card class="q-mb-lg">
           <q-card-section class="bg-primary text-white">
-            <div class="text-h6">{{$t('AccountSettingsPage.card.heading')}}</div>
+            <div class="text-h6">{{ $t('AccountSettingsPage.card.heading') }}</div>
           </q-card-section>
 
           <q-card-section>
@@ -115,7 +115,7 @@ function loadAccount() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.account')}),
+        message: i18n.t('Common.messages.loading.failed', {item: i18n.t('Common.items.account')}),
         icon: 'report_problem',
       });
     });
@@ -151,7 +151,7 @@ function saveAccount() {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: i18n.t('Common.messages.saving.success', { item: i18n.t('Common.items.account')}),
+        message: i18n.t('Common.messages.saving.success', {item: i18n.t('Common.items.account')}),
         icon: 'check',
       });
     })
@@ -159,7 +159,7 @@ function saveAccount() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.saving.failed', { item: i18n.t('Common.items.account')}),
+        message: i18n.t('Common.messages.saving.failed', {item: i18n.t('Common.items.account')}),
         icon: 'report_problem',
       });
     });

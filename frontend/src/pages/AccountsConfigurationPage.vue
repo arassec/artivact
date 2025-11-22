@@ -1,13 +1,13 @@
 <template>
   <ArtivactContent>
     <div class="col">
-      <h1 class="av-text-h1">{{$t("AccountsConfigurationPage.heading")}}</h1>
+      <h1 class="av-text-h1">{{ $t("AccountsConfigurationPage.heading") }}</h1>
       <div class="q-mb-lg">
-        {{$t("AccountsConfigurationPage.description")}}
+        {{ $t("AccountsConfigurationPage.description") }}
       </div>
       <q-card>
         <q-card-section class="bg-primary text-white">
-          <div class="text-h6">{{$t("AccountsConfigurationPage.card.heading")}}</div>
+          <div class="text-h6">{{ $t("AccountsConfigurationPage.card.heading") }}</div>
         </q-card-section>
 
         <q-list class="rounded-borders q-mb-lg" v-if="accountsRef">
@@ -29,7 +29,7 @@
                     editAccountRef = account;
                     showEditModalRef = true;
                   ">
-                  <q-tooltip>{{$t("AccountsConfigurationPage.card.button.tooltip.edit")}}</q-tooltip>
+                  <q-tooltip>{{ $t("AccountsConfigurationPage.card.button.tooltip.edit") }}</q-tooltip>
                 </q-btn>
                 <q-btn
                   round
@@ -41,7 +41,7 @@
                     deleteAccountIdRef = account.id;
                     showDeleteModalRef = true;
                   ">
-                  <q-tooltip>{{$t("AccountsConfigurationPage.card.button.tooltip.delete")}}</q-tooltip>
+                  <q-tooltip>{{ $t("AccountsConfigurationPage.card.button.tooltip.delete") }}</q-tooltip>
                 </q-btn>
               </div>
             </q-item>
@@ -60,7 +60,7 @@
 
     <artivact-dialog :dialog-model="showCreateModalRef">
       <template v-slot:header>
-        {{$t("AccountsConfigurationPage.dialog.create.heading")}}
+        {{ $t("AccountsConfigurationPage.dialog.create.heading") }}
       </template>
 
       <template v-slot:body>
@@ -142,7 +142,7 @@
 
     <artivact-dialog :dialog-model="showEditModalRef">
       <template v-slot:header>
-        {{$t('AccountsConfigurationPage.dialog.edit.heading')}}
+        {{ $t('AccountsConfigurationPage.dialog.edit.heading') }}
       </template>
 
       <template v-slot:body>
@@ -224,12 +224,12 @@
 
     <artivact-dialog :dialog-model="showDeleteModalRef" :warn="true">
       <template v-slot:header>
-        {{$t('AccountsConfigurationPage.dialog.delete.heading')}}
+        {{ $t('AccountsConfigurationPage.dialog.delete.heading') }}
       </template>
 
       <template v-slot:body>
         <q-card-section>
-          {{$t('AccountsConfigurationPage.dialog.delete.description')}}
+          {{ $t('AccountsConfigurationPage.dialog.delete.description') }}
         </q-card-section>
       </template>
 
@@ -289,7 +289,7 @@ function loadAccounts() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.accounts')}),
+        message: i18n.t('Common.messages.loading.failed', {item: i18n.t('Common.items.accounts')}),
         icon: 'report_problem',
       });
     });
@@ -332,7 +332,7 @@ function createAccount(): boolean {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: i18n.t('Common.messages.creating.success', { item: i18n.t('Common.items.account')}),
+        message: i18n.t('Common.messages.creating.success', {item: i18n.t('Common.items.account')}),
         icon: 'done',
       });
     })
@@ -340,7 +340,7 @@ function createAccount(): boolean {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.creating.failure', { item: i18n.t('Common.items.account')}),
+        message: i18n.t('Common.messages.creating.failure', {item: i18n.t('Common.items.account')}),
         icon: 'report_problem',
       });
     });
@@ -369,7 +369,7 @@ function updateAccount(): boolean {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: i18n.t('Common.messages.saving.success', { item: i18n.t('Common.items.account')}),
+        message: i18n.t('Common.messages.saving.success', {item: i18n.t('Common.items.account')}),
         icon: 'done',
       });
     })
@@ -377,7 +377,7 @@ function updateAccount(): boolean {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.saving.failure', { item: i18n.t('Common.items.account')}),
+        message: i18n.t('Common.messages.saving.failure', {item: i18n.t('Common.items.account')}),
         icon: 'report_problem',
       });
     });
@@ -394,7 +394,7 @@ function deleteAccount(id: number) {
       quasar.notify({
         color: 'positive',
         position: 'bottom',
-        message: i18n.t('Common.messages.deleting.success', { item: i18n.t('Common.items.account')}),
+        message: i18n.t('Common.messages.deleting.success', {item: i18n.t('Common.items.account')}),
         icon: 'check',
       });
     })
@@ -402,7 +402,7 @@ function deleteAccount(id: number) {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.deleting.failed', { item: i18n.t('Common.items.account')}),
+        message: i18n.t('Common.messages.deleting.failed', {item: i18n.t('Common.items.account')}),
         icon: 'report_problem',
       });
     });

@@ -176,18 +176,15 @@
 <script setup lang="ts">
 import ArtivactContent from '../components/ArtivactContent.vue';
 import ArtivactExchangeConfigurationEditor from '../components/ArtivactExchangeConfigurationEditor.vue';
-import { QUploader, useQuasar } from 'quasar';
-import { onMounted, ref, Ref } from 'vue';
-import {
-  CollectionExport,
-  ExchangeConfiguration,
-} from '../components/artivact-models';
-import { api } from '../boot/axios';
-import { useI18n } from 'vue-i18n';
-import { useApplicationSettingsStore } from '../stores/application-settings';
+import {QUploader, useQuasar} from 'quasar';
+import {onMounted, ref, Ref} from 'vue';
+import {CollectionExport, ExchangeConfiguration,} from '../components/artivact-models';
+import {api} from '../boot/axios';
+import {useI18n} from 'vue-i18n';
+import {useApplicationSettingsStore} from '../stores/application-settings';
 import ArtivactOperationInProgressDialog from '../components/ArtivactOperationInProgressDialog.vue';
 import ArtivactDialog from '../components/ArtivactDialog.vue';
-import { useMenuStore } from '../stores/menu';
+import {useMenuStore} from '../stores/menu';
 import ArtivactCollectionExportEditor from '../components/ArtivactCollectionExportEditor.vue';
 
 const quasar = useQuasar();

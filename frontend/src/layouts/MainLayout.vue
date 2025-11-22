@@ -8,14 +8,14 @@
     >
       <q-toolbar class="q-pl-xs page-toolbar">
         <q-toolbar-title class="q-mt-xs q-mb-xs">
-          <artivact-menu-bar />
+          <artivact-menu-bar/>
         </q-toolbar-title>
 
         <label v-if="localeStore.selectedLocale !== null" class="q-mr-sm">
           {{ localeStore.selectedLocale }}
         </label>
 
-        <artivact-settings-bar />
+        <artivact-settings-bar/>
 
         <router-link
           to="/user-login"
@@ -62,7 +62,7 @@
 
     <q-page-container>
       <q-page class="bg-accent" data-test="artivact-main-page">
-        <router-view :key="$route.fullPath" />
+        <router-view :key="$route.fullPath"/>
       </q-page>
     </q-page-container>
   </q-layout>

@@ -10,7 +10,7 @@
 
       <template v-slot:body>
         <q-card-section>
-          <q-spinner size="2em" class="q-mr-md" />
+          <q-spinner size="2em" class="q-mr-md"/>
           {{ $t(progressMonitorRef?.key) }}
           <template v-if="progressMonitorRef.targetAmount">
             {{
@@ -39,7 +39,7 @@
       <template v-slot:body>
         <q-card-section>
           {{ $t(progressMonitorRef?.key) }}
-          <q-separator class="q-mt-lg q-mb-xs" />
+          <q-separator class="q-mt-lg q-mb-xs"/>
           <q-expansion-item
             :v-model="showDetailsRef"
             :label="$t('ArtivactOperationInProgressDialog.details')"
@@ -55,12 +55,12 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, toRef } from 'vue';
-import { useQuasar } from 'quasar';
+import {onMounted, ref, toRef} from 'vue';
+import {useQuasar} from 'quasar';
 import ArtivactDialog from '../components/ArtivactDialog.vue';
-import { OperationProgress } from './artivact-models';
-import { api } from '../boot/axios';
-import { useI18n } from 'vue-i18n';
+import {OperationProgress} from './artivact-models';
+import {api} from '../boot/axios';
+import {useI18n} from 'vue-i18n';
 
 const props = defineProps({
   dialogModel: {

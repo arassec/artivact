@@ -78,8 +78,9 @@
       v-if="restrictedItemRef && !showDetailsRef"
     >
       <q-tooltip>{{
-        $t('ArtivactRestrictedTranslatableItemEditor.tooltip.more')
-      }}</q-tooltip>
+          $t('ArtivactRestrictedTranslatableItemEditor.tooltip.more')
+        }}
+      </q-tooltip>
     </q-btn>
     <q-btn
       rounded
@@ -95,8 +96,9 @@
       v-if="restrictedItem && showDetailsRef"
     >
       <q-tooltip>{{
-        $t('ArtivactRestrictedTranslatableItemEditor.tooltip.less')
-      }}</q-tooltip>
+          $t('ArtivactRestrictedTranslatableItemEditor.tooltip.less')
+        }}
+      </q-tooltip>
     </q-btn>
 
     <div v-if="restrictedItem" v-show="showDetailsRef">
@@ -112,17 +114,17 @@
       <!-- Slot for additional editors -->
       <slot></slot>
 
-      <div v-if="!showSeparator" class="q-mb-md" />
+      <div v-if="!showSeparator" class="q-mb-md"/>
     </div>
-    <q-separator class="q-mt-xs q-mb-lg" v-if="showSeparator" />
+    <q-separator class="q-mt-xs q-mb-lg" v-if="showSeparator"/>
   </div>
 </template>
 
 <script setup lang="ts">
-import { PropType, ref, toRef } from 'vue';
+import {PropType, ref, toRef} from 'vue';
 import ArtivactRestrictionsEditor from '../components/ArtivactRestrictionsEditor.vue';
-import { BaseRestrictedObject, TranslatableString } from './artivact-models';
-import { useLocaleStore } from '../stores/locale';
+import {BaseRestrictedObject, TranslatableString} from './artivact-models';
+import {useLocaleStore} from '../stores/locale';
 
 const props = defineProps({
   label: {

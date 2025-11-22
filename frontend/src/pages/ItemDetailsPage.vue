@@ -19,8 +19,9 @@
             @click="confirmDeleteRef = true"
           >
             <q-tooltip>{{
-              $t('ItemDetailsPage.button.tooltip.delete')
-            }}</q-tooltip>
+                $t('ItemDetailsPage.button.tooltip.delete')
+              }}
+            </q-tooltip>
           </q-btn>
           <!-- DOWNLOAD BUTTON -->
           <q-btn
@@ -32,8 +33,9 @@
             class="q-mr-sm main-nav-button"
           >
             <q-tooltip>{{
-              $t('ItemDetailsPage.button.tooltip.download')
-            }}</q-tooltip>
+                $t('ItemDetailsPage.button.tooltip.download')
+              }}
+            </q-tooltip>
           </q-btn>
           <!-- SYNC UP BUTTON -->
           <q-btn
@@ -46,8 +48,9 @@
             @click="synchronizeUp()"
           >
             <q-tooltip>{{
-              $t('ItemDetailsPage.button.tooltip.sync')
-            }}</q-tooltip>
+                $t('ItemDetailsPage.button.tooltip.sync')
+              }}
+            </q-tooltip>
           </q-btn>
           <!-- EDIT ITEM BUTTON -->
           <router-link
@@ -61,8 +64,9 @@
               class="main-nav-button"
             >
               <q-tooltip>{{
-                $t('ItemDetailsPage.button.tooltip.edit')
-              }}</q-tooltip>
+                  $t('ItemDetailsPage.button.tooltip.edit')
+                }}
+              </q-tooltip>
             </q-btn>
           </router-link>
         </q-form>
@@ -87,28 +91,28 @@
               "
               style="text-decoration: underline"
             />
-            <q-breadcrumbs-el v-else :label="breadcrumb.label" />
+            <q-breadcrumbs-el v-else :label="breadcrumb.label"/>
           </template>
         </q-breadcrumbs>
       </div>
 
       <div class="col-12">
-        <div class="col q-mt-xl lt-md" />
+        <div class="col q-mt-xl lt-md"/>
         <!-- Space on mobile resolution -->
 
         <!-- TITLE -->
         <div v-if="itemDataDetailsRef.title.translatedValue" class="q-mb-sm">
           <div class="gt-xs">
             <label class="title">{{
-              translate(itemDataDetailsRef.title)
-            }}</label>
+                translate(itemDataDetailsRef.title)
+              }}</label>
           </div>
           <div class="lt-sm">
             <label class="title-small">{{
-              translate(itemDataDetailsRef.title)
-            }}</label>
+                translate(itemDataDetailsRef.title)
+              }}</label>
           </div>
-          <q-separator />
+          <q-separator/>
         </div>
 
         <!-- TAGS -->
@@ -209,21 +213,21 @@
 </template>
 
 <script setup lang="ts">
-import { useQuasar } from 'quasar';
-import { api } from '../boot/axios';
-import { useRoute, useRouter } from 'vue-router';
-import { onMounted, ref } from 'vue';
-import { useUserdataStore } from '../stores/userdata';
+import {useQuasar} from 'quasar';
+import {api} from '../boot/axios';
+import {useRoute, useRouter} from 'vue-router';
+import {onMounted, ref} from 'vue';
+import {useUserdataStore} from '../stores/userdata';
 import ArtivactContent from '../components/ArtivactContent.vue';
-import { useBreadcrumbsStore } from '../stores/breadcrumbs';
-import { translate } from '../components/artivact-utils';
+import {useBreadcrumbsStore} from '../stores/breadcrumbs';
+import {translate} from '../components/artivact-utils';
 import ArtivactPropertyCategoryViewer from '../components/ArtivactPropertyCategoryViewer.vue';
 import ArtivactOperationInProgressDialog from '../components/ArtivactOperationInProgressDialog.vue';
 import ArtivactDialog from '../components/ArtivactDialog.vue';
-import { useI18n } from 'vue-i18n';
+import {useI18n} from 'vue-i18n';
 import ArtivactItemMediaCarousel from '../components/ArtivactItemMediaCarousel.vue';
-import { useProfilesStore } from '../stores/profiles';
-import { useApplicationSettingsStore } from '../stores/application-settings';
+import {useProfilesStore} from '../stores/profiles';
+import {useApplicationSettingsStore} from '../stores/application-settings';
 
 const quasar = useQuasar();
 const route = useRoute();

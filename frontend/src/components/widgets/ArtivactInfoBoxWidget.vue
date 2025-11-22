@@ -9,18 +9,19 @@
     @stop-editing="editingRef = false"
   >
     <template v-slot:widget-content>
-      <q-space />
+      <q-space/>
 
       <q-card :class="infoBoxStyle">
         <q-card-section class="text-white" v-if="widgetDataRef.heading">
           <div class="av-text-h2">{{ translate(widgetDataRef.heading) }}</div>
           <template v-if="widgetDataRef.content">{{
-            translate(widgetDataRef.content)
-          }}</template>
+              translate(widgetDataRef.content)
+            }}
+          </template>
         </q-card-section>
       </q-card>
 
-      <q-space />
+      <q-space/>
     </template>
 
     <template v-slot:widget-editor>
@@ -62,11 +63,11 @@
 </template>
 
 <script setup lang="ts">
-import { InfoBoxWidgetData } from './artivact-widget-models';
-import { computed, PropType, ref, toRef } from 'vue';
-import { useLocaleStore } from '../../stores/locale';
+import {InfoBoxWidgetData} from './artivact-widget-models';
+import {computed, PropType, ref, toRef} from 'vue';
+import {useLocaleStore} from '../../stores/locale';
 import ArtivactRestrictedTranslatableItemEditor from '../../components/ArtivactRestrictedTranslatableItemEditor.vue';
-import { translate } from '../artivact-utils';
+import {translate} from '../artivact-utils';
 import ArtivactWidgetTemplate from '../../components/widgets/ArtivactWidgetTemplate.vue';
 
 const props = defineProps({

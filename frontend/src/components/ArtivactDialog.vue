@@ -12,9 +12,9 @@
       >
         <div class="row">
           <div class="text-h6" :class="showCloseButton ? '' : 'full-width'">
-            <slot name="header" />
+            <slot name="header"/>
           </div>
-          <q-space />
+          <q-space/>
           <q-btn
             v-if="showCloseButton"
             icon="close"
@@ -27,15 +27,15 @@
       </q-card-section>
 
       <div class="fit">
-        <slot name="body" />
+        <slot name="body"/>
       </div>
 
-      <q-separator class="q-mr-sm q-ml-sm" v-if="!hideButtons" />
+      <q-separator class="q-mr-sm q-ml-sm" v-if="!hideButtons"/>
 
       <q-card-actions v-if="!hideButtons">
-        <slot name="cancel" />
-        <q-space />
-        <slot name="approve" />
+        <slot name="cancel"/>
+        <q-space/>
+        <slot name="approve"/>
       </q-card-actions>
     </q-card>
 
@@ -47,9 +47,9 @@
       >
         <div class="row">
           <div class="text-h6">
-            <slot name="header" />
+            <slot name="header"/>
           </div>
-          <q-space />
+          <q-space/>
           <q-btn
             v-if="showCloseButton"
             icon="close"
@@ -62,22 +62,22 @@
       </q-card-section>
 
       <div class="fit">
-        <slot name="body" />
+        <slot name="body"/>
       </div>
 
-      <q-separator class="q-mr-sm q-ml-sm" v-if="!hideButtons" />
+      <q-separator class="q-mr-sm q-ml-sm" v-if="!hideButtons"/>
 
       <q-card-actions v-if="!hideButtons">
-        <slot name="cancel" />
-        <q-space />
-        <slot name="approve" />
+        <slot name="cancel"/>
+        <q-space/>
+        <slot name="approve"/>
       </q-card-actions>
     </q-card>
   </q-dialog>
 </template>
 
 <script setup lang="ts">
-import { toRef } from 'vue';
+import {toRef} from 'vue';
 
 const props = defineProps({
   dialogModel: {

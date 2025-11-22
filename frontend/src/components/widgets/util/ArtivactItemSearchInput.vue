@@ -112,7 +112,7 @@ function loadTagsConfiguration() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.tags') }),
+        message: i18n.t('Common.messages.loading.failed', {item: i18n.t('Common.items.tags')}),
         icon: 'report_problem',
       });
     });
@@ -128,7 +128,7 @@ function loadPropertyConfiguration() {
       quasar.notify({
         color: 'negative',
         position: 'bottom',
-        message: i18n.t('Common.messages.loading.failed', { item: i18n.t('Common.items.properties') }),
+        message: i18n.t('Common.messages.loading.failed', {item: i18n.t('Common.items.properties')}),
         icon: 'report_problem',
       });
     });

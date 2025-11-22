@@ -1,5 +1,5 @@
-import { defineStore } from 'pinia';
-import { ApplicationSettings, ColorTheme, License, Profiles } from '../components/artivact-models';
+import {defineStore} from 'pinia';
+import {ApplicationSettings, ColorTheme, License, Profiles} from '../components/artivact-models';
 
 export const useApplicationSettingsStore = defineStore('applicationSettings', {
   state: () => ({

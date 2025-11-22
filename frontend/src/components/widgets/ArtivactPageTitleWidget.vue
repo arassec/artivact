@@ -92,12 +92,12 @@
 </template>
 
 <script setup lang="ts">
-import { PropType, ref, toRef } from 'vue';
-import { PageTitleWidgetData } from './artivact-widget-models';
-import { QUploader } from 'quasar';
+import {PropType, ref, toRef} from 'vue';
+import {PageTitleWidgetData} from './artivact-widget-models';
+import {QUploader} from 'quasar';
 import ArtivactRestrictedTranslatableItemEditor from '../../components/ArtivactRestrictedTranslatableItemEditor.vue';
-import { useLocaleStore } from '../../stores/locale';
-import { translate } from '../artivact-utils';
+import {useLocaleStore} from '../../stores/locale';
+import {translate} from '../artivact-utils';
 import ArtivactWidgetTemplate from '../../components/widgets/ArtivactWidgetTemplate.vue';
 import ArtivactContent from '../ArtivactContent.vue';
 

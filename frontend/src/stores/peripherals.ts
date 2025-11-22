@@ -1,5 +1,5 @@
-import { defineStore } from 'pinia';
-import { PeripheralsConfiguration } from '../components/artivact-models';
+import {defineStore} from 'pinia';
+import {PeripheralsConfiguration} from '../components/artivact-models';
 
 export const usePeripheralsConfigStore = defineStore('peripheralsConfig', {
   state: () => ({

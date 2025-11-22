@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia';
+import {defineStore} from 'pinia';
 import {BreadcrumbData} from '../components/artivact-models';
 
 export const useBreadcrumbsStore = defineStore('breadcrumbs', {
@@ -7,7 +7,7 @@ export const useBreadcrumbsStore = defineStore('breadcrumbs', {
   }),
 
   getters: {
-    breadcrumbs (state) {
+    breadcrumbs(state) {
       return state.breadcrumbsData;
     },
   },
@@ -15,15 +15,15 @@ export const useBreadcrumbsStore = defineStore('breadcrumbs', {
   actions: {
     addAnchor(anchor: string) {
       if (this.breadcrumbsData.length > 0) {
-        this.breadcrumbsData[this.breadcrumbsData.length -1].anchor = '#' + anchor
+        this.breadcrumbsData[this.breadcrumbsData.length - 1].anchor = '#' + anchor
       }
     },
-    addBreadcrumb (breadcrumbData: BreadcrumbData) {
-      if (this.breadcrumbsData[this.breadcrumbsData.length -1] !== breadcrumbData) {
+    addBreadcrumb(breadcrumbData: BreadcrumbData) {
+      if (this.breadcrumbsData[this.breadcrumbsData.length - 1] !== breadcrumbData) {
         this.breadcrumbsData.push(breadcrumbData);
       }
     },
-    resetBreadcrumbs () {
+    resetBreadcrumbs() {
       this.breadcrumbsData.length = 0;
       this.anchor = '';
     },

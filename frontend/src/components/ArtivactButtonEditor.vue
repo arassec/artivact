@@ -56,11 +56,11 @@
 </template>
 
 <script setup lang="ts">
-import { ButtonConfig } from './artivact-models';
+import {ButtonConfig} from './artivact-models';
 import ArtivactRestrictedTranslatableItemEditor from './ArtivactRestrictedTranslatableItemEditor.vue';
-import { useLocaleStore } from '../stores/locale';
+import {useLocaleStore} from '../stores/locale';
 
-const config = defineModel<ButtonConfig>('config', { required: true });
+const config = defineModel<ButtonConfig>('config', {required: true});
 
 const localeStore = useLocaleStore();
 </script>

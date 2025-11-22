@@ -11,7 +11,7 @@
     <template v-slot:widget-content>
       <div class="column full-width">
         <div class="row">
-          <q-space />
+          <q-space/>
           <q-avatar
             size="256px"
             v-if="widgetData.avatarImage !== ''"
@@ -30,14 +30,14 @@
               "
             />
           </q-avatar>
-          <q-space />
+          <q-space/>
         </div>
         <div class="row">
-          <q-space />
+          <q-space/>
           <div v-if="widgetData.avatarSubtext" class="av-text-h2">
             {{ translate(widgetData.avatarSubtext) }}
           </div>
-          <q-space />
+          <q-space/>
         </div>
       </div>
     </template>
@@ -67,12 +67,12 @@
 </template>
 
 <script setup lang="ts">
-import { PropType, ref, toRef } from 'vue';
-import { AvatarWidgetData } from './artivact-widget-models';
-import { QUploader } from 'quasar';
+import {PropType, ref, toRef} from 'vue';
+import {AvatarWidgetData} from './artivact-widget-models';
+import {QUploader} from 'quasar';
 import ArtivactRestrictedTranslatableItemEditor from '../../components/ArtivactRestrictedTranslatableItemEditor.vue';
-import { useLocaleStore } from '../../stores/locale';
-import { translate } from '../artivact-utils';
+import {useLocaleStore} from '../../stores/locale';
+import {translate} from '../artivact-utils';
 import ArtivactWidgetTemplate from '../../components/widgets/ArtivactWidgetTemplate.vue';
 
 const props = defineProps({

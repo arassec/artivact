@@ -1,8 +1,8 @@
 <template>
   <div class="full-width bg-primary q-mb-sm row rounded-borders">
     <div class="col text-white q-ma-sm config-label">
-      <q-icon name="star" v-if="peripheralConfigRef.favourite" />
-      <q-icon name="star_outline" v-if="!peripheralConfigRef.favourite" />
+      <q-icon name="star" v-if="peripheralConfigRef.favourite"/>
+      <q-icon name="star_outline" v-if="!peripheralConfigRef.favourite"/>
       {{ peripheralConfigRef.label }}
     </div>
     <div>
@@ -14,8 +14,9 @@
         class="q-ml-xs"
       >
         <q-tooltip>{{
-          $t('PeripheralStatus.' + peripheralStatusRef)
-        }}</q-tooltip>
+            $t('PeripheralStatus.' + peripheralStatusRef)
+          }}
+        </q-tooltip>
       </q-icon>
       <q-icon
         v-if="peripheralStatusRef && peripheralStatusRef != 'AVAILABLE'"
@@ -25,8 +26,9 @@
         class="q-ml-xs"
       >
         <q-tooltip>{{
-          $t('PeripheralStatus.' + peripheralStatusRef)
-        }}</q-tooltip>
+            $t('PeripheralStatus.' + peripheralStatusRef)
+          }}
+        </q-tooltip>
       </q-icon>
       <q-btn
         class="q-ma-xs"
@@ -51,8 +53,8 @@
 </template>
 
 <script setup lang="ts">
-import { PropType, toRef } from 'vue';
-import { PeripheralConfig } from './artivact-models';
+import {PropType, toRef} from 'vue';
+import {PeripheralConfig} from './artivact-models';
 
 const props = defineProps({
   peripheralConfig: {

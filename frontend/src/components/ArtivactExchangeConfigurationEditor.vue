@@ -34,8 +34,8 @@
 </template>
 
 <script setup lang="ts">
-import { ExchangeConfiguration } from './artivact-models';
-import { PropType, toRef } from 'vue';
+import {ExchangeConfiguration} from './artivact-models';
+import {PropType, toRef} from 'vue';
 
 const props = defineProps({
   exchangeConfiguration: {

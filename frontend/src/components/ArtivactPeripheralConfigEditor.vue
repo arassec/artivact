@@ -5,7 +5,7 @@
   >
     <template v-slot:header>
       <div>
-        <slot name="header" />
+        <slot name="header"/>
         <q-btn
           class="float-right"
           round
@@ -462,7 +462,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, PropType, ref, toRef } from 'vue';
+import {computed, onMounted, PropType, ref, toRef} from 'vue';
 import {
   ArduinoTurntablePeripheralConfig,
   ExternalProgramPeripheralConfig,
@@ -474,8 +474,8 @@ import {
   SelectboxModel,
 } from './artivact-models';
 import ArtivactDialog from './ArtivactDialog.vue';
-import { Platform } from 'quasar';
-import { api } from '../boot/axios';
+import {Platform} from 'quasar';
+import {api} from '../boot/axios';
 
 const props = defineProps({
   dialogModel: {
@@ -608,7 +608,7 @@ const formValid = computed(() => {
       peripheralConfigRef.value.peripheralImplementation.toString() ===
       PeripheralImplementation[
         PeripheralImplementation.ONNX_IMAGE_BACKGROUND_REMOVAL_PERIPHERAL
-      ]
+          ]
     ) {
       let config =
         peripheralConfigRef.value as OnnxBackgroundRemovalPeripheralConfig;
@@ -634,15 +634,15 @@ const formValid = computed(() => {
     if (
       peripheralConfigRef.value.peripheralImplementation.toString() ===
         PeripheralImplementation[
-          PeripheralImplementation.EXTERNAL_PROGRAM_CAMERA_PERIPHERAL
+            PeripheralImplementation.EXTERNAL_PROGRAM_CAMERA_PERIPHERAL
         ] ||
       peripheralConfigRef.value.peripheralImplementation.toString() ===
         PeripheralImplementation[
-          PeripheralImplementation.EXTERNAL_PROGRAM_MODEL_CREATOR_PERIPHERAL
+            PeripheralImplementation.EXTERNAL_PROGRAM_MODEL_CREATOR_PERIPHERAL
         ] ||
       peripheralConfigRef.value.peripheralImplementation.toString() ===
         PeripheralImplementation[
-          PeripheralImplementation.EXTERNAL_PROGRAM_MODEL_EDITOR_PERIPHERAL
+            PeripheralImplementation.EXTERNAL_PROGRAM_MODEL_EDITOR_PERIPHERAL
         ]
     ) {
       let config = peripheralConfigRef.value as ExternalProgramPeripheralConfig;

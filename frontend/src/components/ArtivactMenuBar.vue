@@ -33,8 +33,9 @@
         />
 
         <q-tooltip v-if="userdataStore.isAdmin">{{
-          $t('ArtivactMenuBar.tooltip.edit')
-        }}</q-tooltip>
+            $t('ArtivactMenuBar.tooltip.edit')
+          }}
+        </q-tooltip>
         <q-menu
           :data-test="'menu-context-menu-' + menu.value"
           v-model="showMenuRef[menu.id]"
@@ -424,15 +425,15 @@
               "
             >
               <q-item-section
-                ><label class="menu-label">
-                  <q-icon
-                    name="add"
-                    size="xs"
-                    color="primary"
-                    class="q-mr-sm"
-                  ></q-icon>
-                  {{ $t('ArtivactMenuBar.label.add') }}</label
-                >
+              ><label class="menu-label">
+                <q-icon
+                  name="add"
+                  size="xs"
+                  color="primary"
+                  class="q-mr-sm"
+                ></q-icon>
+                {{ $t('ArtivactMenuBar.label.add') }}</label
+              >
               </q-item-section>
             </q-item>
             <q-item
@@ -446,15 +447,15 @@
               "
             >
               <q-item-section
-                ><label class="menu-label">
-                  <q-icon
-                    name="add"
-                    size="xs"
-                    color="primary"
-                    class="q-mr-sm"
-                  ></q-icon>
-                  {{ $t('ArtivactMenuBar.label.addEntry') }}</label
-                >
+              ><label class="menu-label">
+                <q-icon
+                  name="add"
+                  size="xs"
+                  color="primary"
+                  class="q-mr-sm"
+                ></q-icon>
+                {{ $t('ArtivactMenuBar.label.addEntry') }}</label
+              >
               </q-item-section>
             </q-item>
             <q-item
@@ -545,7 +546,7 @@
           >
             <q-item-section>
               <label class="menu-label">
-                <q-icon name="add" size="xs" color="primary" class="q-mr-sm" />
+                <q-icon name="add" size="xs" color="primary" class="q-mr-sm"/>
                 {{ $t('ArtivactMenuBar.label.createMenu') }}</label
               >
             </q-item-section>
@@ -781,7 +782,7 @@
             >
               <label class="menu-label">
                 {{ menu.translatedValue }}
-                <q-icon v-if="menu.external" name="open_in_new" size="xs" />
+                <q-icon v-if="menu.external" name="open_in_new" size="xs"/>
               </label>
             </q-item-section>
 
@@ -830,21 +831,21 @@
 </template>
 
 <script setup lang="ts">
-import { useMenuStore } from '../stores/menu';
-import { api } from '../boot/axios';
-import { QUploader, useQuasar } from 'quasar';
-import { useRouter } from 'vue-router';
-import { useUserdataStore } from '../stores/userdata';
-import { ref } from 'vue';
+import {useMenuStore} from '../stores/menu';
+import {api} from '../boot/axios';
+import {QUploader, useQuasar} from 'quasar';
+import {useRouter} from 'vue-router';
+import {useUserdataStore} from '../stores/userdata';
+import {ref} from 'vue';
 import ArtivactRestrictedTranslatableItemEditor from '../components/ArtivactRestrictedTranslatableItemEditor.vue';
-import { useLocaleStore } from '../stores/locale';
-import { moveDown, moveUp, translate } from './artivact-utils';
-import { Menu } from './artivact-models';
-import { useBreadcrumbsStore } from '../stores/breadcrumbs';
+import {useLocaleStore} from '../stores/locale';
+import {moveDown, moveUp, translate} from './artivact-utils';
+import {Menu} from './artivact-models';
+import {useBreadcrumbsStore} from '../stores/breadcrumbs';
 import ArtivactDialog from '../components/ArtivactDialog.vue';
-import { useI18n } from 'vue-i18n';
-import { useProfilesStore } from '../stores/profiles';
-import { usePageStore } from '../stores/page';
+import {useI18n} from 'vue-i18n';
+import {useProfilesStore} from '../stores/profiles';
+import {usePageStore} from '../stores/page';
 
 const quasar = useQuasar();
 const router = useRouter();

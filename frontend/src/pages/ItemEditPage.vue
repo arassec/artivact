@@ -17,7 +17,7 @@
 
     <ArtivactContent>
       <div class="col-12">
-        <div class="col q-mt-xl lt-md" />
+        <div class="col q-mt-xl lt-md"/>
         <!-- Space on mobile resolution -->
 
         <div data-test="edit-item-contents" class="col items-center">
@@ -81,8 +81,8 @@
             >
               <div class="editor-label">
                 <label class="q-mr-xs q-mt-xs vertical-middle">{{
-                  $t('ItemEditPage.label.tags')
-                }}</label>
+                    $t('ItemEditPage.label.tags')
+                  }}</label>
               </div>
 
               <div>
@@ -91,7 +91,7 @@
                   color="secondary"
                   v-for="(tag, index) in itemDataRef.tags"
                   :key="index"
-                  >{{ tag.translatedValue }}
+                >{{ tag.translatedValue }}
                   <q-btn
                     rounded
                     dense
@@ -102,8 +102,9 @@
                     @click="removeTag(tag)"
                   >
                     <q-tooltip>{{
-                      $t('ItemEditPage.button.tooltip.removeTag')
-                    }}</q-tooltip>
+                        $t('ItemEditPage.button.tooltip.removeTag')
+                      }}
+                    </q-tooltip>
                   </q-btn>
                 </q-badge>
                 <q-btn
@@ -118,8 +119,9 @@
                   @click="addTag"
                 >
                   <q-tooltip>{{
-                    $t('ItemEditPage.button.tooltip.addTag')
-                  }}</q-tooltip>
+                      $t('ItemEditPage.button.tooltip.addTag')
+                    }}
+                  </q-tooltip>
                 </q-btn>
               </div>
 
@@ -237,31 +239,27 @@
 </template>
 
 <script setup lang="ts">
-import { useQuasar } from 'quasar';
-import { computed, onMounted, ref } from 'vue';
-import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router';
-import { api } from '../boot/axios';
+import {useQuasar} from 'quasar';
+import {computed, onMounted, ref} from 'vue';
+import {onBeforeRouteLeave, useRoute, useRouter} from 'vue-router';
+import {api} from '../boot/axios';
 import ArtivactContent from '../components/ArtivactContent.vue';
 import ArtivactRestrictionsEditor from '../components/ArtivactRestrictionsEditor.vue';
-import { useLocaleStore } from '../stores/locale';
-import {
-  ItemDetails,
-  Tag,
-  TagsConfiguration,
-} from '../components/artivact-models';
+import {useLocaleStore} from '../stores/locale';
+import {ItemDetails, Tag, TagsConfiguration,} from '../components/artivact-models';
 import ArtivactPropertyCategoryEditor from '../components/ArtivactPropertyCategoryEditor.vue';
 import ArtivactRestrictedTranslatableItemEditor from '../components/ArtivactRestrictedTranslatableItemEditor.vue';
-import { useBreadcrumbsStore } from '../stores/breadcrumbs';
-import { useUserdataStore } from '../stores/userdata';
+import {useBreadcrumbsStore} from '../stores/breadcrumbs';
+import {useUserdataStore} from '../stores/userdata';
 import ArtivactDialog from '../components/ArtivactDialog.vue';
-import { useI18n } from 'vue-i18n';
+import {useI18n} from 'vue-i18n';
 import ArtivactItemModelEditor from '../components/ArtivactItemModelEditor.vue';
 import ArtivactItemImageEditor from '../components/ArtivactItemImageEditor.vue';
 import ArtivactItemImageSetEditor from '../components/ArtivactItemImageSetEditor.vue';
 import ArtivactItemModelSetEditor from '../components/ArtivactItemModelSetEditor.vue';
-import { useProfilesStore } from '../stores/profiles';
-import { useWizzardStore } from '../stores/wizzard';
-import { usePeripheralsConfigStore } from '../stores/peripherals';
+import {useProfilesStore} from '../stores/profiles';
+import {useWizzardStore} from '../stores/wizzard';
+import {usePeripheralsConfigStore} from '../stores/peripherals';
 
 const quasar = useQuasar();
 const route = useRoute();

@@ -103,10 +103,10 @@
 </template>
 
 <script setup lang="ts">
-import { PropType, ref, toRef } from 'vue';
-import { ItemDetails } from 'components/artivact-models';
+import {PropType, ref, toRef} from 'vue';
+import {ItemDetails} from 'components/artivact-models';
 import ArtivactItemModelViewer from 'components/ArtivactItemModelViewer.vue';
-import { useApplicationSettingsStore } from 'stores/application-settings';
+import {useApplicationSettingsStore} from 'stores/application-settings';
 
 const props = defineProps({
   itemDetails: {

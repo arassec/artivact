@@ -1,10 +1,10 @@
-import { boot } from 'quasar/wrappers';
+import {boot} from 'quasar/wrappers';
 import axios from 'axios';
-import { useLocaleStore } from 'stores/locale';
+import {useLocaleStore} from 'stores/locale';
 
-const api = axios.create({ baseURL: '/' });
+const api = axios.create({baseURL: '/'});
 
-export default boot(({ app }) => {
+export default boot(({app}) => {
   api.interceptors.request.use((request) => {
     const localeStore = useLocaleStore();
     if (localeStore.selectedLocale !== null) {
@@ -18,4 +18,4 @@ export default boot(({ app }) => {
   //       so you can easily perform requests against your app's API
 });
 
-export { axios, api };
+export {axios, api};

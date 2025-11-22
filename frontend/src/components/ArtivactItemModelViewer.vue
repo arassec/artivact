@@ -14,8 +14,9 @@
       class="download-div row justify-center items-center"
     >
       <q-btn icon="download" class="column" @click="reveal = 'auto'">{{
-        $t("ItemModelViewer.downloadModelButtonLabel")
-      }}</q-btn>
+          $t("ItemModelViewer.downloadModelButtonLabel")
+        }}
+      </q-btn>
     </div>
   </model-viewer>
   <model-viewer
@@ -28,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import {ref} from 'vue';
 
 defineProps({
   modelUrl: {

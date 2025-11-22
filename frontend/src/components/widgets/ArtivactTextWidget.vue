@@ -13,7 +13,7 @@
         <h1 class="av-label-h1" v-if="widgetDataRef.heading">
           {{ translate(widgetDataRef.heading) }}
         </h1>
-        <div v-html="format(translate(widgetDataRef.content))" />
+        <div v-html="format(translate(widgetDataRef.content))"/>
       </div>
     </template>
 
@@ -39,12 +39,12 @@
 </template>
 
 <script setup lang="ts">
-import { PropType, ref, toRef } from 'vue';
-import { TextWidgetData } from './artivact-widget-models';
+import {PropType, ref, toRef} from 'vue';
+import {TextWidgetData} from './artivact-widget-models';
 import ArtivactRestrictedTranslatableItemEditor from '../../components/ArtivactRestrictedTranslatableItemEditor.vue';
-import { useLocaleStore } from '../../stores/locale';
+import {useLocaleStore} from '../../stores/locale';
 import MarkdownIt from 'markdown-it';
-import { translate } from '../artivact-utils';
+import {translate} from '../artivact-utils';
 import ArtivactWidgetTemplate from '../../components/widgets/ArtivactWidgetTemplate.vue';
 
 const props = defineProps({

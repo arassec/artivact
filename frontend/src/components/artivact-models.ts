@@ -232,8 +232,8 @@ export interface OperationProgress {
 }
 
 export enum ContentSource {
-  MENU='MENU',
-  ITEM='ITEM',
+  MENU = 'MENU',
+  ITEM = 'ITEM',
 }
 
 export interface ExportConfiguration {
@@ -242,7 +242,7 @@ export interface ExportConfiguration {
   excludeItems: boolean;
 }
 
-export interface CollectionExport extends BaseRestrictedObject{
+export interface CollectionExport extends BaseRestrictedObject {
   title: TranslatableString;
   description: TranslatableString;
   content: TranslatableString;

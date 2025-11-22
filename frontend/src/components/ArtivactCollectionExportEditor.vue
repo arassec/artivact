@@ -72,7 +72,8 @@
                     size="md"
                     @click.stop="$emit('build-collection-export-file', element)">
                     <q-tooltip>
-                      {{ element.filePresent ? $t('ArtivactCollectionExportEditor.tooltip.build') : $t('ArtivactCollectionExportEditor.tooltip.buildNew')
+                      {{
+                        element.filePresent ? $t('ArtivactCollectionExportEditor.tooltip.build') : $t('ArtivactCollectionExportEditor.tooltip.buildNew')
                       }}
                     </q-tooltip>
                   </q-btn>
@@ -163,13 +164,14 @@
     <div class="row">
       <q-space></q-space>
       <q-btn :label="$t('ArtivactCollectionExportEditor.button.create')" @click="configureNewExportConfiguration()"
-             color="primary" />
+             color="primary"/>
     </div>
 
     <!-- CREATE / EDIT EXPORT CONFIGURATION DIALOG -->
     <artivact-dialog :dialog-model="showCollectionExportConfigurationDialogRef">
       <template v-slot:header>
-        {{ createNewExportConfigurationRef ? $t('ArtivactCollectionExportEditor.dialog.create.heading') : $t('ArtivactCollectionExportEditor.dialog.edit.heading')
+        {{
+          createNewExportConfigurationRef ? $t('ArtivactCollectionExportEditor.dialog.create.heading') : $t('ArtivactCollectionExportEditor.dialog.edit.heading')
         }}
       </template>
 
@@ -190,7 +192,7 @@
             :options="availableSourceIdOptionsRef"
             :label="$t('ArtivactCollectionExportEditor.label.sourceId')"
           />
-          <q-separator class="q-mb-lg" />
+          <q-separator class="q-mb-lg"/>
           <p>{{ $t('ArtivactCollectionExportEditor.help.title') }}</p>
           <artivact-restricted-translatable-item-editor :label="$t('ArtivactCollectionExportEditor.label.title')"
                                                         :translatable-string="collectionExportRef.title"
@@ -237,13 +239,13 @@
 
       <template v-slot:cancel>
         <q-btn color="primary" :label="$t('Common.cancel')"
-               @click="showCollectionExportConfigurationDialogRef = false" />
+               @click="showCollectionExportConfigurationDialogRef = false"/>
       </template>
 
       <template v-slot:approve>
         <q-btn color="primary"
                :label="createNewExportConfigurationRef ? $t('ArtivactCollectionExportEditor.dialog.create.approve') : $t('ArtivactCollectionExportEditor.dialog.edit.approve')"
-               @click="saveExportConfiguration()" />
+               @click="saveExportConfiguration()"/>
       </template>
     </artivact-dialog>
 

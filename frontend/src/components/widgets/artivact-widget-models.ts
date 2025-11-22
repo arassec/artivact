@@ -1,6 +1,7 @@
-import { ButtonConfig, TranslatableString, Widget } from '../artivact-models';
+import {ButtonConfig, TranslatableString, Widget} from '../artivact-models';
 
-export interface SearchBasedWidgetData extends Widget {}
+export interface SearchBasedWidgetData extends Widget {
+}
 
 export interface PageTitleWidgetData extends Widget {
   title: TranslatableString;

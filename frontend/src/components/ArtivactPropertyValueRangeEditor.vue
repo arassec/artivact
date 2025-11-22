@@ -71,7 +71,7 @@
       </template>
 
       <template v-slot:approve>
-        <q-btn color="primary" :label="$t('Common.save')" @click="saveValue" />
+        <q-btn color="primary" :label="$t('Common.save')" @click="saveValue"/>
       </template>
     </artivact-dialog>
 

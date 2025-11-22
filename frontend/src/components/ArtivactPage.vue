@@ -370,13 +370,9 @@
 
 <script setup lang="ts">
 import Draggable from 'vuedraggable';
-import { onMounted, PropType, ref, toRef } from 'vue';
-import {
-  ButtonConfig,
-  PageContent,
-  TranslatableString,
-} from './artivact-models';
-import { useUserdataStore } from '../stores/userdata';
+import {onMounted, PropType, ref, toRef} from 'vue';
+import {ButtonConfig, PageContent, TranslatableString,} from './artivact-models';
+import {useUserdataStore} from '../stores/userdata';
 import {
   AvatarWidgetData,
   ButtonsWidgetData,
@@ -387,17 +383,17 @@ import {
   PageTitleWidgetData,
   TextWidgetData,
 } from './widgets/artivact-widget-models';
-import { useI18n } from 'vue-i18n';
+import {useI18n} from 'vue-i18n';
 import ArtivactDialog from './ArtivactDialog.vue';
 import ArtivactAvatarWidget from './widgets/ArtivactAvatarWidget.vue';
 import ArtivactInfoBoxWidget from './widgets/ArtivactInfoBoxWidget.vue';
 import ArtivactTextWidget from './widgets/ArtivactTextWidget.vue';
 import ArtivactPageTitleWidget from './widgets/ArtivactPageTitleWidget.vue';
 import ArtivactItemSearchWidget from './widgets/ArtivactItemSearchWidget.vue';
-import { usePageStore } from '../stores/page';
+import {usePageStore} from '../stores/page';
 import ArtivactImageGalleryWidget from './widgets/ArtivactImageGalleryWidget.vue';
 import ArtivactButtonsWidget from './widgets/ArtivactButtonsWidget.vue';
-import { useProfilesStore } from '../stores/profiles';
+import {useProfilesStore} from '../stores/profiles';
 import ArtivactRestrictedTranslatableItemEditor from './ArtivactRestrictedTranslatableItemEditor.vue';
 
 const props = defineProps({

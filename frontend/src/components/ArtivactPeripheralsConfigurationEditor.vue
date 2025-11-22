@@ -437,16 +437,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, PropType, ref, toRef } from 'vue';
-import {
-  PeripheralConfig,
-  PeripheralImplementation,
-  PeripheralsConfiguration,
-  SelectboxModel,
-} from './artivact-models';
+import {computed, PropType, ref, toRef} from 'vue';
+import {PeripheralConfig, PeripheralImplementation, PeripheralsConfiguration, SelectboxModel,} from './artivact-models';
 import ArtivactPeripheralConfigOverview from './ArtivactPeripheralConfigOverview.vue';
 import ArtivactPeripheralConfigEditor from './ArtivactPeripheralConfigEditor.vue';
-import { useI18n } from 'vue-i18n';
+import {useI18n} from 'vue-i18n';
 
 const props = defineProps({
   peripheralConfiguration: {
@@ -509,7 +504,7 @@ function saveTurntableConfig() {
   } else {
     peripheralConfigurationRef.value.turntablePeripheralConfigs[
       curPeripheralConfigIndexRef.value
-    ] = curPeripheralConfigRef.value;
+      ] = curPeripheralConfigRef.value;
   }
   showTurntablePeripheralConfigEditorRef.value = false;
   curPeripheralConfigRef.value = null;
@@ -545,7 +540,7 @@ function saveCameraConfig() {
   } else {
     peripheralConfigurationRef.value.cameraPeripheralConfigs[
       curPeripheralConfigIndexRef.value
-    ] = curPeripheralConfigRef.value;
+      ] = curPeripheralConfigRef.value;
   }
   showCameraPeripheralConfigEditorRef.value = false;
   curPeripheralConfigRef.value = null;
@@ -572,7 +567,7 @@ function editBackgroundRemovalConfig(index: number) {
   curPeripheralConfigRef.value =
     peripheralConfigurationRef.value.imageBackgroundRemovalPeripheralConfigs[
       index
-    ];
+      ];
   curPeripheralConfigIndexRef.value = index;
   showBackgroundRemovalPeripheralConfigEditorRef.value = true;
 }
@@ -586,7 +581,7 @@ function saveBackgroundRemovalConfig() {
   } else {
     peripheralConfigurationRef.value.imageBackgroundRemovalPeripheralConfigs[
       curPeripheralConfigIndexRef.value
-    ] = curPeripheralConfigRef.value;
+      ] = curPeripheralConfigRef.value;
   }
   showBackgroundRemovalPeripheralConfigEditorRef.value = false;
   curPeripheralConfigRef.value = null;
@@ -625,7 +620,7 @@ function saveModelCreatorConfig() {
   } else {
     peripheralConfigurationRef.value.modelCreatorPeripheralConfigs[
       curPeripheralConfigIndexRef.value
-    ] = curPeripheralConfigRef.value;
+      ] = curPeripheralConfigRef.value;
   }
   showModelCreatorPeripheralConfigEditorRef.value = false;
   curPeripheralConfigRef.value = null;
@@ -664,7 +659,7 @@ function saveModelEditorConfig() {
   } else {
     peripheralConfigurationRef.value.modelEditorPeripheralConfigs[
       curPeripheralConfigIndexRef.value
-    ] = curPeripheralConfigRef.value;
+      ] = curPeripheralConfigRef.value;
   }
   showModelEditorPeripheralConfigEditorRef.value = false;
   curPeripheralConfigRef.value = null;
@@ -735,11 +730,11 @@ const availableTurntableOptions: SelectboxModel[] = [
     label:
       PeripheralImplementation[
         PeripheralImplementation.ARDUINO_TURNTABLE_PERIPHERAL
-      ],
+        ],
     value:
       PeripheralImplementation[
         PeripheralImplementation.ARDUINO_TURNTABLE_PERIPHERAL
-      ],
+        ],
     disable: isDisabled(
       peripheralConfigurationRef.value
         ?.availableTurntablePeripheralImplementations,
@@ -764,11 +759,11 @@ const availableCameraOptions: SelectboxModel[] = [
     label:
       PeripheralImplementation[
         PeripheralImplementation.EXTERNAL_PROGRAM_CAMERA_PERIPHERAL
-      ],
+        ],
     value:
       PeripheralImplementation[
         PeripheralImplementation.EXTERNAL_PROGRAM_CAMERA_PERIPHERAL
-      ],
+        ],
     disable: isDisabled(
       peripheralConfigurationRef.value
         ?.availableCameraPeripheralImplementations,
@@ -782,11 +777,11 @@ const availableBackgroundRemovalOptions: SelectboxModel[] = [
     label:
       PeripheralImplementation[
         PeripheralImplementation.ONNX_IMAGE_BACKGROUND_REMOVAL_PERIPHERAL
-      ],
+        ],
     value:
       PeripheralImplementation[
         PeripheralImplementation.ONNX_IMAGE_BACKGROUND_REMOVAL_PERIPHERAL
-      ],
+        ],
     disable: isDisabled(
       peripheralConfigurationRef.value
         ?.availableImageBackgroundRemovalPeripheralImplementations,
@@ -800,11 +795,11 @@ const availableModelCreatorOptions: SelectboxModel[] = [
     label:
       PeripheralImplementation[
         PeripheralImplementation.EXTERNAL_PROGRAM_MODEL_CREATOR_PERIPHERAL
-      ],
+        ],
     value:
       PeripheralImplementation[
         PeripheralImplementation.EXTERNAL_PROGRAM_MODEL_CREATOR_PERIPHERAL
-      ],
+        ],
     disable: isDisabled(
       peripheralConfigurationRef.value
         ?.availableModelCreatorPeripheralImplementations,
@@ -818,11 +813,11 @@ const availableModelEditorOptions: SelectboxModel[] = [
     label:
       PeripheralImplementation[
         PeripheralImplementation.EXTERNAL_PROGRAM_MODEL_EDITOR_PERIPHERAL
-      ],
+        ],
     value:
       PeripheralImplementation[
         PeripheralImplementation.EXTERNAL_PROGRAM_MODEL_EDITOR_PERIPHERAL
-      ],
+        ],
     disable: isDisabled(
       peripheralConfigurationRef.value
         ?.availableModelEditorPeripheralImplementations,

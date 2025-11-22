@@ -13,8 +13,9 @@
       @click="showCaptureSinglePhotoParamsModalRef = true"
     >
       <q-tooltip>{{
-        $t('ItemImageSetEditor.tooltip.directCapture')
-      }}</q-tooltip>
+          $t('ItemImageSetEditor.tooltip.directCapture')
+        }}
+      </q-tooltip>
     </q-btn>
     <q-btn
       :disable="!peripheralsConfigStore.isCameraSet"
@@ -99,9 +100,10 @@
             v-model="imageSet.modelInput"
             @click="toggleModelInput(index)"
             :disable="imageSet.images.length === 0"
-            >Model input</q-toggle
+          >Model input
+          </q-toggle
           >
-          <q-separator class="q-mt-sm q-mb-sm" />
+          <q-separator class="q-mt-sm q-mb-sm"/>
         </div>
       </q-card-section>
       <q-card-actions>
@@ -132,10 +134,11 @@
           v-if="!imageSet.backgroundRemoved"
         >
           <q-tooltip>{{
-            $t('ItemImageSetEditor.tooltip.backgrounds')
-          }}</q-tooltip>
+              $t('ItemImageSetEditor.tooltip.backgrounds')
+            }}
+          </q-tooltip>
         </q-btn>
-        <q-space />
+        <q-space/>
         <q-btn
           icon="delete"
           round
@@ -260,7 +263,7 @@
       <q-card-section>
         <div class="row">
           <div>
-            <q-spinner size="2em" class="q-mr-md col" />
+            <q-spinner size="2em" class="q-mr-md col"/>
           </div>
           <div>
             {{
@@ -466,10 +469,11 @@
                   @click="transferImageToMedia(image)"
                 >
                   <q-tooltip>{{
-                    $t('ItemImageSetEditor.dialog.details.transfer')
-                  }}</q-tooltip>
+                      $t('ItemImageSetEditor.dialog.details.transfer')
+                    }}
+                  </q-tooltip>
                 </q-btn>
-                <q-space />
+                <q-space/>
                 <q-btn
                   icon="delete"
                   round
@@ -480,8 +484,9 @@
                   @click="deleteImageFromImageSet(image)"
                 >
                   <q-tooltip>{{
-                    $t('ItemImageSetEditor.dialog.details.deleteImage')
-                  }}</q-tooltip>
+                      $t('ItemImageSetEditor.dialog.details.deleteImage')
+                    }}
+                  </q-tooltip>
                 </q-btn>
               </div>
             </q-card-actions>
@@ -538,19 +543,14 @@
 </template>
 
 <script setup lang="ts">
-import { api } from '../boot/axios';
-import {
-  Asset,
-  CaptureImageParams,
-  ImageSet,
-  SelectboxModel,
-} from './artivact-models';
-import { useQuasar } from 'quasar';
-import { onMounted, PropType, Ref, ref } from 'vue';
+import {api} from '../boot/axios';
+import {Asset, CaptureImageParams, ImageSet, SelectboxModel,} from './artivact-models';
+import {useQuasar} from 'quasar';
+import {onMounted, PropType, Ref, ref} from 'vue';
 import ArtivactDialog from '../components/ArtivactDialog.vue';
 import ArtivactOperationInProgressDialog from '../components/ArtivactOperationInProgressDialog.vue';
-import { useI18n } from 'vue-i18n';
-import { usePeripheralsConfigStore } from '../stores/peripherals';
+import {useI18n} from 'vue-i18n';
+import {usePeripheralsConfigStore} from '../stores/peripherals';
 
 const props = defineProps({
   itemId: {
@@ -738,11 +738,11 @@ function removeBackgrounds() {
   api
     .post(
       '/api/item/' +
-        props.itemId +
-        '/media-creation/remove-backgrounds?imageSetIndex=' +
-        selectedImageSetIndexRef.value +
-        '&imageManipulatorPeripheralConfigId=' +
-        selectedImageBackgroundRemoverRef.value.value,
+      props.itemId +
+      '/media-creation/remove-backgrounds?imageSetIndex=' +
+      selectedImageSetIndexRef.value +
+      '&imageManipulatorPeripheralConfigId=' +
+      selectedImageBackgroundRemoverRef.value.value,
     )
     .then((response) => {
       if (response) {
@@ -825,9 +825,9 @@ function deleteImageSet() {
   api
     .delete(
       '/api/item/' +
-        props.itemId +
-        '/media-creation/image-set/' +
-        selectedImageSetIndex,
+      props.itemId +
+      '/media-creation/image-set/' +
+      selectedImageSetIndex,
     )
     .then((response) => {
       if (response) {
@@ -854,10 +854,10 @@ function toggleModelInput(imageSetIndex: number) {
   api
     .put(
       '/api/item/' +
-        props.itemId +
-        '/media-creation/image-set/' +
-        imageSetIndex +
-        '/toggle-model-input',
+      props.itemId +
+      '/media-creation/image-set/' +
+      imageSetIndex +
+      '/toggle-model-input',
     )
     .then((response) => {
       if (response) {

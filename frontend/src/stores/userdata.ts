@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia';
+import {defineStore} from 'pinia';
 import {UserData} from 'components/artivact-models';
 
 export const useUserdataStore = defineStore('userdata', {
@@ -11,13 +11,13 @@ export const useUserdataStore = defineStore('userdata', {
   }),
 
   getters: {
-    authenticated (state) {
+    authenticated(state) {
       return state.userdata.authenticated;
     },
-    roles (state) {
+    roles(state) {
       return state.userdata.roles;
     },
-    username (state) {
+    username(state) {
       return state.userdata.username;
     },
     isAdmin(state) {
@@ -50,7 +50,7 @@ export const useUserdataStore = defineStore('userdata', {
   },
 
   actions: {
-    setUserdata (userdata: UserData) {
+    setUserdata(userdata: UserData) {
       this.userdata.authenticated = userdata.authenticated;
       this.userdata.roles = userdata.roles;
       this.userdata.username = userdata.username;

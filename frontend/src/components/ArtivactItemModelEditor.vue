@@ -30,8 +30,9 @@
             @click="openModelsDir"
           >
             <q-tooltip>{{
-              $t('ArtivactItemModelEditor.tooltip.open')
-            }}</q-tooltip>
+                $t('ArtivactItemModelEditor.tooltip.open')
+              }}
+            </q-tooltip>
           </q-btn>
           <q-btn
             data-test="item-media-models-upload-button"
@@ -43,8 +44,9 @@
             @click="showUploadFilesModalRef = true"
           >
             <q-tooltip>{{
-              $t('ArtivactItemModelEditor.tooltip.upload')
-            }}</q-tooltip>
+                $t('ArtivactItemModelEditor.tooltip.upload')
+              }}
+            </q-tooltip>
           </q-btn>
         </div>
       </q-menu>
@@ -69,10 +71,11 @@
             <q-card-actions>
               <q-icon name="drag_indicator" class="model-move-icon" size="md">
                 <q-tooltip>{{
-                  $t('ArtivactItemModelEditor.tooltip.move')
-                }}</q-tooltip>
+                    $t('ArtivactItemModelEditor.tooltip.move')
+                  }}
+                </q-tooltip>
               </q-icon>
-              <q-space />
+              <q-space/>
               <q-btn
                 icon="delete"
                 round
@@ -83,8 +86,9 @@
                 @click="showDeleteModelSetConfirm(element)"
               >
                 <q-tooltip>{{
-                  $t('ArtivactItemModelEditor.tooltip.delete')
-                }}</q-tooltip>
+                    $t('ArtivactItemModelEditor.tooltip.delete')
+                  }}
+                </q-tooltip>
               </q-btn>
             </q-card-actions>
           </q-card>
@@ -157,13 +161,13 @@
 <script setup lang="ts">
 // noinspection ES6UnusedImports
 import draggable from 'vuedraggable';
-import { PropType, ref, toRef } from 'vue';
-import { Asset } from './artivact-models';
-import { api } from '../boot/axios';
-import { useQuasar } from 'quasar';
-import { useI18n } from 'vue-i18n';
+import {PropType, ref, toRef} from 'vue';
+import {Asset} from './artivact-models';
+import {api} from '../boot/axios';
+import {useQuasar} from 'quasar';
+import {useI18n} from 'vue-i18n';
 import ArtivactDialog from '../components/ArtivactDialog.vue';
-import { useProfilesStore } from '../stores/profiles';
+import {useProfilesStore} from '../stores/profiles';
 
 const props = defineProps({
   itemId: {

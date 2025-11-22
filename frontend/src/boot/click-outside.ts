@@ -1,6 +1,6 @@
 // src/boot/click-outside.ts
-import { boot } from 'quasar/wrappers';
-import type { App, DirectiveBinding } from 'vue';
+import {boot} from 'quasar/wrappers';
+import type {App, DirectiveBinding} from 'vue';
 
 interface ClickOutsideElement {
   el: HTMLElement;
@@ -21,7 +21,7 @@ function onClick(event: Event) {
   ) {
     return;
   }
-  elements.forEach(({ el, handler }) => {
+  elements.forEach(({el, handler}) => {
     if (!el.contains(target)) {
       handler(event);
     }
@@ -38,7 +38,7 @@ export const clickOutsideDirective = {
     // pro Instanz ein eigener Handler
     const instanceHandler = binding.value;
 
-    elements.push({ el, handler: instanceHandler });
+    elements.push({el, handler: instanceHandler});
 
     // Listener einmalig auf document registrieren
     if (elements.length === 1) {
@@ -62,6 +62,6 @@ export const clickOutsideDirective = {
 };
 
 // Quasar Boot-File
-export default boot(({ app }: { app: App }) => {
+export default boot(({app}: { app: App }) => {
   app.directive('click-outside', clickOutsideDirective);
 });

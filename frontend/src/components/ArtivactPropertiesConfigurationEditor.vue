@@ -44,14 +44,15 @@
                   @click="deleteCategory(element)"
                 >
                   <q-tooltip>{{
-                    $t('ArtivactPropertiesConfigurationEditor.tooltip.delete')
-                  }}</q-tooltip>
+                      $t('ArtivactPropertiesConfigurationEditor.tooltip.delete')
+                    }}
+                  </q-tooltip>
                 </q-btn>
               </q-item-section>
             </template>
 
             <q-card class="q-mb-lg">
-              <q-separator />
+              <q-separator/>
 
               <q-card-section>
                 <artivact-restricted-translatable-item-editor
@@ -64,7 +65,7 @@
                 />
               </q-card-section>
 
-              <q-separator />
+              <q-separator/>
 
               <q-card-section>
                 <h2 class="av-text-h2">{{ $t('Common.items.properties') }}</h2>
@@ -83,10 +84,11 @@
                     @click="deleteProperty(element, index)"
                   >
                     <q-tooltip>{{
-                      $t(
-                        'ArtivactPropertiesConfigurationEditor.tooltip.deleteProperty',
-                      )
-                    }}</q-tooltip>
+                        $t(
+                          'ArtivactPropertiesConfigurationEditor.tooltip.deleteProperty',
+                        )
+                      }}
+                    </q-tooltip>
                   </q-btn>
                   <q-btn
                     round
@@ -98,10 +100,11 @@
                     v-if="propertiesConfigurationProp.categories.length > 1"
                   >
                     <q-tooltip>{{
-                      $t(
-                        'ArtivactPropertiesConfigurationEditor.tooltip.switchCategory',
-                      )
-                    }}</q-tooltip>
+                        $t(
+                          'ArtivactPropertiesConfigurationEditor.tooltip.switchCategory',
+                        )
+                      }}
+                    </q-tooltip>
                     <q-menu>
                       <q-list>
                         <template
@@ -134,8 +137,9 @@
                     @click="moveUp(element, index)"
                   >
                     <q-tooltip>{{
-                      $t('ArtivactPropertiesConfigurationEditor.tooltip.up')
-                    }}</q-tooltip>
+                        $t('ArtivactPropertiesConfigurationEditor.tooltip.up')
+                      }}
+                    </q-tooltip>
                   </q-btn>
                   <q-btn
                     round
@@ -148,8 +152,9 @@
                     @click="moveDown(element, index)"
                   >
                     <q-tooltip>{{
-                      $t('ArtivactPropertiesConfigurationEditor.tooltip.down')
-                    }}</q-tooltip>
+                        $t('ArtivactPropertiesConfigurationEditor.tooltip.down')
+                      }}
+                    </q-tooltip>
                   </q-btn>
 
                   <artivact-restricted-translatable-item-editor
@@ -166,7 +171,7 @@
                     />
                   </artivact-restricted-translatable-item-editor>
 
-                  <q-separator class="q-mt-sm q-mb-lg" />
+                  <q-separator class="q-mt-sm q-mb-lg"/>
                 </div>
               </q-card-section>
 
@@ -204,16 +209,12 @@
 
 <script setup lang="ts">
 import draggable from 'vuedraggable';
-import { PropType, toRef } from 'vue';
-import {
-  PropertiesConfiguration,
-  Property,
-  PropertyCategory,
-} from './artivact-models';
+import {PropType, toRef} from 'vue';
+import {PropertiesConfiguration, Property, PropertyCategory,} from './artivact-models';
 import ArtivactRestrictedTranslatableItemEditor from '../components/ArtivactRestrictedTranslatableItemEditor.vue';
 import ArtivactPropertyValueRangeEditor from '../components/ArtivactPropertyValueRangeEditor.vue';
-import { translate } from './artivact-utils';
-import { useI18n } from 'vue-i18n';
+import {translate} from './artivact-utils';
+import {useI18n} from 'vue-i18n';
 
 const i18n = useI18n();
 
