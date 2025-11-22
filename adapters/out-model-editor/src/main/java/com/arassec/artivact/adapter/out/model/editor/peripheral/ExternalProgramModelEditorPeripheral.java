@@ -11,7 +11,6 @@ import com.arassec.artivact.domain.model.peripheral.configs.PeripheralConfig;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
@@ -34,7 +33,6 @@ public class ExternalProgramModelEditorPeripheral extends BasePeripheral impleme
      * Gateway to the operating system.
      */
     private final OsGateway osGateway;
-    private final MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter;
 
     /**
      * {@inheritDoc}
