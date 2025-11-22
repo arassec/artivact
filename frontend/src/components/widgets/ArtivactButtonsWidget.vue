@@ -17,7 +17,7 @@
           :class="'col-' + 12 / widgetDataRef.columns"
           class="flex justify-center"
         >
-          <artivact-button :config="buttonConfig" :disabled="inEditMode" />
+          <artivact-button :config="buttonConfig" :disabled="inEditMode"/>
         </div>
       </div>
       <q-space />
@@ -82,13 +82,13 @@
 </template>
 
 <script setup lang="ts">
-import { PropType, ref, toRef } from 'vue';
-import { ButtonsWidgetData } from './artivact-widget-models';
+import {PropType, ref, toRef} from 'vue';
+import {ButtonsWidgetData} from './artivact-widget-models';
 import ArtivactWidgetTemplate from './ArtivactWidgetTemplate.vue';
 import ArtivactButton from '../ArtivactButton.vue';
 import ArtivactButtonEditor from '../ArtivactButtonEditor.vue';
-import { ButtonConfig, TranslatableString } from '../artivact-models';
-import { translate } from '../artivact-utils';
+import {ButtonConfig, TranslatableString} from '../artivact-models';
+import {translate} from '../artivact-utils';
 
 const props = defineProps({
   inEditMode: {

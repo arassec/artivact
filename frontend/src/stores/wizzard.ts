@@ -1,10 +1,11 @@
-import { defineStore } from 'pinia';
+import {defineStore} from 'pinia';
 
 export const useWizzardStore = defineStore('wizzard', {
   state: () => ({
     wizzardData: {
       scanItem: null as boolean | null,
       scanPeripherals: null as boolean | null,
+      startTour: null as boolean | null,
     },
   }),
 
@@ -15,6 +16,9 @@ export const useWizzardStore = defineStore('wizzard', {
     scanPeripherals(state) {
       return state.wizzardData.scanPeripherals;
     },
+    startTour(state) {
+      return state.wizzardData.startTour;
+    }
   },
 
   actions: {
@@ -24,5 +28,8 @@ export const useWizzardStore = defineStore('wizzard', {
     setScanPeripherals(scanPeripherals: boolean | null) {
       this.wizzardData.scanPeripherals = scanPeripherals;
     },
+    setStartTour(startTour: boolean | null) {
+      this.wizzardData.startTour = startTour;
+    }
   },
 });

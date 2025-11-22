@@ -1,6 +1,7 @@
 <template>
   <a :href="config.targetUrl">
     <q-btn
+      :data-test="'button-' + config.label.value"
       class="q-mb-md"
       no-caps
       :disable="disabled"
@@ -23,9 +24,9 @@
 </template>
 
 <script setup lang="ts">
-import { PropType } from 'vue';
-import { ButtonConfig } from './artivact-models';
-import { translate } from './artivact-utils';
+import {PropType} from 'vue';
+import {ButtonConfig} from './artivact-models';
+import {translate} from './artivact-utils';
 
 defineProps({
   config: {

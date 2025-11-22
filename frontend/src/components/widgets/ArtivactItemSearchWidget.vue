@@ -34,7 +34,7 @@
               class="q-mb-lg"
             >
               <template v-slot:append>
-                <q-icon v-if="searchTermRef === ''" name="search" />
+                <q-icon v-if="searchTermRef === ''" name="search"/>
                 <q-icon
                   v-else
                   name="clear"
@@ -63,7 +63,7 @@
           searchResultRef.data &&
           searchResultRef.data.length > 0
         "
-      >
+        data-test="item-search-widget-results">
         <div class="row">
           <artivact-item-card
             :widget-id="widgetData.id"
@@ -124,7 +124,7 @@
         @refresh-search-results="searchPreview()"
       />
 
-      <q-separator />
+      <q-separator/>
 
       <div
         class="full-width"
@@ -171,19 +171,19 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, PropType, ref, toRef } from 'vue';
-import { ItemSearchWidget } from './artivact-widget-models';
-import { SearchResult } from '../artivact-models';
-import { api } from '../../boot/axios';
-import { useQuasar } from 'quasar';
-import { useWidgetdataStore } from '../../stores/widgetdata';
+import {onMounted, PropType, ref, toRef} from 'vue';
+import {ItemSearchWidget} from './artivact-widget-models';
+import {SearchResult} from '../artivact-models';
+import {api} from '../../boot/axios';
+import {useQuasar} from 'quasar';
+import {useWidgetdataStore} from '../../stores/widgetdata';
 import ArtivactItemSearchInput from '../../components/widgets/util/ArtivactItemSearchInput.vue';
-import { useI18n } from 'vue-i18n';
+import {useI18n} from 'vue-i18n';
 import ArtivactItemCard from '../../components/ArtivactItemCard.vue';
 import ArtivactWidgetTemplate from '../../components/widgets/ArtivactWidgetTemplate.vue';
 import ArtivactRestrictedTranslatableItemEditor from '../../components/ArtivactRestrictedTranslatableItemEditor.vue';
-import { useLocaleStore } from '../../stores/locale';
-import { translate } from '../artivact-utils';
+import {useLocaleStore} from '../../stores/locale';
+import {translate} from '../artivact-utils';
 import MarkdownIt from 'markdown-it';
 
 const props = defineProps({
@@ -256,13 +256,13 @@ function search(page: number) {
   api
     .get(
       '/api/search?query=' +
-        searchQuery +
-        '&pageNo=' +
-        page +
-        '&maxResults=' +
-        maxSearchResults +
-        '&pageSize=' +
-        pageSize,
+      searchQuery +
+      '&pageNo=' +
+      page +
+      '&maxResults=' +
+      maxSearchResults +
+      '&pageSize=' +
+      pageSize,
     )
     .then((response) => {
       searchResultRef.value = response.data;

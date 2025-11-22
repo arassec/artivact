@@ -77,16 +77,19 @@
 </template>
 
 <script setup lang="ts">
-import { useMeta, useQuasar } from 'quasar';
-import { useRoute } from 'vue-router';
-import { api } from '../boot/axios';
-import { onMounted, ref } from 'vue';
+import {useMeta, useQuasar} from 'quasar';
+import {useRoute} from 'vue-router';
+import {api} from '../boot/axios';
+import {nextTick, onMounted, ref} from 'vue';
 import ArtivactPage from '../components/ArtivactPage.vue';
-import { Widget } from '../components/artivact-models';
-import { useBreadcrumbsStore } from '../stores/breadcrumbs';
-import { useI18n } from 'vue-i18n';
+import {Widget} from '../components/artivact-models';
+import {useBreadcrumbsStore} from '../stores/breadcrumbs';
+import {useI18n} from 'vue-i18n';
 import ArtivactDialog from '../components/ArtivactDialog.vue';
-import { useProfilesStore } from '../stores/profiles';
+import {useProfilesStore} from '../stores/profiles';
+import {useWizzardStore} from "../stores/wizzard";
+import {driver} from "driver.js";
+import 'driver.js/dist/driver.css';
 
 const quasar = useQuasar();
 const route = useRoute();
@@ -94,6 +97,7 @@ const i18n = useI18n();
 
 const breadcrumbsStore = useBreadcrumbsStore();
 const profilesStore = useProfilesStore();
+const wizzardStore = useWizzardStore();
 
 const pageContentRef = ref();
 const pageIdRef = ref('');
@@ -111,6 +115,106 @@ const metaKeywordsRef = ref(null);
 let originalPageContentJson: string;
 let publishedPageContentJson: string;
 
+const driverObj = driver({
+  showProgress: true,
+  progressText: '{{current}} / {{total}}',
+  nextBtnText: i18n.t('Common.next'),
+  prevBtnText: i18n.t('Common.previous'),
+  doneBtnText: i18n.t('Common.done'),
+  steps: [
+    {
+      element: '[data-test="artivact-menu-bar"]',
+      popover: {
+        title: i18n.t('EditablePage.tour.menuBarTitle'),
+        description: i18n.t('EditablePage.tour.menuBarDescription'),
+        side: "bottom",
+        align: 'center'
+      }
+    },
+    {
+      element: '[data-test="menu-Welcome"]',
+      popover: {
+        title: i18n.t('EditablePage.tour.menuWelcomeTitle'),
+        description: i18n.t('EditablePage.tour.menuWelcomeDescription'),
+        side: "bottom",
+        align: 'start'
+      }
+    },
+    {
+      element: '[data-test="add-menu-button"]',
+      popover: {
+        title: i18n.t('EditablePage.tour.addMenuTitle'),
+        description: i18n.t('EditablePage.tour.addMenuDescription'),
+        side: "bottom",
+        align: 'start'
+      }
+    },
+    {
+      element: '[data-test="item-settings-button"]',
+      popover: {
+        title: i18n.t('EditablePage.tour.itemSettingsTitle'),
+        description: i18n.t('EditablePage.tour.itemSettingsDescription'),
+        side: "bottom",
+        align: 'start'
+      }
+    },
+    {
+      element: '[data-test="system-settings-button"]',
+      popover: {
+        title: i18n.t('EditablePage.tour.systemSettingsTitle'),
+        description: i18n.t('EditablePage.tour.systemSettingsDescription'),
+        side: "bottom",
+        align: 'start'
+      }
+    },
+    {
+      element: '[data-test="edit-page-button"]',
+      popover: {
+        title: i18n.t('EditablePage.tour.editPageTitle'),
+        description: i18n.t('EditablePage.tour.editPageDescription'),
+        side: "bottom",
+        align: 'start'
+      }
+    },
+    {
+      element: '[data-test="button-Prepare 3D Scanning"]',
+      popover: {
+        title: i18n.t('EditablePage.tour.setupScanningTitle'),
+        description: i18n.t('EditablePage.tour.setupScanningDescription'),
+        side: "bottom",
+        align: 'start'
+      }
+    },
+    {
+      element: '[data-test="button-Scan Item"]',
+      popover: {
+        title: i18n.t('EditablePage.tour.scanItemTitle'),
+        description: i18n.t('EditablePage.tour.scanItemDescription'),
+        side: "bottom",
+        align: 'start'
+      }
+    },
+    {
+      element: '[data-test="item-search-widget-results"]',
+      popover: {
+        title: i18n.t('EditablePage.tour.searchResultsTitle'),
+        description: i18n.t('EditablePage.tour.searchResultsDescription'),
+        side: "top",
+        align: 'center'
+      }
+    },
+    {
+      element: '[data-test="documentation-button"]',
+      popover: {
+        title: i18n.t('EditablePage.tour.documentationTitle'),
+        description: i18n.t('EditablePage.tour.documentationDescription'),
+        side: "bottom",
+        align: 'start'
+      }
+    },
+  ]
+});
+
 async function exitEditMode(pageId: string) {
   if (profilesStore.isE2eModeEnabled || profilesStore.isDesktopModeEnabled) {
     let currentPageContentJson = JSON.stringify(pageContentRef.value);
@@ -121,7 +225,7 @@ async function exitEditMode(pageId: string) {
   loadPage(pageId, false);
 }
 
-function loadPage(pageId: string | string[], wip: boolean) {
+async function loadPage(pageId: string | string[], wip: boolean) {
   pageIdRef.value = Array.isArray(pageId) ? pageId[0] : pageId;
   let url = '/api/page';
 
@@ -137,7 +241,7 @@ function loadPage(pageId: string | string[], wip: boolean) {
 
   api
     .get(url)
-    .then((response) => {
+    .then(async (response) => {
       metaTitleRef.value = response.data.metaData.title.translatedValue;
       metaDescriptionRef.value =
         response.data.metaData.description.translatedValue;
@@ -150,6 +254,13 @@ function loadPage(pageId: string | string[], wip: boolean) {
         publishedPageContentJson = JSON.stringify(response.data);
       }
       inEditModeRef.value = wip;
+
+      await nextTick();
+
+      if (wizzardStore.startTour) {
+        wizzardStore.setStartTour(false);
+        driverObj.drive();
+      }
     })
     .catch(() => {
       quasar.notify({
@@ -190,7 +301,7 @@ function fileDeleted(widgetId: string, propertyName: string, filename: string) {
           // eslint-disable-next-line
           pageContentRef.value.widgets[index][propertyName] = (widget as any)[
             propertyName
-          ];
+            ];
         }
       });
       originalPageContentJson = JSON.stringify(pageContentRef.value);
@@ -305,4 +416,5 @@ onMounted(() => {
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+</style>

@@ -18,7 +18,8 @@
   "dependencies": {
     "@google/model-viewer": "4.1.0",
     "@quasar/extras": "1.17.0",
-    "axios": "^1.13.2",
+    "axios": "1.13.2",
+    "driver.js": "1.4.0",
     "markdown-it": "14.1.0",
     "pinia": "3.0.3",
     "quasar": "2.18.2",

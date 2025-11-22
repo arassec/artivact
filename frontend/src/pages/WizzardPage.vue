@@ -3,12 +3,12 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { useWizzardStore } from '../stores/wizzard';
-import { api } from '../boot/axios';
-import { useQuasar } from 'quasar';
-import { useI18n } from 'vue-i18n';
+import {onMounted} from 'vue';
+import {useRoute, useRouter} from 'vue-router';
+import {useWizzardStore} from '../stores/wizzard';
+import {api} from '../boot/axios';
+import {useQuasar} from 'quasar';
+import {useI18n} from 'vue-i18n';
 
 const route = useRoute();
 const router = useRouter();
@@ -47,6 +47,9 @@ onMounted(() => {
   } else if (action === 'scanPeripherals') {
     wizzardStore.setScanPeripherals(true);
     router.push('/administration/configuration/peripherals');
+  } else if (action === 'welcomeTour') {
+    wizzardStore.setStartTour(true);
+    router.push('/');
   } else {
     router.push('/');
   }
