@@ -5,6 +5,7 @@
     :page-content="pageContentRef"
     :in-edit-mode="inEditModeRef"
     @update-page-content="savePageIfRequired"
+    @save-widget-before-upload="saveWidgetBeforeUpload"
     @file-added="fileAdded"
     @file-deleted="fileDeleted"
     @enter-edit-mode="loadPage(pageIdRef, true)"
@@ -318,7 +319,7 @@ function fileDeleted(widgetId: string, propertyName: string, filename: string) {
     });
 }
 
-function savePageIfRequired() {
+async function savePageIfRequired({resolve, reject} = {} as any) {
   let currentPageContentJson = JSON.stringify(pageContentRef.value);
   if (currentPageContentJson !== originalPageContentJson) {
     api
@@ -326,6 +327,9 @@ function savePageIfRequired() {
       .then((response) => {
         pageContentRef.value = response.data;
         originalPageContentJson = JSON.stringify(response.data);
+        if (resolve) {
+          resolve();
+        }
       })
       .catch(() => {
         quasar.notify({
@@ -336,6 +340,9 @@ function savePageIfRequired() {
           }),
           icon: 'report_problem',
         });
+        if (reject) {
+          reject();
+        }
       });
   }
 }
@@ -362,6 +369,10 @@ function resetWip() {
         icon: 'report_problem',
       });
     });
+}
+
+async function saveWidgetBeforeUpload({resolve, reject}) {
+  await savePageIfRequired({resolve, reject});
 }
 
 async function publishWip(notifySuccess: boolean) {

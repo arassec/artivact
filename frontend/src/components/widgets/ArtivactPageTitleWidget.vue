@@ -71,12 +71,14 @@
       <div class="column full-width page-title-editor">
         <q-uploader
           :label="$t('PageTitleWidget.label.bgImage')"
-          auto-upload
+          :auto-upload="true"
+          :multiple="false"
           field-name="file"
           :no-thumbnails="true"
           class="q-mb-md"
           :url="'/api/page/' + pageIdRef + '/widget/' + widgetDataRef.id"
           @uploaded="$emit('image-added', 'backgroundImage')"
+          @start="saveWidgetBeforeUpload"
           ref="imageUploader"
         >
         </q-uploader>
@@ -116,12 +118,24 @@ const props = defineProps({
   },
 });
 
+const emit = defineEmits<{
+  (e: 'image-added', payload: string): void;
+  (e: 'save-widget-before-upload', payload: { resolve; reject; }): void;
+}>();
+
 const editingRef = ref(false);
 
 const localeStore = useLocaleStore();
 
 const pageIdRef = toRef(props, 'pageId');
 const widgetDataRef = toRef(props, 'widgetData');
+
+function saveWidgetBeforeUpload() {
+  return new Promise((resolve, reject) => {
+    emit('save-widget-before-upload', {resolve, reject})
+  });
+}
+
 </script>
 
 <style scoped>

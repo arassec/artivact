@@ -107,6 +107,7 @@
             :class="inEditModeRef ? 'widget' : ''"
             :widget-data="element as PageTitleWidgetData"
             :in-edit-mode="inEditModeRef"
+            @save-widget-before-upload="saveWidgetBeforeUpload"
             @add-widget-below="
               addWidgetBelowRef = element.id;
               showAddWidgetDialogRef = true;
@@ -169,6 +170,7 @@
             :class="inEditModeRef ? 'widget' : ''"
             :widget-data="element as AvatarWidgetData"
             :in-edit-mode="inEditModeRef"
+            @save-widget-before-upload="saveWidgetBeforeUpload"
             @add-widget-below="
               addWidgetBelowRef = element.id;
               showAddWidgetDialogRef = true;
@@ -187,11 +189,13 @@
             :widget-data="element as ImageGalleryWidgetData"
             :page-id="pageId"
             :in-edit-mode="inEditModeRef"
+            @save-widget-before-upload="saveWidgetBeforeUpload"
             @add-widget-below="
               addWidgetBelowRef = element.id;
               showAddWidgetDialogRef = true;
             "
             @delete-widget="() => deleteWidget(index)"
+
             @image-added="fileAdded($event, element.id)"
             @image-deleted="fileDeleted($event, element.id)"
             @stop-editing="$emit('update-page-content')"
@@ -413,6 +417,10 @@ const props = defineProps({
 
 const emit = defineEmits<{
   (e: 'file-added', widgetId: string, property: string): void;
+  (e: 'save-widget-before-upload', payload: {
+    resolve: () => void;
+    reject: () => void;
+  }): void;
   (
     e: 'file-deleted',
     widgetId: string,
@@ -616,6 +624,10 @@ function fileDeleted(parameters: string[], widgetId: string) {
 function updateMetadata() {
   showEditMetadataDialogRef.value = false;
   emit('update-page-content');
+}
+
+async function saveWidgetBeforeUpload({resolve, reject}) {
+  emit('save-widget-before-upload', {resolve, reject})
 }
 
 onMounted(() => {

@@ -42,6 +42,7 @@
             padding
             arrows
             :navigation="widgetDataRef.images.length > 1"
+            infinite
             @click.stop
           >
             <q-carousel-slide
@@ -129,13 +130,15 @@
         <div class="row">
           <q-uploader
             :label="$t('ImageGalleryWidget.label.images')"
-            auto-upload
+            :auto-upload="true"
+            :multiple="true"
+            :max-concurrent-uploads="1"
             field-name="file"
             :no-thumbnails="true"
             class="q-mb-md col"
-            :multiple="true"
             :url="'/api/page/' + pageIdRef + '/widget/' + widgetDataRef.id"
             @uploaded="$emit('image-added', 'images')"
+            @start="saveWidgetBeforeUpload"
             ref="imageUploader"
           >
           </q-uploader>
@@ -225,11 +228,10 @@ const props = defineProps({
   },
 });
 
-const editingRef = ref(false);
-
 const emit = defineEmits<{
   (e: 'image-added', property: string): void;
   (e: 'image-deleted', parameters: string[]): void;
+  (e: 'save-widget-before-upload', payload: { resolve; reject; }): void;
 }>();
 
 const quasar = useQuasar();
@@ -240,6 +242,8 @@ const widgetDataRef = toRef(props, 'widgetData');
 
 const fullscreen = ref(false);
 const slide = ref(0);
+
+const editingRef = ref(false);
 
 function deleteImage(filename: string) {
   emit('image-deleted', ['images', filename]);
@@ -313,6 +317,13 @@ function format(text: string) {
   let md = new MarkdownIt();
   return md.render(text);
 }
+
+function saveWidgetBeforeUpload() {
+  return new Promise((resolve, reject) => {
+    emit('save-widget-before-upload', {resolve, reject})
+  });
+}
+
 </script>
 
 <style scoped>
