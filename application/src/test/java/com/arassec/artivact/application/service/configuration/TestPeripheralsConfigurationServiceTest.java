@@ -8,10 +8,10 @@ import com.arassec.artivact.domain.model.peripheral.PeripheralStatus;
 import com.arassec.artivact.domain.model.peripheral.configs.PeripheralConfig;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -25,9 +25,6 @@ class TestPeripheralsConfigurationServiceTest {
     @Mock
     private Peripheral peripheral;
 
-    @InjectMocks
-    private TestPeripheralsConfigurationService service;
-
     @Test
     void testTestConfig() {
         PeripheralConfig peripheralConfig = new PeripheralConfig();
@@ -37,7 +34,7 @@ class TestPeripheralsConfigurationServiceTest {
         when(peripheral.supports(PeripheralImplementation.PTP_CAMERA_PERIPHERAL)).thenReturn(true);
         when(peripheral.getStatus(peripheralConfig)).thenReturn(PeripheralStatus.AVAILABLE);
 
-        service = new TestPeripheralsConfigurationService(List.of(peripheral));
+        TestPeripheralsConfigurationService service = new TestPeripheralsConfigurationService(List.of(peripheral));
 
         PeripheralStatus result = service.testConfig(peripheralConfig);
 
@@ -53,7 +50,7 @@ class TestPeripheralsConfigurationServiceTest {
         when(peripheral.supports(PeripheralImplementation.EXTERNAL_PROGRAM_CAMERA_PERIPHERAL)).thenReturn(true);
         when(peripheral.getStatus(peripheralConfig)).thenReturn(PeripheralStatus.ERROR);
 
-        service = new TestPeripheralsConfigurationService(List.of(peripheral));
+        TestPeripheralsConfigurationService service = new TestPeripheralsConfigurationService(List.of(peripheral));
 
         PeripheralStatus result = service.testConfig(peripheralConfig);
 
@@ -69,7 +66,7 @@ class TestPeripheralsConfigurationServiceTest {
         when(peripheral.supports(PeripheralImplementation.ARDUINO_TURNTABLE_PERIPHERAL)).thenReturn(true);
         when(peripheral.getStatus(peripheralConfig)).thenReturn(PeripheralStatus.DISCONNECTED);
 
-        service = new TestPeripheralsConfigurationService(List.of(peripheral));
+        TestPeripheralsConfigurationService service = new TestPeripheralsConfigurationService(List.of(peripheral));
 
         PeripheralStatus result = service.testConfig(peripheralConfig);
 
@@ -84,7 +81,7 @@ class TestPeripheralsConfigurationServiceTest {
 
         when(peripheral.supports(PeripheralImplementation.PTP_CAMERA_PERIPHERAL)).thenReturn(false);
 
-        service = new TestPeripheralsConfigurationService(List.of(peripheral));
+        TestPeripheralsConfigurationService service = new TestPeripheralsConfigurationService(List.of(peripheral));
 
         assertThatThrownBy(() -> service.testConfig(peripheralConfig))
                 .isInstanceOf(ArtivactException.class)
@@ -133,7 +130,7 @@ class TestPeripheralsConfigurationServiceTest {
         when(peripheral.getStatus(modelCreatorConfig)).thenReturn(PeripheralStatus.NOT_EXECUTABLE);
         when(peripheral.getStatus(modelEditorConfig)).thenReturn(PeripheralStatus.FILE_DOESNT_EXIST);
 
-        service = new TestPeripheralsConfigurationService(List.of(peripheral));
+        TestPeripheralsConfigurationService service = new TestPeripheralsConfigurationService(List.of(peripheral));
 
         Map<String, PeripheralStatus> result = service.testConfigs(peripheralsConfiguration);
 
@@ -155,7 +152,7 @@ class TestPeripheralsConfigurationServiceTest {
                 .modelEditorPeripheralConfigs(List.of())
                 .build();
 
-        service = new TestPeripheralsConfigurationService(List.of(peripheral));
+        TestPeripheralsConfigurationService service = new TestPeripheralsConfigurationService(List.of(peripheral));
 
         Map<String, PeripheralStatus> result = service.testConfigs(peripheralsConfiguration);
 
@@ -175,7 +172,7 @@ class TestPeripheralsConfigurationServiceTest {
         when(peripheral.supports(PeripheralImplementation.PTP_CAMERA_PERIPHERAL)).thenReturn(true);
         when(peripheral.getStatus(cameraConfig)).thenReturn(PeripheralStatus.AVAILABLE);
 
-        service = new TestPeripheralsConfigurationService(java.util.Arrays.asList(null, peripheral));
+        TestPeripheralsConfigurationService service = new TestPeripheralsConfigurationService(Arrays.asList(null, peripheral));
 
         Map<String, PeripheralStatus> result = service.testConfigs(peripheralsConfiguration);
 
