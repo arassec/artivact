@@ -176,23 +176,23 @@ export default {
       menuBarTitle: 'Menüleiste',
       menuBarDescription: 'Dies ist die Hauptmenüleiste von Artivact, über die Sie auf verschiedene Bereiche der Anwendung zugreifen können.',
       menuWelcomeTitle: 'Menüeintrag',
-      menuWelcomeDescription: 'Dies ist ein Menüeintrag. Er kann durch Rechtsklick angepasst werden.<br/><br/>Die angezeigte Willkommensseite kann ebenfalls nach Ihren Bedürfnissen angepasst werden.',
+      menuWelcomeDescription: 'Dies ist ein Menüeintrag. Er kann durch Rechtsklick angepasst werden.\n\nDie angezeigte Willkommensseite kann ebenfalls nach Ihren Bedürfnissen angepasst werden.',
       addMenuTitle: 'Menüeintrag hinzufügen',
       addMenuDescription: 'Mit dieser Schaltfläche können Sie eigene Menüeinträge zur Menüleiste hinzufügen.',
       itemSettingsTitle: 'Objekte verwalten',
-      itemSettingsDescription: 'Dieses Menü ermöglicht die Verwaltung der Objekte Ihrer Sammlung.<br/><br/>Sie können neue Objekte erstellen, importieren oder vorhandene stapelweise ändern.',
+      itemSettingsDescription: 'Dieses Menü ermöglicht die Verwaltung der Objekte Ihrer Sammlung.\n\nSie können neue Objekte erstellen, importieren oder vorhandene stapelweise ändern.',
       systemSettingsTitle: 'Systemeinstellungen',
-      systemSettingsDescription: 'Dieses Menü konfiguriert die Anwendung.<br/><br/>Sie können z.B. Eigenschaften Ihrer Sammlungsobjekte definieren, das Aussehen von Artivact anpassen oder Peripheriegeräte für das 3D-Scannen einrichten.',
+      systemSettingsDescription: 'Dieses Menü konfiguriert die Anwendung.\n\nSie können z.B. Eigenschaften Ihrer Sammlungsobjekte definieren, das Aussehen von Artivact anpassen oder Peripheriegeräte für das 3D-Scannen einrichten.',
       editPageTitle: 'Seite bearbeiten',
-      editPageDescription: 'Sie können jede Seite anpassen, indem Sie auf die Schaltfläche zum Bearbeiten klicken.<br/><br/>Dies aktiviert den Bearbeitungsmodus, der es Ihnen ermöglicht, Widgets auf der Seite hinzuzufügen, zu entfernen oder zu ändern.',
+      editPageDescription: 'Sie können jede Seite anpassen, indem Sie auf die Schaltfläche zum Bearbeiten klicken.\n\nDies aktiviert den Bearbeitungsmodus, der es Ihnen ermöglicht, Widgets auf der Seite hinzuzufügen, zu entfernen oder zu ändern.',
       setupScanningTitle: '3D-Scannen einrichten',
       setupScanningDescription: 'Wenn Sie Ihre Sammlungsobjekte in 3D scannen möchten, sollten Sie als Nächstes Peripheriegeräte für das Scannen einrichten.',
       scanItemTitle: 'Objekt scannen',
       scanItemDescription: 'Anschließend können Sie mit dem Scannen Ihres ersten Objekts beginnen.',
       searchResultsTitle: 'Sammlungsobjekte',
-      searchResultsDescription: 'Ihre neuen Sammlungsobjekte erscheinen hier nach dem Scannen.<br/><br/>Passen Sie die Suchergebnisse an, indem Sie die Seite und dieses Widget bearbeiten.',
+      searchResultsDescription: 'Ihre neuen Sammlungsobjekte erscheinen hier nach dem Scannen.\n\nPassen Sie die Suchergebnisse an, indem Sie die Seite und dieses Widget bearbeiten.',
       documentationTitle: 'Dokumentation',
-      documentationDescription: 'Ausführlichere Informationen finden Sie in der Dokumentation von Artivact.<br/><br/>Viel Spaß beim Pflegen Ihrer Sammlung! :-)',
+      documentationDescription: 'Ausführlichere Informationen finden Sie in der Dokumentation von Artivact.\n\nViel Spaß beim Pflegen Ihrer Sammlung! :-)',
     }
   },
 
@@ -422,7 +422,7 @@ export default {
       title: {
         heading: 'Anwendungstitel',
         description:
-          'Der Titel der Anwendung wird im Browser-Tab auf jeder Seite angezeigt.',
+          'Der Titel wird im Anwendungsfenster oder in Browser-Tabs angezeigt.',
         label: 'Anwendungstitel',
       },
       locales: {

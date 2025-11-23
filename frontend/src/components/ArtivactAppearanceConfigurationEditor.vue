@@ -8,7 +8,6 @@
       <q-expansion-item
         data-test="appearance-config-application-title"
         group="appearanceConfig"
-        v-if="profilesStore.isServerModeEnabled"
         header-class="bg-primary text-white"
         class="list-entry"
         expand-separator
@@ -293,6 +292,7 @@
             <div class="row">
               <q-uploader
                 label="Favicon"
+                auto-upload
                 :url="'/api/configuration/favicon'"
                 :multiple="false"
                 field-name="file"

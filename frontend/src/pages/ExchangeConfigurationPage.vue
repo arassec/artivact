@@ -83,6 +83,7 @@
             <q-uploader
               :label="$t('ExchangeConfigurationPage.import.exportFile')"
               field-name="file"
+              auto-upload
               :multiple="false"
               accept=".artivact.collection.zip"
               url="/api/collection/export/import"
@@ -97,6 +98,7 @@
               :label="$t('ExchangeConfigurationPage.import.exportFile')"
               field-name="file"
               :multiple="false"
+              auto-upload
               accept=".artivact.collection.zip"
               url="/api/collection/export/import/for-distribution"
               @finish="pollOperationProgress()"

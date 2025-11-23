@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+    <configuration default="false" name="Backend (Desktop, PostgreSQL)" type="SpringBootApplicationConfigurationType"
+                   factoryName="Spring Boot">
+        <module name="artivact-server"/>
+        <option name="SPRING_BOOT_MAIN_CLASS" value="com.arassec.artivact.server.ArtivactServerApplication"/>
+        <option name="VM_PARAMETERS"
+                value="-Dartivact.initial.password=admin -Dspring.profiles.active=desktop -Dspring.datasource.url=jdbc:postgresql://localhost:5432/postgres -Dspring.datasource.username=artivact -Dspring.datasource.password=artivact -Dspring.datasource.driver-class-name=org.postgresql.Driver"/>
+        <method v="2">
+            <option name="Make" enabled="true"/>
+        </method>
+    </configuration>
+</component>

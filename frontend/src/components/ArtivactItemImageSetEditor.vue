@@ -420,6 +420,7 @@
           :url="'/api/item/' + itemId + '/image?uploadOnly=true'"
           :label="$t('ItemImageSetEditor.dialog.upload.label')"
           multiple
+          auto-upload
           class="full-width q-mt-md q-mb-md"
           accept=".jpg, image/*"
           field-name="file"

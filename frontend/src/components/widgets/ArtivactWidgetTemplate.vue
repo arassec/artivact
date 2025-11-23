@@ -8,6 +8,7 @@
     <slot v-if="!editingRef" name="widget-content"></slot>
 
     <template v-if="editingRef">
+      <div class="full-width with-background-color q-pa-sm">
       <artivact-restrictions-editor
         v-if="userDataStore.isAdmin"
         :in-details-view="false"
@@ -24,6 +25,7 @@
         />
       </div>
       <slot name="widget-editor"></slot>
+      </div>
     </template>
 
     <q-btn
@@ -158,5 +160,9 @@ function handleClickOutside() {
   left: 50%;
   bottom: -15px;
   transform: translateX(-50%);
+}
+
+.with-background-color {
+  background-color: #eaeaea;
 }
 </style>

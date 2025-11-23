@@ -130,15 +130,14 @@
         <div class="row">
           <q-uploader
             :label="$t('ImageGalleryWidget.label.images')"
-            :auto-upload="true"
+            :auto-upload="false"
             :multiple="true"
-            :max-concurrent-uploads="1"
             field-name="file"
             :no-thumbnails="true"
             class="q-mb-md col"
             :url="'/api/page/' + pageIdRef + '/widget/' + widgetDataRef.id"
             @uploaded="$emit('image-added', 'images')"
-            @start="saveWidgetBeforeUpload"
+            @added="saveWidgetBeforeUpload"
             ref="imageUploader"
           >
           </q-uploader>
@@ -245,6 +244,8 @@ const slide = ref(0);
 
 const editingRef = ref(false);
 
+const imageUploader = ref(null);
+
 function deleteImage(filename: string) {
   emit('image-deleted', ['images', filename]);
   if (widgetDataRef.value.images.length > 0) {
@@ -318,10 +319,11 @@ function format(text: string) {
   return md.render(text);
 }
 
-function saveWidgetBeforeUpload() {
-  return new Promise((resolve, reject) => {
+async function saveWidgetBeforeUpload() {
+  await new Promise((resolve, reject) => {
     emit('save-widget-before-upload', {resolve, reject})
   });
+  imageUploader.value.upload();
 }
 
 </script>

@@ -123,6 +123,7 @@
                                   field-name="file"
                                   :multiple="false"
                                   class="col"
+                                  auto-upload
                                   :url="'/api/collection/export/' + element.id + '/cover-picture'"
                                   @finish="element.coverPictureExtension = null; $emit('cover-picture-uploaded')"
                       />

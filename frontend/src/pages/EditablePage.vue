@@ -127,7 +127,7 @@ const driverObj = driver({
       element: '[data-test="artivact-menu-bar"]',
       popover: {
         title: i18n.t('EditablePage.tour.menuBarTitle'),
-        description: i18n.t('EditablePage.tour.menuBarDescription'),
+        description: i18n.t('EditablePage.tour.menuBarDescription').replace(/\n/g, '<br/>'),
         side: "bottom",
         align: 'center'
       }
@@ -136,7 +136,7 @@ const driverObj = driver({
       element: '[data-test="menu-Welcome"]',
       popover: {
         title: i18n.t('EditablePage.tour.menuWelcomeTitle'),
-        description: i18n.t('EditablePage.tour.menuWelcomeDescription'),
+        description: i18n.t('EditablePage.tour.menuWelcomeDescription').replace(/\n/g, '<br/>'),
         side: "bottom",
         align: 'start'
       }
@@ -145,7 +145,7 @@ const driverObj = driver({
       element: '[data-test="add-menu-button"]',
       popover: {
         title: i18n.t('EditablePage.tour.addMenuTitle'),
-        description: i18n.t('EditablePage.tour.addMenuDescription'),
+        description: i18n.t('EditablePage.tour.addMenuDescription').replace(/\n/g, '<br/>'),
         side: "bottom",
         align: 'start'
       }
@@ -154,7 +154,7 @@ const driverObj = driver({
       element: '[data-test="item-settings-button"]',
       popover: {
         title: i18n.t('EditablePage.tour.itemSettingsTitle'),
-        description: i18n.t('EditablePage.tour.itemSettingsDescription'),
+        description: i18n.t('EditablePage.tour.itemSettingsDescription').replace(/\n/g, '<br/>'),
         side: "bottom",
         align: 'start'
       }
@@ -163,7 +163,7 @@ const driverObj = driver({
       element: '[data-test="system-settings-button"]',
       popover: {
         title: i18n.t('EditablePage.tour.systemSettingsTitle'),
-        description: i18n.t('EditablePage.tour.systemSettingsDescription'),
+        description: i18n.t('EditablePage.tour.systemSettingsDescription').replace(/\n/g, '<br/>'),
         side: "bottom",
         align: 'start'
       }
@@ -172,7 +172,7 @@ const driverObj = driver({
       element: '[data-test="edit-page-button"]',
       popover: {
         title: i18n.t('EditablePage.tour.editPageTitle'),
-        description: i18n.t('EditablePage.tour.editPageDescription'),
+        description: i18n.t('EditablePage.tour.editPageDescription').replace(/\n/g, '<br/>'),
         side: "bottom",
         align: 'start'
       }
@@ -181,7 +181,7 @@ const driverObj = driver({
       element: '[data-test="button-Prepare 3D Scanning"]',
       popover: {
         title: i18n.t('EditablePage.tour.setupScanningTitle'),
-        description: i18n.t('EditablePage.tour.setupScanningDescription'),
+        description: i18n.t('EditablePage.tour.setupScanningDescription').replace(/\n/g, '<br/>'),
         side: "bottom",
         align: 'start'
       }
@@ -190,7 +190,7 @@ const driverObj = driver({
       element: '[data-test="button-Scan Item"]',
       popover: {
         title: i18n.t('EditablePage.tour.scanItemTitle'),
-        description: i18n.t('EditablePage.tour.scanItemDescription'),
+        description: i18n.t('EditablePage.tour.scanItemDescription').replace(/\n/g, '<br/>'),
         side: "bottom",
         align: 'start'
       }
@@ -199,7 +199,7 @@ const driverObj = driver({
       element: '[data-test="item-search-widget-results"]',
       popover: {
         title: i18n.t('EditablePage.tour.searchResultsTitle'),
-        description: i18n.t('EditablePage.tour.searchResultsDescription'),
+        description: i18n.t('EditablePage.tour.searchResultsDescription').replace(/\n/g, '<br/>'),
         side: "top",
         align: 'center'
       }
@@ -208,7 +208,7 @@ const driverObj = driver({
       element: '[data-test="documentation-button"]',
       popover: {
         title: i18n.t('EditablePage.tour.documentationTitle'),
-        description: i18n.t('EditablePage.tour.documentationDescription'),
+        description: i18n.t('EditablePage.tour.documentationDescription').replace(/\n/g, '<br/>'),
         side: "bottom",
         align: 'start'
       }
@@ -344,6 +344,8 @@ async function savePageIfRequired({resolve, reject} = {} as any) {
           reject();
         }
       });
+  } else {
+    resolve();
   }
 }
 

@@ -373,6 +373,7 @@
               accept=".artivact.item.zip"
               field-name="file"
               :no-thumbnails="true"
+              auto-upload
               class="col"
               :url="'/api/item/import'"
               @uploaded="itemImported()"

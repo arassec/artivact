@@ -595,6 +595,7 @@
               accept=".artivact.menu.zip"
               field-name="file"
               :no-thumbnails="true"
+              auto-upload
               class="col"
               :url="'/api/menu/import'"
               @uploaded="menuImported()"
@@ -972,6 +973,7 @@ function deleteMenu() {
       menuRef.value = createEmptyMenuRef();
       menuStore.setAvailableMenus(response.data);
       confirmDeleteRef.value = false;
+      router.push('/');
       quasar.notify({
         color: 'positive',
         position: 'bottom',

@@ -43,6 +43,11 @@ public class ExternalProgramModelCreatorPeripheral extends BasePeripheral implem
     private final OsGateway osGateway;
 
     /**
+     * Result directory template used for external model creators.
+     */
+    private static final String RESULT_DIR_TEMPLATE = "{projectDir}/temp/export/";
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -83,7 +88,7 @@ public class ExternalProgramModelCreatorPeripheral extends BasePeripheral implem
             peripheralConfig.setPeripheralImplementation(PeripheralImplementation.EXTERNAL_PROGRAM_MODEL_CREATOR_PERIPHERAL);
             peripheralConfig.setCommand(optionalMeshroom.get().resolve("Meshroom").toAbsolutePath().toString());
             peripheralConfig.setArguments("-i {projectDir}/temp/\n-p photogrammetry");
-            peripheralConfig.setResultDir("{projectDir}/temp/export/");
+            peripheralConfig.setResultDir(RESULT_DIR_TEMPLATE);
 
             peripheralConfigs.add(peripheralConfig);
 
@@ -92,7 +97,7 @@ public class ExternalProgramModelCreatorPeripheral extends BasePeripheral implem
             peripheralConfig.setPeripheralImplementation(PeripheralImplementation.EXTERNAL_PROGRAM_MODEL_CREATOR_PERIPHERAL);
             peripheralConfig.setCommand(optionalMeshroom.get().resolve("meshroom_batch").toAbsolutePath().toString());
             peripheralConfig.setArguments("-i {projectDir}/temp/\n-p photogrammetry\n-o {projectDir}/temp/export/");
-            peripheralConfig.setResultDir("{projectDir}/temp/export/");
+            peripheralConfig.setResultDir(RESULT_DIR_TEMPLATE);
 
             peripheralConfigs.add(peripheralConfig);
         }
@@ -106,7 +111,7 @@ public class ExternalProgramModelCreatorPeripheral extends BasePeripheral implem
                 peripheralConfig.setCommand(optionalMetashape.get().resolve("metashape").toAbsolutePath().toString());
                 peripheralConfig.setOpenInputDirInOs(true);
                 peripheralConfig.setArguments("");
-                peripheralConfig.setResultDir("{projectDir}/temp/export/");
+                peripheralConfig.setResultDir(RESULT_DIR_TEMPLATE);
                 peripheralConfigs.add(peripheralConfig);
             }
         }
@@ -120,7 +125,7 @@ public class ExternalProgramModelCreatorPeripheral extends BasePeripheral implem
                 peripheralConfig.setCommand(metashape.toAbsolutePath().toString());
                 peripheralConfig.setOpenInputDirInOs(true);
                 peripheralConfig.setArguments("");
-                peripheralConfig.setResultDir("{projectDir}/temp/export/");
+                peripheralConfig.setResultDir(RESULT_DIR_TEMPLATE);
                 peripheralConfigs.add(peripheralConfig);
             }
 
@@ -138,18 +143,20 @@ public class ExternalProgramModelCreatorPeripheral extends BasePeripheral implem
                 peripheralConfig.setLabel("RealityScan (Headless)");
                 peripheralConfig.setPeripheralImplementation(PeripheralImplementation.EXTERNAL_PROGRAM_MODEL_CREATOR_PERIPHERAL);
                 peripheralConfig.setCommand(realityScan.toAbsolutePath().toString());
-                peripheralConfig.setArguments("-addFolder {projectDir}/temp/" +
-                        "\n-save {projectDir}/temp/MyProject.rcproj" +
-                        "\n-headless" +
-                        "\n-align" +
-                        "\n-setReconstructionRegionAuto" +
-                        "\n-calculateNormalModel" +
-                        "\n-simplify 200000" +
-                        "\n-smooth\n" +
-                        "-calculateTexture" +
-                        "\n-exportSelectedModel {projectDir}/temp/export/RealityScanExport.obj" +
-                        "\n-quit");
-                peripheralConfig.setResultDir("{projectDir}/temp/export/");
+                peripheralConfig.setArguments("""
+                        -addFolder {projectDir}/temp/
+                        -save {projectDir}/temp/MyProject.rcproj
+                        -headless
+                        -align
+                        -setReconstructionRegionAuto
+                        -calculateNormalModel
+                        -simplify 200000
+                        -smooth
+                        -calculateTexture
+                        -exportSelectedModel {projectDir}/temp/export/RealityScanExport.obj
+                        -quit
+                        """);
+                peripheralConfig.setResultDir(RESULT_DIR_TEMPLATE);
                 peripheralConfigs.add(peripheralConfig);
             }
         }

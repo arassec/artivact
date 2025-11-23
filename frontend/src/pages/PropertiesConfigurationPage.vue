@@ -96,6 +96,7 @@
           class="q-mt-md q-mb-md"
           accept=".artivact.properties-configuration.json"
           field-name="file"
+          auto-upload
           :no-thumbnails="true"
           @finish="propertiesUploaded"
         />

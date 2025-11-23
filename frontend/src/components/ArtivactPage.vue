@@ -99,7 +99,7 @@
       @dragend="$emit('update-page-content')"
     >
       <template #item="{ element, index }">
-        <div>
+        <div class="bg-accent">
           <artivact-page-title-widget
             v-if="element.type === 'PAGE_TITLE'"
             group="widgets"
@@ -663,4 +663,5 @@ onMounted(() => {
   width: 100%;
   position: absolute;
 }
+
 </style>

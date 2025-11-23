@@ -1,6 +1,6 @@
-import {TranslatableString} from 'components/artivact-models';
-import {useLocaleStore} from 'stores/locale';
-import {useUserdataStore} from 'stores/userdata';
+import {TranslatableString} from './artivact-models';
+import {useLocaleStore} from '../stores/locale';
+import {useUserdataStore} from '../stores/userdata';
 
 const localeStore = useLocaleStore();
 const userdataStore = useUserdataStore();
@@ -23,16 +23,17 @@ export function moveDown(array: [unknown], index: number) {
 }
 
 export function translate(translatableString: TranslatableString) {
-  if (localeStore.selectedLocale !== null && translatableString.translations[localeStore.selectedLocale]) {
+  if (translatableString
+    && translatableString.translations
+    && localeStore.selectedLocale !== null
+    && localeStore.selectedLocale in translatableString.translations
+    && translatableString.translations[localeStore.selectedLocale]) {
     return translatableString.translations[localeStore.selectedLocale];
-  }
-  if (localeStore.selectedLocale !== null && !translatableString.translations[localeStore.selectedLocale]) {
-    return translatableString.value;
   }
   if (localeStore.selectedLocale === null && userdataStore.isUserOrAdmin) {
     return translatableString.value;
   }
-  if (translatableString.translatedValue) {
+  if (translatableString && translatableString.translatedValue) {
     return translatableString.translatedValue;
   }
   return translatableString.value;

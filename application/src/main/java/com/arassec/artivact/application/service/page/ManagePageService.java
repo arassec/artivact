@@ -384,7 +384,7 @@ public class ManagePageService
      * @return The name of the saved file.
      */
     @Override
-    public synchronized String saveFile(String pageId, String widgetId, MultipartFile file) {
+    public String saveFile(String pageId, String widgetId, MultipartFile file) {
 
         String filename = saveFile(useProjectDirsUseCase.getWidgetsDir(), widgetId, file);
 
