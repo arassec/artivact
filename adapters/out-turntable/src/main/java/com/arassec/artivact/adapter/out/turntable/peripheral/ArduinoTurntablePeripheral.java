@@ -120,8 +120,9 @@ public class ArduinoTurntablePeripheral extends BasePeripheral implements Turnta
                 motorPins[i].setMode(Pin.Mode.OUTPUT);
             }
 
-            // 4096 steps are one full rotation with a 28BYJ-48 stepper motor:
-            int numSteps = (4096 / numPhotos);
+            // A full rotation of the 28BYJ-48 stepper motor consists of 4096 steps.
+            // The gear ratio of the Artivact turntable is 1:6.
+            int numSteps = ((4096 * 6) / numPhotos);
             for (int step = 0; step < numSteps; step++) {
                 int[] sequence = STEP_SEQUENCE[step % STEP_SEQUENCE.length];
                 for (int i = 0; i < motorPins.length; i++) {
