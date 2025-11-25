@@ -17,13 +17,13 @@ import com.arassec.artivact.domain.model.exchange.CollectionExport;
 import com.arassec.artivact.domain.model.exchange.CollectionExportInfo;
 import com.arassec.artivact.domain.model.item.ImageSize;
 import com.arassec.artivact.domain.model.misc.ExchangeDefinitions;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -71,9 +71,9 @@ public class ManageCollectionExportService
     private final LoadMenuUseCase loadMenuUseCase;
 
     /**
-     * The application's standard {@link ObjectMapper}.
+     * The application's standard {@link JsonMapper}.
      */
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
 
     private final ExportCollectionUseCase exportCollectionUseCase;
 
@@ -198,6 +198,8 @@ public class ManageCollectionExportService
             log.info("Build export: {}", exportedFile);
 
             collectionExportRepository.save(collectionExport);
+
+            progressMonitor.updateProgress(1, 1);
         });
     }
 
@@ -290,7 +292,7 @@ public class ManageCollectionExportService
             ZipEntry zipEntry = new ZipEntry(ExchangeDefinitions.COLLECTION_EXPORT_OVERVIEWS_JSON_FILE);
 
             zipOutputStream.putNextEntry(zipEntry);
-            zipOutputStream.write(objectMapper.writeValueAsBytes(collectionExportInfos));
+            zipOutputStream.write(jsonMapper.writeValueAsBytes(collectionExportInfos));
 
             getFileRepository().list(useProjectDirsUseCase.getExportsDir()).stream()
                     .filter(path -> !path.getFileName().toString().endsWith("zip"))

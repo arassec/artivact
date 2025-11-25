@@ -1,52 +1,41 @@
-package com.arassec.artivact.application.infrastructure.mapper;
+package com.arassec.artivact.application.infrastructure.mapping;
 
 import com.arassec.artivact.domain.model.TranslatableString;
 import com.arassec.artivact.domain.model.page.Widget;
 import com.arassec.artivact.domain.model.page.widget.*;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import lombok.extern.slf4j.Slf4j;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.ValueDeserializer;
+import tools.jackson.databind.json.JsonMapper;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
 /**
- * Custom {@link ObjectMapper} deserializer for Artivact widgets.
+ * Custom {@link ValueDeserializer} deserializer for Artivact widgets.
  */
 @Slf4j
-public class WidgetDeserializer extends StdDeserializer<Widget> {
+public class WidgetDeserializer extends ValueDeserializer<Widget> {
 
-    /**
-     * The object mapper.
-     */
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper = JsonMapper.builder()
+            .enable(SerializationFeature.INDENT_OUTPUT)
+            .disable(tools.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+            .build();
 
-    /**
-     * Creates a new instance.
-     */
-    public WidgetDeserializer() {
-        super(Widget.class);
-        objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings("unchecked")
     @Override
-    public Widget deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
-        Map<String, Object> map = deserializationContext.readValue(jsonParser, Map.class);
+    public Widget deserialize(JsonParser jsonParser, tools.jackson.databind.DeserializationContext deserializationContext) throws JacksonException {
+        Map<String, Object> map = deserializationContext.readValue(jsonParser, new TypeReference<>() {
+        });
         try {
             Class<?> classOfType = getClassOfType(getType(map));
             if (classOfType == null) {
                 return null;
             }
-            Widget widget = (Widget) objectMapper.readValue(objectMapper.writeValueAsString(map), classOfType);
+            Widget widget = (Widget) jsonMapper.readValue(jsonMapper.writeValueAsString(map), classOfType);
             if (widget.getNavigationTitle() == null) {
                 widget.setNavigationTitle(TranslatableString.builder().value("").build());
             }

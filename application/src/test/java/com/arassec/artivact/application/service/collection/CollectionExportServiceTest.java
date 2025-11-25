@@ -10,7 +10,6 @@ import com.arassec.artivact.domain.model.configuration.TagsConfiguration;
 import com.arassec.artivact.domain.model.exchange.CollectionExport;
 import com.arassec.artivact.domain.model.exchange.ExchangeMainData;
 import com.arassec.artivact.domain.model.menu.Menu;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +18,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -34,7 +34,7 @@ class CollectionExportServiceTest {
     private FileRepository fileRepository;
 
     @Mock
-    private ObjectMapper objectMapper;
+    private JsonMapper jsonMapper;
 
     @Mock
     private UseProjectDirsUseCase useProjectDirsUseCase;
@@ -84,7 +84,7 @@ class CollectionExportServiceTest {
         verify(fileRepository, never()).copy(any(), any());
 
         ArgumentCaptor<File> argCap = ArgumentCaptor.forClass(File.class);
-        verify(objectMapper).writeValue(argCap.capture(), any(ExchangeMainData.class));
+        verify(jsonMapper).writeValue(argCap.capture(), any(ExchangeMainData.class));
         assertThat(argCap.getValue().toString()).endsWith("artivact.content.json");
     }
 
@@ -114,7 +114,7 @@ class CollectionExportServiceTest {
         verify(fileRepository).delete(any());
 
         ArgumentCaptor<File> argCap = ArgumentCaptor.forClass(File.class);
-        verify(objectMapper).writeValue(argCap.capture(), any(ExchangeMainData.class));
+        verify(jsonMapper).writeValue(argCap.capture(), any(ExchangeMainData.class));
         assertThat(argCap.getValue().toString()).endsWith("artivact.content.json");
     }
 
@@ -144,7 +144,7 @@ class CollectionExportServiceTest {
         verify(fileRepository).delete(any());
 
         ArgumentCaptor<File> argCap = ArgumentCaptor.forClass(File.class);
-        verify(objectMapper).writeValue(argCap.capture(), any(ExchangeMainData.class));
+        verify(jsonMapper).writeValue(argCap.capture(), any(ExchangeMainData.class));
         assertThat(argCap.getValue().toString()).endsWith("artivact.content.json");
     }
 

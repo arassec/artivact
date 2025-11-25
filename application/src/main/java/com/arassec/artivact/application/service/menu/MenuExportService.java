@@ -12,11 +12,11 @@ import com.arassec.artivact.domain.model.exchange.ContentSource;
 import com.arassec.artivact.domain.model.exchange.ExportConfiguration;
 import com.arassec.artivact.domain.model.exchange.ExportContext;
 import com.arassec.artivact.domain.model.menu.Menu;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -30,7 +30,7 @@ import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.MENU_EX
 public class MenuExportService extends BaseExportService implements ExportMenuUseCase {
 
     @Getter
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
 
     @Getter
     private final FileRepository fileRepository;

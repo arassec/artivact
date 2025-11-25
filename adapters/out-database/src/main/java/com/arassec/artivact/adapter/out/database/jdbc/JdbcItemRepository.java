@@ -6,7 +6,6 @@ import com.arassec.artivact.application.port.out.repository.ItemRepository;
 import com.arassec.artivact.domain.model.item.Item;
 import com.arassec.artivact.domain.model.item.MediaContent;
 import com.arassec.artivact.domain.model.item.MediaCreationContent;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +37,7 @@ public class JdbcItemRepository extends BaseJdbcRepository implements ItemReposi
      * Jackson's ObjectMapper.
      */
     @Getter
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
 
     /**
      * {@inheritDoc}

@@ -15,11 +15,11 @@ import com.arassec.artivact.domain.model.exchange.ContentSource;
 import com.arassec.artivact.domain.model.exchange.ExportContext;
 import com.arassec.artivact.domain.model.item.Item;
 import com.arassec.artivact.domain.model.misc.DirectoryDefinitions;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.OutputStream;
 import java.nio.file.Path;
@@ -37,7 +37,7 @@ public class ItemExportService extends BaseExportService implements ExportItemUs
     private final UseProjectDirsUseCase useProjectDirsUseCase;
 
     @Getter
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
 
     @Getter
     private final FileRepository fileRepository;

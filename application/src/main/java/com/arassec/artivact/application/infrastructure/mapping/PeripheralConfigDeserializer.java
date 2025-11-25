@@ -1,43 +1,36 @@
-package com.arassec.artivact.application.infrastructure.mapper;
+package com.arassec.artivact.application.infrastructure.mapping;
 
 import com.arassec.artivact.domain.model.peripheral.configs.*;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.ValueDeserializer;
+import tools.jackson.databind.json.JsonMapper;
 
-import java.io.IOException;
 import java.util.Map;
 
-public class PeripheralConfigDeserializer extends StdDeserializer<PeripheralConfig> {
+/**
+ * Custom {@link ValueDeserializer} deserializer for Artivact peripheral configs.
+ */
+public class PeripheralConfigDeserializer extends ValueDeserializer<PeripheralConfig> {
 
-    /**
-     * The object mapper.
-     */
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper = JsonMapper.builder()
+            .enable(SerializationFeature.INDENT_OUTPUT)
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+            .build();
 
-    /**
-     * Creates a new instance.
-     */
-    public PeripheralConfigDeserializer() {
-        super(PeripheralConfig.class);
-        objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings("unchecked")
     @Override
-    public PeripheralConfig deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
-        Map<String, Object> map = deserializationContext.readValue(jsonParser, Map.class);
+    public PeripheralConfig deserialize(JsonParser jsonParser, tools.jackson.databind.DeserializationContext context) throws JacksonException {
+        Map<String, Object> map = context.readValue(jsonParser, new TypeReference<>() {
+        });
         Class<?> classOfType = getClassOfImplementation(getPeripheralImplementation(map));
         if (classOfType == null) {
             return null;
         }
-        return (PeripheralConfig) objectMapper.readValue(objectMapper.writeValueAsString(map), classOfType);
+        return (PeripheralConfig) jsonMapper.readValue(jsonMapper.writeValueAsString(map), classOfType);
     }
 
     /**

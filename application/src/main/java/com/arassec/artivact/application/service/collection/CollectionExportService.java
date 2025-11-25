@@ -13,12 +13,12 @@ import com.arassec.artivact.domain.model.exchange.CollectionExport;
 import com.arassec.artivact.domain.model.exchange.ContentSource;
 import com.arassec.artivact.domain.model.exchange.ExportContext;
 import com.arassec.artivact.domain.model.menu.Menu;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -35,7 +35,7 @@ public class CollectionExportService extends BaseExportService implements Export
     private final FileRepository fileRepository;
 
     @Getter
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
 
     @Getter
     private final UseProjectDirsUseCase useProjectDirsUseCase;

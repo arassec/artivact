@@ -9,7 +9,6 @@ import com.arassec.artivact.domain.model.exchange.ExportContext;
 import com.arassec.artivact.domain.model.item.Item;
 import com.arassec.artivact.domain.model.page.PageContent;
 import com.arassec.artivact.domain.model.page.widget.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +16,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -30,7 +30,7 @@ import static org.mockito.Mockito.*;
 class PageExportServiceTest {
 
     @Mock
-    private ObjectMapper objectMapper;
+    private JsonMapper jsonMapper;
 
     @Mock
     private FileRepository fileRepository;
@@ -100,7 +100,7 @@ class PageExportServiceTest {
         service.exportPage(ctx, "page2", content);
 
         ArgumentCaptor<File> argCap = ArgumentCaptor.forClass(File.class);
-        verify(objectMapper).writeValue(argCap.capture(), eq(content));
+        verify(jsonMapper).writeValue(argCap.capture(), eq(content));
         assertThat(argCap.getValue().toString()).endsWith("page2.artivact.page-content.json");
     }
 
@@ -122,7 +122,7 @@ class PageExportServiceTest {
         service.exportPage(ctx, "page3", content);
 
         ArgumentCaptor<File> argCap = ArgumentCaptor.forClass(File.class);
-        verify(objectMapper).writeValue(argCap.capture(), eq(content));
+        verify(jsonMapper).writeValue(argCap.capture(), eq(content));
         assertThat(argCap.getValue().toString()).endsWith("page3.artivact.page-content.json");
 
         verify(fileRepository, never()).copy(any(), any());
@@ -158,7 +158,7 @@ class PageExportServiceTest {
         verify(exportItemUseCase).exportItem(ctx, item1);
 
         ArgumentCaptor<File> argCap = ArgumentCaptor.forClass(File.class);
-        verify(objectMapper).writeValue(argCap.capture(), eq(content));
+        verify(jsonMapper).writeValue(argCap.capture(), eq(content));
         assertThat(argCap.getValue().toString()).endsWith("page4.artivact.page-content.json");
     }
 

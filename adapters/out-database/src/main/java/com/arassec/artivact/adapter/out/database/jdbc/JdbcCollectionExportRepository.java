@@ -4,12 +4,12 @@ import com.arassec.artivact.adapter.out.database.jdbc.springdata.entity.Collecti
 import com.arassec.artivact.adapter.out.database.jdbc.springdata.repository.CollectionExportEntityRepository;
 import com.arassec.artivact.application.port.out.repository.CollectionExportRepository;
 import com.arassec.artivact.domain.model.exchange.CollectionExport;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -35,7 +35,7 @@ public class JdbcCollectionExportRepository extends BaseJdbcRepository implement
      * The systems ObjectMapper.
      */
     @Getter
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
 
     /**
      * {@inheritDoc}

@@ -5,15 +5,13 @@ import com.arassec.artivact.application.port.in.configuration.ImportTagsConfigur
 import com.arassec.artivact.application.port.in.configuration.SavePropertiesConfigurationUseCase;
 import com.arassec.artivact.application.port.in.configuration.SaveTagsConfigurationUseCase;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
-import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.configuration.PropertiesConfiguration;
 import com.arassec.artivact.domain.model.configuration.TagsConfiguration;
 import com.arassec.artivact.domain.model.exchange.ImportContext;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.nio.file.Path;
 
@@ -26,9 +24,9 @@ import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.TAGS_EX
 public class ConfigurationImportService implements ImportPropertiesConfigurationUseCase, ImportTagsConfigurationUseCase {
 
     /**
-     * The application's object mapper.
+     * The application's JSON mapper.
      */
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
 
     private final FileRepository fileRepository;
 
@@ -40,11 +38,7 @@ public class ConfigurationImportService implements ImportPropertiesConfiguration
     @Override
     public void importPropertiesConfiguration(String propertiesConfiguration) {
         PropertiesConfiguration propConfig;
-        try {
-            propConfig = objectMapper.readValue(propertiesConfiguration, PropertiesConfiguration.class);
-        } catch (JsonProcessingException e) {
-            throw new ArtivactException("Could not deserialize properties configuration!", e);
-        }
+        propConfig = jsonMapper.readValue(propertiesConfiguration, PropertiesConfiguration.class);
         savePropertiesConfigurationUseCase.savePropertiesConfiguration(propConfig);
     }
 
@@ -56,23 +50,15 @@ public class ConfigurationImportService implements ImportPropertiesConfiguration
         Path propertiesConfigurationJson = importContext.getImportDir().resolve(PROPERTIES_EXCHANGE_FILENAME_JSON);
         if (fileRepository.exists(propertiesConfigurationJson)) {
             PropertiesConfiguration propertiesConfiguration;
-            try {
-                propertiesConfiguration = objectMapper.readValue(fileRepository.read(propertiesConfigurationJson), PropertiesConfiguration.class);
-            } catch (JsonProcessingException e) {
-                throw new ArtivactException("Could not read properties configuration file", e);
-            }
+            propertiesConfiguration = jsonMapper.readValue(fileRepository.read(propertiesConfigurationJson), PropertiesConfiguration.class);
             savePropertiesConfigurationUseCase.savePropertiesConfiguration(propertiesConfiguration);
         }
     }
 
     @Override
     public void importTagsConfiguration(String tagsConfiguration) {
-        try {
-            TagsConfiguration tagsConfig = objectMapper.readValue(tagsConfiguration, TagsConfiguration.class);
-            saveTagsConfigurationUseCase.saveTagsConfiguration(tagsConfig);
-        } catch (JsonProcessingException e) {
-            throw new ArtivactException("Could not deserialize tags configuration!", e);
-        }
+        TagsConfiguration tagsConfig = jsonMapper.readValue(tagsConfiguration, TagsConfiguration.class);
+        saveTagsConfigurationUseCase.saveTagsConfiguration(tagsConfig);
     }
 
     /**
@@ -83,11 +69,7 @@ public class ConfigurationImportService implements ImportPropertiesConfiguration
         Path tagsConfigurationJson = importContext.getImportDir().resolve(TAGS_EXCHANGE_FILENAME_JSON);
         if (fileRepository.exists(tagsConfigurationJson)) {
             TagsConfiguration tagsConfiguration;
-            try {
-                tagsConfiguration = objectMapper.readValue(fileRepository.read(tagsConfigurationJson), TagsConfiguration.class);
-            } catch (JsonProcessingException e) {
-                throw new ArtivactException("Could not read tags configuration file", e);
-            }
+            tagsConfiguration = jsonMapper.readValue(fileRepository.read(tagsConfigurationJson), TagsConfiguration.class);
             saveTagsConfigurationUseCase.saveTagsConfiguration(tagsConfiguration);
         }
     }

@@ -4,7 +4,6 @@ import com.arassec.artivact.adapter.out.database.jdbc.springdata.entity.MenuEnti
 import com.arassec.artivact.adapter.out.database.jdbc.springdata.repository.MenuEntityRepository;
 import com.arassec.artivact.domain.model.configuration.MenuConfiguration;
 import com.arassec.artivact.domain.model.menu.Menu;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,6 +11,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.List;
 import java.util.Optional;
@@ -43,7 +43,7 @@ class JdbcMenuRepositoryTest {
      * ObjectMapper mock.
      */
     @Mock
-    private ObjectMapper objectMapper;
+    private JsonMapper jsonMapper;
 
     /**
      * Tests loading the menu configuration.
@@ -59,9 +59,9 @@ class JdbcMenuRepositoryTest {
         first.setContentJson("first");
 
         Menu firstMenu = new Menu();
-        when(objectMapper.readValue("first", Menu.class)).thenReturn(firstMenu);
+        when(jsonMapper.readValue("first", Menu.class)).thenReturn(firstMenu);
         Menu secondMenu = new Menu();
-        when(objectMapper.readValue("second", Menu.class)).thenReturn(secondMenu);
+        when(jsonMapper.readValue("second", Menu.class)).thenReturn(secondMenu);
 
         when(menuEntityRepository.findAll()).thenReturn(List.of(second, first));
 

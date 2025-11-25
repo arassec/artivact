@@ -20,7 +20,7 @@ public class PeripheralsConfiguration {
      * The configured turntable peripherals.
      */
     @Builder.Default
-    private List<? extends PeripheralConfig> turntablePeripheralConfigs = new LinkedList<>();
+    private List<PeripheralConfig> turntablePeripheralConfigs = new LinkedList<>();
 
     /**
      * All available turntable peripheral implementations.
@@ -32,7 +32,7 @@ public class PeripheralsConfiguration {
      * The configured camera peripherals.
      */
     @Builder.Default
-    private List<? extends PeripheralConfig> cameraPeripheralConfigs = new LinkedList<>();
+    private List<PeripheralConfig> cameraPeripheralConfigs = new LinkedList<>();
 
     /**
      * All available camera adapters.
@@ -44,7 +44,7 @@ public class PeripheralsConfiguration {
      * The configured image-manipulators.
      */
     @Builder.Default
-    private List<? extends PeripheralConfig> imageBackgroundRemovalPeripheralConfigs = new LinkedList<>();
+    private List<PeripheralConfig> imageBackgroundRemovalPeripheralConfigs = new LinkedList<>();
 
     /**
      * All available image-manipulation adapters.
@@ -56,7 +56,7 @@ public class PeripheralsConfiguration {
      * The current model creator adapter.
      */
     @Builder.Default
-    private List<? extends PeripheralConfig> modelCreatorPeripheralConfigs = new LinkedList<>();
+    private List<PeripheralConfig> modelCreatorPeripheralConfigs = new LinkedList<>();
 
     /**
      * All available model creator adapters.
@@ -68,7 +68,7 @@ public class PeripheralsConfiguration {
      * The current model editor adapter.
      */
     @Builder.Default
-    private List<? extends PeripheralConfig> modelEditorPeripheralConfigs = new LinkedList<>();
+    private List<PeripheralConfig> modelEditorPeripheralConfigs = new LinkedList<>();
 
     /**
      * All available model editor adapters.

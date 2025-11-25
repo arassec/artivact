@@ -4,13 +4,13 @@ import com.arassec.artivact.adapter.out.database.jdbc.springdata.entity.Configur
 import com.arassec.artivact.adapter.out.database.jdbc.springdata.repository.ConfigurationEntityRepository;
 import com.arassec.artivact.domain.model.configuration.ConfigurationType;
 import com.arassec.artivact.domain.model.configuration.ExchangeConfiguration;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.Optional;
 
@@ -40,7 +40,7 @@ class JdbcConfigurationRepositoryTest {
      * ObjectMapper mock.
      */
     @Mock
-    private ObjectMapper objectMapper;
+    private JsonMapper jsonMapper;
 
     /**
      * Tests loading a configuration by its type which has not been configured before.
@@ -65,7 +65,7 @@ class JdbcConfigurationRepositoryTest {
 
         ExchangeConfiguration exchangeConfiguration = new ExchangeConfiguration();
 
-        when(objectMapper.readValue("{contentJson}", ExchangeConfiguration.class)).thenReturn(
+        when(jsonMapper.readValue("{contentJson}", ExchangeConfiguration.class)).thenReturn(
                 exchangeConfiguration
         );
 
@@ -88,7 +88,7 @@ class JdbcConfigurationRepositoryTest {
 
         ExchangeConfiguration exchangeConfiguration = new ExchangeConfiguration();
 
-        when(objectMapper.writeValueAsString(exchangeConfiguration)).thenReturn("{contentJson}");
+        when(jsonMapper.writeValueAsString(exchangeConfiguration)).thenReturn("{contentJson}");
 
         jdbcConfigurationRepository.saveConfiguration(ConfigurationType.EXCHANGE, exchangeConfiguration);
 

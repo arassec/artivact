@@ -5,7 +5,6 @@ import com.arassec.artivact.adapter.out.database.jdbc.springdata.repository.Page
 import com.arassec.artivact.domain.model.page.Page;
 import com.arassec.artivact.domain.model.page.PageContent;
 import com.arassec.artivact.domain.model.page.widget.TextWidget;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,6 +12,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.List;
 import java.util.Optional;
@@ -44,7 +44,7 @@ class JdbcPageRepositoryTest {
      * ObjectMapper mock.
      */
     @Mock
-    private ObjectMapper objectMapper;
+    private JsonMapper jsonMapper;
 
     /**
      * Tests saving a new page.
@@ -56,7 +56,7 @@ class JdbcPageRepositoryTest {
         page.setId("id");
         page.setPageContent(new PageContent());
 
-        when(objectMapper.writeValueAsString(any(PageContent.class))).thenReturn("{contentJson}");
+        when(jsonMapper.writeValueAsString(any(PageContent.class))).thenReturn("{contentJson}");
 
         jdbcPageRepository.save(page);
 
@@ -80,7 +80,7 @@ class JdbcPageRepositoryTest {
         page.setId("id");
         page.setPageContent(new PageContent());
 
-        when(objectMapper.writeValueAsString(any(PageContent.class))).thenReturn("{contentJson}");
+        when(jsonMapper.writeValueAsString(any(PageContent.class))).thenReturn("{contentJson}");
 
         PageEntity pageEntity = new PageEntity();
 
@@ -105,7 +105,7 @@ class JdbcPageRepositoryTest {
 
         PageContent pageContent = new PageContent();
 
-        when(objectMapper.readValue("{contentJson}", PageContent.class)).thenReturn(pageContent);
+        when(jsonMapper.readValue("{contentJson}", PageContent.class)).thenReturn(pageContent);
 
         Optional<Page> pageOptional = jdbcPageRepository.deleteById("id");
 
@@ -147,7 +147,7 @@ class JdbcPageRepositoryTest {
         pageContent.getWidgets().add(null); // must be removed!
         pageContent.getWidgets().add(new TextWidget());
 
-        when(objectMapper.readValue("{contentJson}", PageContent.class)).thenReturn(pageContent);
+        when(jsonMapper.readValue("{contentJson}", PageContent.class)).thenReturn(pageContent);
 
         Optional<Page> pageOptional = jdbcPageRepository.deleteById("id");
 

@@ -4,13 +4,13 @@ import com.arassec.artivact.adapter.out.database.jdbc.springdata.entity.Configur
 import com.arassec.artivact.adapter.out.database.jdbc.springdata.repository.ConfigurationEntityRepository;
 import com.arassec.artivact.application.port.out.repository.ConfigurationRepository;
 import com.arassec.artivact.domain.model.configuration.ConfigurationType;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.Optional;
 
@@ -32,7 +32,7 @@ public class JdbcConfigurationRepository extends BaseJdbcRepository implements C
      * Jackson's ObjectMapper.
      */
     @Getter
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
 
     /**
      * {@inheritDoc}

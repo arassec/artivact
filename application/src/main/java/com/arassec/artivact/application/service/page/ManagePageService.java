@@ -18,8 +18,6 @@ import com.arassec.artivact.domain.model.configuration.ConfigurationType;
 import com.arassec.artivact.domain.model.item.ImageSize;
 import com.arassec.artivact.domain.model.menu.Menu;
 import com.arassec.artivact.domain.model.page.*;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +26,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -87,10 +86,10 @@ public class ManagePageService
     private final FileRepository fileRepository;
 
     /**
-     * The object mapper.
+     * The JSON mapper.
      */
     @Getter
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
 
     /**
      * Use case for project directory handling.
@@ -296,12 +295,8 @@ public class ManagePageService
             page.setId(pageIdOrAlias);
             page.setVersion(0);
             page.setPageContent(pageContent);
-            try {
-                // Create a deep copy of the original page content:
-                page.setWipPageContent(objectMapper.readValue(objectMapper.writeValueAsString(pageContent), PageContent.class));
-            } catch (JsonProcessingException e) {
-                throw new ArtivactException("Could not create WIP-PageContent!", e);
-            }
+            // Create a deep copy of the original page content:
+            page.setWipPageContent(jsonMapper.readValue(jsonMapper.writeValueAsString(pageContent), PageContent.class));
         }
 
         Optional<Menu> menuOptional = findMenu(page.getId());

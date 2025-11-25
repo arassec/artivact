@@ -14,14 +14,13 @@ import com.arassec.artivact.domain.model.exchange.ExchangeMainData;
 import com.arassec.artivact.domain.model.exchange.ImportContext;
 import com.arassec.artivact.domain.model.item.Item;
 import com.arassec.artivact.domain.model.item.MediaContent;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.File;
 import java.io.InputStream;
@@ -49,7 +48,7 @@ class ItemImportServiceTest {
     private LoadAccountUseCase loadAccountUseCase;
 
     @Mock
-    private ObjectMapper objectMapper;
+    private JsonMapper jsonMapper;
 
     @Mock
     private FileRepository fileRepository;
@@ -109,14 +108,14 @@ class ItemImportServiceTest {
     }
 
     @Test
-    void testImportItemHappyPath() throws Exception {
+    void testImportItemHappyPath() {
         ExchangeMainData exchangeMainData = new ExchangeMainData();
         exchangeMainData.setSourceId("item1");
-        when(objectMapper.readValue(any(File.class), eq(ExchangeMainData.class))).thenReturn(exchangeMainData);
+        when(jsonMapper.readValue(any(File.class), eq(ExchangeMainData.class))).thenReturn(exchangeMainData);
 
         when(fileRepository.read(any(Path.class))).thenReturn("item-json");
         Item item = new Item();
-        when(objectMapper.readValue("item-json", Item.class)).thenReturn(item);
+        when(jsonMapper.readValue("item-json", Item.class)).thenReturn(item);
 
         itemImportService.importItem(zipPath);
 
@@ -128,22 +127,22 @@ class ItemImportServiceTest {
     }
 
     @Test
-    void testImportItemThrowsOnException() throws Exception {
-        when(objectMapper.readValue(anyString(), eq(ExchangeMainData.class))).thenThrow(new RuntimeException("fail"));
+    void testImportItemThrowsOnException() {
+        when(jsonMapper.readValue(anyString(), eq(ExchangeMainData.class))).thenThrow(new RuntimeException("fail"));
         assertThatThrownBy(() -> itemImportService.importItem(zipPath))
                 .isInstanceOf(ArtivactException.class)
                 .hasMessageContaining("Could not import item!");
     }
 
     @Test
-    void testImportItemWithContextHappyPath() throws Exception {
+    void testImportItemWithContextHappyPath() {
         ImportContext ctx = ImportContext.builder().importDir(importDir).build();
         Path itemDir = importDir.resolve("item1");
         Item item = mock(Item.class);
 
         MediaContent mediaContent = mock(MediaContent.class);
         when(fileRepository.read(itemDir.resolve(ITEM_EXCHANGE_FILENAME_JSON))).thenReturn("{}");
-        when(objectMapper.readValue(anyString(), eq(Item.class))).thenReturn(item);
+        when(jsonMapper.readValue(anyString(), eq(Item.class))).thenReturn(item);
         when(item.getMediaContent()).thenReturn(mediaContent);
         when(mediaContent.getImages()).thenReturn(List.of("img1.png"));
         when(mediaContent.getModels()).thenReturn(List.of("model1.obj"));
@@ -157,15 +156,15 @@ class ItemImportServiceTest {
     }
 
     @Test
-    void testImportItemWithContextJsonProcessingExceptionThrows() throws Exception {
+    void testImportItemWithContextExceptionThrows() {
         ImportContext ctx = ImportContext.builder().importDir(importDir).build();
         when(fileRepository.read(any())).thenReturn("broken");
-        when(objectMapper.readValue(anyString(), eq(Item.class))).thenThrow(new JsonProcessingException("fail") {
+        when(jsonMapper.readValue(anyString(), eq(Item.class))).thenThrow(new RuntimeException("fail") {
         });
 
         assertThatThrownBy(() -> itemImportService.importItem(ctx, "id"))
-                .isInstanceOf(ArtivactException.class)
-                .hasMessageContaining("Could not import item!");
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("fail");
     }
 
 }

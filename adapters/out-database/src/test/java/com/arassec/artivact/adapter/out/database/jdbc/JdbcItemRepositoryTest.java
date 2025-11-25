@@ -3,7 +3,6 @@ package com.arassec.artivact.adapter.out.database.jdbc;
 import com.arassec.artivact.adapter.out.database.jdbc.springdata.entity.ItemEntity;
 import com.arassec.artivact.adapter.out.database.jdbc.springdata.repository.ItemEntityRepository;
 import com.arassec.artivact.domain.model.item.Item;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.List;
 import java.util.Optional;
@@ -46,7 +46,7 @@ class JdbcItemRepositoryTest {
      * ObjectMapper mock.
      */
     @Mock
-    private ObjectMapper objectMapper;
+    private JsonMapper jsonMapper;
 
     /**
      * Tests saving a new item.
@@ -59,7 +59,7 @@ class JdbcItemRepositoryTest {
         item.setVersion(42);
         item.setSyncVersion(23);
 
-        when(objectMapper.writeValueAsString(item)).thenReturn("{contentJson}");
+        when(jsonMapper.writeValueAsString(item)).thenReturn("{contentJson}");
 
         ItemEntity savedItemEntity = new ItemEntity();
         savedItemEntity.setVersion(43);
@@ -82,7 +82,7 @@ class JdbcItemRepositoryTest {
         item.setVersion(42);
         item.setSyncVersion(23);
 
-        when(objectMapper.writeValueAsString(item)).thenReturn("{contentJson}");
+        when(jsonMapper.writeValueAsString(item)).thenReturn("{contentJson}");
 
         ItemEntity existingItemEntity = new ItemEntity();
 
@@ -122,7 +122,7 @@ class JdbcItemRepositoryTest {
 
         Item item = new Item();
 
-        when(objectMapper.readValue(anyString(), eq(Item.class))).thenReturn(item);
+        when(jsonMapper.readValue(anyString(), eq(Item.class))).thenReturn(item);
 
         ItemEntity itemEntity = new ItemEntity();
         itemEntity.setVersion(42);
@@ -153,7 +153,7 @@ class JdbcItemRepositoryTest {
     @Test
     @SneakyThrows
     void testFindAll() {
-        when(objectMapper.readValue(anyString(), eq(Item.class))).thenReturn(new Item());
+        when(jsonMapper.readValue(anyString(), eq(Item.class))).thenReturn(new Item());
 
         ItemEntity itemEntity = new ItemEntity();
         itemEntity.setVersion(23);
@@ -173,7 +173,7 @@ class JdbcItemRepositoryTest {
     @Test
     @SneakyThrows
     void testFindAllWithLimit() {
-        when(objectMapper.readValue(anyString(), eq(Item.class))).thenReturn(new Item());
+        when(jsonMapper.readValue(anyString(), eq(Item.class))).thenReturn(new Item());
 
         ItemEntity itemEntity = new ItemEntity();
         itemEntity.setVersion(23);
@@ -182,7 +182,6 @@ class JdbcItemRepositoryTest {
         Pageable limit = PageRequest.of(0, 666);
 
         Page<ItemEntity> itemEntityPage = new PageImpl<>(List.of(itemEntity));
-
         when(itemEntityRepository.findAll(limit)).thenReturn(itemEntityPage);
 
         List<Item> items = jdbcItemRepository.findAll(666);
@@ -197,7 +196,7 @@ class JdbcItemRepositoryTest {
     @Test
     @SneakyThrows
     void testFindAllById() {
-        when(objectMapper.readValue(anyString(), eq(Item.class))).thenReturn(new Item());
+        when(jsonMapper.readValue(anyString(), eq(Item.class))).thenReturn(new Item());
 
         ItemEntity itemEntity = new ItemEntity();
         itemEntity.setVersion(23);

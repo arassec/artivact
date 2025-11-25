@@ -15,11 +15,11 @@ import com.arassec.artivact.domain.model.exchange.ExportContext;
 import com.arassec.artivact.domain.model.property.Property;
 import com.arassec.artivact.domain.model.property.PropertyCategory;
 import com.arassec.artivact.domain.model.tag.Tag;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.nio.file.Path;
 import java.util.LinkedList;
@@ -36,7 +36,7 @@ public class ConfigurationExportService extends BaseExportService
         ExportTagsConfigurationUseCase {
 
     @Getter
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
 
     @Getter
     private final FileRepository fileRepository;

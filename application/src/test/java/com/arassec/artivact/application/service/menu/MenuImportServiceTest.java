@@ -10,14 +10,13 @@ import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.exchange.ExchangeMainData;
 import com.arassec.artivact.domain.model.exchange.ImportContext;
 import com.arassec.artivact.domain.model.menu.Menu;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -32,7 +31,7 @@ import static org.mockito.Mockito.*;
 class MenuImportServiceTest {
 
     @Mock
-    private ObjectMapper objectMapper;
+    private JsonMapper jsonMapper;
 
     @Mock
     private FileRepository fileRepository;
@@ -57,7 +56,7 @@ class MenuImportServiceTest {
 
     @BeforeEach
     void setup() {
-        objectMapper = mock(ObjectMapper.class);
+        jsonMapper = mock(JsonMapper.class);
         fileRepository = mock(FileRepository.class);
         useProjectDirsUseCase = mock(UseProjectDirsUseCase.class);
         importPageUseCase = mock(ImportPageUseCase.class);
@@ -66,7 +65,7 @@ class MenuImportServiceTest {
         importTagsConfigurationUseCase = mock(ImportTagsConfigurationUseCase.class);
 
         menuImportService = new MenuImportService(
-                objectMapper,
+                jsonMapper,
                 fileRepository,
                 useProjectDirsUseCase,
                 importPageUseCase,
@@ -77,7 +76,7 @@ class MenuImportServiceTest {
     }
 
     @Test
-    void testImportMenuFromPathSuccess() throws Exception {
+    void testImportMenuFromPathSuccess() {
         Path zipFile = Path.of("export.zip");
         ExchangeMainData exchangeMainData = new ExchangeMainData();
         exchangeMainData.setSourceId("menu123");
@@ -85,8 +84,8 @@ class MenuImportServiceTest {
         when(fileRepository.read(Path.of("temp/export/menu123.artivact.menu.json"))).thenReturn("valid-json");
 
         when(useProjectDirsUseCase.getTempDir()).thenReturn(Path.of("temp"));
-        when(objectMapper.readValue(any(File.class), eq(ExchangeMainData.class))).thenReturn(exchangeMainData);
-        when(objectMapper.readValue("valid-json", Menu.class)).thenReturn(new Menu());
+        when(jsonMapper.readValue(any(File.class), eq(ExchangeMainData.class))).thenReturn(exchangeMainData);
+        when(jsonMapper.readValue("valid-json", Menu.class)).thenReturn(new Menu());
 
         menuImportService.importMenu(zipFile);
 
@@ -97,11 +96,11 @@ class MenuImportServiceTest {
     }
 
     @Test
-    void testImportMenuFromPathThrowsException() throws Exception {
+    void testImportMenuFromPathThrowsException() {
         Path zipFile = Path.of("export.zip");
 
         when(useProjectDirsUseCase.getTempDir()).thenReturn(Path.of("temp"));
-        when(objectMapper.readValue(anyString(), eq(ExchangeMainData.class))).thenThrow(new RuntimeException("boom"));
+        when(jsonMapper.readValue(anyString(), eq(ExchangeMainData.class))).thenThrow(new RuntimeException("boom"));
 
         assertThatThrownBy(() -> menuImportService.importMenu(zipFile))
                 .isInstanceOf(ArtivactException.class)
@@ -109,7 +108,7 @@ class MenuImportServiceTest {
     }
 
     @Test
-    void testImportMenuWithSaveMenuTrue() throws Exception {
+    void testImportMenuWithSaveMenuTrue() {
         ImportContext ctx = ImportContext.builder().importDir(Path.of("importDir")).build();
         Menu menu = new Menu();
         menu.setId("menu123");
@@ -119,7 +118,7 @@ class MenuImportServiceTest {
         menu.setMenuEntries(List.of());
 
         when(fileRepository.read(any())).thenReturn("json-content");
-        when(objectMapper.readValue(anyString(), eq(Menu.class))).thenReturn(menu);
+        when(jsonMapper.readValue(anyString(), eq(Menu.class))).thenReturn(menu);
 
         menuImportService.importMenu(ctx, "menu123", true);
 
@@ -130,7 +129,7 @@ class MenuImportServiceTest {
     }
 
     @Test
-    void testImportMenuWithSubmenus() throws Exception {
+    void testImportMenuWithSubmenus() {
         ImportContext ctx = ImportContext.builder().importDir(Path.of("importDir")).build();
         Menu submenu = new Menu();
         submenu.setId("submenu");
@@ -145,7 +144,7 @@ class MenuImportServiceTest {
         menu.setMenuEntries(List.of(submenuEntry));
 
         when(fileRepository.read(any())).thenReturn("json-content");
-        when(objectMapper.readValue(anyString(), eq(Menu.class)))
+        when(jsonMapper.readValue(anyString(), eq(Menu.class)))
                 .thenReturn(menu)
                 .thenReturn(submenu);
 
@@ -157,15 +156,15 @@ class MenuImportServiceTest {
     }
 
     @Test
-    void testImportMenuThrowsJsonProcessingException() throws Exception {
+    void testImportMenuThrowsJsonProcessingException() {
         ImportContext ctx = ImportContext.builder().importDir(Path.of("importDir")).build();
 
         when(fileRepository.read(any())).thenReturn("invalid-json");
-        when(objectMapper.readValue(anyString(), eq(Menu.class))).thenThrow(new JsonProcessingException("boom") {
+        when(jsonMapper.readValue(anyString(), eq(Menu.class))).thenThrow(new RuntimeException("boom") {
         });
 
         assertThatThrownBy(() -> menuImportService.importMenu(ctx, "menu123", true))
-                .isInstanceOf(ArtivactException.class)
-                .hasMessageContaining("Could not import menu!");
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("boom");
     }
 }

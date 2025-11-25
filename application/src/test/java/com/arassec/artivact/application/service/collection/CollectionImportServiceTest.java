@@ -14,16 +14,15 @@ import com.arassec.artivact.domain.model.exchange.ExchangeMainData;
 import com.arassec.artivact.domain.model.exchange.ImportContext;
 import com.arassec.artivact.domain.model.misc.ProgressMonitor;
 import com.arassec.artivact.domain.model.operation.BackgroundOperation;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -56,7 +55,7 @@ class CollectionImportServiceTest {
     private CollectionExportRepository collectionExportRepository;
 
     @Mock
-    private ObjectMapper objectMapper;
+    private JsonMapper jsonMapper;
 
     @InjectMocks
     private CollectionImportService service;
@@ -79,7 +78,7 @@ class CollectionImportServiceTest {
     }
 
     @Test
-    void testImportCollectionTriggersBackgroundExecution() throws Exception {
+    void testImportCollectionTriggersBackgroundExecution() {
         when(useProjectDirsUseCase.getExportsDir()).thenReturn(exportsDir);
         when(useProjectDirsUseCase.getTempDir()).thenReturn(tempDir);
 
@@ -89,7 +88,7 @@ class CollectionImportServiceTest {
             return null;
         }).when(runBackgroundOperationUseCase).execute(any(), any(), any());
 
-        when(objectMapper.readValue(any(File.class), eq(ExchangeMainData.class))).thenReturn(exchangeMainData);
+        when(jsonMapper.readValue(any(File.class), eq(ExchangeMainData.class))).thenReturn(exchangeMainData);
         when(fileRepository.exists(any())).thenReturn(false);
 
         service.importCollection(testFile);
@@ -102,7 +101,7 @@ class CollectionImportServiceTest {
     }
 
     @Test
-    void testImportCollectionForDistributionSkipsContentImports() throws Exception {
+    void testImportCollectionForDistributionSkipsContentImports() {
         when(useProjectDirsUseCase.getExportsDir()).thenReturn(exportsDir);
         when(useProjectDirsUseCase.getTempDir()).thenReturn(tempDir);
 
@@ -112,7 +111,7 @@ class CollectionImportServiceTest {
             return null;
         }).when(runBackgroundOperationUseCase).execute(any(), any(), any());
 
-        when(objectMapper.readValue(any(File.class), eq(ExchangeMainData.class))).thenReturn(exchangeMainData);
+        when(jsonMapper.readValue(any(File.class), eq(ExchangeMainData.class))).thenReturn(exchangeMainData);
         when(fileRepository.exists(any())).thenReturn(false);
 
         service.importCollectionForDistribution(testFile);
@@ -124,11 +123,11 @@ class CollectionImportServiceTest {
     }
 
     @Test
-    void testImportCollectionThrowsOnUnsupportedContentSource() throws Exception {
+    void testImportCollectionThrowsOnUnsupportedContentSource() {
         exchangeMainData.setContentSource(ContentSource.ITEM);
         when(useProjectDirsUseCase.getExportsDir()).thenReturn(exportsDir);
         when(useProjectDirsUseCase.getTempDir()).thenReturn(tempDir);
-        when(objectMapper.readValue(any(File.class), eq(ExchangeMainData.class))).thenReturn(exchangeMainData);
+        when(jsonMapper.readValue(any(File.class), eq(ExchangeMainData.class))).thenReturn(exchangeMainData);
 
         doAnswer(invocation -> {
             BackgroundOperation backgroundOperation = invocation.getArgument(2);
@@ -140,15 +139,6 @@ class CollectionImportServiceTest {
         }).when(runBackgroundOperationUseCase).execute(any(), any(), any());
 
         service.importCollection(testFile);
-    }
-
-    @Test
-    void testReadExchangeMainDataJsonThrowsWrappedException() throws Exception {
-        when(objectMapper.readValue(any(File.class), eq(ExchangeMainData.class))).thenThrow(new IOException("fail"));
-        var method = CollectionImportService.class.getDeclaredMethod("readExchangeMainDataJson", Path.class);
-        method.setAccessible(true);
-        assertThatThrownBy(() -> method.invoke(service, Path.of("file.json")))
-                .hasCauseInstanceOf(ArtivactException.class);
     }
 
     @Test

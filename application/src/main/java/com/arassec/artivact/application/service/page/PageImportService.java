@@ -6,18 +6,16 @@ import com.arassec.artivact.application.port.in.page.SavePageContentUseCase;
 import com.arassec.artivact.application.port.in.page.UpdatePageAliasUseCase;
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
-import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.exchange.ImportContext;
 import com.arassec.artivact.domain.model.misc.DirectoryDefinitions;
 import com.arassec.artivact.domain.model.page.PageContent;
 import com.arassec.artivact.domain.model.page.widget.ItemSearchWidget;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -32,7 +30,7 @@ import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.SEARCH_
 @RequiredArgsConstructor
 public class PageImportService implements ImportPageUseCase {
 
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
 
     private final FileRepository fileRepository;
 
@@ -51,44 +49,36 @@ public class PageImportService implements ImportPageUseCase {
     public void importPage(ImportContext importContext, String pageId, String pageAlias) {
         Path pageContentJson = importContext.getImportDir().resolve(pageId + PAGE_EXCHANGE_FILE_SUFFIX);
 
-        try {
-            PageContent pageContent = objectMapper.readValue(fileRepository.read(pageContentJson), PageContent.class);
+        PageContent pageContent = jsonMapper.readValue(fileRepository.read(pageContentJson), PageContent.class);
 
-            pageContent.setWidgets(pageContent.getWidgets().stream()
-                    .filter(Objects::nonNull)
-                    .toList());
+        pageContent.setWidgets(pageContent.getWidgets().stream()
+                .filter(Objects::nonNull)
+                .toList());
 
-            pageContent.getWidgets().forEach(widget -> {
-                // Import the widget:
-                Path widgetSource = importContext.getImportDir().resolve(widget.getId());
+        pageContent.getWidgets().forEach(widget -> {
+            // Import the widget:
+            Path widgetSource = importContext.getImportDir().resolve(widget.getId());
 
-                Path widgetTarget = fileRepository.getDirFromId(useProjectDirsUseCase.getProjectRoot()
-                        .resolve(DirectoryDefinitions.WIDGETS_DIR), widget.getId());
+            Path widgetTarget = fileRepository.getDirFromId(useProjectDirsUseCase.getProjectRoot()
+                    .resolve(DirectoryDefinitions.WIDGETS_DIR), widget.getId());
 
-                fileRepository.copy(widgetSource, widgetTarget);
+            fileRepository.copy(widgetSource, widgetTarget);
 
-                // Import Items:
-                if (widget instanceof ItemSearchWidget itemSearchWidget) {
-                    Path searchResultJson = importContext.getImportDir().resolve(itemSearchWidget.getId() + SEARCH_RESULT_FILE_SUFFIX);
-                    if (fileRepository.exists(searchResultJson)) {
-                        try {
-                            List<String> itemIds = objectMapper.readValue(fileRepository.read(searchResultJson), new TypeReference<>() {
-                            });
-                            itemIds.forEach(itemId -> importItemUseCase.importItem(importContext, itemId));
-                        } catch (JsonProcessingException e) {
-                            throw new ArtivactException("Could not read search result!", e);
-                        }
-                    }
+            // Import Items:
+            if (widget instanceof ItemSearchWidget itemSearchWidget) {
+                Path searchResultJson = importContext.getImportDir().resolve(itemSearchWidget.getId() + SEARCH_RESULT_FILE_SUFFIX);
+                if (fileRepository.exists(searchResultJson)) {
+                    List<String> itemIds = jsonMapper.readValue(fileRepository.read(searchResultJson), new TypeReference<>() {
+                    });
+                    itemIds.forEach(itemId -> importItemUseCase.importItem(importContext, itemId));
                 }
-            });
-
-            savePageContentUseCase.savePageContent(pageId, Set.of(), pageContent);
-
-            if (StringUtils.hasText(pageAlias)) {
-                updatePageAliasUseCase.updatePageAlias(pageId, pageAlias);
             }
-        } catch (JsonProcessingException e) {
-            throw new ArtivactException("Could not import page!", e);
+        });
+
+        savePageContentUseCase.savePageContent(pageId, Set.of(), pageContent);
+
+        if (StringUtils.hasText(pageAlias)) {
+            updatePageAliasUseCase.updatePageAlias(pageId, pageAlias);
         }
     }
 

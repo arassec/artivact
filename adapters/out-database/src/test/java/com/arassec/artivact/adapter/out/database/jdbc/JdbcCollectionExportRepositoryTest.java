@@ -3,7 +3,6 @@ package com.arassec.artivact.adapter.out.database.jdbc;
 import com.arassec.artivact.adapter.out.database.jdbc.springdata.entity.CollectionExportEntity;
 import com.arassec.artivact.adapter.out.database.jdbc.springdata.repository.CollectionExportEntityRepository;
 import com.arassec.artivact.domain.model.exchange.CollectionExport;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,6 +10,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.List;
 import java.util.Optional;
@@ -42,7 +42,7 @@ class JdbcCollectionExportRepositoryTest {
      * ObjectMapper mock.
      */
     @Mock
-    private ObjectMapper objectMapper;
+    private JsonMapper jsonMapper;
 
     /**
      * Tests finding a collection export by its ID.
@@ -55,7 +55,7 @@ class JdbcCollectionExportRepositoryTest {
         when(collectionExportEntityRepository.findById("id")).thenReturn(Optional.of(entity));
 
         CollectionExport collectionExport = new CollectionExport();
-        when(objectMapper.readValue("{content-json}", CollectionExport.class)).thenReturn(collectionExport);
+        when(jsonMapper.readValue("{content-json}", CollectionExport.class)).thenReturn(collectionExport);
 
         CollectionExport result = jdbcCollectionExportRepository.findById("id").orElseThrow(AssertionError::new);
 
@@ -79,9 +79,9 @@ class JdbcCollectionExportRepositoryTest {
         when(collectionExportEntityRepository.findAll()).thenReturn(List.of(entityOne, entityTwo));
 
         CollectionExport collectionExportOne = new CollectionExport();
-        when(objectMapper.readValue("{content-json-one}", CollectionExport.class)).thenReturn(collectionExportOne);
+        when(jsonMapper.readValue("{content-json-one}", CollectionExport.class)).thenReturn(collectionExportOne);
         CollectionExport collectionExportTwo = new CollectionExport();
-        when(objectMapper.readValue("{content-json-two}", CollectionExport.class)).thenReturn(collectionExportTwo);
+        when(jsonMapper.readValue("{content-json-two}", CollectionExport.class)).thenReturn(collectionExportTwo);
 
         List<CollectionExport> result = jdbcCollectionExportRepository.findAll();
 
@@ -104,7 +104,7 @@ class JdbcCollectionExportRepositoryTest {
 
         when(collectionExportEntityRepository.findMaxSortOrder()).thenReturn(Optional.of(23));
 
-        when(objectMapper.writeValueAsString(any(CollectionExport.class))).thenReturn("{content-json}");
+        when(jsonMapper.writeValueAsString(any(CollectionExport.class))).thenReturn("{content-json}");
 
         ArgumentCaptor<CollectionExportEntity> argCap = ArgumentCaptor.forClass(CollectionExportEntity.class);
 

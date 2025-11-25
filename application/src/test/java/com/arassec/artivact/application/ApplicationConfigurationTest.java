@@ -3,11 +3,11 @@ package com.arassec.artivact.application;
 import com.arassec.artivact.domain.model.TranslatableString;
 import com.arassec.artivact.domain.model.page.WidgetType;
 import com.arassec.artivact.domain.model.page.widget.TextWidget;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.Set;
 
@@ -38,8 +38,8 @@ class ApplicationConfigurationTest {
      */
     @Test
     @SneakyThrows
-    void testObjectMapper() {
-        ObjectMapper objectMapper = domainConfiguration.objectMapper();
+    void testJsonMapper() {
+        JsonMapper jsonMapper = domainConfiguration.jsonMapper();
 
         TranslatableString title = new TranslatableString();
         title.setValue("testObjectMapper");
@@ -49,10 +49,10 @@ class ApplicationConfigurationTest {
         textWidget.setRestrictions(Set.of("ROLE_ADMIN"));
         textWidget.setHeading(title);
 
-        String serializedWidget = objectMapper.writeValueAsString(textWidget);
+        String serializedWidget = jsonMapper.writeValueAsString(textWidget);
         log.info("Serialized widget: {}", serializedWidget);
 
-        TextWidget deserializedWidget = objectMapper.readValue(serializedWidget, TextWidget.class);
+        TextWidget deserializedWidget = jsonMapper.readValue(serializedWidget, TextWidget.class);
         assertEquals(WidgetType.TEXT, deserializedWidget.getType());
         assertEquals("testObjectMapper", deserializedWidget.getHeading().getValue());
         assertEquals("123abc", deserializedWidget.getId());

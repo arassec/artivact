@@ -13,13 +13,13 @@ import com.arassec.artivact.domain.model.TranslatableString;
 import com.arassec.artivact.domain.model.exchange.CollectionExport;
 import com.arassec.artivact.domain.model.misc.ProgressMonitor;
 import com.arassec.artivact.domain.model.operation.BackgroundOperation;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -54,7 +54,7 @@ class ManageCollectionExportServiceTest {
     private LoadMenuUseCase loadMenuUseCase;
 
     @Mock
-    private ObjectMapper objectMapper;
+    private JsonMapper jsonMapper;
 
     @Mock
     private ExportCollectionUseCase exportCollectionUseCase;
@@ -192,7 +192,7 @@ class ManageCollectionExportServiceTest {
     }
 
     @Test
-    void testCreateCollectionExportInfosWritesToStream() throws Exception {
+    void testCreateCollectionExportInfosWritesToStream() {
         export.setFilePresent(true);
         export.setFileSize(42L);
         export.setFileLastModified(Instant.now().toEpochMilli());
@@ -200,7 +200,7 @@ class ManageCollectionExportServiceTest {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         when(useProjectDirsUseCase.getExportsDir()).thenReturn(Path.of("/tmp"));
         when(fileRepository.list(any())).thenReturn(List.of());
-        when(objectMapper.writeValueAsBytes(any())).thenReturn("data".getBytes());
+        when(jsonMapper.writeValueAsBytes(any())).thenReturn("data".getBytes());
 
         service.createCollectionExportInfos(outputStream, List.of(export));
 

@@ -7,13 +7,13 @@ import com.arassec.artivact.application.port.in.search.SearchItemsUseCase;
 import com.arassec.artivact.application.port.out.gateway.SearchGateway;
 import com.arassec.artivact.application.port.out.repository.ItemRepository;
 import com.arassec.artivact.domain.model.item.Item;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -43,7 +43,7 @@ public class SearchService
      * The object mapper.
      */
     @Getter
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
 
     /**
      * Recreates the search index.

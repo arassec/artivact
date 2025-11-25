@@ -11,7 +11,6 @@ import com.arassec.artivact.domain.model.exchange.ExportContext;
 import com.arassec.artivact.domain.model.property.Property;
 import com.arassec.artivact.domain.model.property.PropertyCategory;
 import com.arassec.artivact.domain.model.tag.Tag;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,6 +18,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -33,7 +33,7 @@ import static org.mockito.Mockito.*;
 class ConfigurationExportServiceTest {
 
     @Mock
-    private ObjectMapper objectMapper;
+    private JsonMapper jsonMapper;
 
     @Mock
     private FileRepository fileRepository;
@@ -70,7 +70,7 @@ class ConfigurationExportServiceTest {
         verify(fileRepository).read(any(Path.class));
 
         ArgumentCaptor<File> argCap = ArgumentCaptor.forClass(File.class);
-        verify(objectMapper).writeValue(argCap.capture(), any(TagsConfiguration.class));
+        verify(jsonMapper).writeValue(argCap.capture(), any(TagsConfiguration.class));
         assertThat(argCap.getValue().toString()).endsWith("artivact.tags-configuration.json");
     }
 
@@ -91,7 +91,7 @@ class ConfigurationExportServiceTest {
         verify(fileRepository).read(any(Path.class));
 
         ArgumentCaptor<File> argCap = ArgumentCaptor.forClass(File.class);
-        verify(objectMapper).writeValue(argCap.capture(), any(PropertiesConfiguration.class));
+        verify(jsonMapper).writeValue(argCap.capture(), any(PropertiesConfiguration.class));
         assertThat(argCap.getValue().toString()).endsWith("artivact.properties-configuration.json");
     }
 

@@ -12,12 +12,12 @@ import com.arassec.artivact.domain.model.misc.DirectoryDefinitions;
 import com.arassec.artivact.domain.model.page.PageContent;
 import com.arassec.artivact.domain.model.page.Widget;
 import com.arassec.artivact.domain.model.page.widget.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.nio.file.Path;
 import java.util.HashSet;
@@ -34,7 +34,7 @@ import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.SEARCH_
 public class PageExportService extends BaseExportService implements ExportPageUseCase {
 
     @Getter
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
 
     @Getter
     private final FileRepository fileRepository;

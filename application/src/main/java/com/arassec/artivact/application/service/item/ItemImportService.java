@@ -15,14 +15,12 @@ import com.arassec.artivact.domain.model.exchange.ExchangeMainData;
 import com.arassec.artivact.domain.model.exchange.ImportContext;
 import com.arassec.artivact.domain.model.item.Item;
 import com.arassec.artivact.domain.model.item.MediaCreationContent;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import tools.jackson.databind.json.JsonMapper;
 
-import java.io.IOException;
 import java.nio.file.Path;
 
 import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.*;
@@ -40,7 +38,7 @@ public class ItemImportService implements ImportItemUseCase {
 
     private final LoadAccountUseCase loadAccountUseCase;
 
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
 
     private final FileRepository fileRepository;
 
@@ -80,7 +78,8 @@ public class ItemImportService implements ImportItemUseCase {
         fileRepository.unpack(contentExport, importContext.getImportDir());
 
         try {
-            ExchangeMainData exchangeMainData = readExchangeMainDataJson(importContext.getImportDir().resolve(CONTENT_EXCHANGE_MAIN_DATA_FILENAME_JSON));
+            ExchangeMainData exchangeMainData =
+                    jsonMapper.readValue(importContext.getImportDir().resolve(CONTENT_EXCHANGE_MAIN_DATA_FILENAME_JSON).toFile(), ExchangeMainData.class);
             importItem(importContext, exchangeMainData.getSourceId());
             importPropertiesConfigurationUseCase.importPropertiesConfiguration(importContext);
             importTagsConfigurationUseCase.importTagsConfiguration(importContext);
@@ -100,29 +99,17 @@ public class ItemImportService implements ImportItemUseCase {
         Path itemDir = importContext.getImportDir().resolve(itemId);
         String itemJson = fileRepository.read(itemDir.resolve(ITEM_EXCHANGE_FILENAME_JSON));
 
-        try {
-            Item item = objectMapper.readValue(itemJson, Item.class);
+        Item item = jsonMapper.readValue(itemJson, Item.class);
 
-            item.setMediaCreationContent(new MediaCreationContent());
+        item.setMediaCreationContent(new MediaCreationContent());
 
-            item.getMediaContent().getImages()
-                    .forEach(image -> manageItemImagesUseCase.saveImage(item.getId(), image, fileRepository.readStream(itemDir.resolve(image)), true));
+        item.getMediaContent().getImages()
+                .forEach(image -> manageItemImagesUseCase.saveImage(item.getId(), image, fileRepository.readStream(itemDir.resolve(image)), true));
 
-            item.getMediaContent().getModels()
-                    .forEach(model -> manageItemModelsUseCase.saveModel(item.getId(), model, fileRepository.readStream(itemDir.resolve(model)), true));
+        item.getMediaContent().getModels()
+                .forEach(model -> manageItemModelsUseCase.saveModel(item.getId(), model, fileRepository.readStream(itemDir.resolve(model)), true));
 
-            saveItemUseCase.save(item);
-        } catch (JsonProcessingException e) {
-            throw new ArtivactException("Could not import item!", e);
-        }
-    }
-
-    private ExchangeMainData readExchangeMainDataJson(Path file) {
-        try {
-            return objectMapper.readValue(file.toFile(), ExchangeMainData.class);
-        } catch (IOException e) {
-            throw new ArtivactException("Could not read ExchangeMainData JSON file " + file, e);
-        }
+        saveItemUseCase.save(item);
     }
 
 }

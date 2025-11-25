@@ -21,7 +21,6 @@ import com.arassec.artivact.domain.model.item.MediaCreationContent;
 import com.arassec.artivact.domain.model.property.Property;
 import com.arassec.artivact.domain.model.property.PropertyCategory;
 import com.arassec.artivact.domain.model.tag.Tag;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,6 +32,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -52,7 +52,7 @@ import static org.mockito.Mockito.*;
         GenerateIdsAspect.class,
         RestrictResultAspect.class,
         TranslateResultAspect.class,
-        ObjectMapper.class
+        JsonMapper.class
 })
 class ItemManagementIntegrationTest {
 

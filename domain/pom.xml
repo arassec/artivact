@@ -17,4 +17,13 @@
     <name>domain</name>
     <description>Domain logic of the artivact application.</description>
 
+    <dependencies>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+        </dependency>
+
+    </dependencies>
+
 </project>

@@ -13,12 +13,11 @@ import com.arassec.artivact.domain.model.exchange.CollectionExport;
 import com.arassec.artivact.domain.model.exchange.ContentSource;
 import com.arassec.artivact.domain.model.exchange.ExchangeMainData;
 import com.arassec.artivact.domain.model.exchange.ImportContext;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.json.JsonMapper;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
@@ -43,7 +42,7 @@ public class CollectionImportService implements ImportCollectionUseCase {
 
     private final CollectionExportRepository collectionExportRepository;
 
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
 
     /**
      * Imports previously created collection exports to the application by reading from the exported ZIP file.
@@ -88,7 +87,8 @@ public class CollectionImportService implements ImportCollectionUseCase {
 
             fileRepository.unpack(file, importContext.getImportDir());
 
-            ExchangeMainData exchangeMainData = readExchangeMainDataJson(importContext.getImportDir().resolve(CONTENT_EXCHANGE_MAIN_DATA_FILENAME_JSON));
+            ExchangeMainData exchangeMainData =
+                    jsonMapper.readValue(importContext.getImportDir().resolve(CONTENT_EXCHANGE_MAIN_DATA_FILENAME_JSON).toFile(), ExchangeMainData.class);
 
             if (!ContentSource.MENU.equals(exchangeMainData.getContentSource())) {
                 throw new ArtivactException("Unsupported content source: " + exchangeMainData.getContentSource());
@@ -118,6 +118,8 @@ public class CollectionImportService implements ImportCollectionUseCase {
             fileRepository.delete(file);
 
             collectionExportRepository.save(createCollectionExport(exchangeMainData, onlyForDistribution));
+
+            progressMonitor.updateProgress(1, 1);
         });
     }
 
@@ -139,14 +141,6 @@ public class CollectionImportService implements ImportCollectionUseCase {
         result.setCoverPictureExtension(exchangeMainData.getCoverPictureExtension());
         result.setDistributionOnly(distributionOnly);
         return result;
-    }
-
-    private ExchangeMainData readExchangeMainDataJson(Path file) {
-        try {
-            return objectMapper.readValue(file.toFile(), ExchangeMainData.class);
-        } catch (IOException e) {
-            throw new ArtivactException("Could not read JSON file " + file, e);
-        }
     }
 
 }

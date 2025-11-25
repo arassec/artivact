@@ -5,19 +5,18 @@ import com.arassec.artivact.application.port.in.page.SavePageContentUseCase;
 import com.arassec.artivact.application.port.in.page.UpdatePageAliasUseCase;
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
-import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.exchange.ImportContext;
 import com.arassec.artivact.domain.model.page.PageContent;
 import com.arassec.artivact.domain.model.page.Widget;
 import com.arassec.artivact.domain.model.page.widget.ItemSearchWidget;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -34,7 +33,7 @@ import static org.mockito.Mockito.*;
 class PageImportServiceTest {
 
     @Mock
-    private ObjectMapper objectMapper;
+    private JsonMapper jsonMapper;
 
     @Mock
     private FileRepository fileRepository;
@@ -63,14 +62,14 @@ class PageImportServiceTest {
     }
 
     @Test
-    void testImportPageBasic() throws Exception {
+    void testImportPageBasic() {
         String pageId = "page-1";
         String pageAlias = "alias-1";
 
         PageContent pageContent = new PageContent();
         when(fileRepository.read(importContext.getImportDir().resolve(pageId + PAGE_EXCHANGE_FILE_SUFFIX)))
                 .thenReturn("page-content-json");
-        when(objectMapper.readValue("page-content-json", PageContent.class)).thenReturn(pageContent);
+        when(jsonMapper.readValue("page-content-json", PageContent.class)).thenReturn(pageContent);
 
         service.importPage(importContext, pageId, pageAlias);
 
@@ -79,7 +78,7 @@ class PageImportServiceTest {
     }
 
     @Test
-    void testImportPageWithItemSearchWidget() throws Exception {
+    void testImportPageWithItemSearchWidget() {
         String pageId = "page-1";
 
         ItemSearchWidget widget = new ItemSearchWidget();
@@ -90,7 +89,7 @@ class PageImportServiceTest {
 
         when(fileRepository.read(importContext.getImportDir().resolve(pageId + PAGE_EXCHANGE_FILE_SUFFIX)))
                 .thenReturn("page-content-json");
-        when(objectMapper.readValue("page-content-json", PageContent.class)).thenReturn(pageContent);
+        when(jsonMapper.readValue("page-content-json", PageContent.class)).thenReturn(pageContent);
 
         Path widgetSource = importContext.getImportDir().resolve(widget.getId());
         Path widgetTarget = Path.of("/widgets/widget1");
@@ -100,7 +99,7 @@ class PageImportServiceTest {
         when(fileRepository.read(importContext.getImportDir().resolve(widget.getId() + SEARCH_RESULT_FILE_SUFFIX)))
                 .thenReturn("search-result");
         //noinspection unchecked
-        when(objectMapper.readValue(eq("search-result"), any(TypeReference.class))).thenReturn(List.of("item1", "item2"));
+        when(jsonMapper.readValue(eq("search-result"), any(TypeReference.class))).thenReturn(List.of("item1", "item2"));
 
         service.importPage(importContext, pageId, null);
 
@@ -112,20 +111,20 @@ class PageImportServiceTest {
     }
 
     @Test
-    void testImportPageThrowsArtivactExceptionOnJsonProcessing() throws Exception {
+    void testImportPageThrowsArtivactExceptionOnJsonProcessing() {
         String pageId = "page-1";
 
         when(fileRepository.read(importContext.getImportDir().resolve(pageId + PAGE_EXCHANGE_FILE_SUFFIX)))
                 .thenReturn("page-content-json");
-        when(objectMapper.readValue("page-content-json", PageContent.class))
-                .thenThrow(new com.fasterxml.jackson.core.JsonProcessingException("error") {
+        when(jsonMapper.readValue("page-content-json", PageContent.class))
+                .thenThrow(new RuntimeException("error") {
                 });
 
-        assertThrows(ArtivactException.class, () -> service.importPage(importContext, pageId, null));
+        assertThrows(RuntimeException.class, () -> service.importPage(importContext, pageId, null));
     }
 
     @Test
-    void testImportPageSkipsNullWidgets() throws Exception {
+    void testImportPageSkipsNullWidgets() {
         String pageId = "page-1";
         PageContent pageContent = new PageContent();
 
@@ -135,7 +134,7 @@ class PageImportServiceTest {
 
         when(fileRepository.read(importContext.getImportDir().resolve(pageId + PAGE_EXCHANGE_FILE_SUFFIX)))
                 .thenReturn("page-content-json");
-        when(objectMapper.readValue("page-content-json", PageContent.class)).thenReturn(pageContent);
+        when(jsonMapper.readValue("page-content-json", PageContent.class)).thenReturn(pageContent);
 
         service.importPage(importContext, pageId, null);
 

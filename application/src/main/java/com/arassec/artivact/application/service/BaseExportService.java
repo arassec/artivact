@@ -2,16 +2,14 @@ package com.arassec.artivact.application.service;
 
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
-import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.TranslatableObject;
 import com.arassec.artivact.domain.model.TranslatableString;
 import com.arassec.artivact.domain.model.exchange.ContentSource;
 import com.arassec.artivact.domain.model.exchange.ExchangeMainData;
 import com.arassec.artivact.domain.model.exchange.ExportConfiguration;
 import com.arassec.artivact.domain.model.exchange.ExportContext;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Optional;
 
@@ -25,9 +23,9 @@ public abstract class BaseExportService {
     /**
      * The object mapper.
      *
-     * @return The {@link ObjectMapper} for object mapping.
+     * @return The {@link JsonMapper} for object mapping.
      */
-    public abstract ObjectMapper getObjectMapper();
+    public abstract JsonMapper getJsonMapper();
 
     public abstract FileRepository getFileRepository();
 
@@ -49,11 +47,7 @@ public abstract class BaseExportService {
      * @param object     The object to write.
      */
     protected void writeJsonFile(Path targetPath, Object object) {
-        try {
-            getObjectMapper().writeValue(targetPath.toFile(), object);
-        } catch (IOException e) {
-            throw new ArtivactException("Could not write export file!", e);
-        }
+        getJsonMapper().writeValue(targetPath.toFile(), object);
     }
 
 

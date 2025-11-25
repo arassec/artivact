@@ -1,24 +1,28 @@
-package com.arassec.artivact.application.infrastructure.mapper;
+package com.arassec.artivact.application.infrastructure.mapping;
 
 import com.arassec.artivact.domain.model.page.Widget;
 import com.arassec.artivact.domain.model.page.WidgetType;
 import com.arassec.artivact.domain.model.page.widget.*;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.DeserializationContext;
 
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
  * Tests the {@link WidgetDeserializer}.
  */
+@SuppressWarnings("unchecked")
 class WidgetDeserializerTest {
 
     /**
@@ -30,7 +34,7 @@ class WidgetDeserializerTest {
         JsonParser jsonParserMock = mock(JsonParser.class);
         DeserializationContext deserializationContextMock = mock(DeserializationContext.class);
 
-        when(deserializationContextMock.readValue(jsonParserMock, Map.class)).thenReturn(Map.of(
+        when(deserializationContextMock.readValue(eq(jsonParserMock), any(TypeReference.class))).thenReturn(Map.of(
                 "type", WidgetType.PAGE_TITLE.toString()
         ));
 
@@ -48,7 +52,7 @@ class WidgetDeserializerTest {
         JsonParser jsonParserMock = mock(JsonParser.class);
         DeserializationContext deserializationContextMock = mock(DeserializationContext.class);
 
-        when(deserializationContextMock.readValue(jsonParserMock, Map.class)).thenReturn(Map.of(
+        when(deserializationContextMock.readValue(eq(jsonParserMock), any(TypeReference.class))).thenReturn(Map.of(
                 "type", WidgetType.TEXT.toString()
         ));
 
@@ -66,7 +70,7 @@ class WidgetDeserializerTest {
         JsonParser jsonParserMock = mock(JsonParser.class);
         DeserializationContext deserializationContextMock = mock(DeserializationContext.class);
 
-        when(deserializationContextMock.readValue(jsonParserMock, Map.class)).thenReturn(Map.of(
+        when(deserializationContextMock.readValue(eq(jsonParserMock), any(TypeReference.class))).thenReturn(Map.of(
                 "type", WidgetType.ITEM_SEARCH.toString(),
                 "searchTerm", "*"
         ));
@@ -89,7 +93,7 @@ class WidgetDeserializerTest {
         JsonParser jsonParserMock = mock(JsonParser.class);
         DeserializationContext deserializationContextMock = mock(DeserializationContext.class);
 
-        when(deserializationContextMock.readValue(jsonParserMock, Map.class)).thenReturn(Map.of(
+        when(deserializationContextMock.readValue(eq(jsonParserMock), any(TypeReference.class))).thenReturn(Map.of(
                 "type", WidgetType.INFO_BOX.toString()
         ));
 
@@ -107,7 +111,7 @@ class WidgetDeserializerTest {
         JsonParser jsonParserMock = mock(JsonParser.class);
         DeserializationContext deserializationContextMock = mock(DeserializationContext.class);
 
-        when(deserializationContextMock.readValue(jsonParserMock, Map.class)).thenReturn(Map.of(
+        when(deserializationContextMock.readValue(eq(jsonParserMock), any(TypeReference.class))).thenReturn(Map.of(
                 "type", WidgetType.AVATAR.toString()
         ));
 
@@ -125,7 +129,7 @@ class WidgetDeserializerTest {
         JsonParser jsonParserMock = mock(JsonParser.class);
         DeserializationContext deserializationContextMock = mock(DeserializationContext.class);
 
-        when(deserializationContextMock.readValue(jsonParserMock, Map.class)).thenReturn(Map.of(
+        when(deserializationContextMock.readValue(eq(jsonParserMock), any(TypeReference.class))).thenReturn(Map.of(
                 "type", WidgetType.IMAGE_GALLERY.toString()
         ));
 
@@ -143,7 +147,7 @@ class WidgetDeserializerTest {
         JsonParser jsonParserMock = mock(JsonParser.class);
         DeserializationContext deserializationContextMock = mock(DeserializationContext.class);
 
-        when(deserializationContextMock.readValue(jsonParserMock, Map.class)).thenReturn(Map.of(
+        when(deserializationContextMock.readValue(eq(jsonParserMock), any(TypeReference.class))).thenReturn(Map.of(
                 "type", "UNKNOWN_WIDGET",
                 "invalid", true
         ));

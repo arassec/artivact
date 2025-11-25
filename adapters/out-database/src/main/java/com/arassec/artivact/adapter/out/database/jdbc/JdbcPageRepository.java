@@ -5,12 +5,12 @@ import com.arassec.artivact.adapter.out.database.jdbc.springdata.repository.Page
 import com.arassec.artivact.application.port.out.repository.PageRepository;
 import com.arassec.artivact.domain.model.page.Page;
 import com.arassec.artivact.domain.model.page.PageContent;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.List;
 import java.util.Objects;
@@ -36,7 +36,7 @@ public class JdbcPageRepository extends BaseJdbcRepository implements PageReposi
      * The systems ObjectMapper.
      */
     @Getter
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
 
     /**
      * {@inheritDoc}

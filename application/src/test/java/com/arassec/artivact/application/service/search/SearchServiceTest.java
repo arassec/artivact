@@ -3,9 +3,9 @@ package com.arassec.artivact.application.service.search;
 import com.arassec.artivact.application.port.out.gateway.SearchGateway;
 import com.arassec.artivact.application.port.out.repository.ItemRepository;
 import com.arassec.artivact.domain.model.item.Item;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.List;
 
@@ -22,8 +22,8 @@ class SearchServiceTest {
     void setUp() {
         itemRepository = mock(ItemRepository.class);
         searchGateway = mock(SearchGateway.class);
-        ObjectMapper objectMapper = new ObjectMapper();
-        searchService = new SearchService(itemRepository, searchGateway, objectMapper);
+        JsonMapper jsonMapper = JsonMapper.builder().build();
+        searchService = new SearchService(itemRepository, searchGateway, jsonMapper);
     }
 
     @Test

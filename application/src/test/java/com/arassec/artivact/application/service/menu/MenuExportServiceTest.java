@@ -9,7 +9,6 @@ import com.arassec.artivact.domain.model.exchange.ExportConfiguration;
 import com.arassec.artivact.domain.model.exchange.ExportContext;
 import com.arassec.artivact.domain.model.menu.Menu;
 import com.arassec.artivact.domain.model.page.PageContent;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +16,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -30,7 +30,7 @@ import static org.mockito.Mockito.*;
 class MenuExportServiceTest {
 
     @Mock
-    private ObjectMapper objectMapper;
+    private JsonMapper jsonMapper;
 
     @Mock
     private FileRepository fileRepository;
@@ -95,7 +95,7 @@ class MenuExportServiceTest {
                 .containsExactly("allowed");
 
         ArgumentCaptor<File> argCap = ArgumentCaptor.forClass(File.class);
-        verify(objectMapper).writeValue(argCap.capture(), eq(menu));
+        verify(jsonMapper).writeValue(argCap.capture(), eq(menu));
         assertThat(argCap.getValue().toString()).endsWith("submenu.artivact.menu.json");
     }
 
@@ -117,10 +117,10 @@ class MenuExportServiceTest {
         service.exportMenu(ctx, parent);
 
         ArgumentCaptor<File> argCap = ArgumentCaptor.forClass(File.class);
-        verify(objectMapper).writeValue(argCap.capture(), eq(parent));
+        verify(jsonMapper).writeValue(argCap.capture(), eq(parent));
         assertThat(argCap.getValue().toString()).endsWith("parent.artivact.menu.json");
 
-        verify(objectMapper).writeValue(argCap.capture(), eq(child));
+        verify(jsonMapper).writeValue(argCap.capture(), eq(child));
         assertThat(argCap.getValue().toString()).endsWith("child.artivact.menu.json");
     }
 
