@@ -14,8 +14,9 @@ public interface OsGateway {
      *
      * @param command   The command to execute.
      * @param arguments The optional command arguments.
+     * @return {@code true}, if the command was executed successfully, {@code false} otherwise.
      */
-    void execute(String command, List<String> arguments);
+    boolean execute(String command, List<String> arguments);
 
     /**
      * Returns whether the provided command is executable or not.
@@ -35,8 +36,18 @@ public interface OsGateway {
      */
     Optional<Path> scanForDirectory(Path startDir, int maxDepth, String dirNamePrefix);
 
+    /**
+     * Returns whether the operating system is Windows.
+     *
+     * @return {@code true} if the OS is Windows, {@code false} otherwise.
+     */
     boolean isWindows();
 
+    /**
+     * Returns whether the operating system is Linux.
+     *
+     * @return {@code true} if the OS is Linux, {@code false} otherwise.
+     */
     boolean isLinux();
 
 }

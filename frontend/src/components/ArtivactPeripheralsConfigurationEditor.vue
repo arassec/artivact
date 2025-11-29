@@ -1,5 +1,5 @@
 <template>
-  <div v-if="peripheralConfigurationRef">
+  <div>
     <div class="q-mb-md">
       {{ $t('ArtivactPeripheralsConfigurationEditor.description') }}
     </div>
@@ -9,7 +9,7 @@
       }}
     </div>
 
-    <q-list bordered class="rounded-borders q-mb-lg">
+    <q-list bordered class="rounded-borders q-mb-lg" v-if="peripheralConfigurationRef">
       <q-expansion-item
         group="peripherals"
         header-class="bg-primary text-white"
@@ -445,11 +445,11 @@ import {useI18n} from 'vue-i18n';
 
 const props = defineProps({
   peripheralConfiguration: {
-    required: true,
+    required: false,
     type: Object as PropType<PeripheralsConfiguration | null>,
   },
   peripheralStatusOverview: {
-    required: true,
+    required: false,
     type: Object,
   },
 });

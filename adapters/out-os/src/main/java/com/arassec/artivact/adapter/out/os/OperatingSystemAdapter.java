@@ -27,7 +27,7 @@ public class OperatingSystemAdapter implements OsGateway {
      * {@inheritDoc}
      */
     @Override
-    public void execute(String command, List<String> arguments) {
+    public boolean execute(String command, List<String> arguments) {
 
         CommandLine cmdLine = new CommandLine(command);
         if (arguments != null && !arguments.isEmpty()) {
@@ -37,7 +37,7 @@ public class OperatingSystemAdapter implements OsGateway {
         var resultHandler = new DefaultExecuteResultHandler();
 
         Executor executor = DaemonExecutor.builder().get();
-        executor.setExitValue(1);
+        executor.setExitValues(new int[]{0, 1});
 
         log.debug("Executing command: {}", cmdLine);
 
@@ -54,13 +54,15 @@ public class OperatingSystemAdapter implements OsGateway {
             Thread.currentThread().interrupt();
         }
 
-        boolean executionSuccessful = resultHandler.getExitValue() == 0 || resultHandler.getException() == null;
+        boolean executionSuccessful = resultHandler.getExitValue() == 0 && resultHandler.getException() == null;
 
         if (!executionSuccessful) {
             log.error("Problem during command execution!", resultHandler.getException());
         }
 
         log.debug("Executed command finished (success={}).", executionSuccessful);
+
+        return executionSuccessful;
     }
 
     /**
@@ -80,10 +82,7 @@ public class OperatingSystemAdapter implements OsGateway {
         AtomicReference<Path> result = new AtomicReference<>();
 
         try {
-
-
             Files.walkFileTree(startDir, EnumSet.noneOf(FileVisitOption.class), maxDepth, new SimpleFileVisitor<>() {
-
                 @Override
                 public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
                     if (dir.getFileName().toString().startsWith(dirNamePrefix) && !Files.isSymbolicLink(dir)) {

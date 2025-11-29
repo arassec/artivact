@@ -216,7 +216,7 @@
             v-if="profilesStore.isDesktopModeEnabled"
             v-show="tabRef == 'creation'"
           >
-            <div class="q-mb-xl">
+            <div class="q-mb-xl" v-if="itemDataRef">
               <artivact-item-image-set-editor
                 ref="imageSetEditorRef"
                 :item-id="savedItemId"
@@ -492,10 +492,10 @@ onBeforeRouteLeave((to, from, next) => {
 });
 
 onMounted(() => {
+  loadPeripheralConfiguration();
   loadPropertiesData();
   loadTagsData();
   loadItemData(route.params.itemId);
-  loadPeripheralConfiguration();
 });
 </script>
 

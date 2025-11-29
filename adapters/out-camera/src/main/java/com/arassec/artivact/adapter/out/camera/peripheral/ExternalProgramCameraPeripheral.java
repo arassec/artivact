@@ -2,6 +2,7 @@ package com.arassec.artivact.adapter.out.camera.peripheral;
 
 import com.arassec.artivact.application.port.out.gateway.OsGateway;
 import com.arassec.artivact.application.port.out.peripheral.CameraPeripheral;
+import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.configuration.PeripheralImplementation;
 import com.arassec.artivact.domain.model.peripheral.BasePeripheral;
 import com.arassec.artivact.domain.model.peripheral.PeripheralStatus;
@@ -100,7 +101,9 @@ public class ExternalProgramCameraPeripheral extends BasePeripheral implements C
                 .replace("{targetFile}", targetFile.toString())
                 .replace("\n", " ")
                 .split(" ");
-        osGateway.execute(command, Arrays.asList(arguments));
+        if (!osGateway.execute(command, Arrays.asList(arguments))) {
+            throw new ArtivactException("Could not capture image (command execution failed)!");
+        }
         log.debug("Finished image capturing with external program.");
         return true;
     }

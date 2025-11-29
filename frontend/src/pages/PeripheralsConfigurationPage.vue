@@ -5,7 +5,6 @@
         {{ $t('PeripheralsConfigurationPage.heading') }}
       </h1>
       <artivact-peripherals-configuration-editor
-        v-if="peripheralConfigurationRef && peripheralStatusOverviewRef"
         :peripheral-configuration="peripheralConfigurationRef"
         :peripheral-status-overview="peripheralStatusOverviewRef"
       />

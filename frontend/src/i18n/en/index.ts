@@ -173,7 +173,7 @@ export default {
     tour: {
       menuBarTitle: "Menu Bar",
       menuBarDescription:
-        "This is artivact's main menu bar where you can access different sections of the application.",
+        "This is Artivact's main menu bar where you can access different sections of the application.",
       menuWelcomeTitle: "Menu Entry",
       menuWelcomeDescription:
         "This is a menu entry. It can be customized by right-clicking on it.\n\nThe welcome page shown can be customized as well to fit your needs.",
@@ -185,13 +185,13 @@ export default {
         "This menu lets you manage your collection's items.\n\nYou can create new items, import them or modify existing ones in batch.",
       systemSettingsTitle: "System Settings",
       systemSettingsDescription:
-        "This menu configures the application.\n\nYou can e.g. define properties of your collection items, customize Artivact's look or setup peripherals for 3D scanning.",
+        "This menu configures the application.\n\nYou can e.g. define properties of your collection items, customize Artivact's look or set up peripherals for 3D scanning.",
       editPageTitle: "Edit Page",
       editPageDescription:
         "You can customize every page by clicking on its edit button.\n\nThis enables the edit mode, which allows you to add, remove or modify widgets on the page.",
       setupScanningTitle: "Setup 3D Scanning",
       setupScanningDescription:
-        "If you intent to 3D scan your collection items, you should setup peripherals for scanning next.",
+        "If you intend to 3D scan your collection items, you should set up peripherals for scanning next.",
       scanItemTitle: "Scan Item",
       scanItemDescription:
         "Afterwards, you can start scanning your first item.",
@@ -352,14 +352,14 @@ export default {
           heading: "Cameras",
           ptp: "Cameras connected to the PC via USB are checked for Picture Transfer Protocol (PTP) support and selected if available.",
           gphoto:
-            "Artivact searches for the program gphoto2 in the directory '/usr/bin/gphoto2'.",
+            "Artivact searches for the program gphoto2 at '/usr/bin/gphoto2'.",
           digiCamControl:
-            "Artivact searches for the program DigiCamControl in the directory 'C:Program Files (x86)digiCamControlCameraControl.exe'.",
+            "Artivact searches for the program DigiCamControl in the directory 'C:\\Program Files (x86)\\digiCamControl\\CameraControl.exe'.",
         },
         imageBackgroundRemoval: {
           heading: "Image Background Removal",
           default:
-            "ONNX background removal is configured if 'utils / onnx / silueta.onnx' exists in the project directory.",
+            "ONNX background removal is configured if 'utils/onnx/silueta.onnx' exists in the project directory.",
         },
         modelCreation: {
           heading: "Model Creators",
@@ -377,7 +377,7 @@ export default {
           blenderLinux:
             "Blender is searched for in the user's home directory in a folder beginning with 'blender-4.5' or 'blender-5.0'.",
           blenderWindows:
-            "Blender is searched for in a directory under 'C:\\Program Files\\Blender Foundation\\Blender 4.5\\blender.exe' or 'C:\\Program Files\\Blender Foundation\\Blender 5.0\\blender.exe'.",
+            "Blender is searched for under 'C:\\Program Files\\Blender Foundation\\Blender 4.5\\blender.exe' or 'C:\\Program Files\\Blender Foundation\\Blender 5.0\\blender.exe'.",
         },
       },
     },
@@ -462,7 +462,7 @@ export default {
       applicationLocale: {
         heading: "Application Locale",
         description:
-          "Here you can select the locale used by the application, i.e. the language of all texts of the application, that are not edited by the user. By default, the system locale is used if it is supported by the application, or english if it isn't supported.",
+          "Here you can select the locale used by the application, i.e. the language of all texts of the application, that are not edited by the user. By default, the system locale is used if it is supported by the application, or English if it isn't supported.",
         label: "Locale",
         de: "German",
         en: "English",
@@ -485,7 +485,7 @@ export default {
       license: {
         heading: "Media Files License",
         description:
-          "Configures the license string displayed on the artivacts details-page. The license is composed of a prefix, the actual license and a suffix. If an URL is configured, the license will be rendered as link to the provided URL.",
+          "Configures the license string displayed on the Artivact details page. The license is composed of a prefix, the actual license and a suffix. If an URL is configured, the license will be rendered as a link to the provided URL.",
         descriptionSuffix:
           "The final license text might look like: \"Media files are provided under 'CC BY-SA' license.\"",
         card: {
@@ -747,7 +747,7 @@ export default {
 
   ArtivactPeripheralConfigEditor: {
     heading: {
-      turntable: "Drehteller-Konfiguration",
+      turntable: "Turntable Configuration",
       camera: "Camera Configuration",
       backgroundRemoval: "Background Removal",
       modelCreator: "3D Model-Creator",

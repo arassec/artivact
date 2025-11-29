@@ -248,6 +248,13 @@ public class ArduinoTurntablePeripheral extends BasePeripheral implements Turnta
                 if (e instanceof InterruptedException) {
                     Thread.currentThread().interrupt();
                 }
+                if (ioDevice != null) {
+                    try {
+                        ioDevice.stop();
+                    } catch (IOException ex) {
+                        log.warn("Error during stopping a turntable!", e);
+                    }
+                }
                 log.debug("Arduino device found, but not accessible with firmata4j.", e);
             }
         }
