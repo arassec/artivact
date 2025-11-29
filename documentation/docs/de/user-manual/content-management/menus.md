@@ -34,6 +34,7 @@ Durch Rechtsklick auf das Menü öffnet sich ein Kontextmenü mit folgenden Opti
 | Seite hinzufügen        | Fügt dem Menü eine Seite hinzu. Bei Linksklick auf das Menü wird die Seite direkt geöffnet.                                                 |
 | Eintrag hinzufügen      | Fügt dem Menü einen Eintrag hinzu. Bei Linksklick auf das Menü öffnet sich der Eintrag und zeigt seine Untereinträge.                       |
 | Menü exportieren        | Exportiert die Seiten des Menüs und deren Inhalte einschließlich der Objekte mit Mediendateien in das ``exports``-Verzeichnis des Projekts. |
+| Menü umhängen           | Öffnet einen Dialog, um das Menü in ein anderes Menü zu verschieben.                                                                        |
 | Nach links verschieben  | Verschiebt das Menü einen Schritt nach links.                                                                                               |
 | Nach rechts verschieben | Verschiebt das Menü einen Schritt nach rechts.                                                                                              |
 
@@ -45,10 +46,11 @@ Einschränkungen für den Menüeintrag können angegeben werden.
 
 Beim Rechtsklick auf einen bestehenden Menüeintrag öffnet sich ein Kontextmenü mit folgenden Optionen:
 
-| Option                 | Beschreibung                                                                                                                                 |
-|:-----------------------|:---------------------------------------------------------------------------------------------------------------------------------------------|
-| Menüeintrag bearbeiten | Öffnet den Dialog für den Menüeintrag und erlaubt die Änderung des Namens oder der Einschränkungen.                                          |
-| Menüeintrag löschen    | Löscht den Menüeintrag und die zugehörige Seite!                                                                                             |
-| Inhalt exportieren     | Exportiert die Seite des Menüeintrags und deren Inhalte einschließlich der Objekte mit Mediendateien in das Projekt-``exports``-Verzeichnis. |
-| Nach oben verschieben  | Verschiebt den Menüeintrag einen Schritt nach oben.                                                                                          |
-| Nach unten verschieben | Verschiebt den Menüeintrag einen Schritt nach unten.                                                                                         |
+| Option                  | Beschreibung                                                                                                                                 |
+|:------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------|
+| Menüeintrag bearbeiten  | Öffnet den Dialog für den Menüeintrag und erlaubt die Änderung des Namens oder der Einschränkungen.                                          |
+| Menüeintrag löschen     | Löscht den Menüeintrag und die zugehörige Seite!                                                                                             |
+| Menüeintrag exportieren | Exportiert die Seite des Menüeintrags und deren Inhalte einschließlich der Objekte mit Mediendateien in das Projekt-``exports``-Verzeichnis. |
+| Menüeintrag umhängen    | Öffnet einen Dialog, um den Menüeintrag in ein anderes Menü oder das Hauptmenü zu verschieben.                                               |
+| Nach oben verschieben   | Verschiebt den Menüeintrag einen Schritt nach oben.                                                                                          |
+| Nach unten verschieben  | Verschiebt den Menüeintrag einen Schritt nach unten.                                                                                         |

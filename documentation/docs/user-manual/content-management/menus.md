@@ -29,15 +29,16 @@ The dialog for creating/editing a menu offers the following options:
 
 By right-clicking on the menu a context menu opens, which offers the following options:
 
-| Option      | Description                                                                                                           |
-|:------------|:----------------------------------------------------------------------------------------------------------------------|
-| Edit Menu   | Opens the menu dialog and lets you change the menu's name or restrictions.                                            |
-| Delete Menu | Deletes the menu and all its entries and associated pages!                                                            |
-| Add Page    | Adds a page to the menu. When left-clicking the menu, the page will open directly.                                    |
-| Add Entry   | Adds an entry to the menu. When left-clicking the menu, it will open and show its menu entries.                       |
-| Export Menu | Exports the menu's pages and their content including items with media files into the project's ``exports`` directory. |
-| Move Left   | Moves the menu one step to the left.                                                                                  |
-| Move Right  | Moves the menu one step to the right.                                                                                 |
+| Option        | Description                                                                                                           |
+|:--------------|:----------------------------------------------------------------------------------------------------------------------|
+| Edit Menu     | Opens the menu dialog and lets you change the menu's name or restrictions.                                            |
+| Delete Menu   | Deletes the menu and all its entries and associated pages!                                                            |
+| Add Page      | Adds a page to the menu. When left-clicking the menu, the page will open directly.                                    |
+| Add Entry     | Adds an entry to the menu. When left-clicking the menu, it will open and show its menu entries.                       |
+| Export Menu   | Exports the menu's pages and their content including items with media files into the project's ``exports`` directory. |
+| Relocate Menu | Opens a dialog to move the menu into another menu.                                                                    |
+| Move Left     | Moves the menu one step to the left.                                                                                  |
+| Move Right    | Moves the menu one step to the right.                                                                                 |
 
 ## Menu Entries
 
@@ -47,10 +48,11 @@ be specified.
 
 When right-clicking on an existing menu entry, a context menu opens, which offers the following options:
 
-| Option            | Description                                                                                                        |
-|:------------------|:-------------------------------------------------------------------------------------------------------------------|
-| Edit Menu Entry   | Opens the menu entry dialog and lets you change the menu entry's name or restrictions.                             |
-| Delete Menu Entry | Deletes the menu entry and its associated page!                                                                    |
-| Export Content    | Exports the menu's page and its content including items with media files into the project's ``exports`` directory. |
-| Move Up           | Moves the menu entry one step up.                                                                                  |
-| Move Down         | Moves the menu one step down.                                                                                      |
+| Option              | Description                                                                                                        |
+|:--------------------|:-------------------------------------------------------------------------------------------------------------------|
+| Edit Menu Entry     | Opens the menu entry dialog and lets you change the menu entry's name or restrictions.                             |
+| Delete Menu Entry   | Deletes the menu entry and its associated page!                                                                    |
+| Export Content      | Exports the menu's page and its content including items with media files into the project's ``exports`` directory. |
+| Relocate Menu Entry | Opens a dialog to move the menu entry into another menu or the main menu.                                          |
+| Move Up             | Moves the menu entry one step up.                                                                                  |
+| Move Down           | Moves the menu one step down.                                                                                      |

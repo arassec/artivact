@@ -59,7 +59,9 @@ After=syslog.target
 
 [Service]
 User=artivact
-ExecStart=/opt/artivact-server/artivact-server-v##VERSION##.jar
+Type=simple
+WorkingDirectory=/opt/artivact-server
+ExecStart=/usr/bin/java -jar /opt/artivact-server/artivact-server-v##VERSION##.jar
 SuccessExitStatus=143
 
 [Install]

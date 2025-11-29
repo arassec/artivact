@@ -10,6 +10,9 @@ The page shows configuration options for every external part of 3D model creatio
 
 ![peripherals-configuration](./assets/peripherals/peripherals-configuration.png)
 
+By clicking on "Scan Peripherals", Artivact attempts to detect connected devices and installed software and create
+configurations for them.
+
 ## Turntable
 
 ::: warning Linux Systems
@@ -26,7 +29,7 @@ After assembly of the turntable, you can connect it to your PC via USB and confi
 
 For automatic image capturing, you need to attach your camera to your PC using USB and enable Picture Transfer
 Protocol (PTP) on it.
-If the camera is not working with the builtin default connector, you and install additional Software to control it
+If the camera is not working with the builtin PTP peripheral adapter, you can install additional Software to control it
 remotely. Currently, [DigiCamControl](https://digicamcontrol.com/) for Windows systems and [gphoto2](http://gphoto.org/)
 for Linux systems are supported as fallback.
 
@@ -90,7 +93,7 @@ Model editing is supported by Artivact through an external application: Blender 
 ### Blender 3D
 
 ::: tip Supported Version
-Blender integration has been tested for Versions **4**.
+Blender integration has been tested for Versions **4.5** and **5.0**.
 :::
 
 For model editing, Blender 3D can be opened from within Artivact.
