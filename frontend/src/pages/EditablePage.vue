@@ -345,7 +345,9 @@ async function savePageIfRequired({resolve, reject} = {} as any) {
         }
       });
   } else {
-    resolve();
+    if (resolve) {
+      resolve();
+    }
   }
 }
 

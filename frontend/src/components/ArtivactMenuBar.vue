@@ -102,6 +102,26 @@
               </q-item-section>
             </q-item>
             <q-item
+              :active="true"
+              :data-test="'menu-relocate-button-' + menu.value"
+              clickable
+              v-close-popup
+              class="menu-entry"
+              @click="relocateMenu(menu)"
+            >
+              <q-item-section>
+                <label class="menu-label">
+                  <q-icon
+                    name="redo"
+                    size="xs"
+                    color="primary"
+                    class="q-mr-sm"
+                  />
+                  {{ $t('ArtivactMenuBar.label.relocate') }}</label
+                >
+              </q-item-section>
+            </q-item>
+            <q-item
               :data-test="'menu-move-left-button-' + menu.value"
               v-if="index > 0"
               clickable
@@ -295,7 +315,7 @@
                         </q-item>
                         <q-item
                           :href="'/api/menu/' + menuEntry.id + '/export'"
-                          :data-test="'menu-export-button-' + menu.value"
+                          :data-test="'menu-export-button-' + menuEntry.value"
                           clickable
                           v-close-popup
                           :active="true"
@@ -312,6 +332,26 @@
                               {{
                                 $t('ArtivactMenuBar.label.exportEntry')
                               }}</label
+                            >
+                          </q-item-section>
+                        </q-item>
+                        <q-item
+                          :active="true"
+                          :data-test="'menu-relocate-button-' + menuEntry.value"
+                          clickable
+                          v-close-popup
+                          class="menu-entry"
+                          @click="relocateMenu(menuEntry)"
+                        >
+                          <q-item-section>
+                            <label class="menu-label">
+                              <q-icon
+                                name="redo"
+                                size="xs"
+                                color="primary"
+                                class="q-mr-sm"
+                              />
+                              {{ $t('ArtivactMenuBar.label.relocateEntry') }}</label
                             >
                           </q-item-section>
                         </q-item>
@@ -642,6 +682,7 @@
           </div>
           <artivact-restricted-translatable-item-editor
             :dataTest="'add-menu-modal-menu-name'"
+            :show-restrictions="!profilesStore.isDesktopModeEnabled || profilesStore.isE2eModeEnabled"
             :locales="localeStore.locales"
             :translatable-string="menuRef"
             :restricted-item="menuRef"
@@ -761,6 +802,55 @@
         />
       </template>
     </artivact-dialog>
+
+    <!-- RELOCATE MENU MODAL -->
+    <artivact-dialog
+      :data-test="'relocate-menu-modal'"
+      :dialog-model="showRelocateMenuModalRef"
+    >
+      <template v-slot:header>
+        <div class="text-h6">
+          {{ $t('ArtivactMenuBar.dialog.relocate') }}
+        </div>
+      </template>
+      <template v-slot:body>
+        <q-card-section>
+          <div class="q-mb-lg">
+            {{ $t('ArtivactMenuBar.dialog.relocateDescription') }}
+          </div>
+          <div class="row">
+            <q-select
+              :disable="relocateTargetMainMenuRef || availableRelocateTargetsRef.length == 0"
+              class="q-mb-md full-width"
+              outlined
+              v-model="relocateTargetRef"
+              :options="availableRelocateTargetsRef"
+              :option-label="(opt) => (opt.translatedValue ? opt.translatedValue : opt.value)"
+              :label="$t('ArtivactMenuBar.dialog.relocateSelect')"
+            />
+            <q-checkbox
+              :disable="!relocateSourceRef.parentId"
+              v-model="relocateTargetMainMenuRef"
+              :label="$t('ArtivactMenuBar.dialog.relocateMainMenu')"
+            />
+          </div>
+        </q-card-section>
+      </template>
+      <template v-slot:cancel>
+        <q-btn
+          :label="$t('Common.cancel')"
+          color="primary"
+          @click="showRelocateMenuModalRef = false"
+        />
+      </template>
+      <template v-slot:approve>
+        <q-btn
+          :label="$t('Common.save')"
+          color="primary"
+          @click="relocateMenuConfirm()"
+        />
+      </template>
+    </artivact-dialog>
   </div>
 
   <!-- MENUS FOR SMALL RESOLUTIONS / MOBILE RESOLUTIONS -->
@@ -868,6 +958,12 @@ const menuRef = ref(menu);
 const confirmDeleteRef = ref(false);
 
 const showImportMenuModal = ref(false);
+
+const showRelocateMenuModalRef = ref(false);
+const availableRelocateTargetsRef = ref([] as Menu[]);
+const relocateSourceRef = ref({} as Menu);
+const relocateTargetRef = ref({} as Menu);
+const relocateTargetMainMenuRef = ref(false);
 
 function createEmptyMenuRef(): Menu {
   return {
@@ -1134,6 +1230,63 @@ function menuImported() {
       });
     });
 }
+
+function relocateMenu(menu: Menu) {
+  relocateSourceRef.value = menu;
+  availableRelocateTargetsRef.value = [];
+  relocateTargetMainMenuRef.value = false;
+  menuStore.availableMenus.forEach((storedMenu) => {
+    if (storedMenu.id !== menu.id
+      && storedMenu.id !== menu.parentId
+      && !storedMenu.targetPageId
+      && !storedMenu.external) {
+      availableRelocateTargetsRef.value.push(storedMenu);
+    }
+  });
+  if (availableRelocateTargetsRef.value.length > 0) {
+    relocateTargetRef.value = availableRelocateTargetsRef.value[0];
+  } else {
+    relocateTargetRef.value = {} as Menu
+  }
+  showRelocateMenuModalRef.value = true;
+}
+
+function relocateMenuConfirm() {
+  showRelocateMenuModalRef.value = false;
+  if (!relocateTargetRef.value.id && !relocateTargetMainMenuRef.value) {
+    return;
+  }
+  const targetId = relocateTargetMainMenuRef.value ? 'main' : relocateTargetRef.value.id;
+  api.put('/api/menu/' + relocateSourceRef.value.id + '/relocate/' + targetId).then(() => {
+    api
+      .get('/api/menu')
+      .then((response) => {
+        menuStore.setAvailableMenus(response.data);
+      })
+      .catch(() => {
+        quasar.notify({
+          color: 'negative',
+          position: 'bottom',
+          message: i18n.t('ArtivactMenuBar.messages.relocateFailed'),
+        });
+      });
+    router.push('/');
+    quasar.notify({
+      color: 'positive',
+      position: 'bottom',
+      message: i18n.t('ArtivactMenuBar.messages.relocateSuccess'),
+      icon: 'check',
+    });
+  }).catch(() => {
+    quasar.notify({
+      color: 'negative',
+      position: 'bottom',
+      message: i18n.t('ArtivactMenuBar.messages.relocateFailed'),
+      icon: 'report_problem',
+    });
+  });
+}
+
 </script>
 
 <style scoped>

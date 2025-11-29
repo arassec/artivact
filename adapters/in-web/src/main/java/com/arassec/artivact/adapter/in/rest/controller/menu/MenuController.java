@@ -72,6 +72,11 @@ public class MenuController extends BaseImportController {
     private final ImportMenuUseCase importMenuUseCase;
 
     /**
+     * Use case to relocate menus.
+     */
+    private final RelocateMenuUseCase relocateMenuUseCase;
+
+    /**
      * Returns the application's menu as configured by the user.
      *
      * @return The menu.
@@ -162,6 +167,19 @@ public class MenuController extends BaseImportController {
         importMenuUseCase.importMenu(tempFile);
         fileRepository.delete(tempFile);
         return ResponseEntity.ok("Menu imported.");
+    }
+
+    /**
+     * Relocates the given menu to the target menu.
+     *
+     * @param menuId       The menu to relocate.
+     * @param targetMenuId The target menu to move it to.
+     * @return A status string.
+     */
+    @PutMapping(value = "/{menuId}/relocate/{targetMenuId}")
+    public ResponseEntity<String> relocateMenu(@PathVariable String menuId, @PathVariable(required = false) String targetMenuId) {
+        relocateMenuUseCase.relocateMenu(menuId, targetMenuId);
+        return ResponseEntity.ok("Menu relocated.");
     }
 
 }

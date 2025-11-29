@@ -17,24 +17,9 @@
       v-if="translatableStringRef && localeStore.selectedLocale !== null"
     >
       <q-input
-        v-if="
-          translatableStringRef.translations &&
-          localeStore.selectedLocale in translatableStringRef.translations
-        "
         :data-test="dataTest"
         outlined
         v-model="translatableStringRef.translations[localeStore.selectedLocale]"
-        :label="label"
-        :type="textarea ? 'textarea' : 'text'"
-        :autogrow="textarea"
-        class="no-scroll column col-grow"
-        :disable="disable"
-      />
-      <q-input
-        v-else
-        :data-test="dataTest"
-        outlined
-        v-model="translatableStringRef.value"
         :label="label"
         :type="textarea ? 'textarea' : 'text'"
         :autogrow="textarea"
@@ -75,7 +60,7 @@
         showDetailsRef = true;
         $emit('show-details');
       "
-      v-if="restrictedItemRef && !showDetailsRef"
+      v-if="restrictedItemRef && showRestrictions && !showDetailsRef"
     >
       <q-tooltip>{{
           $t('ArtivactRestrictedTranslatableItemEditor.tooltip.more')
@@ -159,6 +144,11 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  showRestrictions: {
+    required: false,
+    type: Boolean,
+    default: true,
+  }
 });
 
 const localeStore = useLocaleStore();

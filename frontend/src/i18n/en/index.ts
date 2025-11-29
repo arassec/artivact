@@ -1,112 +1,112 @@
 export default {
   Common: {
-    cancel: 'Cancel',
-    save: 'Save',
-    apply: 'Apply',
-    close: 'Close',
-    ok: 'OK',
-    test: 'Test',
-    next: 'Next',
-    previous: 'Previous',
-    done: 'Done',
-    username: 'Username',
-    password: 'Password',
-    passwordRepeat: 'Password (repeat)',
-    email: 'E-Mail',
+    cancel: "Cancel",
+    save: "Save",
+    apply: "Apply",
+    close: "Close",
+    ok: "OK",
+    test: "Test",
+    next: "Next",
+    previous: "Previous",
+    done: "Done",
+    username: "Username",
+    password: "Password",
+    passwordRepeat: "Password (repeat)",
+    email: "E-Mail",
     messages: {
       creating: {
-        success: '{item} created',
+        success: "{item} created",
         failed: "Creating '{item}' failed",
       },
       loading: {
-        success: '{item} loaded',
+        success: "{item} loaded",
         failed: "Loading '{item}' failed",
       },
       saving: {
-        success: '{item} saved',
+        success: "{item} saved",
         failed: "Saving '{item}' failed",
       },
       deleting: {
-        success: '{item} deleted',
+        success: "{item} deleted",
         failed: "Deleting '{item}' failed",
       },
     },
     dialogs: {
       unsavedChanges: {
-        heading: 'Unsaved Changes!',
-        body: 'Unsaved changes will be lost. Continue anyway?',
+        heading: "Unsaved Changes!",
+        body: "Unsaved changes will be lost. Continue anyway?",
       },
     },
     items: {
-      accounts: 'Accounts',
-      account: 'Account',
-      locales: 'Locales',
-      page: 'Page',
-      items: 'Items',
-      item: 'Item',
-      category: 'Category',
-      properties: 'Properties',
-      property: 'Property',
-      tags: 'Tags',
-      tag: 'Tag',
-      exports: 'Exports',
-      export: 'Export',
-      menus: 'Menus',
-      menu: 'Menu',
-      image: 'Image',
-      images: 'Images',
-      model: '3D Model',
-      models: '3D Models',
-      applicationLocale: 'Application Locale',
-      collectionExport: 'Collection Export',
-      collectionExports: 'Collection Exports',
+      accounts: "Accounts",
+      account: "Account",
+      locales: "Locales",
+      page: "Page",
+      items: "Items",
+      item: "Item",
+      category: "Category",
+      properties: "Properties",
+      property: "Property",
+      tags: "Tags",
+      tag: "Tag",
+      exports: "Exports",
+      export: "Export",
+      menus: "Menus",
+      menu: "Menu",
+      image: "Image",
+      images: "Images",
+      model: "3D Model",
+      models: "3D Models",
+      applicationLocale: "Application Locale",
+      collectionExport: "Collection Export",
+      collectionExports: "Collection Exports",
       configuration: {
-        appearance: 'Appearance configuration',
-        exchange: 'Exchange configuration',
-        license: 'License configuration',
-        peripherals: 'Peripherals configuration',
-        properties: 'Properties configuration',
-        tags: 'Tags configuration',
+        appearance: "Appearance configuration",
+        exchange: "Exchange configuration",
+        license: "License configuration",
+        peripherals: "Peripherals configuration",
+        properties: "Properties configuration",
+        tags: "Tags configuration",
       },
     },
   },
 
   MainLayout: {
-    login: 'Login',
-    logout: 'Logout',
+    login: "Login",
+    logout: "Logout",
     messages: {
-      userDataFailed: 'Loading user data failed!',
-      logoutFailed: 'Logout failed!',
+      userDataFailed: "Loading user data failed!",
+      logoutFailed: "Logout failed!",
     },
   },
 
   AccountsConfigurationPage: {
-    heading: 'Accounts Administration',
-    description: 'All system accounts can be configured on this page.',
+    heading: "Accounts Administration",
+    description: "All system accounts can be configured on this page.",
     button: {
-      addAccount: 'Add Account',
+      addAccount: "Add Account",
     },
     card: {
-      heading: 'Accounts',
+      heading: "Accounts",
       button: {
         tooltip: {
-          delete: 'Delete account',
-          edit: 'Edit account',
+          delete: "Delete account",
+          edit: "Edit account",
         },
       },
     },
     dialog: {
       create: {
-        heading: 'Create Account',
+        heading: "Create Account",
       },
       edit: {
-        heading: 'Edit Account',
+        heading: "Edit Account",
       },
       delete: {
-        heading: 'Delete Account?',
+        heading: "Delete Account?",
         description:
-          'Are you sure you want to delete this account? This action cannot be undone!',
-        button: 'Delete Account',
+          "Are you sure you want to delete this account? This action cannot be undone!",
+        button: "Delete Account",
       },
       user: "Has 'User' rights?",
       admin: "Has 'Administrator' rights?",
@@ -114,43 +114,43 @@ export default {
   },
 
   AccountSettingsPage: {
-    heading: 'Account Settings',
-    description: 'Here you can configure your account settings.',
+    heading: "Account Settings",
+    description: "Here you can configure your account settings.",
     card: {
-      heading: 'Account',
+      heading: "Account",
     },
-    apiToken: 'API Token',
+    apiToken: "API Token",
   },
 
   AppearanceConfigurationPage: {
-    heading: 'Appearance Configuration',
+    heading: "Appearance Configuration",
   },
 
   BatchProcessingPage: {
-    heading: 'Batch Processing',
-    startButton: 'Start batch processing',
+    heading: "Batch Processing",
+    startButton: "Start batch processing",
     parameters: {
-      task: 'Task',
+      task: "Task",
       taskDescription:
-        'Please select the task to perform on all selected items.',
-      searchTerm: 'Item Selection',
+        "Please select the task to perform on all selected items.",
+      searchTerm: "Item Selection",
       searchTermDescription:
-        'Specify a search term which will select all items that should be processed.',
-      targetId: 'Target',
-      targetIdDescription: 'Please select the target of the task to perform.',
+        "Specify a search term which will select all items that should be processed.",
+      targetId: "Target",
+      targetIdDescription: "Please select the target of the task to perform.",
     },
     dialog: {
       process: {
-        heading: 'Batch Processing',
+        heading: "Batch Processing",
         description:
-          'Are you sure you want to start batch processing the selected items?',
-        approve: 'Start batch processing',
+          "Are you sure you want to start batch processing the selected items?",
+        approve: "Start batch processing",
       },
     },
     messages: {
       process: {
-        success: 'Batch processing finished',
-        failed: 'Batch processing failed!',
+        success: "Batch processing finished",
+        failed: "Batch processing failed!",
       },
     },
   },
@@ -158,119 +158,129 @@ export default {
   EditablePage: {
     dialog: {
       resetWip: {
-        heading: 'Reset Page?',
+        heading: "Reset Page?",
         content:
-          'Are you sure you want to reset the page to the latest published version? All changes will be lost!',
-        approve: 'Reset',
+          "Are you sure you want to reset the page to the latest published version? All changes will be lost!",
+        approve: "Reset",
       },
       publishWip: {
-        heading: 'Publish Page?',
+        heading: "Publish Page?",
         content:
-          'Do you really want to publish the current page configuration?',
-        approve: 'Publish',
+          "Do you really want to publish the current page configuration?",
+        approve: "Publish",
       },
     },
     tour: {
-      menuBarTitle: 'Menu Bar',
-      menuBarDescription: 'This is artivact\'s main menu bar where you can access different sections of the application.',
-      menuWelcomeTitle: 'Menu Entry',
-      menuWelcomeDescription: 'This is a menu entry. It can be customized by right-clicking on it.\n\nThe welcome page shown can be customized as well to fit your needs.',
-      addMenuTitle: 'Add Menu Entry',
-      addMenuDescription: 'With this button you can add your own menu entries to the menu bar.',
-      itemSettingsTitle: 'Manage Items',
-      itemSettingsDescription: 'This menu lets you manage your collection\'s items.\n\nYou can create new items, import them or modify existing ones in batch.',
-      systemSettingsTitle: 'System Settings',
-      systemSettingsDescription: 'This menu configures the application.\n\nYou can e.g. define properties of your collection items, customize Artivact\'s look or setup peripherals for 3D scanning.',
-      editPageTitle: 'Edit Page',
-      editPageDescription: 'You can customize every page by clicking on its edit button.\n\nThis enables the edit mode, which allows you to add, remove or modify widgets on the page.',
-      setupScanningTitle: 'Setup 3D Scanning',
-      setupScanningDescription: 'If you intent to 3D scan your collection items, you should setup peripherals for scanning next.',
-      scanItemTitle: 'Scan Item',
-      scanItemDescription: 'Afterwards, you can start scanning your first item.',
-      searchResultsTitle: 'Collection Items',
-      searchResultsDescription: 'Your new collection items will appear here after scanning.\n\nCustomize the search results by editing the page and this widget.',
-      documentationTitle: 'Documentation',
-      documentationDescription: 'You can find more detailed information in Artivact\'s documentation.\n\nHave fun managing your collection! :-)',
-    }
+      menuBarTitle: "Menu Bar",
+      menuBarDescription:
+        "This is artivact's main menu bar where you can access different sections of the application.",
+      menuWelcomeTitle: "Menu Entry",
+      menuWelcomeDescription:
+        "This is a menu entry. It can be customized by right-clicking on it.\n\nThe welcome page shown can be customized as well to fit your needs.",
+      addMenuTitle: "Add Menu Entry",
+      addMenuDescription:
+        "With this button you can add your own menu entries to the menu bar.",
+      itemSettingsTitle: "Manage Items",
+      itemSettingsDescription:
+        "This menu lets you manage your collection's items.\n\nYou can create new items, import them or modify existing ones in batch.",
+      systemSettingsTitle: "System Settings",
+      systemSettingsDescription:
+        "This menu configures the application.\n\nYou can e.g. define properties of your collection items, customize Artivact's look or setup peripherals for 3D scanning.",
+      editPageTitle: "Edit Page",
+      editPageDescription:
+        "You can customize every page by clicking on its edit button.\n\nThis enables the edit mode, which allows you to add, remove or modify widgets on the page.",
+      setupScanningTitle: "Setup 3D Scanning",
+      setupScanningDescription:
+        "If you intent to 3D scan your collection items, you should setup peripherals for scanning next.",
+      scanItemTitle: "Scan Item",
+      scanItemDescription:
+        "Afterwards, you can start scanning your first item.",
+      searchResultsTitle: "Collection Items",
+      searchResultsDescription:
+        "Your new collection items will appear here after scanning.\n\nCustomize the search results by editing the page and this widget.",
+      documentationTitle: "Documentation",
+      documentationDescription:
+        "You can find more detailed information in Artivact's documentation.\n\nHave fun managing your collection! :-)",
+    },
   },
 
   ErrorNotFoundPage: {
-    heading: '404',
-    description: 'Page not found...',
+    heading: "404",
+    description: "Page not found...",
   },
 
   ExchangeConfigurationPage: {
-    heading: 'Collection Exchange',
+    heading: "Collection Exchange",
     configuration: {
-      heading: 'Item Synchronization',
+      heading: "Item Synchronization",
       description:
-        'Here you can configure exchange parameters for syncing items with remote Artivact instances.',
+        "Here you can configure exchange parameters for syncing items with remote Artivact instances.",
     },
     tabs: {
-      configuration: 'Configuration',
-      export: 'Export',
-      import: 'Import',
+      configuration: "Configuration",
+      export: "Export",
+      import: "Import",
     },
     export: {
-      heading: 'Export Configurations',
+      heading: "Export Configurations",
       description:
-        'This page can be used to create and manage collection exports. Those can be used to transfer menus, their pages and items displayed on the pages to other Artivact instances. Additionally, the collection exports can be served by Artivact instances to be used e.g. in the Artivact XR app.',
+        "This page can be used to create and manage collection exports. Those can be used to transfer menus, their pages and items displayed on the pages to other Artivact instances. Additionally, the collection exports can be served by Artivact instances to be used e.g. in the Artivact XR app.",
     },
     import: {
-      heading: 'Collection Import',
+      heading: "Collection Import",
       description:
-        'Here you can import previously created collection exports. Those can either be imported with all menus, pages and items or as packaged export for distribution only.',
-      completeImport: 'Complete Import',
-      forDistributionImport: 'Import for Distribution',
-      exportFile: 'Collection Export',
+        "Here you can import previously created collection exports. Those can either be imported with all menus, pages and items or as packaged export for distribution only.",
+      completeImport: "Complete Import",
+      forDistributionImport: "Import for Distribution",
+      exportFile: "Collection Export",
     },
     dialog: {
       delete: {
-        heading: 'Delete Export Configuration?',
+        heading: "Delete Export Configuration?",
         description:
-          'Do you want to delete this collection export configuration and all associated files? This action cannot be undone!',
-        approve: 'Delete Configuration',
+          "Do you want to delete this collection export configuration and all associated files? This action cannot be undone!",
+        approve: "Delete Configuration",
       },
       build: {
-        heading: 'Create Export File?',
+        heading: "Create Export File?",
         description:
-          'Do you want to create the export file for this configuration now? This may take some time, depending on the collection size.',
-        approve: 'Create Export File',
+          "Do you want to create the export file for this configuration now? This may take some time, depending on the collection size.",
+        approve: "Create Export File",
       },
     },
     messages: {
-      buildExportFileFailed: 'Export file building failed!',
-      importSuccess: 'Import successful',
+      buildExportFileFailed: "Export file building failed!",
+      importSuccess: "Import successful",
     },
   },
 
   IndexPage: {
     messages: {
-      noIndexPage: 'Could not load index page!',
+      noIndexPage: "Could not load index page!",
     },
   },
 
   ItemDetailsPage: {
     button: {
       tooltip: {
-        delete: 'Delete item',
-        download: 'Download item data as ZIP',
-        sync: 'Synchronize item with remote server',
-        edit: 'Edit item',
+        delete: "Delete item",
+        download: "Download item data as ZIP",
+        sync: "Synchronize item with remote server",
+        edit: "Edit item",
       },
     },
     dialog: {
       delete: {
-        heading: 'Delete Item?',
+        heading: "Delete Item?",
         description:
-          'Are you sure you want to delete this item and all its files? This action cannot be undone!',
-        button: 'Delete Item',
+          "Are you sure you want to delete this item and all its files? This action cannot be undone!",
+        button: "Delete Item",
       },
     },
     messages: {
       sync: {
-        success: 'Item synchronized',
-        failed: 'Synchronization failed',
+        success: "Item synchronized",
+        failed: "Synchronization failed",
       },
     },
   },
@@ -278,1421 +288,974 @@ export default {
   ItemEditPage: {
     button: {
       tooltip: {
-        close: 'Leave edit mode and return to item page',
-        save: 'Save item',
-        addTag: 'Add tag to item',
-        removeTag: 'Remove tag from item',
-        deleteModel: 'Deletes the model from the item',
+        close: "Leave edit mode and return to item page",
+        save: "Save item",
+        addTag: "Add tag to item",
+        removeTag: "Remove tag from item",
+        deleteModel: "Deletes the model from the item",
       },
     },
     tab: {
-      base: 'Base Data',
-      media: 'Media',
-      properties: 'Properties',
-      creation: 'Scan',
+      base: "Base Data",
+      media: "Media",
+      properties: "Properties",
+      creation: "Scan",
     },
     label: {
-      tags: 'Tags:',
+      tags: "Tags:",
       noProperties:
-        'There are currently no property definitions for items available. Go to the configuration page and add properties.',
+        "There are currently no property definitions for items available. Go to the configuration page and add properties.",
     },
     dialog: {
       addTag: {
-        heading: 'Add Tag',
+        heading: "Add Tag",
       },
     },
     editor: {
-      title: 'Title',
-      description: 'Description',
+      title: "Title",
+      description: "Description",
     },
   },
 
   LoginPage: {
-    login: 'Login',
+    login: "Login",
     messages: {
-      loginSuccessful: 'Login successful',
-      loginFailed: 'Login failed',
-      loadingUserdataFailed: 'Loading user data failed',
-      loadingMenusFailed: 'Loading menus failed',
+      loginSuccessful: "Login successful",
+      loginFailed: "Login failed",
+      loadingUserdataFailed: "Loading user data failed",
+      loadingMenusFailed: "Loading menus failed",
     },
   },
 
   PeripheralsConfigurationPage: {
-    heading: 'Peripherals Configuration',
-    scanPeripherals: 'Scan Peripherals',
+    heading: "Peripherals Configuration",
+    scanPeripherals: "Scan Peripherals",
     messages: {
       scan: {
-        success: 'Scan successful',
-        failed: 'Scan failed',
+        success: "Scan successful",
+        failed: "Scan failed",
       },
     },
     dialogs: {
       scanDescription: {
-        heading: 'How is the scanning performed?',
-        description: 'Artivact creates peripheral configurations when no other option within a category is available. It searches for peripherals in the following locations.',
+        heading: "How is the scanning performed?",
+        description:
+          "Artivact creates peripheral configurations when no other option within a category is available. It searches for peripherals in the following locations.",
 
         turntables: {
-          heading: 'Turntables',
-          arduino: 'Artivact searches for Arduino devices connected to the PC via USB. If Firmata is installed, the device is treated as an Artivact-compatible turntable.'
+          heading: "Turntables",
+          arduino:
+            "Artivact searches for Arduino devices connected to the PC via USB. If Firmata is installed, the device is treated as an Artivact-compatible turntable.",
         },
 
         cameras: {
-          heading: 'Cameras',
-          ptp: 'Cameras connected to the PC via USB are checked for Picture Transfer Protocol (PTP) support and selected if available.',
-          gphoto: 'Artivact searches for the program gphoto2 in the directory \'/usr/bin/gphoto2\'.',
-          digiCamControl: 'Artivact searches for the program DigiCamControl in the directory \'C:\Program Files (x86)\digiCamControl\CameraControl.exe\'.'
+          heading: "Cameras",
+          ptp: "Cameras connected to the PC via USB are checked for Picture Transfer Protocol (PTP) support and selected if available.",
+          gphoto:
+            "Artivact searches for the program gphoto2 in the directory '/usr/bin/gphoto2'.",
+          digiCamControl:
+            "Artivact searches for the program DigiCamControl in the directory 'C:Program Files (x86)digiCamControlCameraControl.exe'.",
         },
         imageBackgroundRemoval: {
-          heading: 'Image Background Removal',
-          default: 'ONNX background removal is configured if \'utils / onnx / silueta.onnx\' exists in the project directory.'
+          heading: "Image Background Removal",
+          default:
+            "ONNX background removal is configured if 'utils / onnx / silueta.onnx' exists in the project directory.",
         },
         modelCreation: {
-          heading: 'Model Creators',
-          meshroom: 'Meshroom is searched for in the user\'s home directory in a folder beginning with \'Meshroom-2025\'.',
-          metashapeLinux: 'Metashape is searched for in the user\'s home directory in a folder beginning with \'metashape-2.2\'.',
-          metashapeWindows: 'Metashape is searched for under \'C:\\Program Files\\Agisoft\\Metashape\\metashape.exe\'.',
-          realityScanWindows: 'RealityScan is searched for under \'C:\\Program Files\\Epic Games\\RealityScan_2.0\\RealityScan.exe\'.'
+          heading: "Model Creators",
+          meshroom:
+            "Meshroom is searched for in the user's home directory in a folder beginning with 'Meshroom-2025'.",
+          metashapeLinux:
+            "Metashape is searched for in the user's home directory in a folder beginning with 'metashape-2.2'.",
+          metashapeWindows:
+            "Metashape is searched for under 'C:\\Program Files\\Agisoft\\Metashape\\metashape.exe'.",
+          realityScanWindows:
+            "RealityScan is searched for under 'C:\\Program Files\\Epic Games\\RealityScan_2.0\\RealityScan.exe'.",
         },
         modelEditing: {
-          heading: 'Model Editors',
-          blenderLinux: 'Blender is searched for in the user\'s home directory in a folder beginning with \'blender-4.5\' or \'blender-5.0\'.',
-          blenderWindows: 'Blender is searched for in a directory under \'C:\\Program Files\\Blender Foundation\\Blender 4.5\\blender.exe\' or \'C:\\Program Files\\Blender Foundation\\Blender 5.0\\blender.exe\'.',
-        }
-      }
-    }
+          heading: "Model Editors",
+          blenderLinux:
+            "Blender is searched for in the user's home directory in a folder beginning with 'blender-4.5' or 'blender-5.0'.",
+          blenderWindows:
+            "Blender is searched for in a directory under 'C:\\Program Files\\Blender Foundation\\Blender 4.5\\blender.exe' or 'C:\\Program Files\\Blender Foundation\\Blender 5.0\\blender.exe'.",
+        },
+      },
+    },
   },
 
   PropertiesConfigurationPage: {
-    heading: 'Properties',
-    tabs:
-      {
-        configuration: 'Configuration',
-        export:
-          'Export',
-        import:
-          'Import',
-      }
-    ,
+    heading: "Properties",
+    tabs: {
+      configuration: "Configuration",
+      export: "Export",
+      import: "Import",
+    },
     configuration: {
-      heading: 'Configuration',
+      heading: "Configuration",
       description:
-        'Here the properties of items can be configured. They are organized in categories, which can be ordered by drag & drop. The categories, with their respective properties, are shown at the bottom of the item details page.',
-      noPropertiesDefined:
-        'There are currently no properties defined.',
-    }
-    ,
-    export:
-      {
-        heading: 'Properties Export',
-        description:
-          'You can export the current properties configuration with the button below. A JSON file containing the current configuration will be created.',
-        button:
-          'Export Properties',
-      }
-    ,
-    import:
-      {
-        heading: 'Properties Import',
-        description:
-          'You can upload a previously created properties export here and OVERWRITE the current properties with it.',
-        button:
-          'Import Properties',
-      }
-    ,
+        "Here the properties of items can be configured. They are organized in categories, which can be ordered by drag & drop. The categories, with their respective properties, are shown at the bottom of the item details page.",
+      noPropertiesDefined: "There are currently no properties defined.",
+    },
+    export: {
+      heading: "Properties Export",
+      description:
+        "You can export the current properties configuration with the button below. A JSON file containing the current configuration will be created.",
+      button: "Export Properties",
+    },
+    import: {
+      heading: "Properties Import",
+      description:
+        "You can upload a previously created properties export here and OVERWRITE the current properties with it.",
+      button: "Import Properties",
+    },
     messages: {
-      uploadSuccess: 'Properties configuration uploaded',
-    }
-    ,
-  }
-  ,
+      uploadSuccess: "Properties configuration uploaded",
+    },
+  },
 
   TagsConfigurationPage: {
-    heading: 'Tags',
-    configuration:
-      {
-        heading: 'Configuration',
-        description:
-          'Tags can be used to categorize items beyond their properties. They should be considered meta-data and not be used to replace properties.',
-        noTagsDefined:
-          'There are currently no tags defined.',
-      }
-    ,
-    export:
-      {
-        heading: 'Export',
-        description:
-          'You can export the current tags configuration with the button below. A JSON file containing the current configuration will be created.',
-        button:
-          'Export Tags',
-      }
-    ,
-    import:
-      {
-        heading: 'Import',
-        description:
-          'You can upload a previously created tags export here and OVERWRITE the current tags with it.',
-        button:
-          'Import Tags',
-      }
-    ,
+    heading: "Tags",
+    configuration: {
+      heading: "Configuration",
+      description:
+        "Tags can be used to categorize items beyond their properties. They should be considered meta-data and not be used to replace properties.",
+      noTagsDefined: "There are currently no tags defined.",
+    },
+    export: {
+      heading: "Export",
+      description:
+        "You can export the current tags configuration with the button below. A JSON file containing the current configuration will be created.",
+      button: "Export Tags",
+    },
+    import: {
+      heading: "Import",
+      description:
+        "You can upload a previously created tags export here and OVERWRITE the current tags with it.",
+      button: "Import Tags",
+    },
     messages: {
-      uploadSuccess: 'Tags configuration uploaded',
-    }
-    ,
-  }
-  ,
+      uploadSuccess: "Tags configuration uploaded",
+    },
+  },
 
   ArtivactAppearanceConfigurationEditor: {
-    description: 'Configures the appearance of the Artivact application.',
-    list:
-      {
-        title: {
-          heading: 'Application Title',
-          description:
-            'The title is displayed in the application window or in browser tabs.',
-          label:
-            'Application Title',
-        }
-        ,
-        indexPage: {
-          heading: 'Index Page',
-          description:
-            'The index page is loaded as default by the application if no specific page is opened by the user.',
-          label:
-            'Index Page',
-        }
-        ,
-        locales: {
-          heading: 'Supported Locales',
-          description:
-            "Comma-separated list of locales supported by this installation. E.g. 'de,nl,ja'. Those locales can be maintained in addition to the default locale by choosing it from the settings menu and editing translatable strings e.g. on pages.",
-          label:
-            'Locales',
-        }
-        ,
-        applicationLocale: {
-          heading: 'Application Locale',
-          description:
-            "Here you can select the locale used by the application, i.e. the language of all texts of the application, that are not edited by the user. By default, the system locale is used if it is supported by the application, or english if it isn't supported.",
-          label:
-            'Locale',
-          de:
-            'German',
-          en:
-            'English',
-          system:
-            'System language',
-        }
-        ,
-        colors: {
-          heading: 'Color Theme',
-          description:
-            'The color theme can be customized with the following settings.',
-        }
-        ,
-        favicon: {
-          heading: 'Favicon',
-          descriptionPrefix:
-            'A custom Favicon can be uploaded here. The favicon file must be in ICO (.ico) format!',
-          description:
-            'The uploaded file is directly installed as favicon!',
-          descriptionSuffix:
-            'Due to browser caching the newly uploaded favicon might not directly be visible in your browser tab.',
-          saved:
-            'Favicon saved',
-        }
-        ,
-        license: {
-          heading: 'Media Files License',
-          description:
-            'Configures the license string displayed on the artivacts details-page. The license is composed of a prefix, the actual license and a suffix. If an URL is configured, the license will be rendered as link to the provided URL.',
-          descriptionSuffix:
-            'The final license text might look like: "Media files are provided under \'CC BY-SA\' license."',
-          card:
-            {
-              heading: 'License',
-              prefixDescription:
-                "The first part of the license text, e.g. 'Media files are provided under'.",
-              prefixLabel:
-                'Prefix',
-              licenseDescription:
-                "The name of the license, e.g. 'MIT' or 'CC BY-SA'.",
-              licenseLabel:
-                'License',
-              suffixDescription:
-                "The last part of the license text, e.g. 'license'.",
-              suffixLabel:
-                'Suffix',
-              urlDescription:
-                'If provided, this URL will be used to make the license text into a link.',
-              urlLabel:
-                'License-URL',
-            }
-          ,
-        }
-        ,
-      }
-    ,
-  }
-  ,
+    description: "Configures the appearance of the Artivact application.",
+    list: {
+      title: {
+        heading: "Application Title",
+        description:
+          "The title is displayed in the application window or in browser tabs.",
+        label: "Application Title",
+      },
+      indexPage: {
+        heading: "Index Page",
+        description:
+          "The index page is loaded as default by the application if no specific page is opened by the user.",
+        label: "Index Page",
+      },
+      locales: {
+        heading: "Supported Locales",
+        description:
+          "Comma-separated list of locales supported by this installation. E.g. 'de,nl,ja'. Those locales can be maintained in addition to the default locale by choosing it from the settings menu and editing translatable strings e.g. on pages.",
+        label: "Locales",
+      },
+      applicationLocale: {
+        heading: "Application Locale",
+        description:
+          "Here you can select the locale used by the application, i.e. the language of all texts of the application, that are not edited by the user. By default, the system locale is used if it is supported by the application, or english if it isn't supported.",
+        label: "Locale",
+        de: "German",
+        en: "English",
+        system: "System language",
+      },
+      colors: {
+        heading: "Color Theme",
+        description:
+          "The color theme can be customized with the following settings.",
+      },
+      favicon: {
+        heading: "Favicon",
+        descriptionPrefix:
+          "A custom Favicon can be uploaded here. The favicon file must be in ICO (.ico) format!",
+        description: "The uploaded file is directly installed as favicon!",
+        descriptionSuffix:
+          "Due to browser caching the newly uploaded favicon might not directly be visible in your browser tab.",
+        saved: "Favicon saved",
+      },
+      license: {
+        heading: "Media Files License",
+        description:
+          "Configures the license string displayed on the artivacts details-page. The license is composed of a prefix, the actual license and a suffix. If an URL is configured, the license will be rendered as link to the provided URL.",
+        descriptionSuffix:
+          "The final license text might look like: \"Media files are provided under 'CC BY-SA' license.\"",
+        card: {
+          heading: "License",
+          prefixDescription:
+            "The first part of the license text, e.g. 'Media files are provided under'.",
+          prefixLabel: "Prefix",
+          licenseDescription:
+            "The name of the license, e.g. 'MIT' or 'CC BY-SA'.",
+          licenseLabel: "License",
+          suffixDescription:
+            "The last part of the license text, e.g. 'license'.",
+          suffixLabel: "Suffix",
+          urlDescription:
+            "If provided, this URL will be used to make the license text into a link.",
+          urlLabel: "License-URL",
+        },
+      },
+    },
+  },
 
   ArtivactButtonEditor: {
     label: {
-      targetUrl: 'Target URL',
-      iconLeft:
-        'Left icon',
-      label:
-        'Button label',
-      iconRight:
-        'Right icon',
-      size:
-        'Button size',
-      buttonColor:
-        'Button color',
-      textColor:
-        'Text color',
-    }
-    ,
-  }
-  ,
+      targetUrl: "Target URL",
+      iconLeft: "Left icon",
+      label: "Button label",
+      iconRight: "Right icon",
+      size: "Button size",
+      buttonColor: "Button color",
+      textColor: "Text color",
+    },
+  },
 
   ArtivactCollectionExportEditor: {
     dialog: {
       create: {
-        heading: 'Create Export Configuration',
-        approve:
-          'Create Configuration',
-      }
-      ,
+        heading: "Create Export Configuration",
+        approve: "Create Configuration",
+      },
       edit: {
-        heading: 'Edit Export Configuration',
-        approve:
-          'Save Configuration',
-      }
-      ,
-    }
-    ,
+        heading: "Edit Export Configuration",
+        approve: "Save Configuration",
+      },
+    },
     label: {
-      sourceId: 'Source of collection export',
-      title:
-        'Title',
-      description:
-        'Short Description',
-      content:
-        'Content',
-      optimizeSize:
-        'Optimize export size',
-      applyRestrictions:
-        'Exclude restricted elements',
+      sourceId: "Source of collection export",
+      title: "Title",
+      description: "Short Description",
+      content: "Content",
+      optimizeSize: "Optimize export size",
+      applyRestrictions: "Exclude restricted elements",
       exportFileMissing:
-        'No export file exists for this configuration! You can create one by clicking on the respective button above.',
-      lastModified:
-        'Last modification of export file: ',
-      coverPicture:
-        'Cover Picture',
-      noCoverPicture:
-        'No cover picture available.',
-    }
-    ,
+        "No export file exists for this configuration! You can create one by clicking on the respective button above.",
+      lastModified: "Last modification of export file: ",
+      coverPicture: "Cover Picture",
+      noCoverPicture: "No cover picture available.",
+    },
     help: {
       title: "The collection export's title.",
       description:
         "A short (one to two sentences) description of the export's content.",
-      content:
-        "A longer description of the export's content.",
-    }
-    ,
+      content: "A longer description of the export's content.",
+    },
     button: {
-      create: 'Create Export Configuration',
-    }
-    ,
+      create: "Create Export Configuration",
+    },
     tooltip: {
-      delete:
-        'Delete this export configuration and associated files',
-      edit:
-        'Edit this export configuration',
+      delete: "Delete this export configuration and associated files",
+      edit: "Edit this export configuration",
       build:
-        'Re-create the export file for this collection export configuration',
+        "Re-create the export file for this collection export configuration",
       buildNew:
-        'Create a new export file for this collection export configuration',
-      download:
-        'Download the export file',
-      deleteCoverPicture:
-        'Delete cover picture from collection export',
-      restricted:
-        'Access to this collection export is restricted',
-      distributionOnly:
-        'This collection export is for distribution only',
-    }
-    ,
-  }
-  ,
+        "Create a new export file for this collection export configuration",
+      download: "Download the export file",
+      deleteCoverPicture: "Delete cover picture from collection export",
+      restricted: "Access to this collection export is restricted",
+      distributionOnly: "This collection export is for distribution only",
+    },
+  },
 
   ArtivactContentExportConfigurationEditor: {
     tooltip: {
-      deleteContentExport: 'Delete Export',
-    }
-    ,
+      deleteContentExport: "Delete Export",
+    },
     label: {
-      lastModified: 'Last modified: ',
-    }
-    ,
-  }
-  ,
+      lastModified: "Last modified: ",
+    },
+  },
 
   ArtivactExchangeConfigurationEditor: {
     synchronization: {
-      heading: 'Synchronization Configuration',
-      server:
-        {
-          description:
-            'URL of the remote Artivact server you want to use to synchronize items.',
-          label:
-            'Remote Artivact Server',
-        }
-      ,
+      heading: "Synchronization Configuration",
+      server: {
+        description:
+          "URL of the remote Artivact server you want to use to synchronize items.",
+        label: "Remote Artivact Server",
+      },
       token: {
         description:
-          'API token to use for synchronization. The token configured here must also be configured for a user account on the remote server. This user will be used on the remote side for authentication and authorization.',
-        label:
-          'API Token',
-      }
-      ,
-    }
-    ,
-  }
-  ,
+          "API token to use for synchronization. The token configured here must also be configured for a user account on the remote server. This user will be used on the remote side for authentication and authorization.",
+        label: "API Token",
+      },
+    },
+  },
 
   ArtivactItemModelEditor: {
     tooltip: {
-      open: 'Open the directory containing the 3D model.',
-      upload:
-        'Upload an existing GLTF/GLB 3D model to this item.',
-      delete:
-        'Remove model from item',
-      move:
-        'Change sort order per Drag&Drop.',
-    }
-    ,
+      open: "Open the directory containing the 3D model.",
+      upload: "Upload an existing GLTF/GLB 3D model to this item.",
+      delete: "Remove model from item",
+      move: "Change sort order per Drag&Drop.",
+    },
     dialog: {
       upload: {
-        heading: 'Upload 3D model',
-        label:
-          'Add model',
-      }
-      ,
-      delete:
-        {
-          heading: 'Remove 3D model?',
-          description:
-            'Are you sure you want to delete this model? This action cannot be undone!',
-          approve:
-            'Delete model',
-        }
-      ,
+        heading: "Upload 3D model",
+        label: "Add model",
+      },
+      delete: {
+        heading: "Remove 3D model?",
+        description:
+          "Are you sure you want to delete this model? This action cannot be undone!",
+        approve: "Delete model",
+      },
       messages: {
-        openFailed: 'Could not open model directory!',
-      }
-      ,
-    }
-    ,
-  }
-  ,
+        openFailed: "Could not open model directory!",
+      },
+    },
+  },
 
   ArtivactMenuBar: {
     tooltip: {
-      edit: 'Right click to edit menu',
-    }
-    ,
+      edit: "Right click to edit menu",
+    },
     label: {
-      menu: 'Menu',
-      targetPageAlias:
-        'URL Alias',
-      hidden:
-        'Hidden Menu',
-      external:
-        'External Page URL',
-      edit:
-        'Edit Menu',
-      delete:
-        'Delete Menu',
-      export:
-        'Export Menu',
-      left:
-        'Move Left',
-      right:
-        'Move Right',
-      editEntry:
-        'Edit Menu Entry',
-      deleteEntry:
-        'Delete Menu Entry',
-      exportEntry:
-        'Export Menu Entry',
-      up:
-        'Move Up',
-      down:
-        'Move Down',
-      createMenu:
-        'Create Menu',
-      importMenu:
-        'Import Menu',
-      add:
-        'Add Page',
-      addEntry:
-        'Add Entry',
-      exportConfiguration:
-        {
-          optimizeSize: 'Optimize export size',
-          applyRestrictions:
-            'Exclude restricted elements',
-          excludeItems:
-            'Exclude items from export',
-        }
-      ,
-    }
-    ,
+      menu: "Menu",
+      targetPageAlias: "URL Alias",
+      hidden: "Hidden Menu",
+      external: "External Page URL",
+      edit: "Edit Menu",
+      delete: "Delete Menu",
+      export: "Export Menu",
+      left: "Move Left",
+      right: "Move Right",
+      editEntry: "Edit Menu Entry",
+      deleteEntry: "Delete Menu Entry",
+      exportEntry: "Export Menu Entry",
+      up: "Move Up",
+      down: "Move Down",
+      createMenu: "Create Menu",
+      importMenu: "Import Menu",
+      add: "Add Page",
+      addEntry: "Add Entry",
+      relocate: "Relocate Menu",
+      relocateEntry: "Relocate Menu Entry",
+      exportConfiguration: {
+        optimizeSize: "Optimize export size",
+        applyRestrictions: "Exclude restricted elements",
+        excludeItems: "Exclude items from export",
+      },
+    },
     dialog: {
-      add: 'Add Menu',
-      edit:
-        'Edit Menu',
-      addEntry:
-        'Add Menu Entry',
-      editEntry:
-        'Edit Menu Entry',
-      description:
-        "Enter the menu's name.",
-      descriptionEntry:
-        "Enter the menu entry's name.",
+      add: "Add Menu",
+      edit: "Edit Menu",
+      addEntry: "Add Menu Entry",
+      editEntry: "Edit Menu Entry",
+      description: "Enter the menu's name.",
+      descriptionEntry: "Enter the menu entry's name.",
       descriptionTargetPageAlias:
         "An optional alias which can be entered in the URL instead of the page's ID.",
       descriptionHidden:
-        'The menu is hidden to unauthenticated users, but the page is still accessible via URL!',
+        "The menu is hidden to unauthenticated users, but the page is still accessible via URL!",
       descriptionExternal:
-        'An URL pointing to an external web page. The URL is opened in a new browser window.',
-      delete:
-        'Delete Menu?',
-      deleteEntry:
-        'Delete Menu Entry?',
+        "An URL pointing to an external web page. The URL is opened in a new browser window.",
+      delete: "Delete Menu?",
+      deleteEntry: "Delete Menu Entry?",
       deleteDescription:
-        'Are you sure you want to delete this menu including its page and menu entries? This action cannot be undone!',
-      deleteApprove:
-        'Delete Menu',
-      deleteApproveEntry:
-        'Delete Menu Entry',
-      exportConfiguration:
-        'Export Configuration',
-      exportApprove:
-        'Export Content',
-      import:
-        'Import Menu',
+        "Are you sure you want to delete this menu including its page and menu entries? This action cannot be undone!",
+      deleteApprove: "Delete Menu",
+      deleteApproveEntry: "Delete Menu Entry",
+      exportConfiguration: "Export Configuration",
+      exportApprove: "Export Content",
+      import: "Import Menu",
       importDescription:
-        'Please select a previously exported menu and upload the export file here.',
-      importFileUpload:
-        'Export File Upload',
-    }
-    ,
+        "Please select a previously exported menu and upload the export file here.",
+      importFileUpload: "Export File Upload",
+      relocate: "Relocate Menu (Entry)",
+      relocateDescription: "Select the new target of the menu (entry).",
+      relocateSelect: "Target Menu",
+      relocateMainMenu: "Move menu to the application's main menu bar.",
+    },
     messages: {
-      movingFailed: 'Moving failed',
-      exportFinished:
-        'Export finished',
-    }
-    ,
-  }
-  ,
+      movingFailed: "Moving failed",
+      exportFinished: "Export finished",
+      relocateSuccess: "Relocation successful",
+      relocateFailed: "Relocate failed",
+    },
+  },
 
   ArtivactOperationInProgressDialog: {
-    heading: 'Operation in Progress',
-    failedHeading:
-      'Operation Failed',
-    details:
-      'Details',
-    successMessage:
-      'The operation finished successfully.',
-    errorMessage:
-      'The operation failed.',
-  }
-  ,
+    heading: "Operation in Progress",
+    failedHeading: "Operation Failed",
+    details: "Details",
+    successMessage: "The operation finished successfully.",
+    errorMessage: "The operation failed.",
+  },
 
   ArtivactPage: {
     tooltip: {
-      edit: 'Edit page',
-      cancel:
-        'Leave Edit Mode',
-      add:
-        'Add Widget',
-      resetWip:
-        'Reset Page',
-      publishWip:
-        'Publish Page',
-      editMetadata:
-        'Edit Metadata',
-    }
-    ,
+      edit: "Edit page",
+      cancel: "Leave Edit Mode",
+      add: "Add Widget",
+      resetWip: "Reset Page",
+      publishWip: "Publish Page",
+      editMetadata: "Edit Metadata",
+    },
     label: {
       noIndexPage:
-        'No index page has been defined yet. Create a menu, add a page to it and edit it to be the index page.',
-      addWidget:
-        'Add Widget',
-      deleteWidget:
-        'Delete Widget',
-      pageTitle:
-        'Page Title',
-      textTitle:
-        'Text Title',
-      textContent:
-        'Text Content',
-      text:
-        'Text',
-      infoBoxTitle:
-        'Info-Box Title',
-      infoBoxContent:
-        'Info-Box Content',
-      avatarSubtext:
-        'Avatar Subtext',
-    }
-    ,
+        "No index page has been defined yet. Create a menu, add a page to it and edit it to be the index page.",
+      addWidget: "Add Widget",
+      deleteWidget: "Delete Widget",
+      pageTitle: "Page Title",
+      textTitle: "Text Title",
+      textContent: "Text Content",
+      text: "Text",
+      infoBoxTitle: "Info-Box Title",
+      infoBoxContent: "Info-Box Content",
+      avatarSubtext: "Avatar Subtext",
+    },
     dialog: {
       addWidget: {
-        heading: 'Widget Selection',
+        heading: "Widget Selection",
         description:
-          'WARNING: Adding a new widget will save the current page configuration!',
-        type:
-          'Widget Type',
-      }
-      ,
+          "WARNING: Adding a new widget will save the current page configuration!",
+        type: "Widget Type",
+      },
       deleteWidget: {
-        heading: 'Delete Widget',
-        description:
-          'Are you sure you want to delete this widget?',
-      }
-      ,
+        heading: "Delete Widget",
+        description: "Are you sure you want to delete this widget?",
+      },
       editMetadata: {
-        heading: 'Edit Metadata',
+        heading: "Edit Metadata",
         description:
-          'You can edit the metadata of this page here. The values will be used in the HTML HEAD element.',
-        label:
-          {
-            title: 'Title',
-            description:
-              'Description',
-            author:
-              'Author',
-            keywords:
-              'Keywords',
-          }
-        ,
+          "You can edit the metadata of this page here. The values will be used in the HTML HEAD element.",
+        label: {
+          title: "Title",
+          description: "Description",
+          author: "Author",
+          keywords: "Keywords",
+        },
         desc: {
-          title: 'The page title displayed in the browser tab.',
-          description:
-            'A short description of the page.',
-          author:
-            'The author of the page.',
-          keywords:
-            'Comma-separated list of Keywords for the page.',
-        }
-        ,
-      }
-      ,
-    }
-    ,
-  }
-  ,
+          title: "The page title displayed in the browser tab.",
+          description: "A short description of the page.",
+          author: "The author of the page.",
+          keywords: "Comma-separated list of Keywords for the page.",
+        },
+      },
+    },
+  },
 
   ArtivactPeripheralConfigEditor: {
     heading: {
-      turntable: 'Drehteller-Konfiguration',
-      camera:
-        'Camera Configuration',
-      backgroundRemoval:
-        'Background Removal',
-      modelCreator:
-        '3D Model-Creator',
-      modelEditor:
-        '3D Model-Editor',
-    }
-    ,
+      turntable: "Drehteller-Konfiguration",
+      camera: "Camera Configuration",
+      backgroundRemoval: "Background Removal",
+      modelCreator: "3D Model-Creator",
+      modelEditor: "3D Model-Editor",
+    },
     label: {
-      default:
-        'Peripheral',
-      label:
-        'Peripheral Label *',
-      favourite:
-        'Favourite Option?',
-      implementation:
-        'Implementation to use',
-    }
-    ,
+      default: "Peripheral",
+      label: "Peripheral Label *",
+      favourite: "Favourite Option?",
+      implementation: "Implementation to use",
+    },
     turntable: {
-      delay: 'Turntable delay in milliseconds',
+      delay: "Turntable delay in milliseconds",
       delayDescription:
-        'This configuration delays further processing after a turntable rotation. This ensures that the object has come to a complete stop before an image is captured.',
-    }
-    ,
+        "This configuration delays further processing after a turntable rotation. This ensures that the object has come to a complete stop before an image is captured.",
+    },
     camera: {
       argumentsDescription:
         'The arguments must include the placeholder "$_targetFile_$" to specify the location where the captured image should be saved. Artivact expects the image to be available there after the capture.',
-      delay:
-        'Delay in milliseconds',
+      delay: "Delay in milliseconds",
       delayDescription:
-        'Delays the image capture. This can be used if older cameras have issues with capturing images too quickly, or if the object is to be rotated manually.',
-    }
-    ,
+        "Delays the image capture. This can be used if older cameras have issues with capturing images too quickly, or if the object is to be rotated manually.",
+    },
     background: {
       argumentsDescription:
         'The path to the ONNX file can use the placeholder "$_projectDir_$" to refer to the project directory, e.g. "$_projectDir_$/utils/onnx/silueta.onnx".',
-    }
-    ,
+    },
     onnx: {
-      onnxModelFile: 'ONNX File *',
-      inputParameterName:
-        'Input Parameter Name *',
-      imageWidth:
-        'Input Image Width *',
-      imageHeight:
-        'Input Image Height *',
-      numThreads:
-        'Number of Threads *',
-    }
-    ,
+      onnxModelFile: "ONNX File *",
+      inputParameterName: "Input Parameter Name *",
+      imageWidth: "Input Image Width *",
+      imageHeight: "Input Image Height *",
+      numThreads: "Number of Threads *",
+    },
     externalProgram: {
-      command: 'Executable',
-      arguments:
-        'Arguments',
-    }
-    ,
+      command: "Executable",
+      arguments: "Arguments",
+    },
     modelCreator: {
       description:
-        'The placeholder $_projectDir_$ can be used to refer to the project directory. A 3D model that is found in the result directory after the photogrammetry process is completed will be imported automatically.',
+        "The placeholder $_projectDir_$ can be used to refer to the project directory. A 3D model that is found in the result directory after the photogrammetry process is completed will be imported automatically.",
       openInputDirInOs:
-        'Additionally open image input directory on program start?',
-      resultDir:
-        'Result directory',
-    }
-    ,
+        "Additionally open image input directory on program start?",
+      resultDir: "Result directory",
+    },
     modelEditor: {
       description:
-        'The placeholder $_projectDir_$ can be used to reference the project directory. The placeholder $_modelDir_$ can be used to reference the directory where the 3D model is located.',
-    }
-    ,
-  }
-  ,
+        "The placeholder $_projectDir_$ can be used to reference the project directory. The placeholder $_modelDir_$ can be used to reference the directory where the 3D model is located.",
+    },
+  },
 
-  ArtivactPeripheralConfigOverview: {}
-  ,
+  ArtivactPeripheralConfigOverview: {},
 
   ArtivactPeripheralsConfigurationEditor: {
     description:
-      'Configures the peripherals for 3D model creation of the Artivact application.',
+      "Configures the peripherals for 3D model creation of the Artivact application.",
     scanPeripheralsDescription:
       'You can click the "Scan Peripherals" button below to automatically detect peripherals. Artivact will then try to find connected USB devices, such as turntables or cameras, as well as any installed and supported software. If some software is not found, this may be due to unknown installation paths or untested software versions. You can still configure it manually if needed.',
-    turntable:
-      {
-        heading: 'Turntable Configuration',
-        description:
-          'Automatic rotation of captured items via turntables can be configured here. Currently only DIY turntables using Arduino via USB, like the Artivact open-source turntable, are supported. More infos are available in the documentation.',
-      }
-    ,
+    turntable: {
+      heading: "Turntable Configuration",
+      description:
+        "Automatic rotation of captured items via turntables can be configured here. Currently only DIY turntables using Arduino via USB, like the Artivact open-source turntable, are supported. More infos are available in the documentation.",
+    },
     camera: {
-      heading: 'Camera Configuration',
+      heading: "Camera Configuration",
       description:
         'Cameras for image capturing can be configured here. The built-in Picture-Transfer-Protocol implementation should support all cameras connected via USB that implement that protocol. If a camera is not supported, third party applications like "DigiCamControl" for Windows or "gphoto2" for Linux can be used.',
-    }
-    ,
+    },
     background: {
-      heading: 'Background Removal',
+      heading: "Background Removal",
       description:
-        'Automatic background removal of captured images is implemented using open-source neural networks for salient object detection. The network files must be provided in ONNX format. You can find out more in the documentation.',
-    }
-    ,
+        "Automatic background removal of captured images is implemented using open-source neural networks for salient object detection. The network files must be provided in ONNX format. You can find out more in the documentation.",
+    },
     creator: {
-      heading: '3D Model-Creator',
+      heading: "3D Model-Creator",
       description:
-        'For 3D model creation, external photogrammetry software can be configured here.',
-    }
-    ,
+        "For 3D model creation, external photogrammetry software can be configured here.",
+    },
     editor: {
-      heading: '3D Model-Editor',
+      heading: "3D Model-Editor",
       description:
-        'For editing created 3D models, external programs can be configured here.',
-    }
-    ,
-  }
-  ,
+        "For editing created 3D models, external programs can be configured here.",
+    },
+  },
 
   ArtivactPropertiesConfigurationEditor: {
     tooltip: {
-      delete:
-        'Delete Category',
-      deleteProperty:
-        'Delete Property',
-      switchCategory:
-        'Move property to a different category',
-      up:
-        'Move property up',
-      down:
-        'Move property down',
-    }
-    ,
+      delete: "Delete Category",
+      deleteProperty: "Delete Property",
+      switchCategory: "Move property to a different category",
+      up: "Move property up",
+      down: "Move property down",
+    },
     button: {
-      addProperty: 'Add Property',
-      addCategory:
-        'Add Category',
-    }
-    ,
-    newCategory: 'New Category',
-    newProperty:
-      'New Property',
-  }
-  ,
+      addProperty: "Add Property",
+      addCategory: "Add Category",
+    },
+    newCategory: "New Category",
+    newProperty: "New Property",
+  },
 
   ArtivactPropertyValueRangeEditor: {
-    label: 'Range of values:',
-    tooltip:
-      {
-        edit: 'Edit value',
-        delete:
-          'Delete value',
-        add:
-          'Add value',
-      }
-    ,
+    label: "Range of values:",
+    tooltip: {
+      edit: "Edit value",
+      delete: "Delete value",
+      add: "Add value",
+    },
     dialog: {
-      heading: 'Configure Value',
-      label:
-        'Value',
-    }
-    ,
-    newValue: 'New Value',
-  }
-  ,
+      heading: "Configure Value",
+      label: "Value",
+    },
+    newValue: "New Value",
+  },
 
   ArtivactRestrictedTranslatableItemEditor: {
-    default:
-      'Default: ',
-    tooltip:
-      {
-        more: 'Show details',
-        less:
-          'Hide details',
-      }
-    ,
-  }
-  ,
+    default: "Default: ",
+    tooltip: {
+      more: "Show details",
+      less: "Hide details",
+    },
+  },
 
   ArtivactRestrictionsEditor: {
-    restrictions: 'Restrictions:',
-  }
-  ,
+    restrictions: "Restrictions:",
+  },
 
   ArtivactSettingsBar: {
     tooltip: {
-      locales: 'Locale Selection',
-      systemSettings:
-        'System Settings',
-      account:
-        'Account Settings',
-      documentation:
-        'Open the documentation',
-    }
-    ,
-    default:
-      'Default',
-    itemSettings:
-      'Item Settings',
-    createItem:
-      'Create Item',
-    scanItem:
-      'Scan Item',
-    importItem:
-      'Import Item',
-    license:
-      'License',
-    appearance:
-      'Appearance',
-    peripherals:
-      'Peripherals',
-    exchange:
-      'Exchange',
-    locale:
-      'Locale',
-    exhib:
-      'Exhib.',
-    system:
-      'System',
-    documentation:
-      'Docs',
-    batch:
-      'Batch Processing',
-    dialog:
-      {
-        import:
-          'Import Item',
-        importDescription:
-          'Import a previously exported item. Please select the export file and upload it here.',
-        importFileUpload:
-          'Export File Upload',
-      }
-    ,
-  }
-  ,
+      locales: "Locale Selection",
+      systemSettings: "System Settings",
+      account: "Account Settings",
+      documentation: "Open the documentation",
+    },
+    default: "Default",
+    itemSettings: "Item Settings",
+    createItem: "Create Item",
+    scanItem: "Scan Item",
+    importItem: "Import Item",
+    license: "License",
+    appearance: "Appearance",
+    peripherals: "Peripherals",
+    exchange: "Exchange",
+    locale: "Locale",
+    exhib: "Exhib.",
+    system: "System",
+    documentation: "Docs",
+    batch: "Batch Processing",
+    dialog: {
+      import: "Import Item",
+      importDescription:
+        "Import a previously exported item. Please select the export file and upload it here.",
+      importFileUpload: "Export File Upload",
+    },
+  },
 
   ArtivactTagsConfigurationEditor: {
     tooltip: {
-      delete:
-        'Delete Tag',
-    }
-    ,
-    defaultTagLabel: 'Default tag for new items?',
-    url:
-      'URL',
-    addTag:
-      'Add Tag',
-    newTag:
-      'New Tag',
-  }
-  ,
+      delete: "Delete Tag",
+    },
+    defaultTagLabel: "Default tag for new items?",
+    url: "URL",
+    addTag: "Add Tag",
+    newTag: "New Tag",
+  },
 
   ItemImageEditor: {
     tooltip: {
-      open: 'Open the directory containing the images.',
-      upload:
-        'Upload an existing JPG/PNG image to this item.',
-      delete:
-        'Remove image from item',
-      move:
-        'Change sort order per Drag&Drop.',
-    }
-    ,
+      open: "Open the directory containing the images.",
+      upload: "Upload an existing JPG/PNG image to this item.",
+      delete: "Remove image from item",
+      move: "Change sort order per Drag&Drop.",
+    },
     dialog: {
       upload: {
-        heading: 'Upload image',
-        label:
-          'Add image',
-      }
-      ,
-      delete:
-        {
-          heading: 'Delete Image?',
-          description:
-            'Are you sure you want to delete this image? This action cannot be undone!',
-          approve:
-            'Delete image',
-        }
-      ,
+        heading: "Upload image",
+        label: "Add image",
+      },
+      delete: {
+        heading: "Delete Image?",
+        description:
+          "Are you sure you want to delete this image? This action cannot be undone!",
+        approve: "Delete image",
+      },
       messages: {
-        openFailed: 'Could not open model directory!',
-      }
-      ,
-    }
-    ,
-  }
-  ,
+        openFailed: "Could not open model directory!",
+      },
+    },
+  },
 
   ItemImageSetEditor: {
     tooltip: {
-      capture: 'Capture photos into new image set',
-      open:
-        'Open directory containing images',
-      upload:
-        'Upload existing images into new image set',
-      details:
-        'Show image set details',
-      backgrounds:
-        'Remove image backgrounds',
-      delete:
-        'Delete image set',
-      directCapture:
-        'Capture single photo into item media',
-    }
-    ,
+      capture: "Capture photos into new image set",
+      open: "Open directory containing images",
+      upload: "Upload existing images into new image set",
+      details: "Show image set details",
+      backgrounds: "Remove image backgrounds",
+      delete: "Delete image set",
+      directCapture: "Capture single photo into item media",
+    },
     label: {
-      numPhotos: 'Number of photos',
-      turntable:
-        'Use Turntable?',
-      delay:
-        'Turntable Delay',
-      backgrounds:
-        'Remove image backgrounds?',
-      add:
-        'Add',
-      selectTurntable:
-        'Select Turntable',
-      selectCamera:
-        'Select Camera',
-      selectImageBackgroundRemover:
-        'Select Background Remover',
-      selectModelCreator:
-        'Select Model Creator',
-      selectModelEditor:
-        'Select Model Editor',
-    }
-    ,
-    captureParameters: 'Capture Image Set',
-    startCapturing:
-      'Start Capturing',
-    transferPhotoToMedia:
-      'Add Photo to Media?',
-    dialog:
-      {
-        upload: {
-          heading: 'Upload Files to new Image-Set',
-          label:
-            'Add Images',
-        }
-        ,
-        details: {
-          heading: 'Image-Set Details',
-          transfer:
-            'Transfer image to item media',
-          deleteImage:
-            'Delete image',
-        }
-        ,
-        delete:
-          {
-            heading: 'Delete Image-Set?',
-            description:
-              'Are you sure you want to delete this Image-Set and all its files? This action cannot be undone!',
-            approve:
-              'Delete Image-Set',
-          }
-        ,
-        captureSinglePhotoParams: {
-          heading: 'Capture Single Photo',
-        }
-        ,
-        captureSinglePhotoInProgress: {
-          heading: 'Capturing Photo',
-          description:
-            'Capturing single photo to import as item media.',
-        }
-        ,
-        removeBackground: {
-          heading: 'Remove Image Background',
-          approve:
-            'Start',
-        }
-        ,
-        createModel: {
-          heading: 'Create Model',
-          approve:
-            'Start',
-        }
-        ,
-        editModel: {
-          heading: 'Edit Model',
-          approve:
-            'Start',
-        }
-        ,
-      }
-    ,
+      numPhotos: "Number of photos",
+      turntable: "Use Turntable?",
+      delay: "Turntable Delay",
+      backgrounds: "Remove image backgrounds?",
+      add: "Add",
+      selectTurntable: "Select Turntable",
+      selectCamera: "Select Camera",
+      selectImageBackgroundRemover: "Select Background Remover",
+      selectModelCreator: "Select Model Creator",
+      selectModelEditor: "Select Model Editor",
+    },
+    captureParameters: "Capture Image Set",
+    startCapturing: "Start Capturing",
+    transferPhotoToMedia: "Add Photo to Media?",
+    dialog: {
+      upload: {
+        heading: "Upload Files to new Image-Set",
+        label: "Add Images",
+      },
+      details: {
+        heading: "Image-Set Details",
+        transfer: "Transfer image to item media",
+        deleteImage: "Delete image",
+      },
+      delete: {
+        heading: "Delete Image-Set?",
+        description:
+          "Are you sure you want to delete this Image-Set and all its files? This action cannot be undone!",
+        approve: "Delete Image-Set",
+      },
+      captureSinglePhotoParams: {
+        heading: "Capture Single Photo",
+      },
+      captureSinglePhotoInProgress: {
+        heading: "Capturing Photo",
+        description: "Capturing single photo to import as item media.",
+      },
+      removeBackground: {
+        heading: "Remove Image Background",
+        approve: "Start",
+      },
+      createModel: {
+        heading: "Create Model",
+        approve: "Start",
+      },
+      editModel: {
+        heading: "Edit Model",
+        approve: "Start",
+      },
+    },
     messages: {
-      capturingFailed: 'Capturing photos failed!',
-      backgroundFailed:
-        'Background removal failed!',
-      imageSetFailed:
-        'Image-Set creation failed!',
-      openingFailed:
-        'Opening directory failed!',
-      transferred:
-        'Image transferred',
-      transferFailed:
-        'Image transfer failed!',
-      imageSetDeleted:
-        'Image-Set deleted',
-      imageSetDeletionFailed:
-        'Image-Set deletion failed!',
-      operationSuccess:
-        'Item saved',
-      operationFailed:
-        'Operation failed!',
-    }
-    ,
-  }
-  ,
+      capturingFailed: "Capturing photos failed!",
+      backgroundFailed: "Background removal failed!",
+      imageSetFailed: "Image-Set creation failed!",
+      openingFailed: "Opening directory failed!",
+      transferred: "Image transferred",
+      transferFailed: "Image transfer failed!",
+      imageSetDeleted: "Image-Set deleted",
+      imageSetDeletionFailed: "Image-Set deletion failed!",
+      operationSuccess: "Item saved",
+      operationFailed: "Operation failed!",
+    },
+  },
 
   ItemMediaCarousel: {
     tooltip: {
-      image: 'Show images',
-      model:
-        'Show 3D models',
-    }
-    ,
-  }
-  ,
+      image: "Show images",
+      model: "Show 3D models",
+    },
+  },
 
   ItemModelSetEditor: {
     tooltip: {
-      create: 'Create model from image sets',
-      open:
-        'Open directory containing model directories',
-      details:
-        'Show model files',
-      openModel:
-        'Open directory containing model files',
-      edit:
-        'Edit 3D model in editor',
-      delete:
-        'Delete 3D model',
-    }
-    ,
+      create: "Create model from image sets",
+      open: "Open directory containing model directories",
+      details: "Show model files",
+      openModel: "Open directory containing model files",
+      edit: "Edit 3D model in editor",
+      delete: "Delete 3D model",
+    },
     dialog: {
       details: {
-        heading: 'Model-Set Details',
-        transfer:
-          'Transfer 3D model to item media',
-      }
-      ,
-      delete:
-        {
-          heading: 'Delete Model-Set?',
-          description:
-            'Are you sure you want to delete this Model-Set and all its files? This action cannot be undone!',
-          approve:
-            'Delete Model-Set',
-        }
-      ,
-    }
-    ,
+        heading: "Model-Set Details",
+        transfer: "Transfer 3D model to item media",
+      },
+      delete: {
+        heading: "Delete Model-Set?",
+        description:
+          "Are you sure you want to delete this Model-Set and all its files? This action cannot be undone!",
+        approve: "Delete Model-Set",
+      },
+    },
     messages: {
-      loadingFailed: 'Loading Model-Set failed!',
-      creationFailed:
-        'Creating Model-Set failed!',
-      openFailed:
-        'Opening directory failed!',
-      editingFailed:
-        'Editing 3D model failed!',
-      transferSuccess:
-        'Model transferred',
-      transferFailed:
-        'Model transfer failed!',
-      deleteSuccess:
-        'Model-Set deleted',
-      deleteFailed:
-        'Model-Set deletion failed!',
-      operationFailed:
-        'Operation failed',
-    }
-    ,
-  }
-  ,
+      loadingFailed: "Loading Model-Set failed!",
+      creationFailed: "Creating Model-Set failed!",
+      openFailed: "Opening directory failed!",
+      editingFailed: "Editing 3D model failed!",
+      transferSuccess: "Model transferred",
+      transferFailed: "Model transfer failed!",
+      deleteSuccess: "Model-Set deleted",
+      deleteFailed: "Model-Set deletion failed!",
+      operationFailed: "Operation failed",
+    },
+  },
 
   ItemModelViewer: {
-    downloadModelButtonLabel: 'Download Model',
-  }
-  ,
+    downloadModelButtonLabel: "Download Model",
+  },
 
   ArtivactItemSearchInput: {
-    error: 'Please enter a search query.',
-    label:
-      {
-        maxResults: 'Max Results',
-        term:
-          'Search Term',
-        fulltext:
-          'Syntax for searching property values in fulltext search: "PROPERTY_ID=[SEARCH_TERM]"',
-        property:
-          'Syntax for searching property values only: PROPERTY_ID:"[SEARCH_TERM]"',
-        addTag:
-          'Add Tag',
-        addProperty:
-          'Add Property',
-      }
-    ,
-  }
-  ,
+    error: "Please enter a search query.",
+    label: {
+      maxResults: "Max Results",
+      term: "Search Term",
+      fulltext:
+        'Syntax for searching property values in fulltext search: "PROPERTY_ID=[SEARCH_TERM]"',
+      property:
+        'Syntax for searching property values only: PROPERTY_ID:"[SEARCH_TERM]"',
+      addTag: "Add Tag",
+      addProperty: "Add Property",
+    },
+  },
 
   Widget: {
     label: {
-      navigationTitle: 'Navigation',
-    }
-    ,
-  }
-  ,
-
+      navigationTitle: "Navigation",
+    },
+  },
   AvatarWidget: {
     label: {
-      image: 'Avatar Image',
-      subtext:
-        'Avatar Subtext',
-    }
-    ,
-  }
-  ,
+      image: "Avatar Image",
+      subtext: "Avatar Subtext",
+    },
+  },
 
   ButtonsWidget: {
     label: {
-      columns: 'Grid columns',
-      addButton:
-        'Add button',
-    }
-    ,
-  }
-  ,
+      columns: "Grid columns",
+      addButton: "Add button",
+    },
+  },
 
   ImageGalleryWidget: {
     label: {
-      heading: 'Heading',
-      content:
-        'Content',
-      images:
-        'Images',
+      heading: "Heading",
+      content: "Content",
+      images: "Images",
       fullscreenAllowed:
-        'Configures whether the images can be opened in fullscreen detail view.',
-      iconMode:
-        'Display images as smaller icons.',
-      hideBorder:
-        'Hides the border around the gallery.',
-      textPositionTop:
-        'Show images below text',
-      textPositionLeft:
-        'Show images right of text',
-      textPositionRight:
-        'Show images left of text',
-    }
-    ,
-  }
-  ,
+        "Configures whether the images can be opened in fullscreen detail view.",
+      iconMode: "Display images as smaller icons.",
+      hideBorder: "Hides the border around the gallery.",
+      textPositionTop: "Show images below text",
+      textPositionLeft: "Show images right of text",
+      textPositionRight: "Show images left of text",
+    },
+  },
 
   InfoBoxWidget: {
     label: {
-      heading: 'Heading',
-      content:
-        'Content',
-      outlined:
-        'Outlined',
-      typeInfo:
-        'Info-Box',
-      typeWarn:
-        'Warning-Box',
-      typeAlert:
-        'Alert-Box',
-    }
-    ,
-  }
-  ,
+      heading: "Heading",
+      content: "Content",
+      outlined: "Outlined",
+      typeInfo: "Info-Box",
+      typeWarn: "Warning-Box",
+      typeAlert: "Alert-Box",
+    },
+  },
 
   PageTitleWidget: {
     label: {
-      bgImage: 'Background Image',
-      title:
-        'Title',
-    }
-    ,
-  }
-  ,
+      bgImage: "Background Image",
+      title: "Title",
+    },
+  },
 
   ItemSearchWidget: {
     label: {
-      noSearchResults: 'No search results available!',
-      heading:
-        'Heading',
-      content:
-        'Content',
-      pageSize:
-        'Page size',
-    }
-    ,
+      noSearchResults: "No search results available!",
+      heading: "Heading",
+      content: "Content",
+      pageSize: "Page size",
+    },
     messages: {
-      noSearchResults: 'No search results found!',
-      searchFailed:
-        'Search failed!',
-    }
-    ,
-  }
-  ,
+      noSearchResults: "No search results found!",
+      searchFailed: "Search failed!",
+    },
+  },
 
   TextWidget: {
     label: {
-      heading: 'Heading',
-      content:
-        'Content',
-    }
-    ,
-  }
-  ,
+      heading: "Heading",
+      content: "Content",
+    },
+  },
 
   WidgetTemplate: {
     tooltip: {
-      edit: 'Right click to edit widget',
-    }
-    ,
+      edit: "Right click to edit widget",
+    },
     label: {
-      edit: 'Edit Widget',
-      close:
-        'Close Widget Editor',
-      moveUp:
-        'Move Widget Up',
-      moveDown:
-        'Move Widget Down',
-      delete:
-        'Delete Widget',
-      addAbove:
-        'Add Widget Above',
-      addBelow:
-        'Add Widget Below',
-    }
-    ,
-  }
-  ,
+      edit: "Edit Widget",
+      close: "Close Widget Editor",
+      moveUp: "Move Widget Up",
+      moveDown: "Move Widget Down",
+      delete: "Delete Widget",
+      addAbove: "Add Widget Above",
+      addBelow: "Add Widget Below",
+    },
+  },
 
   Progress: {
     manipulateImage: {
-      backgroundRemovalStart: 'Start removing backgrounds from images.',
-      backgroundRemovalInProgress:
-        'Removing backgrounds from images...',
-      failed:
-        'Removing backgrounds from images failed!',
-    }
-    ,
+      backgroundRemovalStart: "Start removing backgrounds from images.",
+      backgroundRemovalInProgress: "Removing backgrounds from images...",
+      failed: "Removing backgrounds from images failed!",
+    },
     captureImages: {
-      start: 'Start capturing images.',
-      inProgress:
-        'Capturing images...',
-      imageSetInProgress:
-        'Adding images to image-set...',
-      failed:
-        'Capturing images failed!',
-    }
-    ,
+      start: "Start capturing images.",
+      inProgress: "Capturing images...",
+      imageSetInProgress: "Adding images to image-set...",
+      failed: "Capturing images failed!",
+    },
     createImageSet: {
-      start: 'Importing images to new image-set.',
-      failed:
-        'Importing images failed!',
-    }
-    ,
+      start: "Importing images to new image-set.",
+      failed: "Importing images failed!",
+    },
     createModel: {
-      createModelStart: 'Creating model in external editor.',
-      copyImages:
-        'Copying images...',
-      failed:
-        'Error during model creation!',
-    }
-    ,
+      createModelStart: "Creating model in external editor.",
+      copyImages: "Copying images...",
+      failed: "Error during model creation!",
+    },
     editModel: {
-      start: 'Editing model in external editor.',
-      failed:
-        'Error during model editing!',
-    }
-    ,
+      start: "Editing model in external editor.",
+      failed: "Error during model editing!",
+    },
     search: {
-      createIndex: '(Re-)Creating search index...',
-      failed:
-        '(Re-)Creation of search index failed!',
-    }
-    ,
+      createIndex: "(Re-)Creating search index...",
+      failed: "(Re-)Creation of search index failed!",
+    },
     itemUpload: {
-      uploading: 'Uploading file to remote Artivact server.',
-      failed:
-        'Could not upload item file to remote server!',
-    }
-    ,
+      uploading: "Uploading file to remote Artivact server.",
+      failed: "Could not upload item file to remote server!",
+    },
     batch: {
-      process: 'Batch processing...',
-      failed:
-        'Batch processing failed!',
-    }
-    ,
+      process: "Batch processing...",
+      failed: "Batch processing failed!",
+    },
     collectionImport: {
-      import:
-        'Importing collection...',
-      failed:
-        'Import failed!',
-    }
-    ,
+      import: "Importing collection...",
+      failed: "Import failed!",
+    },
     collectionExport: {
-      export:
-        'Building collection export file...',
-      failed:
-        'Operation failed!',
-    }
-    ,
+      export: "Building collection export file...",
+      failed: "Operation failed!",
+    },
     scanPeripherals: {
-      init: 'Scanning peripherals...',
-      scanTurntables:
-        'Scanning for turntables...',
-      scanCameras:
-        'Scanning for cameras...',
+      init: "Scanning peripherals...",
+      scanTurntables: "Scanning for turntables...",
+      scanCameras: "Scanning for cameras...",
       scanImageBackroundRemovers:
-        'Scanning for image background removal support...',
-      scanModelCreators:
-        'Scanning for photogrammetry software...',
-      scanModelEditors:
-        'Scanning for 3D model editors...',
-    }
-    ,
-  }
-  ,
+        "Scanning for image background removal support...",
+      scanModelCreators: "Scanning for photogrammetry software...",
+      scanModelEditors: "Scanning for 3D model editors...",
+    },
+  },
 
   PeripheralStatus: {
-    AVAILABLE: 'The peripheral is available.',
-    ERROR:
-      'The peripheral is not available.',
-    DISCONNECTED:
-      'The peripheral seems to be disconnected.',
-    NOT_EXECUTABLE:
-      'The configured executable is not available.',
-    FILE_DOESNT_EXIST:
-      'The configured file does not exist.',
-  }
-  ,
+    AVAILABLE: "The peripheral is available.",
+    ERROR: "The peripheral is not available.",
+    DISCONNECTED: "The peripheral seems to be disconnected.",
+    NOT_EXECUTABLE: "The configured executable is not available.",
+    FILE_DOESNT_EXIST: "The configured file does not exist.",
+  },
 
-  ROLE_ADMIN: 'Admin',
-  ROLE_USER:
-    'User',
+  ROLE_ADMIN: "Admin",
+  ROLE_USER: "User",
 
-  PAGE_TITLE:
-    'Page Title',
-  PAGE_TITLE_DESCRIPTION:
-    'Page title with hero image and heading.',
-  TEXT:
-    'Text',
+  PAGE_TITLE: "Page Title",
+  PAGE_TITLE_DESCRIPTION: "Page title with hero image and heading.",
+  TEXT: "Text",
   TEXT_DESCRIPTION:
-    'Text block with optional heading. Supports Markdown for text formatting.',
-  ITEM_SEARCH:
-    'Item Search',
+    "Text block with optional heading. Supports Markdown for text formatting.",
+  ITEM_SEARCH: "Item Search",
   ITEM_SEARCH_DESCRIPTION:
-    'Either presents the results of a predefined item search, or lets the user input search parameters and displays the results.',
-  INFO_BOX:
-    'Info Box',
+    "Either presents the results of a predefined item search, or lets the user input search parameters and displays the results.",
+  INFO_BOX: "Info Box",
   INFO_BOX_DESCRIPTION:
-    'A text box with optional heading that can be colored according to their three states: INFO, WARN and ALERT.',
-  AVATAR:
-    'Avatar',
+    "A text box with optional heading that can be colored according to their three states: INFO, WARN and ALERT.",
+  AVATAR: "Avatar",
   AVATAR_DESCRIPTION:
-    'A portrait image with optional subtext and description to the right.',
-  IMAGE_GALLERY:
-    'Image Gallery',
+    "A portrait image with optional subtext and description to the right.",
+  IMAGE_GALLERY: "Image Gallery",
   IMAGE_GALLERY_DESCRIPTION:
-    'An image gallery with optional heading and content text.',
-  BUTTONS:
-    'Buttons',
-  BUTTONS_DESCRIPTION:
-    'A grid of one or more configurable buttons.',
+    "An image gallery with optional heading and content text.",
+  BUTTONS: "Buttons",
+  BUTTONS_DESCRIPTION: "A grid of one or more configurable buttons.",
 
-  ARDUINO_TURNTABLE_PERIPHERAL:
-    'Arduino DIY Turntable',
-  PTP_CAMERA_PERIPHERAL:
-    'USB Camera (Picture-Transfer-Protocol)',
-  EXTERNAL_PROGRAM_CAMERA_PERIPHERAL:
-    'External Program',
-  ONNX_IMAGE_BACKGROUND_REMOVAL_PERIPHERAL:
-    'ONNX Background Removal',
-  EXTERNAL_PROGRAM_MODEL_CREATOR_PERIPHERAL:
-    'External Program',
-  EXTERNAL_PROGRAM_MODEL_EDITOR_PERIPHERAL:
-    'External Program',
+  ARDUINO_TURNTABLE_PERIPHERAL: "Arduino DIY Turntable",
+  PTP_CAMERA_PERIPHERAL: "USB Camera (Picture-Transfer-Protocol)",
+  EXTERNAL_PROGRAM_CAMERA_PERIPHERAL: "External Program",
+  ONNX_IMAGE_BACKGROUND_REMOVAL_PERIPHERAL: "ONNX Background Removal",
+  EXTERNAL_PROGRAM_MODEL_CREATOR_PERIPHERAL: "External Program",
+  EXTERNAL_PROGRAM_MODEL_EDITOR_PERIPHERAL: "External Program",
 
-  DELETE_ITEM:
-    'Delete item',
-  ADD_TAG_TO_ITEM:
-    'Add tag',
-  REMOVE_TAG_FROM_ITEM:
-    'Remove tag',
-  UPLOAD_MODIFIED_ITEM:
-    'Upload modified item',
-  UPDATE_SEARCH_INDEX:
-    'Update search index',
-}
-;
+  DELETE_ITEM: "Delete item",
+  ADD_TAG_TO_ITEM: "Add tag",
+  REMOVE_TAG_FROM_ITEM: "Remove tag",
+  UPLOAD_MODIFIED_ITEM: "Upload modified item",
+  UPDATE_SEARCH_INDEX: "Update search index",
+};

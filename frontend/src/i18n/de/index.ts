@@ -204,6 +204,7 @@ export default {
   ExchangeConfigurationPage: {
     heading: 'Sammlungsaustausch',
     configuration: {
+      heading: 'Objekt-Synchronisation',
       description:
         'Hier können Parameter für den Austausch von Sammlungsobjekten zwischen verschiedenen Artivact-Instanzen konfiguriert werden.',
     },
@@ -425,7 +426,12 @@ export default {
           'Der Titel wird im Anwendungsfenster oder in Browser-Tabs angezeigt.',
         label: 'Anwendungstitel',
       },
-      locales: {
+      indexPage: {
+        heading: 'Index-Seite',
+        description:
+          'Die Index-Seite wird standardmäßig geladen, wenn der Benutzer keine spezielle Seite geöffnet hat.',
+        label: 'Index-Seite',
+      }, locales: {
         heading: 'Unterstützte Sprachen',
         description:
           "Kommaseparierte Liste mit Sprachcodes die von der Anwendung unterstützt werden. Beispiel: 'de,nl,ja'. Die Sprachen können zusätzlich zur Standardsprache verwaltet werden, indem sie über die Sprachwahl in der Menuleiste ausgewählt, und anschließend die entsprechenden Texte editiert werden.",
@@ -603,12 +609,15 @@ export default {
       right: 'Nach rechts bewegen',
       editEntry: 'Menüeintrag bearbeiten',
       deleteEntry: 'Menüeintrag löschen',
+      exportEntry: "Menüeintrag exportieren",
       up: 'Nach oben bewegen',
       down: 'Nach unten bewegen',
       createMenu: 'Menu erstellen',
       importMenu: 'Menu importieren',
       add: 'Seite hinzufügen',
       addEntry: 'Menüeintrag hinzufügen',
+      relocate: 'Menü umhängen',
+      relocateEntry: 'Menüeintrag umhängen',
       exportConfiguration: {
         optimizeSize: 'Exportgröße optimieren',
         applyRestrictions: 'Eingeschränkte Elemente ausschließen',
@@ -640,10 +649,16 @@ export default {
       importDescription:
         'Bitte wählen Sie ein zuvor exportiertes Menu aus und laden Sie die Exportdatei hoch.',
       importFileUpload: 'Exportdatei Upload',
+      relocate: 'Menü(-Eintrag) umhängen',
+      relocateDescription: 'Wählen Sie das Zielmenü aus, in das der Menü(-Eintrag) verschoben werden soll.',
+      relocateSelect: 'Zielmenü',
+      relocateMainMenu: 'Das Menü in das Hauptmenü der Anwendung verschieben.',
     },
     messages: {
       movingFailed: 'Bewegen fehlgeschlagen!',
       exportFinished: 'Export abgeschlossen',
+      relocateSuccess: 'Menu verschoben',
+      relocateFailed: 'Menu verschieben fehlgeschlagen',
     },
   },
 
@@ -941,6 +956,9 @@ export default {
         description:
           'Sind Sie sicher, dass Sie das ausgewählte Bilder-Set löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden!',
         approve: 'Bilder-Set löschen',
+      },
+      captureSinglePhotoParams: {
+        heading: "Einzelaufnahme starten",
       },
       captureSinglePhotoInProgress: {
         heading: 'Fotoaufnahme',

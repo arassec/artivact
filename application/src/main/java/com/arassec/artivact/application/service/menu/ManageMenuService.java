@@ -4,10 +4,7 @@ package com.arassec.artivact.application.service.menu;
 import com.arassec.artivact.application.infrastructure.aspect.GenerateIds;
 import com.arassec.artivact.application.infrastructure.aspect.RestrictResult;
 import com.arassec.artivact.application.infrastructure.aspect.TranslateResult;
-import com.arassec.artivact.application.port.in.menu.AddPageToMenuUseCase;
-import com.arassec.artivact.application.port.in.menu.DeleteMenuUseCase;
-import com.arassec.artivact.application.port.in.menu.LoadMenuUseCase;
-import com.arassec.artivact.application.port.in.menu.SaveMenuUseCase;
+import com.arassec.artivact.application.port.in.menu.*;
 import com.arassec.artivact.application.port.in.page.CreatePageUseCase;
 import com.arassec.artivact.application.port.in.page.DeletePageUseCase;
 import com.arassec.artivact.application.port.in.page.UpdatePageAliasUseCase;
@@ -38,7 +35,8 @@ public class ManageMenuService
         implements SaveMenuUseCase,
         LoadMenuUseCase,
         DeleteMenuUseCase,
-        AddPageToMenuUseCase {
+        AddPageToMenuUseCase,
+        RelocateMenuUseCase {
 
     /**
      * Repository to configurations.
@@ -123,6 +121,7 @@ public class ManageMenuService
             existingMenu.setTargetPageAlias(menu.getTargetPageAlias());
             existingMenu.setHidden(menu.isHidden());
             existingMenu.setMenuEntries(menu.getMenuEntries());
+            existingMenu.setExternal(menu.getExternal());
         } else {
             menuConfiguration.getMenus().add(menu);
         }
@@ -251,6 +250,52 @@ public class ManageMenuService
                 .filter(existingMenu -> existingMenu.getId().equals(menuId))
                 .findFirst()
                 .orElseThrow();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public void relocateMenu(String menuId, String newParentMenuId) {
+
+        MenuConfiguration menuConfiguration = menuRepository.load();
+        List<Menu> menus = menuConfiguration.getMenus();
+
+        List<Menu> flattenedMenus = new LinkedList<>();
+        flattenedMenus.addAll(menus);
+        flattenedMenus.addAll(flattenedMenus.stream()
+                .flatMap(existingMenu -> existingMenu.getMenuEntries().stream())
+                .toList());
+
+        Menu sourceMenu = flattenedMenus.stream()
+                .filter(menu -> menu.getId().equals(menuId))
+                .findFirst()
+                .orElseThrow();
+
+        if (StringUtils.hasText(sourceMenu.getParentId())) {
+            Menu oldParentMenu = flattenedMenus.stream()
+                    .filter(menu -> menu.getId().equals(sourceMenu.getParentId()))
+                    .findFirst()
+                    .orElseThrow();
+            oldParentMenu.getMenuEntries().remove(sourceMenu);
+        }
+
+        if ("main".equals(newParentMenuId)) {
+            sourceMenu.setParentId(null);
+            menus.add(sourceMenu);
+        } else {
+            Menu targetMenu = flattenedMenus.stream()
+                    .filter(menu -> menu.getId().equals(newParentMenuId))
+                    .findFirst()
+                    .orElseThrow();
+            sourceMenu.setParentId(targetMenu.getId());
+            targetMenu.getMenuEntries().add(sourceMenu);
+            // Remove from main menu if necessary:
+            menus.remove(sourceMenu);
+        }
+
+        menuRepository.save(menuConfiguration);
     }
 
 }

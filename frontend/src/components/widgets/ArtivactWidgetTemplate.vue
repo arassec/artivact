@@ -10,7 +10,7 @@
     <template v-if="editingRef">
       <div class="full-width with-background-color q-pa-sm">
       <artivact-restrictions-editor
-        v-if="userDataStore.isAdmin"
+        v-if="userDataStore.isAdmin && (!profilesStore.isDesktopModeEnabled || profilesStore.isE2eModeEnabled)"
         :in-details-view="false"
         :restrictions="restrictions"
         @delete-restriction="deleteRestriction"
@@ -68,6 +68,7 @@ import {useLocaleStore} from '../../stores/locale';
 import ArtivactRestrictionsEditor from '../ArtivactRestrictionsEditor.vue';
 import ArtivactRestrictedTranslatableItemEditor from '../ArtivactRestrictedTranslatableItemEditor.vue';
 import {useUserdataStore} from '../../stores/userdata';
+import {useProfilesStore} from "../../stores/profiles";
 
 const props = defineProps({
   inEditMode: {
@@ -97,6 +98,7 @@ const emit = defineEmits<{
 
 const localStore = useLocaleStore();
 const userDataStore = useUserdataStore();
+const profilesStore = useProfilesStore();
 
 const restrictionsRef = toRef(props, 'restrictions');
 const inEditModeRef = toRef(props, 'inEditMode');
