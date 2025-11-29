@@ -231,34 +231,51 @@ public class ArduinoTurntablePeripheral extends BasePeripheral implements Turnta
      * @return {@code true} if an arduino with firmata is listening on the port, {@code false} otherwise.
      */
     private boolean checkArduinoAtPort(SerialPort port) {
+
         String systemPortName = port.getSystemPortName();
 
         log.trace("Checking serial port for artivact turntable {} - {} - {}", systemPortName,
                 port.getDescriptivePortName(), port.getPortDescription());
 
-        // Check if VID/PID matches Arduino Nano Every:
-        if ((port.getVendorID() == 0x2341 || port.getVendorID() == 0x2A03)
-                && (port.getProductID() == 0x0058 || port.getProductID() == 0x0059)) {
-            try {
-                ioDevice = new FirmataDevice("/dev/" + systemPortName);
-                ioDevice.start();
-                ioDevice.ensureInitializationIsDone();
-                return true;
-            } catch (InterruptedException | IOException e) {
-                if (e instanceof InterruptedException) {
-                    Thread.currentThread().interrupt();
-                }
-                if (ioDevice != null) {
-                    try {
-                        ioDevice.stop();
-                    } catch (IOException ex) {
-                        log.warn("Error during stopping a turntable!", e);
-                    }
-                }
-                log.debug("Arduino device found, but not accessible with firmata4j.", e);
-            }
-        }
+        return isArduinoNanoEvery(port) && hasFirmataInstalled(systemPortName);
+    }
 
+    /**
+     * Returns {@code true} if the given port belongs to an Arduino Nano Every.
+     *
+     * @param port The port to check.
+     * @return {@code true} if the port belongs to an Arduino Nano Every, {@code false} otherwise.
+     */
+    private boolean isArduinoNanoEvery(SerialPort port) {
+        return (port.getVendorID() == 0x2341 || port.getVendorID() == 0x2A03)
+                && (port.getProductID() == 0x0058 || port.getProductID() == 0x0059);
+    }
+
+    /**
+     * Checks if firmata is installed on the Arduino connected to the given system port.
+     *
+     * @param systemPortName The system port name.
+     * @return {@code true} if firmata is installed, {@code false} otherwise.
+     */
+    private boolean hasFirmataInstalled(String systemPortName) {
+        try {
+            ioDevice = new FirmataDevice("/dev/" + systemPortName);
+            ioDevice.start();
+            ioDevice.ensureInitializationIsDone();
+            return true;
+        } catch (InterruptedException | IOException e) {
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
+            if (ioDevice != null) {
+                try {
+                    ioDevice.stop();
+                } catch (IOException ex) {
+                    log.warn("Error during stopping a turntable!", ex);
+                }
+            }
+            log.debug("Arduino device found, but not accessible with firmata4j.", e);
+        }
         return false;
     }
 

@@ -175,7 +175,7 @@ public class ManageCollectionExportService
             try {
                 return Files.newInputStream(exportFile);
             } catch (IOException e) {
-                throw new ArtivactException("Cannot read export file for export with ID: " + id);
+                throw new ArtivactException("Cannot read export file for export with ID: " + id, e);
             }
         }
         throw new ArtivactException("Cannot read export file for export with ID: " + id);

@@ -79,7 +79,7 @@ public class ExternalProgramModelCreatorPeripheral extends BasePeripheral implem
             return peripheralConfigs;
         }
 
-        Path home = Path.of(System.getProperty("user.home"));
+        Path home = osGateway.getUserHomeDirectory();
 
         Optional<Path> optionalMeshroom = osGateway.scanForDirectory(home, 5, "Meshroom-2025");
         if (optionalMeshroom.isPresent()) {
@@ -136,7 +136,7 @@ public class ExternalProgramModelCreatorPeripheral extends BasePeripheral implem
                 peripheralConfig.setPeripheralImplementation(PeripheralImplementation.EXTERNAL_PROGRAM_MODEL_CREATOR_PERIPHERAL);
                 peripheralConfig.setCommand(realityScan.toAbsolutePath().toString());
                 peripheralConfig.setArguments("-addFolder {projectDir}/temp/\n-save {projectDir}/temp/MyProject.rcproj");
-                peripheralConfig.setResultDir("{projectDir}/temp/export/");
+                peripheralConfig.setResultDir(RESULT_DIR_TEMPLATE);
                 peripheralConfigs.add(peripheralConfig);
 
                 peripheralConfig = new ModelCreatorPeripheralConfig();

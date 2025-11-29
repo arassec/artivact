@@ -46,11 +46,6 @@ public class ProjectInitializationService {
     public static final Path PROJECT_SETUP_DIR_FALLBACK = Path.of("application/src/main/resources/project-setup");
 
     /**
-     * Placeholder for the export path in templates.
-     */
-    private static final String TPL_EXPORT_PATH_PLACEHOLDER = "##EXPORT_PATH##";
-
-    /**
      * The initial user's username.
      */
     private static final String INITIAL_USERNAME = "admin";

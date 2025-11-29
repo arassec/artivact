@@ -48,7 +48,7 @@ public class WidgetDeserializer extends ValueDeserializer<Widget> {
                 }
             }
             return widget;
-        } catch (NoSuchElementException e) {
+        } catch (NoSuchElementException _) {
             log.warn("No widget found for type {}. Ignoring widget...", getType(map));
             return null;
         }

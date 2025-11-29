@@ -5,22 +5,21 @@ import com.arassec.artivact.application.port.in.configuration.SavePeripheralConf
 import com.arassec.artivact.application.port.in.operation.RunBackgroundOperationUseCase;
 import com.arassec.artivact.domain.model.configuration.PeripheralImplementation;
 import com.arassec.artivact.domain.model.configuration.PeripheralsConfiguration;
+import com.arassec.artivact.domain.model.misc.ProgressMonitor;
+import com.arassec.artivact.domain.model.operation.BackgroundOperation;
 import com.arassec.artivact.domain.model.peripheral.Peripheral;
 import com.arassec.artivact.domain.model.peripheral.configs.PeripheralConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -70,7 +69,6 @@ class ScanPeripheralsConfigurationServiceTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     void scanPeripheralsConfigurationScansAllPeripheralTypesWhenEmpty() {
         PeripheralsConfiguration emptyConfig = PeripheralsConfiguration.builder()
                 .turntablePeripheralConfigs(new ArrayList<>())
@@ -88,27 +86,26 @@ class ScanPeripheralsConfigurationServiceTest {
         PeripheralConfig modelCreatorConfig = mock(PeripheralConfig.class);
         PeripheralConfig modelEditorConfig = mock(PeripheralConfig.class);
 
-        when(turntablePeripheral.supports(PeripheralImplementation.ARDUINO_TURNTABLE_PERIPHERAL)).thenReturn(true);
-        when(turntablePeripheral.scanPeripherals()).thenReturn(List.of(turntableConfig));
+        lenient().when(turntablePeripheral.supports(PeripheralImplementation.ARDUINO_TURNTABLE_PERIPHERAL)).thenReturn(true);
+        lenient().when(turntablePeripheral.scanPeripherals()).thenReturn(List.of(turntableConfig));
 
-        when(cameraPeripheral.supports(PeripheralImplementation.PTP_CAMERA_PERIPHERAL)).thenReturn(true);
-        when(cameraPeripheral.scanPeripherals()).thenReturn(List.of(cameraConfig));
+        lenient().when(cameraPeripheral.supports(PeripheralImplementation.PTP_CAMERA_PERIPHERAL)).thenReturn(true);
+        lenient().when(cameraPeripheral.scanPeripherals()).thenReturn(List.of(cameraConfig));
 
-        when(backgroundRemovalPeripheral.supports(PeripheralImplementation.ONNX_IMAGE_BACKGROUND_REMOVAL_PERIPHERAL)).thenReturn(true);
-        when(backgroundRemovalPeripheral.scanPeripherals()).thenReturn(List.of(bgRemovalConfig));
+        lenient().when(backgroundRemovalPeripheral.supports(PeripheralImplementation.ONNX_IMAGE_BACKGROUND_REMOVAL_PERIPHERAL)).thenReturn(true);
+        lenient().when(backgroundRemovalPeripheral.scanPeripherals()).thenReturn(List.of(bgRemovalConfig));
 
-        when(modelCreatorPeripheral.supports(PeripheralImplementation.EXTERNAL_PROGRAM_MODEL_CREATOR_PERIPHERAL)).thenReturn(true);
-        when(modelCreatorPeripheral.scanPeripherals()).thenReturn(List.of(modelCreatorConfig));
+        lenient().when(modelCreatorPeripheral.supports(PeripheralImplementation.EXTERNAL_PROGRAM_MODEL_CREATOR_PERIPHERAL)).thenReturn(true);
+        lenient().when(modelCreatorPeripheral.scanPeripherals()).thenReturn(List.of(modelCreatorConfig));
 
-        when(modelEditorPeripheral.supports(PeripheralImplementation.EXTERNAL_PROGRAM_MODEL_EDITOR_PERIPHERAL)).thenReturn(true);
-        when(modelEditorPeripheral.scanPeripherals()).thenReturn(List.of(modelEditorConfig));
+        lenient().when(modelEditorPeripheral.supports(PeripheralImplementation.EXTERNAL_PROGRAM_MODEL_EDITOR_PERIPHERAL)).thenReturn(true);
+        lenient().when(modelEditorPeripheral.scanPeripherals()).thenReturn(List.of(modelEditorConfig));
 
-        ArgumentCaptor<Consumer> consumerCaptor = ArgumentCaptor.forClass(Consumer.class);
         doAnswer(invocation -> {
-            Consumer consumer = invocation.getArgument(2);
-            consumer.accept(mock(com.arassec.artivact.domain.model.misc.ProgressMonitor.class));
+            BackgroundOperation backgroundOperation = invocation.getArgument(2);
+            backgroundOperation.execute(new ProgressMonitor("test", "test"));
             return null;
-        }).when(runBackgroundOperationUseCase).execute(eq("scanPeripherals"), eq("init"), any());
+        }).when(runBackgroundOperationUseCase).execute(any(), any(), any());
 
         service.scanPeripheralsConfiguration();
 
@@ -121,7 +118,6 @@ class ScanPeripheralsConfigurationServiceTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     void scanPeripheralsConfigurationSkipsExistingConfigs() {
         PeripheralConfig existingTurntableConfig = mock(PeripheralConfig.class);
         PeripheralConfig existingCameraConfig = mock(PeripheralConfig.class);
@@ -140,10 +136,10 @@ class ScanPeripheralsConfigurationServiceTest {
         when(loadPeripheralsConfigurationUseCase.loadPeripheralConfiguration()).thenReturn(existingConfig);
 
         doAnswer(invocation -> {
-            Consumer consumer = invocation.getArgument(2);
-            consumer.accept(mock(com.arassec.artivact.domain.model.misc.ProgressMonitor.class));
+            BackgroundOperation backgroundOperation = invocation.getArgument(2);
+            backgroundOperation.execute(new ProgressMonitor("test", "test"));
             return null;
-        }).when(runBackgroundOperationUseCase).execute(eq("scanPeripherals"), eq("init"), any());
+        }).when(runBackgroundOperationUseCase).execute(any(), any(), any());
 
         service.scanPeripheralsConfiguration();
 

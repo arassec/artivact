@@ -211,17 +211,21 @@ function testPeripheralConfiguration() {
 
 function scanPeripherals() {
   api
-    .post('/api/configuration/peripheral/scan')
-    .then(() => {
-      showOperationInProgressModalRef.value = true;
-    })
-    .catch(() => {
-      quasar.notify({
-        color: 'negative',
-        position: 'bottom',
-        message: i18n.t('PeripheralsConfigurationPage.messages.scan.failed'),
-        icon: 'report_problem',
-      });
+    .post('/api/configuration/peripheral', peripheralConfigurationRef.value)
+    .then((response) => {
+      api
+        .post('/api/configuration/peripheral/scan')
+        .then(() => {
+          showOperationInProgressModalRef.value = true;
+        })
+        .catch(() => {
+          quasar.notify({
+            color: 'negative',
+            position: 'bottom',
+            message: i18n.t('PeripheralsConfigurationPage.messages.scan.failed'),
+            icon: 'report_problem',
+          });
+        });
     });
 }
 

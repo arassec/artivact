@@ -21,11 +21,10 @@ public class ArtivactDesktopSecurityConfiguration {
      *
      * @param http Spring-Security's {@link HttpSecurity}.
      * @return A desktop-mode {@link SecurityFilterChain}.
-     * @throws Exception in case of errors.
      */
     @Bean
     @SuppressWarnings("java:S4502") // Disabling CSRF for localhost communication is OK here...
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) {
         return http
                 .authorizeHttpRequests(auth -> auth
                         .anyRequest().permitAll()

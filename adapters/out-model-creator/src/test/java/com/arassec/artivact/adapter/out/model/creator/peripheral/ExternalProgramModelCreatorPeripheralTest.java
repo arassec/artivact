@@ -7,7 +7,6 @@ import com.arassec.artivact.domain.model.misc.ProgressMonitor;
 import com.arassec.artivact.domain.model.peripheral.ModelCreationResult;
 import com.arassec.artivact.domain.model.peripheral.PeripheralInitParams;
 import com.arassec.artivact.domain.model.peripheral.PeripheralStatus;
-import com.arassec.artivact.domain.model.peripheral.configs.ExternalProgramPeripheralConfig;
 import com.arassec.artivact.domain.model.peripheral.configs.ModelCreatorPeripheralConfig;
 import com.arassec.artivact.domain.model.peripheral.configs.PeripheralConfig;
 import org.junit.jupiter.api.Test;
@@ -71,13 +70,14 @@ class ExternalProgramModelCreatorPeripheralTest {
         Path homePath = Path.of("/home/user");
         Path meshroomPath = Path.of("/home/user/Meshroom-2025");
 
-        when(osGateway.scanForDirectory(eq(homePath), eq(5), eq("Meshroom-2025"))).thenReturn(Optional.of(meshroomPath));
+        when(osGateway.scanForDirectory(homePath, 5, "Meshroom-2025")).thenReturn(Optional.of(meshroomPath));
         when(osGateway.isLinux()).thenReturn(true);
+        when(osGateway.getUserHomeDirectory()).thenReturn(homePath);
 
         List<PeripheralConfig> result = peripheral.scanPeripherals();
 
         assertThat(result.stream()
-                .filter(c -> ((ModelCreatorPeripheralConfig) c).getLabel().contains("Meshroom"))
+                .filter(c -> c.getLabel().contains("Meshroom"))
                 .count()).isGreaterThan(0);
     }
 
@@ -122,7 +122,7 @@ class ExternalProgramModelCreatorPeripheralTest {
         assertThat(result.comment()).isEqualTo(config.getLabel());
 
         verify(fileRepository).emptyDir(tempDir);
-        verify(fileRepository, atLeastOnce()).copy(any(), any(), any());
+        verify(fileRepository, atLeastOnce()).copy(any(Path.class), any(), any());
         verify(fileRepository).emptyDir(resultDir);
         verify(fileRepository).createDirIfRequired(resultDir);
     }

@@ -78,7 +78,6 @@ class CaptureItemImageServiceTest {
     void captureImageCapturesWithoutBackgroundRemoval() {
         String itemId = "item-123";
         Path imagesDir = Path.of("/project/items/item-123/images");
-        Path targetFile = imagesDir.resolve("001.jpg");
 
         PeripheralConfig cameraConfig = mock(PeripheralConfig.class);
         when(cameraConfig.getId()).thenReturn("camera-config-1");

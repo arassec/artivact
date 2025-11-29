@@ -12,6 +12,7 @@ import com.arassec.artivact.domain.model.item.CreationModelSet;
 import com.arassec.artivact.domain.model.item.Item;
 import com.arassec.artivact.domain.model.item.MediaCreationContent;
 import com.arassec.artivact.domain.model.misc.ProgressMonitor;
+import com.arassec.artivact.domain.model.operation.BackgroundOperation;
 import com.arassec.artivact.domain.model.peripheral.Peripheral;
 import com.arassec.artivact.domain.model.peripheral.PeripheralInitParams;
 import com.arassec.artivact.domain.model.peripheral.configs.PeripheralConfig;
@@ -24,11 +25,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -66,7 +65,6 @@ class EditItemModelServiceTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     void editModelOpensModelInEditor() {
         String itemId = "item-123";
         String modelEditorConfigId = "editor-1";
@@ -96,10 +94,10 @@ class EditItemModelServiceTest {
         when(modelEditorPeripheral.supports(PeripheralImplementation.EXTERNAL_PROGRAM_MODEL_EDITOR_PERIPHERAL)).thenReturn(true);
 
         doAnswer(invocation -> {
-            Consumer consumer = invocation.getArgument(2);
-            consumer.accept(new ProgressMonitor("test", "test"));
+            BackgroundOperation backgroundOperation = invocation.getArgument(2);
+            backgroundOperation.execute(new ProgressMonitor("test", "test"));
             return null;
-        }).when(runBackgroundOperationUseCase).execute(eq("editModel"), eq("start"), any());
+        }).when(runBackgroundOperationUseCase).execute(any(), any(), any());
 
         service.editModel(itemId, modelEditorConfigId, modelSetIndex);
 
@@ -111,7 +109,6 @@ class EditItemModelServiceTest {
     @Test
     void editModelThrowsExceptionWhenNoMatchingPeripheral() {
         String modelEditorConfigId = "editor-1";
-        Path projectRoot = Path.of("/project");
 
         PeripheralConfig editorConfig = mock(PeripheralConfig.class);
         when(editorConfig.getId()).thenReturn(modelEditorConfigId);

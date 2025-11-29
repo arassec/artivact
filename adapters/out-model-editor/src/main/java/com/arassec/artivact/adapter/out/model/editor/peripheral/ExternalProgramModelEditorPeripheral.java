@@ -70,7 +70,7 @@ public class ExternalProgramModelEditorPeripheral extends BasePeripheral impleme
                 .map(this::scanBlender)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .map(config -> (PeripheralConfig) config)
+                .map(PeripheralConfig.class::cast)
                 .toList();
     }
 
@@ -105,7 +105,7 @@ public class ExternalProgramModelEditorPeripheral extends BasePeripheral impleme
      */
     private Optional<ExternalProgramPeripheralConfig> scanBlender(String version) {
         if (osGateway.isLinux()) {
-            Path home = Path.of(System.getProperty("user.home"));
+            Path home = osGateway.getUserHomeDirectory();
             Optional<Path> optionalBlender = osGateway.scanForDirectory(home, 5, "blender-" + version);
             if (optionalBlender.isPresent()) {
                 ExternalProgramPeripheralConfig peripheralConfig = new ExternalProgramPeripheralConfig();

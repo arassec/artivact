@@ -123,7 +123,7 @@ class TestPeripheralsConfigurationServiceTest {
         when(peripheral.supports(PeripheralImplementation.ONNX_IMAGE_BACKGROUND_REMOVAL_PERIPHERAL)).thenReturn(true);
         when(peripheral.supports(PeripheralImplementation.EXTERNAL_PROGRAM_MODEL_CREATOR_PERIPHERAL)).thenReturn(true);
         when(peripheral.supports(PeripheralImplementation.EXTERNAL_PROGRAM_MODEL_EDITOR_PERIPHERAL)).thenReturn(true);
-        
+
         when(peripheral.getStatus(turntableConfig)).thenReturn(PeripheralStatus.AVAILABLE);
         when(peripheral.getStatus(cameraConfig)).thenReturn(PeripheralStatus.DISCONNECTED);
         when(peripheral.getStatus(imageConfig)).thenReturn(PeripheralStatus.ERROR);
@@ -134,12 +134,12 @@ class TestPeripheralsConfigurationServiceTest {
 
         Map<String, PeripheralStatus> result = service.testConfigs(peripheralsConfiguration);
 
-        assertThat(result).hasSize(5);
-        assertThat(result.get("turntable-id")).isEqualTo(PeripheralStatus.AVAILABLE);
-        assertThat(result.get("camera-id")).isEqualTo(PeripheralStatus.DISCONNECTED);
-        assertThat(result.get("image-id")).isEqualTo(PeripheralStatus.ERROR);
-        assertThat(result.get("model-creator-id")).isEqualTo(PeripheralStatus.NOT_EXECUTABLE);
-        assertThat(result.get("model-editor-id")).isEqualTo(PeripheralStatus.FILE_DOESNT_EXIST);
+        assertThat(result).hasSize(5)
+                .containsEntry("turntable-id", PeripheralStatus.AVAILABLE)
+                .containsEntry("camera-id", PeripheralStatus.DISCONNECTED)
+                .containsEntry("image-id", PeripheralStatus.ERROR)
+                .containsEntry("model-creator-id", PeripheralStatus.NOT_EXECUTABLE)
+                .containsEntry("model-editor-id", PeripheralStatus.FILE_DOESNT_EXIST);
     }
 
     @Test

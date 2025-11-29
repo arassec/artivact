@@ -50,4 +50,11 @@ public interface OsGateway {
      */
     boolean isLinux();
 
+    /**
+     * Returns the user's home directory.
+     *
+     * @return The user's home as Path.
+     */
+    Path getUserHomeDirectory();
+
 }

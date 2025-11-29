@@ -104,11 +104,10 @@ public class ArtivactServerSecurityConfiguration {
      *
      * @param http Spring-Security's {@link HttpSecurity}.
      * @return A server-mode {@link SecurityFilterChain}.
-     * @throws Exception in case of errors.
      */
     @Bean
     @SuppressWarnings("java:S4502")
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) {
         return http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, API_CONFIGURATION_PUBLIC_PATTERN).permitAll()

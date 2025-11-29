@@ -131,9 +131,6 @@ public class RestrictResultAspect {
         if (!(authentication.getPrincipal() instanceof UserDetails userDetails)) {
             return Set.of();
         }
-        if (userDetails.getAuthorities() == null) {
-            return Set.of();
-        }
         return userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
     }
 

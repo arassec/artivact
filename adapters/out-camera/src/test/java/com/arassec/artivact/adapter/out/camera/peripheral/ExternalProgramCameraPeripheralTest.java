@@ -8,7 +8,6 @@ import com.arassec.artivact.domain.model.peripheral.PeripheralInitParams;
 import com.arassec.artivact.domain.model.peripheral.PeripheralStatus;
 import com.arassec.artivact.domain.model.peripheral.configs.ExternalProgramPeripheralConfig;
 import com.arassec.artivact.domain.model.peripheral.configs.PeripheralConfig;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

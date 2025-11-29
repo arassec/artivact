@@ -115,4 +115,12 @@ public class OperatingSystemAdapter implements OsGateway {
         return System.getProperty("os.name").toLowerCase().contains("linux");
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Path getUserHomeDirectory() {
+        return Path.of(System.getProperty("user.home"));
+    }
+
 }

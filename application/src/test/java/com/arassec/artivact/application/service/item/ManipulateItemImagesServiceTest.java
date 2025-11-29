@@ -6,13 +6,13 @@ import com.arassec.artivact.application.port.in.item.SaveItemUseCase;
 import com.arassec.artivact.application.port.in.operation.RunBackgroundOperationUseCase;
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.peripheral.ImageManipulatorPeripheral;
-import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.configuration.PeripheralImplementation;
 import com.arassec.artivact.domain.model.configuration.PeripheralsConfiguration;
 import com.arassec.artivact.domain.model.item.CreationImageSet;
 import com.arassec.artivact.domain.model.item.Item;
 import com.arassec.artivact.domain.model.item.MediaCreationContent;
 import com.arassec.artivact.domain.model.misc.ProgressMonitor;
+import com.arassec.artivact.domain.model.operation.BackgroundOperation;
 import com.arassec.artivact.domain.model.peripheral.Peripheral;
 import com.arassec.artivact.domain.model.peripheral.PeripheralInitParams;
 import com.arassec.artivact.domain.model.peripheral.configs.PeripheralConfig;
@@ -25,10 +25,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -70,7 +68,6 @@ class ManipulateItemImagesServiceTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     void removeBackgroundsProcessesImagesAndSavesResult() {
         String itemId = "item-123";
         String imageManipulatorConfigId = "bg-removal-1";
@@ -107,10 +104,10 @@ class ManipulateItemImagesServiceTest {
         ));
 
         doAnswer(invocation -> {
-            Consumer consumer = invocation.getArgument(2);
-            consumer.accept(new ProgressMonitor("test", "test"));
+            BackgroundOperation backgroundOperation = invocation.getArgument(2);
+            backgroundOperation.execute(new ProgressMonitor("test", "test"));
             return null;
-        }).when(runBackgroundOperationUseCase).execute(eq("manipulateImage"), eq("backgroundRemovalStart"), any());
+        }).when(runBackgroundOperationUseCase).execute(any(), any(), any());
 
         service.removeBackgrounds(itemId, imageManipulatorConfigId, imageSetIndex);
 
@@ -121,7 +118,6 @@ class ManipulateItemImagesServiceTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     void removeBackgroundsDoesNotSaveWhenNoImagesProduced() {
         String itemId = "item-123";
         String imageManipulatorConfigId = "bg-removal-1";
@@ -155,10 +151,10 @@ class ManipulateItemImagesServiceTest {
         when(imageManipulatorPeripheral.getModifiedImages()).thenReturn(List.of());
 
         doAnswer(invocation -> {
-            Consumer consumer = invocation.getArgument(2);
-            consumer.accept(new ProgressMonitor("test", "test"));
+            BackgroundOperation backgroundOperation = invocation.getArgument(2);
+            backgroundOperation.execute(new ProgressMonitor("test", "test"));
             return null;
-        }).when(runBackgroundOperationUseCase).execute(eq("manipulateImage"), eq("backgroundRemovalStart"), any());
+        }).when(runBackgroundOperationUseCase).execute(any(), any(), any());
 
         service.removeBackgrounds(itemId, imageManipulatorConfigId, imageSetIndex);
 
