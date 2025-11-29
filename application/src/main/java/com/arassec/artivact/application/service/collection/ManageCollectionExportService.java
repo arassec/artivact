@@ -308,8 +308,8 @@ public class ManageCollectionExportService
                             while ((length = inputStream.read(bytes)) >= 0) {
                                 zipOutputStream.write(bytes, 0, length);
                             }
-                        } catch (IOException e) {
-                            throw new ArtivactException("Exception while reading and streaming data!", e);
+                        } catch (IOException _) {
+                            throw new ArtivactException("Exception while reading and streaming data!");
                         }
                     });
 

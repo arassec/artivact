@@ -176,8 +176,8 @@ class TestPeripheralsConfigurationServiceTest {
 
         Map<String, PeripheralStatus> result = service.testConfigs(peripheralsConfiguration);
 
-        assertThat(result).hasSize(1);
-        assertThat(result.get("camera-id")).isEqualTo(PeripheralStatus.AVAILABLE);
+        assertThat(result).hasSize(1)
+                .containsEntry("camera-id", PeripheralStatus.AVAILABLE);
     }
 
 }

@@ -25,7 +25,7 @@ jobs:
       - name: Copy Artivact-Server jar (add 'v' to version)
         run: cp artivact-server/target/artivact-server-${{ env.RELEASE_VERSION }}.jar artivact-server/target/artivact-server-v${{ env.RELEASE_VERSION }}.jar
       - name: Upload binaries to release
-        uses: svenstaro/upload-release-action@v2
+        uses: svenstaro/upload-release-action@6b7fa9f267e90b50a19fef07b3596790bb941741
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file_glob: true
@@ -34,7 +34,7 @@ jobs:
           tag: ${{ github.ref }}
           overwrite: true
       - name: Deploy documentation to Github Pages
-        uses: JamesIves/github-pages-deploy-action@v4
+        uses: JamesIves/github-pages-deploy-action@4a3abc783e1a24aeb44c16e869ad83caf6b4cc23
         with:
           folder: adapters/in-web/target/classes/static/artivact
 
@@ -61,7 +61,7 @@ jobs:
       - name: Build
         run: .\mvnw.cmd clean install -Drevision="${{ steps.release_info.outputs.version_short }}" --no-transfer-progress -P 'release,release-desktop-windows'
       - name: Upload binaries to release
-        uses: svenstaro/upload-release-action@v2
+        uses: svenstaro/upload-release-action@6b7fa9f267e90b50a19fef07b3596790bb941741
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file_glob: true
@@ -86,7 +86,7 @@ jobs:
       - name: Build
         run: ./mvnw clean install -Drevision=$RELEASE_VERSION --no-transfer-progress -P release,release-desktop-linux
       - name: Upload binaries to release
-        uses: svenstaro/upload-release-action@v2
+        uses: svenstaro/upload-release-action@6b7fa9f267e90b50a19fef07b3596790bb941741
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file_glob: true
