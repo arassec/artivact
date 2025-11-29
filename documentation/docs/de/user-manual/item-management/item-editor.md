@@ -75,10 +75,8 @@ Andere unterstützen dies nicht, werden aber von Artivact zusammen mit den vorbe
 direkt per Drag & Drop in die Anwendung eingefügt werden können.
 
 ::: danger Photogrammetrie-Ergebnisse
-Das erstellte 3D-Modell wird im OBJ-Format erwartet und in das Projektverzeichnis von Artivact unter folgendem Pfad
-exportiert:
-``./temp/export/``.  
-Mit den von Artivact bereitgestellten Standardkonfigurationen sollte dies automatisch erfolgen.
-:::
+Um Objekte zu scannen, müssen Sie zuerst die Konfiguration der Peripheriegeräte von Artivact einrichten.
+Siehe [Einstellungen](../settings/peripherals) für Details.
+:::::::
 
 Nach der Modellerstellung kann das Ergebnis bei Bedarf mit einem externen Modell-Editor bearbeitet werden.

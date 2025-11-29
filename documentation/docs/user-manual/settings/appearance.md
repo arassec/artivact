@@ -4,8 +4,8 @@
 
 The following aspects of the application's appearance can be configured on this page:
 
-- Application Title <Badge type="warning" text="server"/>
-    - The title of the application, displayed in the browser tab.
+- Application Title
+    - The title of the application, displayed in the browser tab or the application window.
 - Index Page
     - The page that should be loaded by default if no page ID is specified in the URL.
 - Supported Locales

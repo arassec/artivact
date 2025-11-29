@@ -4,8 +4,8 @@
 
 Die folgenden Aspekte des Erscheinungsbildes der Anwendung können auf dieser Seite konfiguriert werden:
 
-- Anwendungstitel <Badge type="warning" text="server"/>
-    - Der Titel der Anwendung, der im Browser-Tab angezeigt wird.
+- Anwendungstitel
+    - Der Titel der Anwendung, der im Browser-Tab oder dem Anwendungsfenster angezeigt wird.
 - Startseite
     - Die Seite, die standardmäßig geladen werden soll, falls keine Seiten-ID in der URL angegeben ist.
 - Unterstützte Sprachen (Locales)

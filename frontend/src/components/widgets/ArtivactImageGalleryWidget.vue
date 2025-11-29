@@ -40,7 +40,7 @@
             swipeable
             animated
             padding
-            arrows
+            :arrows="widgetDataRef.images.length > 1"
             :navigation="widgetDataRef.images.length > 1"
             infinite
             @click.stop
@@ -51,7 +51,6 @@
               draggable="false"
               :name="index"
               dense
-              arrows
               :class="widgetDataRef.iconMode ? 'av-icon' : ''"
             >
               <q-img

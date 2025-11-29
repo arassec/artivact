@@ -13,12 +13,12 @@ The item details page switches into edit mode. The now shown button on the top r
 
 In edit mode, several tabs are shown at the top of the page which offer the following actions:
 
-|                                     Button                                     | Description                                                               |
-|:------------------------------------------------------------------------------:|:--------------------------------------------------------------------------|
-|       ![edit-item-base-tab](./assets/item-editor/edit-item-base-tab.png)       | Lets you edit the base data of the item like title and description.       |
-|      ![edit-item-media-tab](./assets/item-editor/edit-item-media-tab.png)      | Lets you manage media files associated with the item.                     |
-| ![edit-item-properties-tab](./assets/item-editor/edit-item-properties-tab.png) | Configures the item's properties.                                         |
-|   ![edit-item-creation-tab](./assets/item-editor/edit-item-creation-tab.png)   | <Badge type="warning" text="server"/> Lets you scan the item as 3D model. |
+|                                     Button                                     | Description                                                                |
+|:------------------------------------------------------------------------------:|:---------------------------------------------------------------------------|
+|       ![edit-item-base-tab](./assets/item-editor/edit-item-base-tab.png)       | Lets you edit the base data of the item like title and description.        |
+|      ![edit-item-media-tab](./assets/item-editor/edit-item-media-tab.png)      | Lets you manage media files associated with the item.                      |
+| ![edit-item-properties-tab](./assets/item-editor/edit-item-properties-tab.png) | Configures the item's properties.                                          |
+|   ![edit-item-creation-tab](./assets/item-editor/edit-item-creation-tab.png)   | <Badge type="warning" text="desktop"/> Lets you scan the item as 3D model. |
 
 The configuration options behind each tab are explained in the sections below.
 
@@ -71,9 +71,8 @@ Others don't support this, but will be opened by Artivact together with the prep
 into the application.
 
 ::: danger Photogrammetry Results
-The created 3D model is expected to be in OBJ format and exported to Artivact's project folder into the directory:
-``./temp/export/``.
-Using the default configurations provided by Artivact, this should automatically be the case.
+In order to scan items you have to set up Artivact's peripherals configuration first.
+See [System Settings](../settings/peripherals) for details.
 :::
 
 After model creation, the result can be edited with an external model editor if necessary.

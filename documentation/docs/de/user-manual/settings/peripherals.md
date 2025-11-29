@@ -10,6 +10,9 @@ Die Seite zeigt Konfigurationsoptionen für jeden externen Bestandteil der 3D-Mo
 
 ![peripherals-configuration](./assets/peripherals/peripherals-configuration.png)
 
+Durch klick auf "Peripheriegeräte Scannen" versucht Artivact angeschlossene Geräte und installierte Software zu finden,
+und Konfigurationen für diese Anzulegen.
+
 ## Drehteller
 
 ::: warning Linux-Systeme
@@ -26,7 +29,7 @@ Nach dem Zusammenbau des Drehtellers können Sie ihn über USB mit Ihrem PC verb
 
 Für die automatische Bilderfassung müssen Sie Ihre Kamera per USB an den PC anschließen und das Picture Transfer
 Protocol (PTP) aktivieren.  
-Wenn die Kamera nicht mit dem eingebauten Standard-Connector funktioniert, können Sie zusätzliche Software installieren,
+Wenn die Kamera nicht mit dem eingebauten PTP-Adapter funktioniert, können Sie zusätzliche Software installieren,
 um sie remote zu steuern.  
 Derzeit werden als Fallback [DigiCamControl](https://digicamcontrol.com/) für Windows und [gphoto2](http://gphoto.org/)
 für Linux unterstützt.
@@ -92,7 +95,7 @@ Die Modellbearbeitung wird von Artivact über eine externe Anwendung unterstütz
 ### Blender 3D
 
 ::: tip Unterstützte Version
-Die Blender-Integration wurde mit Version **4** getestet.
+Die Blender-Integration wurde mit den Versionen **4.5** und **5.0** getestet.
 :::
 
 Für die Modellbearbeitung kann Blender 3D direkt aus Artivact gestartet werden.  

@@ -1,4 +1,4 @@
-# Exchange-Konfiguration <Badge type="warning" text="desktop"/>
+# Exchange-Konfiguration
 
 ## Synchronisation
 
