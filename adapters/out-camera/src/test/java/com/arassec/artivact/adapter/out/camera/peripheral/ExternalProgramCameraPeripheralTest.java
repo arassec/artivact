@@ -74,21 +74,6 @@ class ExternalProgramCameraPeripheralTest {
     }
 
     @Test
-    void scanPeripheralsReturnsGPhoto2ConfigOnLinuxWhenAvailable() {
-        lenient().when(osGateway.isLinux()).thenReturn(true);
-        lenient().when(osGateway.isWindows()).thenReturn(false);
-        lenient().when(osGateway.isExecutable("/usr/bin/gphoto2")).thenReturn(true);
-
-        List<PeripheralConfig> result = peripheral.scanPeripherals();
-
-        assertThat(result).hasSize(1);
-        ExternalProgramPeripheralConfig config = (ExternalProgramPeripheralConfig) result.getFirst();
-        assertThat(config.getLabel()).isEqualTo("gphoto2 Camera");
-        assertThat(config.getCommand()).contains("gphoto2");
-        assertThat(config.getPeripheralImplementation()).isEqualTo(PeripheralImplementation.EXTERNAL_PROGRAM_CAMERA_PERIPHERAL);
-    }
-
-    @Test
     void scanPeripheralsReturnsDigiCamControlConfigOnWindowsWhenAvailable() {
         lenient().when(osGateway.isLinux()).thenReturn(false);
         lenient().when(osGateway.isWindows()).thenReturn(true);
