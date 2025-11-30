@@ -210,10 +210,8 @@ function testPeripheralConfiguration() {
 }
 
 function scanPeripherals() {
-  api
-    .post('/api/configuration/peripheral', peripheralConfigurationRef.value)
-    .then((response) => {
-      api
+  if (!peripheralConfigurationRef.value) {
+    api
         .post('/api/configuration/peripheral/scan')
         .then(() => {
           showOperationInProgressModalRef.value = true;
@@ -226,7 +224,35 @@ function scanPeripherals() {
             icon: 'report_problem',
           });
         });
-    });
+  } else {
+    api
+        .post('/api/configuration/peripheral', peripheralConfigurationRef.value)
+        .then(() => {
+          api
+              .post('/api/configuration/peripheral/scan')
+              .then(() => {
+                showOperationInProgressModalRef.value = true;
+              })
+              .catch(() => {
+                quasar.notify({
+                  color: 'negative',
+                  position: 'bottom',
+                  message: i18n.t('PeripheralsConfigurationPage.messages.scan.failed'),
+                  icon: 'report_problem',
+                });
+              });
+        })
+        .catch(() => {
+          quasar.notify({
+            color: 'negative',
+            position: 'bottom',
+            message: i18n.t('Common.messages.saving.failed', {
+              item: i18n.t('Common.items.configuration.peripherals'),
+            }),
+            icon: 'report_problem',
+          });
+        });
+  }
 }
 
 function scanFinished() {

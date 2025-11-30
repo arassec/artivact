@@ -16,11 +16,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests the {@link ExternalProgramModelEditorPeripheral}.
@@ -89,6 +93,112 @@ class ExternalProgramModelEditorPeripheralTest {
         assertThat(commandParams.get(1)).endsWith("utils/Blender/blender-artivact-import.py");
         assertThat(commandParams.get(2)).isEqualTo("--");
         assertThat(commandParams.get(3)).endsWith("src/test/resources");
+    }
+
+    /**
+     * Tests getStatus when the configured command is not executable.
+     */
+    @Test
+    void testGetStatusNotExecutable() {
+        ExternalProgramPeripheralConfig config = new ExternalProgramPeripheralConfig();
+        config.setCommand("/non/existent");
+        when(osGateway.isExecutable("/non/existent")).thenReturn(false);
+
+        assertThat(peripheral.getStatus(config).name()).isEqualTo("NOT_EXECUTABLE");
+    }
+
+    /**
+     * Tests getStatus when the peripheral is in use (should be AVAILABLE).
+     */
+    @Test
+    void testGetStatusInUse() throws Exception {
+        // set inUse = true via reflection
+        Field inUseField = peripheral.getClass().getSuperclass().getDeclaredField("inUse");
+        inUseField.setAccessible(true);
+        inUseField.set(peripheral, new AtomicBoolean(true));
+
+        ExternalProgramPeripheralConfig config = new ExternalProgramPeripheralConfig();
+        config.setCommand("/does/not/matter");
+
+        assertThat(peripheral.getStatus(config)).isEqualTo(com.arassec.artivact.domain.model.peripheral.PeripheralStatus.AVAILABLE);
+    }
+
+    /**
+     * Tests scanPeripherals returns found blender installation on Linux.
+     */
+    @Test
+    @EnabledOnOs(OS.LINUX)
+    void testScanPeripheralsLinuxFound() {
+        when(osGateway.isLinux()).thenReturn(true);
+        Path home = Path.of("/home/testuser");
+        when(osGateway.getUserHomeDirectory()).thenReturn(home);
+        when(osGateway.scanForDirectory(home, 5, "blender-4.5"))
+                .thenReturn(Optional.of(home.resolve("blender-4.5")));
+
+        List<?> result = peripheral.scanPeripherals();
+
+        assertThat(result).isNotEmpty();
+        assertThat(result.getFirst()).hasFieldOrProperty("label");
+        assertThat(result.getFirst().toString()).contains("Blender");
+    }
+
+    /**
+     * Tests scanPeripherals returns found blender installation on Windows.
+     */
+    @Test
+    @EnabledOnOs(OS.WINDOWS)
+    void testScanPeripheralsWindowsFound() {
+        when(osGateway.isLinux()).thenReturn(false);
+        when(osGateway.isWindows()).thenReturn(true);
+        // make isExecutable true for the expected path
+        String expectedPath = Path.of("C:\\Program Files\\Blender Foundation\\Blender 5.0\\blender.exe").toAbsolutePath().toString();
+        when(osGateway.isExecutable(expectedPath)).thenReturn(true);
+
+        List<?> result = peripheral.scanPeripherals();
+
+        assertThat(result).isNotEmpty();
+        Object cfg = result.getFirst();
+        assertThat(cfg.toString()).contains("Blender 5.0");
+        assertThat(cfg.toString()).contains("blender.exe");
+    }
+
+    /**
+     * Tests scanPeripherals returns empty list when peripheral is in use.
+     */
+    @Test
+    void testScanPeripheralsInUseReturnsEmpty() throws Exception {
+        // set inUse = true via reflection
+        Field inUseField = peripheral.getClass().getSuperclass().getDeclaredField("inUse");
+        inUseField.setAccessible(true);
+        inUseField.set(peripheral, new AtomicBoolean(true));
+
+        List<?> result = peripheral.scanPeripherals();
+        assertThat(result).isEmpty();
+    }
+
+    /**
+     * Tests open() when no arguments are configured (arguments == null).
+     */
+    @Test
+    void testOpenNoArguments() {
+        ProgressMonitor progressMonitor = new ProgressMonitor("BlenderModelEditorPeripheralTest", "testOpenNoArgs");
+        ExternalProgramPeripheralConfig config = new ExternalProgramPeripheralConfig();
+        config.setCommand("/path/to/executable");
+        config.setArguments(null);
+
+        PeripheralInitParams initParams = PeripheralInitParams.builder()
+                .projectRoot(Path.of("some/project"))
+                .config(config)
+                .build();
+
+        peripheral.initialize(progressMonitor, initParams);
+
+        peripheral.open(CreationModelSet.builder().directory("models").build());
+
+        verify(osGateway).execute(commandCaptor.capture(), commandParamsCaptor.capture());
+        assertThat(commandCaptor.getValue()).isEqualTo("/path/to/executable");
+        List<String> params = commandParamsCaptor.getValue();
+        assertThat(params).isEmpty();
     }
 
 }

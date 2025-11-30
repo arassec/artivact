@@ -12,8 +12,8 @@
 
 <script setup lang="ts">
 import {PropType, toRef} from 'vue';
-import ArtivactPropertyEditor from 'components/ArtivactPropertyEditor.vue';
-import {PropertyCategory, TranslatableString} from 'components/artivact-models';
+import ArtivactPropertyEditor from '../components/ArtivactPropertyEditor.vue';
+import {PropertyCategory, TranslatableString} from './artivact-models';
 import {translate} from './artivact-utils';
 
 const props = defineProps({

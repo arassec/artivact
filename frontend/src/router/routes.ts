@@ -6,6 +6,7 @@ import {Profiles} from '../components/artivact-models';
 import {useProfilesStore} from '../stores/profiles';
 import {useApplicationSettingsStore} from '../stores/application-settings';
 import {useLocaleStore} from '../stores/locale';
+import {usePeripheralsConfigStore} from "../stores/peripherals";
 
 const routes: RouteRecordRaw[] = [
   {
@@ -51,6 +52,13 @@ const routes: RouteRecordRaw[] = [
           }
 
           if (profiles.desktop || profiles.e2e) {
+            const peripheralsConfigStore = usePeripheralsConfigStore();
+            api
+              .get('/api/configuration/peripheral')
+              .then((response) => {
+                peripheralsConfigStore.setPeripheralsConfig(response.data);
+              });
+
             const postdata = new URLSearchParams();
             postdata.append('username', 'desktop');
             postdata.append('password', '');

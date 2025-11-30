@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -79,19 +80,13 @@ public class ArduinoTurntablePeripheral extends BasePeripheral implements Turnta
         turntableDelay = ((ArduinoTurntablePeripheralConfig) initParams.getConfig()).getDelayInMilliseconds();
 
         // Prevent problems when an exception is thrown after the turntable has been initialized.
-        try {
-            if (ioDevice != null) {
-                ioDevice.stop();
-                ioDevice = null;
-            }
-        } catch (IOException e) {
-            throw new ArtivactException("Error during turntable reset!", e);
-        }
+        stopTurntableIfPresent();
 
         SerialPort[] serialPorts = SerialPort.getCommPorts();
-
         for (SerialPort port : serialPorts) {
-            if (checkArduinoAtPort(port)) {
+            Optional<IODevice> optionalIODevice = checkArduinoAtPort(port);
+            if (optionalIODevice.isPresent()) {
+                ioDevice = optionalIODevice.get();
                 break;
             }
         }
@@ -154,14 +149,7 @@ public class ArduinoTurntablePeripheral extends BasePeripheral implements Turnta
      */
     @Override
     public synchronized void teardown() {
-        try {
-            if (ioDevice != null) {
-                ioDevice.stop();
-                ioDevice = null;
-            }
-        } catch (IOException e) {
-            throw new ArtivactException("Error during turntable reset!", e);
-        }
+        stopTurntableIfPresent();
         super.teardown();
     }
 
@@ -174,16 +162,21 @@ public class ArduinoTurntablePeripheral extends BasePeripheral implements Turnta
             return PeripheralStatus.AVAILABLE;
         }
 
+        stopTurntableIfPresent();
+
         SerialPort[] serialPorts = SerialPort.getCommPorts();
         for (SerialPort port : serialPorts) {
-            if (checkArduinoAtPort(port)) {
+            Optional<IODevice> optionalIODevice = checkArduinoAtPort(port);
+
+            if (optionalIODevice.isPresent()) {
+
                 try {
-                    ioDevice.stop();
+                    optionalIODevice.get().stop();
                 } catch (IOException e) {
                     log.warn("Error during stopping a turntable!", e);
                     return PeripheralStatus.ERROR;
                 }
-                ioDevice = null;
+
                 return PeripheralStatus.AVAILABLE;
             }
         }
@@ -200,16 +193,18 @@ public class ArduinoTurntablePeripheral extends BasePeripheral implements Turnta
             return List.of();
         }
 
+        stopTurntableIfPresent();
+
         SerialPort[] serialPorts = SerialPort.getCommPorts();
         for (SerialPort port : serialPorts) {
-            if (checkArduinoAtPort(port)) {
+            Optional<IODevice> optionalIODevice = checkArduinoAtPort(port);
+            if (optionalIODevice.isPresent()) {
                 try {
-                    ioDevice.stop();
+                    optionalIODevice.get().stop();
                 } catch (IOException e) {
                     log.warn("Error during turntable scan!", e);
                     return List.of();
                 }
-                ioDevice = null;
 
                 ArduinoTurntablePeripheralConfig arduinoTurntablePeripheralConfig = new ArduinoTurntablePeripheralConfig();
                 arduinoTurntablePeripheralConfig.setPeripheralImplementation(PeripheralImplementation.ARDUINO_TURNTABLE_PERIPHERAL);
@@ -225,19 +220,37 @@ public class ArduinoTurntablePeripheral extends BasePeripheral implements Turnta
     }
 
     /**
+     * Stops the currently connected device if present.
+     */
+    private void stopTurntableIfPresent() {
+        try {
+            if (ioDevice != null) {
+                ioDevice.stop();
+                ioDevice = null;
+            }
+        } catch (IOException e) {
+            throw new ArtivactException("Error during turntable reset!", e);
+        }
+    }
+
+    /**
      * Checks for a typical arduino signature and that firmata is available on the other side.
      *
      * @param port The port to check.
-     * @return {@code true} if an arduino with firmata is listening on the port, {@code false} otherwise.
+     * @return An {@link Optional} containing the {@link IODevice} if an Arduino with firmata is found, an empty
      */
-    private boolean checkArduinoAtPort(SerialPort port) {
+    private Optional<IODevice> checkArduinoAtPort(SerialPort port) {
 
         String systemPortName = port.getSystemPortName();
 
         log.trace("Checking serial port for artivact turntable {} - {} - {}", systemPortName,
                 port.getDescriptivePortName(), port.getPortDescription());
 
-        return isArduinoNanoEvery(port) && hasFirmataInstalled(systemPortName);
+        if (isArduinoNanoEvery(port)) {
+            return hasFirmataInstalled(systemPortName);
+        }
+
+        return Optional.empty();
     }
 
     /**
@@ -257,26 +270,27 @@ public class ArduinoTurntablePeripheral extends BasePeripheral implements Turnta
      * @param systemPortName The system port name.
      * @return {@code true} if firmata is installed, {@code false} otherwise.
      */
-    private boolean hasFirmataInstalled(String systemPortName) {
+    protected Optional<IODevice> hasFirmataInstalled(String systemPortName) {
+        IODevice ioDevice = null;
+
         try {
             ioDevice = new FirmataDevice("/dev/" + systemPortName);
             ioDevice.start();
             ioDevice.ensureInitializationIsDone();
-            return true;
+            return Optional.of(ioDevice);
         } catch (InterruptedException | IOException e) {
             if (e instanceof InterruptedException) {
                 Thread.currentThread().interrupt();
             }
-            if (ioDevice != null) {
-                try {
-                    ioDevice.stop();
-                } catch (IOException ex) {
-                    log.warn("Error during stopping a turntable!", ex);
-                }
+            try {
+                ioDevice.stop();
+            } catch (IOException ex) {
+                log.error("Error during IODevice stop!", ex);
             }
             log.debug("Arduino device found, but not accessible with firmata4j.", e);
         }
-        return false;
+
+        return Optional.empty();
     }
 
 }

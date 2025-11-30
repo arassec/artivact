@@ -222,14 +222,14 @@
                 :item-id="savedItemId"
                 :creation-image-sets="itemDataRef.creationImageSets"
                 @delete-image="saveItemIfNecessary(false)"
-                @update-item="loadItemData(itemDataRef.id)"
+                @update-item="updateItemMediaData(itemDataRef.id)"
                 @save-item="saveItem(false)"
               />
             </div>
             <artivact-item-model-set-editor
               :item-id="savedItemId"
               :creation-model-sets="itemDataRef.creationModelSets"
-              @update-item="loadItemData(itemDataRef.id)"
+              @update-item="updateItemMediaData(itemDataRef.id)"
             />
           </div>
         </div>
@@ -318,12 +318,34 @@ function loadItemData(itemId: string | string[]) {
   api
     .get('/api/item/' + itemId)
     .then((response) => {
-      itemDataRef.value = response.data;
       originalItemJson = JSON.stringify(response.data);
+      itemDataRef.value = response.data;
       if (wizzardStore.scanItem) {
         wizzardStore.setScanItem(false);
         tabRef.value = 'creation';
       }
+    })
+    .catch(() => {
+      quasar.notify({
+        color: 'negative',
+        position: 'bottom',
+        message: i18n.t('Common.messages.loading.failed', {
+          item: i18n.t('Common.items.item'),
+        }),
+        icon: 'report_problem',
+      });
+    });
+}
+
+function updateItemMediaData(itemId: string) {
+  api
+    .get('/api/item/' + itemId)
+    .then((response) => {
+      originalItemJson = JSON.stringify(response.data);
+      itemDataRef.value.images.splice(0, itemDataRef.value.images.length, ...response.data.images);
+      itemDataRef.value.models.splice(0, itemDataRef.value.models.length, ...response.data.models);
+      itemDataRef.value.creationImageSets.splice(0, itemDataRef.value.creationImageSets.length, ...response.data.creationImageSets);
+      itemDataRef.value.creationModelSets.splice(0, itemDataRef.value.creationModelSets.length, ...response.data.creationModelSets);
     })
     .catch(() => {
       quasar.notify({

@@ -20,9 +20,9 @@
 
 <script setup lang="ts">
 import {computed, PropType, Ref, ref, toRef} from 'vue';
-import {Property, SelectboxModel, TranslatableString} from 'components/artivact-models';
-import {translate} from 'components/artivact-utils';
-import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
+import {Property, SelectboxModel, TranslatableString} from './artivact-models';
+import {translate} from './artivact-utils';
+import ArtivactRestrictedTranslatableItemEditor from '../components/ArtivactRestrictedTranslatableItemEditor.vue';
 
 const props = defineProps({
   property: {
