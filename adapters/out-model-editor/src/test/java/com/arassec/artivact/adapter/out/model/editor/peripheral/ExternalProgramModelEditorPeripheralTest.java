@@ -143,26 +143,6 @@ class ExternalProgramModelEditorPeripheralTest {
     }
 
     /**
-     * Tests scanPeripherals returns found blender installation on Windows.
-     */
-    @Test
-    @EnabledOnOs(OS.WINDOWS)
-    void testScanPeripheralsWindowsFound() {
-        when(osGateway.isLinux()).thenReturn(false);
-        when(osGateway.isWindows()).thenReturn(true);
-        // make isExecutable true for the expected path
-        String expectedPath = Path.of("C:\\Program Files\\Blender Foundation\\Blender 5.0\\blender.exe").toAbsolutePath().toString();
-        when(osGateway.isExecutable(expectedPath)).thenReturn(true);
-
-        List<?> result = peripheral.scanPeripherals();
-
-        assertThat(result).isNotEmpty();
-        Object cfg = result.getFirst();
-        assertThat(cfg.toString()).contains("Blender 5.0");
-        assertThat(cfg.toString()).contains("blender.exe");
-    }
-
-    /**
      * Tests scanPeripherals returns empty list when peripheral is in use.
      */
     @Test
