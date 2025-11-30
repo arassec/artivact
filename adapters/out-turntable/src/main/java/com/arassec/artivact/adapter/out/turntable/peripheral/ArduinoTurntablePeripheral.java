@@ -271,19 +271,19 @@ public class ArduinoTurntablePeripheral extends BasePeripheral implements Turnta
      * @return {@code true} if firmata is installed, {@code false} otherwise.
      */
     protected Optional<IODevice> hasFirmataInstalled(String systemPortName) {
-        IODevice ioDevice = null;
+        IODevice device = null;
 
         try {
-            ioDevice = new FirmataDevice("/dev/" + systemPortName);
-            ioDevice.start();
-            ioDevice.ensureInitializationIsDone();
-            return Optional.of(ioDevice);
+            device = new FirmataDevice("/dev/" + systemPortName);
+            device.start();
+            device.ensureInitializationIsDone();
+            return Optional.of(device);
         } catch (InterruptedException | IOException e) {
             if (e instanceof InterruptedException) {
                 Thread.currentThread().interrupt();
             }
             try {
-                ioDevice.stop();
+                device.stop();
             } catch (IOException ex) {
                 log.error("Error during IODevice stop!", ex);
             }

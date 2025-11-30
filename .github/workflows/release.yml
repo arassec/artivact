@@ -51,7 +51,7 @@ jobs:
           java-version: 25
       - name: Get release info
         id: release_info
-        uses: revam/gh-action-get-tag-and-version@v1
+        uses: revam/gh-action-get-tag-and-version@908d3ec9b0832d5f922f48f6ab285cfa3688a9f7
         with:
           tag: ${{ github.ref }}
           prefix: v

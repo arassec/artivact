@@ -4,6 +4,7 @@ import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.peripheral.PeripheralInitParams;
 import com.arassec.artivact.domain.model.peripheral.PeripheralStatus;
 import com.arassec.artivact.domain.model.peripheral.configs.ArduinoTurntablePeripheralConfig;
+import com.arassec.artivact.domain.model.peripheral.configs.PeripheralConfig;
 import com.fazecast.jSerialComm.SerialPort;
 import lombok.SneakyThrows;
 import org.firmata4j.IODevice;
@@ -15,9 +16,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
@@ -25,7 +27,7 @@ import static org.mockito.Mockito.*;
  * Tests the {@link ArduinoTurntablePeripheral} with Firmata.
  */
 @ExtendWith(MockitoExtension.class)
-class ArduinoTurntablePeripheralHasFirmataTest {
+class ArduinoTurntablePeripheralTest {
 
 
     @Test
@@ -42,9 +44,9 @@ class ArduinoTurntablePeripheralHasFirmataTest {
         try (MockedStatic<SerialPort> mockedSerialPort = mockStatic(SerialPort.class)) {
             mockedSerialPort.when(SerialPort::getCommPorts).thenReturn(new SerialPort[]{mockPort});
 
-            var result = peripheral.scanPeripherals();
+            List<PeripheralConfig> result = peripheral.scanPeripherals();
 
-            assertThat(result.size()).isEqualTo(1);
+            assertThat(result).hasSize(1);
             assertThat(result.getFirst().getLabel()).isEqualTo("Arduino Turntable");
         }
     }
@@ -94,7 +96,7 @@ class ArduinoTurntablePeripheralHasFirmataTest {
     }
 
     @Test
-    void rotateDoesNothingWhenNotInitialized() throws InterruptedException {
+    void rotateDoesNothingWhenNotInitialized() {
         ArduinoTurntablePeripheral peripheral = new ArduinoTurntablePeripheral();
         ReflectionTestUtils.setField(peripheral, "turntableDelay", 10L);
 
