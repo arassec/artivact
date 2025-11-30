@@ -34,7 +34,7 @@ jobs:
       - name: Build with Maven
         run: |
           if [ "$RUNNER_OS" = "Windows" ]; then
-            .\mvnw.cmd clean install --no-transfer-progress
+            ./mvnw.cmd clean install --no-transfer-progress
           else
             ./mvnw clean install --no-transfer-progress
           fi
@@ -47,7 +47,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           if [ "$RUNNER_OS" = "Windows" ]; then
-            .\mvnw.cmd -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=arassec_artivact --no-transfer-progress
+            ./mvnw.cmd -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=arassec_artivact --no-transfer-progress
           else
             ./mvnw -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=arassec_artivact --no-transfer-progress
           fi
