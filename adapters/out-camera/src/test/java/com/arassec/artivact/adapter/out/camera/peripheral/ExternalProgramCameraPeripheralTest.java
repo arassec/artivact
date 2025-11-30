@@ -76,6 +76,7 @@ class ExternalProgramCameraPeripheralTest {
     @Test
     void scanPeripheralsReturnsGPhoto2ConfigOnLinuxWhenAvailable() {
         lenient().when(osGateway.isLinux()).thenReturn(true);
+        lenient().when(osGateway.isWindows()).thenReturn(false);
         lenient().when(osGateway.isExecutable("/usr/bin/gphoto2")).thenReturn(true);
 
         List<PeripheralConfig> result = peripheral.scanPeripherals();
