@@ -21,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -74,8 +75,8 @@ class ExternalProgramCameraPeripheralTest {
 
     @Test
     void scanPeripheralsReturnsGPhoto2ConfigOnLinuxWhenAvailable() {
-        when(osGateway.isLinux()).thenReturn(true);
-        when(osGateway.isExecutable("/usr/bin/gphoto2")).thenReturn(true);
+        lenient().when(osGateway.isLinux()).thenReturn(true);
+        lenient().when(osGateway.isExecutable("/usr/bin/gphoto2")).thenReturn(true);
 
         List<PeripheralConfig> result = peripheral.scanPeripherals();
 
@@ -88,9 +89,9 @@ class ExternalProgramCameraPeripheralTest {
 
     @Test
     void scanPeripheralsReturnsDigiCamControlConfigOnWindowsWhenAvailable() {
-        when(osGateway.isLinux()).thenReturn(false);
-        when(osGateway.isWindows()).thenReturn(true);
-        when(osGateway.isExecutable("C:\\Program Files (x86)\\digiCamControl\\CameraControl.exe")).thenReturn(true);
+        lenient().when(osGateway.isLinux()).thenReturn(false);
+        lenient().when(osGateway.isWindows()).thenReturn(true);
+        lenient().when(osGateway.isExecutable("C:\\Program Files (x86)\\digiCamControl\\CameraControl.exe")).thenReturn(true);
 
         List<PeripheralConfig> result = peripheral.scanPeripherals();
 
