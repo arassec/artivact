@@ -1,5 +1,6 @@
 package com.arassec.artivact.adapter.out.turntable.peripheral;
 
+import com.arassec.artivact.application.port.out.gateway.OsGateway;
 import com.arassec.artivact.domain.model.misc.ProgressMonitor;
 import com.arassec.artivact.domain.model.peripheral.PeripheralInitParams;
 import com.arassec.artivact.domain.model.peripheral.configs.ArduinoTurntablePeripheralConfig;
@@ -7,6 +8,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.Mockito.mock;
 
 /**
  * Integration test for the  {@link ArduinoTurntablePeripheral}.
@@ -24,7 +26,8 @@ class ArduinoTurntablePeripheralIntegrationTest {
                 .config(new ArduinoTurntablePeripheralConfig(100))
                 .build();
 
-        ArduinoTurntablePeripheral peripheral = new ArduinoTurntablePeripheral();
+        OsGateway osGateway = mock(OsGateway.class);
+        ArduinoTurntablePeripheral peripheral = new ArduinoTurntablePeripheral(osGateway);
 
         peripheral.initialize(progressMonitor, initParams);
 
