@@ -340,7 +340,7 @@ export default {
           heading: 'Kameras',
           ptp: 'Über USB mit dem PC verbundene Kameras werden auf Unterstützung des Picture Transfer Protocol (PTP) geprüft und bei Verfügbarkeit ausgewählt.',
           gphoto: 'Artivact sucht nach dem Programm gphoto2 im Verzeichnis \'/usr/bin/gphoto2\'.',
-          digiCamControl: 'Artivact sucht nach dem Programm DigiCamControl im Verzeichnis \'C:\\Program Files (x86)\\digiCamControl\\CameraControl.exe\'.'
+          digiCamControl: 'Artivact sucht nach dem Programm DigiCamControl im Verzeichnis \'C:\\Program Files (x86)\\digiCamControl\\CameraControlCmd.exe\'.'
         },
         imageBackgroundRemoval: {
           heading: 'Bildhintergrund-Entfernung',
@@ -350,13 +350,13 @@ export default {
           heading: 'Modellerstellung',
           meshroom: 'Meshroom wird im Home-Verzeichnis des Nutzers in einem Ordner gesucht, der mit \'Meshroom-2025\' beginnt.',
           metashapeLinux: 'Metashape wird im Home-Verzeichnis des Nutzers in einem Ordner gesucht, der mit \'metashape-2.2\' beginnt.',
-          metashapeWindows: 'Metashape wird unter \'C:\Program Files\Agisoft\Metashape\metashape.exe\' gesucht.',
-          realityScanWindows: 'RealityScan wird unter \'C:\Program Files\Epic Games\RealityScan_2.0\RealityScan.exe\' gesucht.'
+          metashapeWindows: 'Metashape wird unter \'C:\\Program Files\\Agisoft\\Metashape\\metashape.exe\' gesucht.',
+          realityScanWindows: 'RealityScan wird unter \'C:\\Program Files\\Epic Games\\RealityScan_2.1\\RealityScan.exe\' gesucht.'
         },
         modelEditing: {
           heading: 'Modellbearbeitung',
           blenderLinux: 'Blender wird im Home-Verzeichnis des Nutzers in einem Ordner gesucht, der mit \'blender-4.5\' oder \'blender-5.0\' beginnt.',
-          blenderWindows: 'Blender wird in einem Verzeichnis unter \'C:\Program Files\Blender Foundation\Blender 4.5\blender.exe\' oder \'C:\Program Files\Blender Foundation\Blender 5.0\blender.exe\' gesucht.',
+          blenderWindows: 'Blender wird in einem Verzeichnis unter \'C:\\Program Files\\Blender Foundation\\Blender 4.5\\blender.exe\' oder \'C:\\Program Files\\Blender Foundation\\Blender 5.0\\blender.exe\' gesucht.',
         }
       }
     }

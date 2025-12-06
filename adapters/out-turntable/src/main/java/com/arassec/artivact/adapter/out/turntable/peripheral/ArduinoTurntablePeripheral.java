@@ -1,5 +1,6 @@
 package com.arassec.artivact.adapter.out.turntable.peripheral;
 
+import com.arassec.artivact.application.port.out.gateway.OsGateway;
 import com.arassec.artivact.application.port.out.peripheral.TurntablePeripheral;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.configuration.PeripheralImplementation;
@@ -11,6 +12,7 @@ import com.arassec.artivact.domain.model.peripheral.configs.ArduinoTurntablePeri
 import com.arassec.artivact.domain.model.peripheral.configs.PeripheralConfig;
 import com.fazecast.jSerialComm.SerialPort;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.firmata4j.IODevice;
 import org.firmata4j.Pin;
@@ -28,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Component
 @Getter
+@RequiredArgsConstructor
 public class ArduinoTurntablePeripheral extends BasePeripheral implements TurntablePeripheral {
 
     /**
@@ -48,6 +51,11 @@ public class ArduinoTurntablePeripheral extends BasePeripheral implements Turnta
             {0, 0, 0, 1},
             {1, 0, 0, 1}
     };
+
+    /**
+     * Gateway for OS interactions.
+     */
+    private final OsGateway osGateway;
 
     /**
      * The turntable connected to a USB port.
@@ -273,8 +281,13 @@ public class ArduinoTurntablePeripheral extends BasePeripheral implements Turnta
     protected Optional<IODevice> hasFirmataInstalled(String systemPortName) {
         IODevice device = null;
 
+        String portName = systemPortName;
+        if (osGateway.isLinux()) {
+            portName = "/dev/" + systemPortName;
+        }
+
         try {
-            device = new FirmataDevice("/dev/" + systemPortName);
+            device = new FirmataDevice(portName);
             device.start();
             device.ensureInitializationIsDone();
             return Optional.of(device);

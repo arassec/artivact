@@ -83,7 +83,7 @@ Metashape integration has been tested for Version **2.2**
 ### RealityScan
 
 ::: tip Supported Version
-RealityScan integration has been tested for Version **2.0**
+RealityScan integration has been tested for Version **2.1**
 :::
 
 ## Model Editor

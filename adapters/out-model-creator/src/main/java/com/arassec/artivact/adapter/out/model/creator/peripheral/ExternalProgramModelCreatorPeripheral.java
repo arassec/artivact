@@ -129,7 +129,7 @@ public class ExternalProgramModelCreatorPeripheral extends BasePeripheral implem
                 peripheralConfigs.add(peripheralConfig);
             }
 
-            Path realityScan = Path.of("C:\\Program Files\\Epic Games\\RealityScan_2.0\\RealityScan.exe");
+            Path realityScan = Path.of("C:\\Program Files\\Epic Games\\RealityScan_2.1\\RealityScan.exe");
             if (osGateway.isExecutable(realityScan.toAbsolutePath().toString())) {
                 ModelCreatorPeripheralConfig peripheralConfig = new ModelCreatorPeripheralConfig();
                 peripheralConfig.setLabel("RealityScan 2.0");

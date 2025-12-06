@@ -77,14 +77,14 @@ class ExternalProgramCameraPeripheralTest {
     void scanPeripheralsReturnsDigiCamControlConfigOnWindowsWhenAvailable() {
         lenient().when(osGateway.isLinux()).thenReturn(false);
         lenient().when(osGateway.isWindows()).thenReturn(true);
-        lenient().when(osGateway.isExecutable("C:\\Program Files (x86)\\digiCamControl\\CameraControl.exe")).thenReturn(true);
+        lenient().when(osGateway.isExecutable("C:\\Program Files (x86)\\digiCamControl\\CameraControlCmd.exe")).thenReturn(true);
 
         List<PeripheralConfig> result = peripheral.scanPeripherals();
 
         assertThat(result).hasSize(1);
         ExternalProgramPeripheralConfig config = (ExternalProgramPeripheralConfig) result.getFirst();
         assertThat(config.getLabel()).isEqualTo("DigiCamControl Camera");
-        assertThat(config.getCommand()).contains("CameraControl.exe");
+        assertThat(config.getCommand()).contains("CameraControlCmd.exe");
         assertThat(config.getPeripheralImplementation()).isEqualTo(PeripheralImplementation.EXTERNAL_PROGRAM_CAMERA_PERIPHERAL);
     }
 

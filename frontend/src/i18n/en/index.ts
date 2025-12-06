@@ -354,7 +354,7 @@ export default {
           gphoto:
             "Artivact searches for the program gphoto2 at '/usr/bin/gphoto2'.",
           digiCamControl:
-            "Artivact searches for the program DigiCamControl in the directory 'C:\\Program Files (x86)\\digiCamControl\\CameraControl.exe'.",
+            "Artivact searches for the program DigiCamControl in the directory 'C:\\Program Files (x86)\\digiCamControl\\CameraControlCmd.exe'.",
         },
         imageBackgroundRemoval: {
           heading: "Image Background Removal",
@@ -370,7 +370,7 @@ export default {
           metashapeWindows:
             "Metashape is searched for under 'C:\\Program Files\\Agisoft\\Metashape\\metashape.exe'.",
           realityScanWindows:
-            "RealityScan is searched for under 'C:\\Program Files\\Epic Games\\RealityScan_2.0\\RealityScan.exe'.",
+            "RealityScan is searched for under 'C:\\Program Files\\Epic Games\\RealityScan_2.1\\RealityScan.exe'.",
         },
         modelEditing: {
           heading: "Model Editors",

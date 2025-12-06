@@ -85,7 +85,7 @@ Die Metashape-Integration wurde mit Version **2.2** getestet.
 ### RealityScan
 
 ::: tip Unterstützte Version
-Die RealityScan-Integration wurde mit Version **2.0** getestet.
+Die RealityScan-Integration wurde mit Version **2.1** getestet.
 :::
 
 ## Modelleditor
