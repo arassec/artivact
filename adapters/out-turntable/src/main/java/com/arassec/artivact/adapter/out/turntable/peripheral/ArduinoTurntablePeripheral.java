@@ -39,7 +39,7 @@ public class ArduinoTurntablePeripheral extends BasePeripheral implements Turnta
     /**
      * The port the turntable is connected to using USB.
      */
-    private SerialPort port;
+    private SerialPort turntablePort;
 
     /**
      * Delay after rotating the turntable. Can be used to stop item movement after rotation or to manually turn a
@@ -67,12 +67,12 @@ public class ArduinoTurntablePeripheral extends BasePeripheral implements Turnta
         turntableDelay = ((ArduinoTurntablePeripheralConfig) initParams.getConfig()).getDelayInMilliseconds();
 
         // Prevent problems when an exception is thrown after the turntable has been initialized.
-        stopTurntableIfPresent(port);
+        stopTurntableIfPresent(turntablePort);
 
         SerialPort[] serialPorts = SerialPort.getCommPorts();
-        for (SerialPort port : serialPorts) {
-            if (isArtivactTurntable(port)) {
-                this.port = port;
+        for (SerialPort serialPort : serialPorts) {
+            if (isArtivactTurntable(serialPort)) {
+                this.turntablePort = serialPort;
                 break;
             }
         }
@@ -85,7 +85,7 @@ public class ArduinoTurntablePeripheral extends BasePeripheral implements Turnta
      */
     @Override
     public synchronized void rotate(int numPhotos) {
-        if (port == null) {
+        if (turntablePort == null) {
             log.warn("Turntable not initialized!");
             if (turntableDelay > 0) {
                 try {
@@ -95,7 +95,7 @@ public class ArduinoTurntablePeripheral extends BasePeripheral implements Turnta
                     log.warn("Interrupted during turntable delay!", e);
                 }
             }
-        } else if (!"OK".equals(move(port, numPhotos))) {
+        } else if (!"OK".equals(move(turntablePort, numPhotos))) {
             log.error("Error during turntable move command!");
         }
     }
@@ -105,8 +105,8 @@ public class ArduinoTurntablePeripheral extends BasePeripheral implements Turnta
      */
     @Override
     public synchronized void teardown() {
-        stopTurntableIfPresent(port);
-        port = null;
+        stopTurntableIfPresent(turntablePort);
+        turntablePort = null;
         super.teardown();
     }
 
@@ -119,12 +119,12 @@ public class ArduinoTurntablePeripheral extends BasePeripheral implements Turnta
             return PeripheralStatus.AVAILABLE;
         }
 
-        stopTurntableIfPresent(port);
+        stopTurntableIfPresent(turntablePort);
 
         SerialPort[] serialPorts = SerialPort.getCommPorts();
-        for (SerialPort port : serialPorts) {
-            if (isArtivactTurntable(port)) {
-                stopTurntableIfPresent(port);
+        for (SerialPort serialPort : serialPorts) {
+            if (isArtivactTurntable(serialPort)) {
+                stopTurntableIfPresent(serialPort);
                 return PeripheralStatus.AVAILABLE;
             }
         }
@@ -142,9 +142,9 @@ public class ArduinoTurntablePeripheral extends BasePeripheral implements Turnta
         }
 
         SerialPort[] serialPorts = SerialPort.getCommPorts();
-        for (SerialPort port : serialPorts) {
-            if (isArtivactTurntable(port)) {
-                stopTurntableIfPresent(port);
+        for (SerialPort serialPort : serialPorts) {
+            if (isArtivactTurntable(serialPort)) {
+                stopTurntableIfPresent(serialPort);
                 ArduinoTurntablePeripheralConfig arduinoTurntablePeripheralConfig = new ArduinoTurntablePeripheralConfig();
                 arduinoTurntablePeripheralConfig.setPeripheralImplementation(PeripheralImplementation.ARDUINO_TURNTABLE_PERIPHERAL);
                 arduinoTurntablePeripheralConfig.setLabel("Arduino Turntable");
@@ -257,9 +257,8 @@ public class ArduinoTurntablePeripheral extends BasePeripheral implements Turnta
         StringBuilder sb = new StringBuilder();
         int b;
         while ((b = port.getInputStream().read()) != -1) {
-            if (b == '\n' || b == '\r') {
-                if (!sb.isEmpty()) break;
-                else continue;
+            if ((b == '\n' || b == '\r') && !sb.isEmpty()) {
+                break;
             }
             sb.append((char) b);
         }

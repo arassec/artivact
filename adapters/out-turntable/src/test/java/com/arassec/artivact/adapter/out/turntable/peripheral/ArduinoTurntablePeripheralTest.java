@@ -49,7 +49,7 @@ class ArduinoTurntablePeripheralTest {
 
         // Assert
         assertThat(peripheral.getTurntableDelay()).isEqualTo(500);
-        assertThat(peripheral.getPort()).isNotNull();
+        assertThat(peripheral.getTurntablePort()).isNotNull();
     }
 
     @Test
@@ -82,13 +82,13 @@ class ArduinoTurntablePeripheralTest {
         SerialPort mockPort = mock(SerialPort.class);
         when(mockPort.getOutputStream()).thenReturn(new ByteArrayOutputStream());
         when(mockPort.getInputStream()).thenReturn(new ByteArrayInputStream("OK\n".getBytes()));
-        ReflectionTestUtils.setField(peripheral, "port", mockPort);
+        ReflectionTestUtils.setField(peripheral, "turntablePort", mockPort);
 
         // Act
         peripheral.rotate(10);
 
         // Assert
-        assertThat(peripheral.getPort()).isNotNull();
+        assertThat(peripheral.getTurntablePort()).isNotNull();
         verify(mockPort, atLeastOnce()).getOutputStream();
     }
 
@@ -97,14 +97,14 @@ class ArduinoTurntablePeripheralTest {
         // Arrange
         SerialPort mockPort = mock(SerialPort.class);
         when(mockPort.isOpen()).thenReturn(true);
-        ReflectionTestUtils.setField(peripheral, "port", mockPort);
+        ReflectionTestUtils.setField(peripheral, "turntablePort", mockPort);
 
         // Act
         peripheral.teardown();
 
         // Assert
         verify(mockPort).closePort();
-        assertThat(peripheral.getPort()).isNull();
+        assertThat(peripheral.getTurntablePort()).isNull();
     }
 
     @Test
