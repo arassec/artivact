@@ -72,38 +72,22 @@ public class WidgetDeserializer extends ValueDeserializer<Widget> {
      * Returns a widget's class for its type.
      *
      * @param type The widget's type.
-     * @return The class of the widgte.
+     * @return The class of the widget.
      */
     private Class<? extends Widget> getClassOfType(String type) {
         if (type == null) {
             return null;
         }
-        switch (type) {
-            case "PAGE_TITLE" -> {
-                return PageTitleWidget.class;
-            }
-            case "TEXT" -> {
-                return TextWidget.class;
-            }
-            case "ITEM_SEARCH" -> {
-                return ItemSearchWidget.class;
-            }
-            case "INFO_BOX" -> {
-                return InfoBoxWidget.class;
-            }
-            case "AVATAR" -> {
-                return AvatarWidget.class;
-            }
-            case "IMAGE_GALLERY" -> {
-                return ImageGalleryWidget.class;
-            }
-            case "BUTTONS" -> {
-                return ButtonsWidget.class;
-            }
-            default -> {
-                return null;
-            }
-        }
+        return switch (type) {
+            case "PAGE_TITLE" -> PageTitleWidget.class;
+            case "TEXT" -> TextWidget.class;
+            case "ITEM_SEARCH" -> ItemSearchWidget.class;
+            case "INFO_BOX" -> InfoBoxWidget.class;
+            case "AVATAR" -> AvatarWidget.class;
+            case "IMAGE_GALLERY" -> ImageGalleryWidget.class;
+            case "BUTTONS" -> ButtonsWidget.class;
+            default -> null;
+        };
     }
 
 }

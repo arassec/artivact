@@ -57,28 +57,15 @@ public class PeripheralConfigDeserializer extends ValueDeserializer<PeripheralCo
         if (peripheralImplementation == null) {
             return null;
         }
-        switch (peripheralImplementation) {
-            case "ARDUINO_TURNTABLE_PERIPHERAL" -> {
-                return ArduinoTurntablePeripheralConfig.class;
-            }
-            case "ONNX_IMAGE_BACKGROUND_REMOVAL_PERIPHERAL" -> {
-                return OnnxBackgroundRemovalPeripheralConfig.class;
-            }
-            case "PTP_CAMERA_PERIPHERAL" -> {
-                return PtpCameraPeripheralConfig.class;
-            }
-            case "EXTERNAL_PROGRAM_MODEL_CREATOR_PERIPHERAL" -> {
-                return ModelCreatorPeripheralConfig.class;
-            }
+        return switch (peripheralImplementation) {
+            case "ARDUINO_TURNTABLE_PERIPHERAL" -> ArduinoTurntablePeripheralConfig.class;
+            case "ONNX_IMAGE_BACKGROUND_REMOVAL_PERIPHERAL" -> OnnxBackgroundRemovalPeripheralConfig.class;
+            case "PTP_CAMERA_PERIPHERAL" -> PtpCameraPeripheralConfig.class;
+            case "EXTERNAL_PROGRAM_MODEL_CREATOR_PERIPHERAL" -> ModelCreatorPeripheralConfig.class;
             case "EXTERNAL_PROGRAM_CAMERA_PERIPHERAL",
-                 "EXTERNAL_PROGRAM_MODEL_EDITOR_PERIPHERAL" -> {
-                return ExternalProgramPeripheralConfig.class;
-            }
-            default -> {
-                return null;
-            }
-        }
+                 "EXTERNAL_PROGRAM_MODEL_EDITOR_PERIPHERAL" -> ExternalProgramPeripheralConfig.class;
+            default -> null;
+        };
     }
-
 
 }
