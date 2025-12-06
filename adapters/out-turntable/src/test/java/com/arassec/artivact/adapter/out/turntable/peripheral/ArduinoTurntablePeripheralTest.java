@@ -1,5 +1,6 @@
 package com.arassec.artivact.adapter.out.turntable.peripheral;
 
+import com.arassec.artivact.application.port.out.gateway.OsGateway;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.peripheral.PeripheralInitParams;
 import com.arassec.artivact.domain.model.peripheral.PeripheralStatus;
@@ -11,6 +12,7 @@ import org.firmata4j.IODevice;
 import org.firmata4j.Pin;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -29,6 +31,8 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class ArduinoTurntablePeripheralTest {
 
+    @Mock
+    private OsGateway osGateway;
 
     @Test
     void scanPeripheralsReturnsConfigurationWhenArduinoConnected() {
@@ -38,7 +42,7 @@ class ArduinoTurntablePeripheralTest {
         when(mockPort.getProductID()).thenReturn(0x0058);
 
         IODevice mockIODevice = mock(IODevice.class);
-        ArduinoTurntablePeripheral peripheral = spy(new ArduinoTurntablePeripheral());
+        ArduinoTurntablePeripheral peripheral = spy(new ArduinoTurntablePeripheral(osGateway));
         doReturn(Optional.of(mockIODevice)).when(peripheral).hasFirmataInstalled("COM3");
 
         try (MockedStatic<SerialPort> mockedSerialPort = mockStatic(SerialPort.class)) {
@@ -59,7 +63,7 @@ class ArduinoTurntablePeripheralTest {
         when(mockPort.getProductID()).thenReturn(0x0058);
 
         IODevice mockIODevice = mock(IODevice.class);
-        ArduinoTurntablePeripheral peripheral = spy(new ArduinoTurntablePeripheral());
+        ArduinoTurntablePeripheral peripheral = spy(new ArduinoTurntablePeripheral(osGateway));
         doReturn(Optional.of(mockIODevice)).when(peripheral).hasFirmataInstalled("COM3");
 
         try (MockedStatic<SerialPort> mockedSerialPort = mockStatic(SerialPort.class)) {
@@ -79,7 +83,7 @@ class ArduinoTurntablePeripheralTest {
         when(mockPort.getProductID()).thenReturn(0x0058);
 
         IODevice mockIODevice = mock(IODevice.class);
-        ArduinoTurntablePeripheral peripheral = spy(new ArduinoTurntablePeripheral());
+        ArduinoTurntablePeripheral peripheral = spy(new ArduinoTurntablePeripheral(osGateway));
         doReturn(Optional.of(mockIODevice)).when(peripheral).hasFirmataInstalled("COM3");
 
         try (MockedStatic<SerialPort> mockedSerialPort = mockStatic(SerialPort.class)) {
@@ -97,7 +101,7 @@ class ArduinoTurntablePeripheralTest {
 
     @Test
     void rotateDoesNothingWhenNotInitialized() {
-        ArduinoTurntablePeripheral peripheral = new ArduinoTurntablePeripheral();
+        ArduinoTurntablePeripheral peripheral = new ArduinoTurntablePeripheral(osGateway);
         ReflectionTestUtils.setField(peripheral, "turntableDelay", 10L);
 
         long start = System.currentTimeMillis();
@@ -114,7 +118,7 @@ class ArduinoTurntablePeripheralTest {
 
         when(mockIODevice.getPin(anyInt())).thenReturn(mockPin);
 
-        ArduinoTurntablePeripheral peripheral = new ArduinoTurntablePeripheral();
+        ArduinoTurntablePeripheral peripheral = new ArduinoTurntablePeripheral(osGateway);
         ReflectionTestUtils.setField(peripheral, "ioDevice", mockIODevice);
         ReflectionTestUtils.setField(peripheral, "turntableDelay", 0L);
 
@@ -133,7 +137,7 @@ class ArduinoTurntablePeripheralTest {
         when(mockIODevice.getPin(anyInt())).thenReturn(mockPin);
         doThrow(new IOException("test")).when(mockPin).setValue(anyLong());
 
-        ArduinoTurntablePeripheral peripheral = new ArduinoTurntablePeripheral();
+        ArduinoTurntablePeripheral peripheral = new ArduinoTurntablePeripheral(osGateway);
         ReflectionTestUtils.setField(peripheral, "ioDevice", mockIODevice);
         ReflectionTestUtils.setField(peripheral, "turntableDelay", 0L);
 
@@ -147,7 +151,7 @@ class ArduinoTurntablePeripheralTest {
     void teardownStopsTurntableAndCallsSuper() {
         IODevice mockIODevice = mock(IODevice.class);
 
-        ArduinoTurntablePeripheral peripheral = new ArduinoTurntablePeripheral();
+        ArduinoTurntablePeripheral peripheral = new ArduinoTurntablePeripheral(osGateway);
         ReflectionTestUtils.setField(peripheral, "ioDevice", mockIODevice);
 
         peripheral.teardown();
