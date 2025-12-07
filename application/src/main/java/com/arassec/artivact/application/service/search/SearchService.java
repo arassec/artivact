@@ -6,6 +6,7 @@ import com.arassec.artivact.application.port.in.search.ManageSearchIndexUseCase;
 import com.arassec.artivact.application.port.in.search.SearchItemsUseCase;
 import com.arassec.artivact.application.port.out.gateway.SearchGateway;
 import com.arassec.artivact.application.port.out.repository.ItemRepository;
+import com.arassec.artivact.domain.model.TranslatableString;
 import com.arassec.artivact.domain.model.item.Item;
 import jakarta.transaction.Transactional;
 import lombok.Getter;
@@ -18,6 +19,7 @@ import tools.jackson.databind.json.JsonMapper;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Service for search-engine management and search handling.
@@ -85,12 +87,18 @@ public class SearchService
 
         if ("*".equals(query)) {
             return itemRepository.findAll(maxResults).stream()
-                    .sorted(Comparator.comparing(o -> o.getTitle().getValue()))
+                    .sorted(Comparator.comparing(
+                            o -> Optional.ofNullable(o.getTitle()).map(TranslatableString::getValue).orElse(null),
+                            Comparator.nullsLast(Comparator.naturalOrder())
+                    ))
                     .toList();
         }
 
         return itemRepository.findAllById(searchGateway.search(query, maxResults)).stream()
-                .sorted(Comparator.comparing(o -> o.getTitle().getValue()))
+                .sorted(Comparator.comparing(
+                        o -> Optional.ofNullable(o.getTitle()).map(TranslatableString::getValue).orElse(null),
+                        Comparator.nullsLast(Comparator.naturalOrder())
+                ))
                 .toList();
     }
 
