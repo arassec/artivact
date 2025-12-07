@@ -59,12 +59,18 @@
 
           <!-- BASE DATA -->
           <div v-show="tabRef == 'base'">
-            <artivact-restrictions-editor
-              :restrictions="itemDataRef.restrictions"
-              @delete-restriction="removeRestriction"
-              @add-restriction="addRestriction"
-              class="q-mb-sm"
-            />
+            <h2 class="q-mb-lg">{{ $t('ItemEditPage.tab.base') }}</h2>
+
+            <div
+              class="q-mb-sm row"
+              v-if="tagsDataRef"
+              v-show="tagsDataRef.tags.length > 0"
+            >
+              <div class="editor-label">
+                <label class="q-mr-xs q-mt-xs vertical-middle">ID</label>
+              </div>
+              <div>{{ itemDataRef.id }}</div>
+            </div>
 
             <q-separator
               :class="
@@ -74,8 +80,16 @@
               "
             />
 
+            <artivact-restrictions-editor
+              :restrictions="itemDataRef.restrictions"
+              @delete-restriction="removeRestriction"
+              @add-restriction="addRestriction"
+            />
+
+            <q-separator/>
+
             <div
-              class="q-mb-sm row"
+              class="q-mb-xl q-mt-md row"
               v-if="tagsDataRef"
               v-show="tagsDataRef.tags.length > 0"
             >
@@ -160,12 +174,6 @@
                 </template>
               </artivact-dialog>
             </div>
-
-            <q-separator
-              v-if="tagsDataRef"
-              v-show="tagsDataRef.tags.length > 0"
-              class="q-mb-lg"
-            />
 
             <artivact-restricted-translatable-item-editor
               :translatable-string="itemDataRef.title"
