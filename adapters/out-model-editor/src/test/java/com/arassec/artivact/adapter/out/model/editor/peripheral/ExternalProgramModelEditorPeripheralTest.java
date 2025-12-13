@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -23,8 +25,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Tests the {@link ExternalProgramModelEditorPeripheral}.
@@ -124,6 +125,18 @@ class ExternalProgramModelEditorPeripheralTest {
     }
 
     /**
+     * Tests getStatus when the configured command is executable.
+     */
+    @Test
+    void testGetStatusExecutable() {
+        ExternalProgramPeripheralConfig config = new ExternalProgramPeripheralConfig();
+        config.setCommand("/path/to/blender");
+        when(osGateway.isExecutable("/path/to/blender")).thenReturn(true);
+
+        assertThat(peripheral.getStatus(config)).isEqualTo(com.arassec.artivact.domain.model.peripheral.PeripheralStatus.AVAILABLE);
+    }
+
+    /**
      * Tests scanPeripherals returns found blender installation on Linux.
      */
     @Test
@@ -154,6 +167,130 @@ class ExternalProgramModelEditorPeripheralTest {
 
         List<?> result = peripheral.scanPeripherals();
         assertThat(result).isEmpty();
+    }
+
+    /**
+     * Tests scanPeripherals returns empty list when no blender installation is found on Linux.
+     */
+    @Test
+    @EnabledOnOs(OS.LINUX)
+    void testScanPeripheralsLinuxNotFound() {
+        when(osGateway.isLinux()).thenReturn(true);
+        Path home = Path.of("/home/testuser");
+        when(osGateway.getUserHomeDirectory()).thenReturn(home);
+        when(osGateway.scanForDirectory(home, 5, "blender-4.5")).thenReturn(Optional.empty());
+        when(osGateway.scanForDirectory(home, 5, "blender-5.0")).thenReturn(Optional.empty());
+
+        List<?> result = peripheral.scanPeripherals();
+
+        assertThat(result).isEmpty();
+    }
+
+    /**
+     * Tests scanPeripherals finds Blender installation on Windows.
+     */
+    @Test
+    @EnabledOnOs(OS.WINDOWS)
+    void testScanPeripheralsWindowsFound() {
+        when(osGateway.isLinux()).thenReturn(false);
+        when(osGateway.isWindows()).thenReturn(true);
+        when(osGateway.isExecutable("C:\\Program Files\\Blender Foundation\\Blender 4.5\\blender.exe"))
+                .thenReturn(true);
+
+        List<?> result = peripheral.scanPeripherals();
+
+        assertThat(result).isNotEmpty();
+        assertThat(result.getFirst()).hasFieldOrProperty("label");
+    }
+
+    /**
+     * Tests scanPeripherals returns empty list when no blender installation is found on Windows.
+     */
+    @Test
+    @EnabledOnOs(OS.WINDOWS)
+    void testScanPeripheralsWindowsNotFound() {
+        when(osGateway.isLinux()).thenReturn(false);
+        when(osGateway.isWindows()).thenReturn(true);
+        when(osGateway.isExecutable("C:\\Program Files\\Blender Foundation\\Blender 4.5\\blender.exe"))
+                .thenReturn(false);
+        when(osGateway.isExecutable("C:\\Program Files\\Blender Foundation\\Blender 5.0\\blender.exe"))
+                .thenReturn(false);
+
+        List<?> result = peripheral.scanPeripherals();
+
+        assertThat(result).isEmpty();
+    }
+
+    /**
+     * Tests scanPeripherals finds multiple Blender versions.
+     */
+    @ParameterizedTest
+    @ValueSource(strings = {"4.5", "5.0"})
+    @EnabledOnOs(OS.LINUX)
+    void testScanPeripheralsMultipleVersions(String version) {
+        when(osGateway.isLinux()).thenReturn(true);
+        Path home = Path.of("/home/testuser");
+        when(osGateway.getUserHomeDirectory()).thenReturn(home);
+        lenient().when(osGateway.scanForDirectory(home, 5, "blender-" + version))
+                .thenReturn(Optional.of(home.resolve("blender-" + version)));
+
+        List<?> result = peripheral.scanPeripherals();
+
+        assertThat(result).isNotEmpty();
+    }
+
+    /**
+     * Tests open() with all placeholder replacements in arguments.
+     */
+    @Test
+    void testOpenWithAllPlaceholders() {
+        ProgressMonitor progressMonitor = new ProgressMonitor("test", "testPlaceholders");
+        ExternalProgramPeripheralConfig config = new ExternalProgramPeripheralConfig();
+        config.setCommand("/path/to/blender");
+        config.setArguments("--python {projectDir}/script.py\n-- {modelDir}/model.blend");
+
+        PeripheralInitParams initParams = PeripheralInitParams.builder()
+                .projectRoot(Path.of("/project"))
+                .config(config)
+                .build();
+
+        peripheral.initialize(progressMonitor, initParams);
+
+        peripheral.open(CreationModelSet.builder().directory("models").build());
+
+        verify(osGateway).execute(commandCaptor.capture(), commandParamsCaptor.capture());
+        assertThat(commandCaptor.getValue()).isEqualTo("/path/to/blender");
+
+        List<String> params = commandParamsCaptor.getValue();
+        assertThat(params).hasSize(4);
+        assertThat(params.get(0)).isEqualTo("--python");
+        assertThat(params.get(1)).contains("project").contains("script.py");
+        assertThat(params.get(2)).isEqualTo("--");
+        assertThat(params.get(3)).contains("project").contains("models").contains("model.blend");
+    }
+
+    /**
+     * Tests that scanPeripherals sets correct peripheral configuration properties.
+     */
+    @Test
+    @EnabledOnOs(OS.LINUX)
+    void testScanPeripheralsConfigurationProperties() {
+        when(osGateway.isLinux()).thenReturn(true);
+        Path home = Path.of("/home/testuser");
+        when(osGateway.getUserHomeDirectory()).thenReturn(home);
+        when(osGateway.scanForDirectory(home, 5, "blender-4.5"))
+                .thenReturn(Optional.of(home.resolve("blender-4.5")));
+
+        List<?> result = peripheral.scanPeripherals();
+
+        assertThat(result).hasSize(1);
+        ExternalProgramPeripheralConfig config = (ExternalProgramPeripheralConfig) result.getFirst();
+        assertThat(config.getLabel()).isEqualTo("Blender 4.5");
+        assertThat(config.getCommand()).endsWith("blender-4.5/blender");
+        assertThat(config.getArguments()).contains("{projectDir}").contains("{modelDir}");
+        assertThat(config.isFavourite()).isTrue();
+        assertThat(config.getPeripheralImplementation())
+                .isEqualTo(PeripheralImplementation.EXTERNAL_PROGRAM_MODEL_EDITOR_PERIPHERAL);
     }
 
     /**

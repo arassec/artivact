@@ -6,6 +6,7 @@ import com.arassec.artivact.application.port.in.account.DeleteAccountUseCase;
 import com.arassec.artivact.application.port.in.account.LoadAccountUseCase;
 import com.arassec.artivact.application.port.in.account.UpdateAccountUseCase;
 import com.arassec.artivact.application.port.out.repository.AccountRepository;
+import com.arassec.artivact.application.port.out.repository.FavoriteRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,11 @@ public class AccountService
      * Repository for accounts.
      */
     private final AccountRepository accountRepository;
+
+    /**
+     * Repository for favorites.
+     */
+    private final FavoriteRepository favoriteRepository;
 
     /**
      * The system's password encoder.
@@ -152,7 +158,13 @@ public class AccountService
      */
     @Override
     public void delete(int accountId) {
-        accountRepository.delete(accountRepository.findById(accountId).orElseThrow());
+        Account account = accountRepository.findById(accountId).orElseThrow();
+        try {
+            favoriteRepository.deleteByUsername(account.getUsername());
+        } catch (Exception e) {
+            log.warn("Failed to delete favorites for user {}: {}", account.getUsername(), e.getMessage());
+        }
+        accountRepository.delete(account);
     }
 
     /**

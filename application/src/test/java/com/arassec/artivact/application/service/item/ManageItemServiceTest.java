@@ -4,6 +4,7 @@ import com.arassec.artivact.application.port.in.configuration.LoadPropertiesConf
 import com.arassec.artivact.application.port.in.configuration.LoadTagsConfigurationUseCase;
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.in.search.ManageSearchIndexUseCase;
+import com.arassec.artivact.application.port.out.repository.FavoriteRepository;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.application.port.out.repository.ItemRepository;
 import com.arassec.artivact.domain.model.configuration.PropertiesConfiguration;
@@ -11,6 +12,7 @@ import com.arassec.artivact.domain.model.configuration.TagsConfiguration;
 import com.arassec.artivact.domain.model.item.Item;
 import com.arassec.artivact.domain.model.item.MediaContent;
 import com.arassec.artivact.domain.model.item.MediaCreationContent;
+import com.arassec.artivact.domain.model.misc.DirectoryDefinitions;
 import com.arassec.artivact.domain.model.property.Property;
 import com.arassec.artivact.domain.model.property.PropertyCategory;
 import com.arassec.artivact.domain.model.tag.Tag;
@@ -48,9 +50,15 @@ class ManageItemServiceTest {
     @Mock
     private LoadPropertiesConfigurationUseCase loadPropertiesConfigurationUseCase;
 
+    @Mock
+    private FavoriteRepository favoriteRepository;
+
     @InjectMocks
     private ManageItemService service;
 
+    /**
+     * Tests that creating a new item initializes it with default values and tags.
+     */
     @Test
     void testCreateInitializesItemWithDefaults() {
         Tag defaultTag = Tag.builder().id("t1").defaultTag(true).build();
@@ -67,6 +75,9 @@ class ManageItemServiceTest {
         assertThat(item.getRestrictions()).isNotEmpty();
     }
 
+    /**
+     * Tests that loading an item returns empty if the item does not exist.
+     */
     @Test
     void testLoadReturnsEmptyWhenNotFound() {
         when(itemRepository.findById("id")).thenReturn(Optional.empty());
@@ -74,6 +85,9 @@ class ManageItemServiceTest {
         assertThat(result).isEmpty();
     }
 
+    /**
+     * Tests that loading an item updates its tags and adds missing properties based on configuration.
+     */
     @Test
     void testLoadUpdatesTagsAndAddsMissingProperties() {
         Tag t1 = Tag.builder().id("1").build();
@@ -101,6 +115,9 @@ class ManageItemServiceTest {
         assertThat(result.get().getProperties()).containsKey("p1");
     }
 
+    /**
+     * Tests that loading a translated item throws an exception if the item is not found.
+     */
     @Test
     void testLoadTranslatedThrowsIfNotFound() {
         when(itemRepository.findById("id")).thenReturn(Optional.empty());
@@ -108,25 +125,59 @@ class ManageItemServiceTest {
                 .isInstanceOf(NoSuchElementException.class);
     }
 
+    /**
+     * Tests that loading a translated and restricted item throws an exception if the item is not found.
+     */
+    @Test
+    void testLoadTranslatedRestrictedThrowsIfNotFound() {
+        when(itemRepository.findById("id")).thenReturn(Optional.empty());
+        assertThatThrownBy(() -> service.loadTranslatedRestricted("id"))
+                .isInstanceOf(NoSuchElementException.class);
+    }
+
+    /**
+     * Tests that saving an item deletes dangling files (images and models) and updates the search index.
+     */
     @Test
     void testSaveDeletesDanglingFilesAndUpdatesIndex() {
         Item item = new Item();
         item.setId("id1");
         item.setMediaContent(new MediaContent());
+        item.getMediaContent().setImages(List.of("img1.jpg"));
+        item.getMediaContent().setModels(List.of("model1.glb"));
         item.setMediaCreationContent(new MediaCreationContent());
 
         when(useProjectDirsUseCase.getItemsDir()).thenReturn(Path.of("items"));
-        when(fileRepository.listNamesWithoutScaledImages(any())).thenReturn(new ArrayList<>());
+
+        // Mock images: img1.jpg is in item, img2.jpg is dangling
         when(fileRepository.getDirFromId(any(), any())).thenReturn(Path.of("items/id1"));
+        when(fileRepository.listNamesWithoutScaledImages(Path.of("items/id1/images"))).thenReturn(new ArrayList<>(List.of("img1.jpg", "img2.jpg")));
+        when(fileRepository.getSubdirFilePath(any(), any(), eq(DirectoryDefinitions.IMAGES_DIR))).thenReturn(Path.of("items/id1/images"));
+
+        // Mock models: model1.glb is in item, model2.glb is dangling
+        when(fileRepository.listNamesWithoutScaledImages(Path.of("items/id1/models"))).thenReturn(new ArrayList<>(List.of("model1.glb", "model2.glb")));
+        when(fileRepository.getSubdirFilePath(any(), any(), eq(DirectoryDefinitions.MODELS_DIR))).thenReturn(Path.of("items/id1/models"));
+
         when(itemRepository.save(item)).thenReturn(item);
 
         Item result = service.save(item);
 
         assertThat(result).isSameAs(item);
+
+        // Verify dangling image deletion (original + scaled versions)
+        verify(fileRepository).delete(Path.of("items/id1/images/img2.jpg"));
+        verify(fileRepository, atLeastOnce()).delete(argThat(path -> path.toString().contains("img2.jpg") && path.toString().contains("-"))); // Scaled versions
+
+        // Verify dangling model deletion
+        verify(fileRepository).delete(Path.of("items/id1/models/model2.glb"));
+
         verify(manageSearchIndexUseCase).updateIndex(item);
         verify(itemRepository).save(item);
     }
 
+    /**
+     * Tests that deleting an item removes it from the repository and filesystem.
+     */
     @Test
     void testDeleteRemovesFromRepositoryAndFilesystem() {
         Path itemsPath = Path.of("items");
@@ -136,10 +187,33 @@ class ManageItemServiceTest {
 
         service.delete("id");
 
+        verify(favoriteRepository).deleteByItemId("id");
         verify(itemRepository).deleteById("id");
         verify(fileRepository).deleteDirAndEmptyParents(itemDirPath);
     }
 
+    /**
+     * Tests that deleting an item handles exceptions from the favorite repository gracefully.
+     */
+    @Test
+    void testDeleteHandlesFavoriteRepositoryException() {
+        Path itemsPath = Path.of("items");
+        when(useProjectDirsUseCase.getItemsDir()).thenReturn(itemsPath);
+        Path itemDirPath = Path.of("items/id");
+        when(fileRepository.getDirFromId(itemsPath, "id")).thenReturn(itemDirPath);
+
+        doThrow(new RuntimeException("DB Error")).when(favoriteRepository).deleteByItemId("id");
+
+        service.delete("id");
+
+        verify(favoriteRepository).deleteByItemId("id");
+        verify(itemRepository).deleteById("id");
+        verify(fileRepository).deleteDirAndEmptyParents(itemDirPath);
+    }
+
+    /**
+     * Tests that loading modified items returns the mapped items.
+     */
     @Test
     void testLoadModifiedReturnsMappedItems() {
         Item item = new Item();

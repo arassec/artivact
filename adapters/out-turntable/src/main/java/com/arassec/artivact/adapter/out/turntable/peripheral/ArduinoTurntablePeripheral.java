@@ -14,14 +14,12 @@ import com.fazecast.jSerialComm.SerialPort;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.firmata4j.IODevice;
-import org.firmata4j.Pin;
-import org.firmata4j.firmata.FirmataDevice;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -34,33 +32,14 @@ import java.util.concurrent.TimeUnit;
 public class ArduinoTurntablePeripheral extends BasePeripheral implements TurntablePeripheral {
 
     /**
-     * Pins which are connected to IN1-IN4 on the ULN2003.
-     */
-    private static final int[] MOTOR_PINS = {8, 9, 10, 11};
-
-    /**
-     * Stepping sequence for e.g. 28BYJ-48.
-     */
-    private static final int[][] STEP_SEQUENCE = {
-            {1, 0, 0, 0},
-            {1, 1, 0, 0},
-            {0, 1, 0, 0},
-            {0, 1, 1, 0},
-            {0, 0, 1, 0},
-            {0, 0, 1, 1},
-            {0, 0, 0, 1},
-            {1, 0, 0, 1}
-    };
-
-    /**
      * Gateway for OS interactions.
      */
     private final OsGateway osGateway;
 
     /**
-     * The turntable connected to a USB port.
+     * The port the turntable is connected to using USB.
      */
-    private IODevice ioDevice;
+    private SerialPort turntablePort;
 
     /**
      * Delay after rotating the turntable. Can be used to stop item movement after rotation or to manually turn a
@@ -88,13 +67,12 @@ public class ArduinoTurntablePeripheral extends BasePeripheral implements Turnta
         turntableDelay = ((ArduinoTurntablePeripheralConfig) initParams.getConfig()).getDelayInMilliseconds();
 
         // Prevent problems when an exception is thrown after the turntable has been initialized.
-        stopTurntableIfPresent();
+        stopTurntableIfPresent(turntablePort);
 
         SerialPort[] serialPorts = SerialPort.getCommPorts();
-        for (SerialPort port : serialPorts) {
-            Optional<IODevice> optionalIODevice = checkArduinoAtPort(port);
-            if (optionalIODevice.isPresent()) {
-                ioDevice = optionalIODevice.get();
+        for (SerialPort serialPort : serialPorts) {
+            if (isArtivactTurntable(serialPort)) {
+                this.turntablePort = serialPort;
                 break;
             }
         }
@@ -107,48 +85,18 @@ public class ArduinoTurntablePeripheral extends BasePeripheral implements Turnta
      */
     @Override
     public synchronized void rotate(int numPhotos) {
-        try {
-            if (ioDevice == null) {
-                log.warn("Turntable not initialized!");
-                if (turntableDelay > 0) {
-                    TimeUnit.MILLISECONDS.sleep(turntableDelay);
-                }
-                return;
-            }
-
-            // Set pins as output:
-            Pin[] motorPins = new Pin[MOTOR_PINS.length];
-            for (int i = 0; i < MOTOR_PINS.length; i++) {
-                motorPins[i] = ioDevice.getPin(MOTOR_PINS[i]);
-                motorPins[i].setMode(Pin.Mode.OUTPUT);
-            }
-
-            // A full rotation of the 28BYJ-48 stepper motor consists of 4096 steps.
-            // The gear ratio of the Artivact turntable is 1:6.
-            int numSteps = ((4096 * 6) / numPhotos);
-            for (int step = 0; step < numSteps; step++) {
-                int[] sequence = STEP_SEQUENCE[step % STEP_SEQUENCE.length];
-                for (int i = 0; i < motorPins.length; i++) {
-                    motorPins[i].setValue(sequence[i]);
-                }
-                // Some time is needed to actually set the pin value on the Arduino!
-                TimeUnit.MILLISECONDS.sleep(5);
-            }
-
-            // Deactivate all pins:
-            for (Pin pin : motorPins) {
-                pin.setValue(0);
-            }
-
+        if (turntablePort == null) {
+            log.warn("Turntable not initialized!");
             if (turntableDelay > 0) {
-                TimeUnit.MILLISECONDS.sleep(turntableDelay);
+                try {
+                    TimeUnit.MILLISECONDS.sleep(turntableDelay);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    log.warn("Interrupted during turntable delay!", e);
+                }
             }
-
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ArtivactException("Interrupted during turntable rotation!", e);
-        } catch (IOException e) {
-            throw new ArtivactException("Error during turntable rotation!", e);
+        } else if (!"OK".equals(move(turntablePort, numPhotos))) {
+            log.error("Error during turntable move command!");
         }
     }
 
@@ -157,7 +105,8 @@ public class ArduinoTurntablePeripheral extends BasePeripheral implements Turnta
      */
     @Override
     public synchronized void teardown() {
-        stopTurntableIfPresent();
+        stopTurntableIfPresent(turntablePort);
+        turntablePort = null;
         super.teardown();
     }
 
@@ -170,21 +119,12 @@ public class ArduinoTurntablePeripheral extends BasePeripheral implements Turnta
             return PeripheralStatus.AVAILABLE;
         }
 
-        stopTurntableIfPresent();
+        stopTurntableIfPresent(turntablePort);
 
         SerialPort[] serialPorts = SerialPort.getCommPorts();
-        for (SerialPort port : serialPorts) {
-            Optional<IODevice> optionalIODevice = checkArduinoAtPort(port);
-
-            if (optionalIODevice.isPresent()) {
-
-                try {
-                    optionalIODevice.get().stop();
-                } catch (IOException e) {
-                    log.warn("Error during stopping a turntable!", e);
-                    return PeripheralStatus.ERROR;
-                }
-
+        for (SerialPort serialPort : serialPorts) {
+            if (isArtivactTurntable(serialPort)) {
+                stopTurntableIfPresent(serialPort);
                 return PeripheralStatus.AVAILABLE;
             }
         }
@@ -201,25 +141,15 @@ public class ArduinoTurntablePeripheral extends BasePeripheral implements Turnta
             return List.of();
         }
 
-        stopTurntableIfPresent();
-
         SerialPort[] serialPorts = SerialPort.getCommPorts();
-        for (SerialPort port : serialPorts) {
-            Optional<IODevice> optionalIODevice = checkArduinoAtPort(port);
-            if (optionalIODevice.isPresent()) {
-                try {
-                    optionalIODevice.get().stop();
-                } catch (IOException e) {
-                    log.warn("Error during turntable scan!", e);
-                    return List.of();
-                }
-
+        for (SerialPort serialPort : serialPorts) {
+            if (isArtivactTurntable(serialPort)) {
+                stopTurntableIfPresent(serialPort);
                 ArduinoTurntablePeripheralConfig arduinoTurntablePeripheralConfig = new ArduinoTurntablePeripheralConfig();
                 arduinoTurntablePeripheralConfig.setPeripheralImplementation(PeripheralImplementation.ARDUINO_TURNTABLE_PERIPHERAL);
                 arduinoTurntablePeripheralConfig.setLabel("Arduino Turntable");
                 arduinoTurntablePeripheralConfig.setFavourite(true);
-                arduinoTurntablePeripheralConfig.setDelayInMilliseconds(100);
-
+                arduinoTurntablePeripheralConfig.setDelayInMilliseconds(0);
                 return List.of(arduinoTurntablePeripheralConfig);
             }
         }
@@ -228,82 +158,111 @@ public class ArduinoTurntablePeripheral extends BasePeripheral implements Turnta
     }
 
     /**
-     * Stops the currently connected device if present.
+     * Stops the turntable if it is present.
+     *
+     * @param port The serial port the turntable is connected to.
      */
-    private void stopTurntableIfPresent() {
+    private void stopTurntableIfPresent(SerialPort port) {
+        if (port != null && port.isOpen()) {
+            port.closePort();
+        }
+    }
+
+    /**
+     * Checks if an Artivact turntable is connected to the given port.
+     *
+     * @param port The serial port to check.
+     * @return {@code true} if an Artivact turntable is connected to the port, {@code false} otherwise.
+     */
+    private boolean isArtivactTurntable(SerialPort port) {
+        port.setBaudRate(115200);
+        port.setNumDataBits(8);
+        port.setNumStopBits(SerialPort.ONE_STOP_BIT);
+        port.setParity(SerialPort.NO_PARITY);
+        port.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING | SerialPort.TIMEOUT_WRITE_BLOCKING, Duration.ofMinutes(1).toMillisPart(), Duration.ofMinutes(1).toMillisPart());
+
+        if (!port.openPort()) {
+            throw new ArtivactException("Could not open turntable port: " + port.getSystemPortName());
+        }
+
         try {
-            if (ioDevice != null) {
-                ioDevice.stop();
-                ioDevice = null;
+            Thread.sleep(1000);
+            while (port.bytesAvailable() > 0) {
+                //noinspection ResultOfMethodCallIgnored - clean input buffer
+                port.getInputStream().read();
             }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new ArtivactException("Interrupted during turntable port initialization!", e);
         } catch (IOException e) {
-            throw new ArtivactException("Error during turntable reset!", e);
+            throw new ArtivactException("Could not read turntable port!", e);
         }
+
+        return "ARTIVACT_TT_V2".equals(getVersion(port));
     }
 
     /**
-     * Checks for a typical arduino signature and that firmata is available on the other side.
+     * Returns the turntable version connected to the given port.
      *
-     * @param port The port to check.
-     * @return An {@link Optional} containing the {@link IODevice} if an Arduino with firmata is found, an empty
+     * @param port The serial port the turntable is connected to.
+     * @return The turntable version.
      */
-    private Optional<IODevice> checkArduinoAtPort(SerialPort port) {
-
-        String systemPortName = port.getSystemPortName();
-
-        log.trace("Checking serial port for artivact turntable {} - {} - {}", systemPortName,
-                port.getDescriptivePortName(), port.getPortDescription());
-
-        if (isArduinoNanoEvery(port)) {
-            return hasFirmataInstalled(systemPortName);
-        }
-
-        return Optional.empty();
-    }
-
-    /**
-     * Returns {@code true} if the given port belongs to an Arduino Nano Every.
-     *
-     * @param port The port to check.
-     * @return {@code true} if the port belongs to an Arduino Nano Every, {@code false} otherwise.
-     */
-    private boolean isArduinoNanoEvery(SerialPort port) {
-        return (port.getVendorID() == 0x2341 || port.getVendorID() == 0x2A03)
-                && (port.getProductID() == 0x0058 || port.getProductID() == 0x0059);
-    }
-
-    /**
-     * Checks if firmata is installed on the Arduino connected to the given system port.
-     *
-     * @param systemPortName The system port name.
-     * @return {@code true} if firmata is installed, {@code false} otherwise.
-     */
-    protected Optional<IODevice> hasFirmataInstalled(String systemPortName) {
-        IODevice device = null;
-
-        String portName = systemPortName;
-        if (osGateway.isLinux()) {
-            portName = "/dev/" + systemPortName;
-        }
-
+    private String getVersion(SerialPort port) {
         try {
-            device = new FirmataDevice(portName);
-            device.start();
-            device.ensureInitializationIsDone();
-            return Optional.of(device);
-        } catch (InterruptedException | IOException e) {
-            if (e instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
-            }
-            try {
-                device.stop();
-            } catch (IOException ex) {
-                log.error("Error during IODevice stop!", ex);
-            }
-            log.debug("Arduino device found, but not accessible with firmata4j.", e);
+            writeLine(port, "VERSION");
+            return readLine(port);
+        } catch (IOException e) {
+            log.debug("Error during getting turntable version on port {}: {}", port.getSystemPortName(), e.getMessage());
+            return null;
         }
+    }
 
-        return Optional.empty();
+    /**
+     * Moves the turntable by the given value.
+     *
+     * @param port  The serial port the turntable is connected to.
+     * @param value The move value.
+     * @return The turntable response.
+     */
+    private String move(SerialPort port, int value) {
+        try {
+            writeLine(port, "MOVE " + value);
+            return readLine(port);
+        } catch (IOException e) {
+            throw new ArtivactException("Error during moving turntable on port " + port.getSystemPortName(), e);
+        }
+    }
+
+    /**
+     * Writes a line to the given port.
+     *
+     * @param port The serial port.
+     * @param s    The string to write.
+     * @throws IOException If an I/O error occurs.
+     */
+    private void writeLine(SerialPort port, String s) throws IOException {
+        String msg = s + "\n";
+        port.getOutputStream().write(msg.getBytes(StandardCharsets.UTF_8));
+        port.getOutputStream().flush();
+    }
+
+    /**
+     * Reads a line from the given port.
+     *
+     * @param port The serial port.
+     * @return The read line.
+     * @throws IOException If an I/O error occurs.
+     */
+    private String readLine(SerialPort port) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        int b;
+        while ((b = port.getInputStream().read()) != -1) {
+            if ((b == '\n' || b == '\r') && !sb.isEmpty()) {
+                break;
+            }
+            sb.append((char) b);
+        }
+        return sb.toString().trim();
     }
 
 }
