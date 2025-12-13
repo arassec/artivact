@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * REST controller for managing favorites.
@@ -76,7 +77,7 @@ public class FavoriteController extends BaseController {
         List<Favorite> favorites = listFavoriteItemsUseCase.listFavorites();
 
         List<FavoriteItemData> favoriteItemDataList = favorites.stream()
-                .flatMap(favorite -> loadItemUseCase.load(favorite.getItemId())
+                .flatMap(favorite -> Optional.of(loadItemUseCase.loadTranslated(favorite.getItemId()))
                         .map(item -> {
                             String thumbnailUrl = null;
                             if (item.getMediaContent() != null && !item.getMediaContent().getImages().isEmpty()) {

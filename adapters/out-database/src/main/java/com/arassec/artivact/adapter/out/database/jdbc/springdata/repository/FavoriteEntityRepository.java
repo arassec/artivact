@@ -14,12 +14,12 @@ import java.util.List;
 public interface FavoriteEntityRepository extends JpaRepository<FavoriteEntity, FavoriteEntity.FavoriteId> {
 
     /**
-     * Finds all favorites for a given username, ordered by creation date descending.
+     * Finds all favorites for a given username, ordered by creation date ascending.
      *
      * @param username The username.
      * @return List of favorites.
      */
-    List<FavoriteEntity> findByUsernameOrderByCreatedAtDesc(String username);
+    List<FavoriteEntity> findByUsernameOrderByCreatedAtAsc(String username);
 
     /**
      * Checks if a favorite exists for a given username and item ID.

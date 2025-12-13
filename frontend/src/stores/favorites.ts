@@ -1,6 +1,6 @@
 import {defineStore} from 'pinia';
-import {FavoriteItemData} from 'components/artivact-models';
-import {api} from 'boot/axios';
+import {FavoriteItemData} from '../components/artivact-models';
+import {api} from '../boot/axios';
 
 export const useFavoritesStore = defineStore('favorites', {
   state: () => ({
@@ -33,7 +33,7 @@ export const useFavoritesStore = defineStore('favorites', {
       try {
         // Optimistically add to list
         if (!wasAlreadyFavorite) {
-          this.favorites.unshift({
+          this.favorites.push({
             itemId,
             title,
             thumbnailUrl: thumbnailUrl || ''

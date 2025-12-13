@@ -340,6 +340,7 @@ function deleteItem() {
     .delete('/api/item/' + item.id)
     .then(() => {
       breadcrumbsStore.removeLastBreadcrumb();
+      favoritesStore.loadFavorites();
       router.push('/');
       quasar.notify({
         color: 'positive',
