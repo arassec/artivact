@@ -44,7 +44,7 @@ public class JdbcFavoriteRepository implements FavoriteRepository {
 
     @Override
     public List<Favorite> findByUsername(String username) {
-        return favoriteEntityRepository.findByUsernameOrderByCreatedAtAsc(username).stream()
+        return favoriteEntityRepository.findByUsernameOrderByCreatedAtDesc(username).stream()
                 .map(this::mapEntity)
                 .toList();
     }
