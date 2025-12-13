@@ -53,9 +53,9 @@ export const useFavoritesStore = defineStore('favorites', {
     async unmarkAsFavorite(itemId: string) {
       const previousFavorites = [...this.favorites];
       try {
-        await api.delete(`/api/favorites/${itemId}`);
         // Optimistically remove from list
         this.favorites = this.favorites.filter(f => f.itemId !== itemId);
+        await api.delete(`/api/favorites/${itemId}`);
       } catch (error) {
         console.error('Failed to unmark item as favorite:', error);
         // Revert optimistic update

@@ -48,4 +48,11 @@ public interface FavoriteRepository {
      */
     void deleteByItemId(String itemId);
 
+    /**
+     * Deletes all favorites for a given user.
+     *
+     * @param username The username.
+     */
+    void deleteByUsername(String username);
+
 }

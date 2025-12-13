@@ -9,46 +9,19 @@
           :action="'/api/item/' + itemDataDetailsRef.id + '/export'"
           method="get"
         >
-          <!-- DELETE ITEM BUTTON -->
+          <!-- FAVORITE BUTTON -->
           <q-btn
-            data-test="delete-item-button"
+            data-test="favorite-item-button"
             round
             color="primary"
-            icon="delete"
+            :icon="isFavoriteRef ? 'star' : 'star_border'"
             class="q-mr-sm main-nav-button"
-            @click="confirmDeleteRef = true"
+            @click="toggleFavorite()"
           >
             <q-tooltip>{{
-                $t('ItemDetailsPage.button.tooltip.delete')
-              }}
-            </q-tooltip>
-          </q-btn>
-          <!-- DOWNLOAD BUTTON -->
-          <q-btn
-            data-test="download-item-button"
-            round
-            color="primary"
-            icon="download"
-            type="submit"
-            class="q-mr-sm main-nav-button"
-          >
-            <q-tooltip>{{
-                $t('ItemDetailsPage.button.tooltip.download')
-              }}
-            </q-tooltip>
-          </q-btn>
-          <!-- SYNC UP BUTTON -->
-          <q-btn
-            data-test="sync-item-button"
-            round
-            :disable="!applicationSettingsStore.syncAvailable"
-            color="primary"
-            icon="cloud_upload"
-            class="q-mr-sm main-nav-button"
-            @click="synchronizeUp()"
-          >
-            <q-tooltip>{{
-                $t('ItemDetailsPage.button.tooltip.sync')
+                isFavoriteRef
+                  ? $t('ItemDetailsPage.button.tooltip.unfavorite')
+                  : $t('ItemDetailsPage.button.tooltip.favorite')
               }}
             </q-tooltip>
           </q-btn>
@@ -69,19 +42,46 @@
               </q-tooltip>
             </q-btn>
           </router-link>
-          <!-- FAVORITE BUTTON -->
+          <!-- SYNC UP BUTTON -->
           <q-btn
-            data-test="favorite-item-button"
+            data-test="sync-item-button"
             round
+            :disable="!applicationSettingsStore.syncAvailable"
             color="primary"
-            :icon="isFavoriteRef ? 'star' : 'star_border'"
-            class="main-nav-button"
-            @click="toggleFavorite()"
+            icon="cloud_upload"
+            class="q-mr-sm main-nav-button"
+            @click="synchronizeUp()"
           >
             <q-tooltip>{{
-                isFavoriteRef
-                  ? $t('ItemDetailsPage.button.tooltip.unfavorite')
-                  : $t('ItemDetailsPage.button.tooltip.favorite')
+                $t('ItemDetailsPage.button.tooltip.sync')
+              }}
+            </q-tooltip>
+          </q-btn>
+          <!-- DOWNLOAD BUTTON -->
+          <q-btn
+            data-test="download-item-button"
+            round
+            color="primary"
+            icon="download"
+            type="submit"
+            class="q-mr-sm main-nav-button"
+          >
+            <q-tooltip>{{
+                $t('ItemDetailsPage.button.tooltip.download')
+              }}
+            </q-tooltip>
+          </q-btn>
+          <!-- DELETE ITEM BUTTON -->
+          <q-btn
+            data-test="delete-item-button"
+            round
+            color="primary"
+            icon="delete"
+            class="main-nav-button"
+            @click="confirmDeleteRef = true"
+          >
+            <q-tooltip>{{
+                $t('ItemDetailsPage.button.tooltip.delete')
               }}
             </q-tooltip>
           </q-btn>

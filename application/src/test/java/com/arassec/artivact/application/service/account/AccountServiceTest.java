@@ -1,6 +1,7 @@
 package com.arassec.artivact.application.service.account;
 
 import com.arassec.artivact.application.port.out.repository.AccountRepository;
+import com.arassec.artivact.application.port.out.repository.FavoriteRepository;
 import com.arassec.artivact.domain.model.account.Account;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,6 +22,9 @@ class AccountServiceTest {
 
     @Mock
     private AccountRepository accountRepository;
+
+    @Mock
+    private FavoriteRepository favoriteRepository;
 
     @Mock
     private PasswordEncoder passwordEncoder;
@@ -178,11 +182,13 @@ class AccountServiceTest {
     void testDeletesAccount() {
         Account existing = new Account();
         existing.setId(99);
+        existing.setUsername("testuser");
 
         when(accountRepository.findById(99)).thenReturn(Optional.of(existing));
 
         service.delete(99);
 
+        verify(favoriteRepository).deleteByUsername("testuser");
         verify(accountRepository).delete(existing);
     }
 

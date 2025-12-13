@@ -19,7 +19,7 @@ public interface FavoriteEntityRepository extends JpaRepository<FavoriteEntity, 
      * @param username The username.
      * @return List of favorites.
      */
-    List<FavoriteEntity> findByUsernameOrderByCreatedAtAsc(String username);
+    List<FavoriteEntity> findByUsernameOrderByCreatedAtDesc(String username);
 
     /**
      * Checks if a favorite exists for a given username and item ID.
@@ -38,5 +38,14 @@ public interface FavoriteEntityRepository extends JpaRepository<FavoriteEntity, 
     @Modifying
     @Query("DELETE FROM FavoriteEntity f WHERE f.itemId = :itemId")
     void deleteByItemId(@Param("itemId") String itemId);
+
+    /**
+     * Deletes all favorites for a given username.
+     *
+     * @param username The username.
+     */
+    @Modifying
+    @Query("DELETE FROM FavoriteEntity f WHERE f.username = :username")
+    void deleteByUsername(@Param("username") String username);
 
 }
