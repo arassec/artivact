@@ -39,4 +39,13 @@ public interface FavoriteEntityRepository extends JpaRepository<FavoriteEntity, 
     @Query("DELETE FROM FavoriteEntity f WHERE f.itemId = :itemId")
     void deleteByItemId(@Param("itemId") String itemId);
 
+    /**
+     * Deletes all favorites for a given username.
+     *
+     * @param username The username.
+     */
+    @Modifying
+    @Query("DELETE FROM FavoriteEntity f WHERE f.username = :username")
+    void deleteByUsername(@Param("username") String username);
+
 }

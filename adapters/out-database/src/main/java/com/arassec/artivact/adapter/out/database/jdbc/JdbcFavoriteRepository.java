@@ -54,6 +54,11 @@ public class JdbcFavoriteRepository implements FavoriteRepository {
         favoriteEntityRepository.deleteByItemId(itemId);
     }
 
+    @Override
+    public void deleteByUsername(String username) {
+        favoriteEntityRepository.deleteByUsername(username);
+    }
+
     private Favorite mapEntity(FavoriteEntity entity) {
         return new Favorite(entity.getUsername(), entity.getItemId(), entity.getCreatedAt());
     }
