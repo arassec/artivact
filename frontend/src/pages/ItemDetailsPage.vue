@@ -61,7 +61,7 @@
               round
               color="primary"
               icon="edit"
-              class="main-nav-button"
+              class="q-mr-sm main-nav-button"
             >
               <q-tooltip>{{
                   $t('ItemDetailsPage.button.tooltip.edit')
@@ -69,6 +69,22 @@
               </q-tooltip>
             </q-btn>
           </router-link>
+          <!-- FAVORITE BUTTON -->
+          <q-btn
+            data-test="favorite-item-button"
+            round
+            color="primary"
+            :icon="isFavoriteRef ? 'star' : 'star_border'"
+            class="main-nav-button"
+            @click="toggleFavorite()"
+          >
+            <q-tooltip>{{
+                isFavoriteRef
+                  ? $t('ItemDetailsPage.button.tooltip.unfavorite')
+                  : $t('ItemDetailsPage.button.tooltip.favorite')
+              }}
+            </q-tooltip>
+          </q-btn>
         </q-form>
       </div>
     </div>
@@ -228,6 +244,7 @@ import {useI18n} from 'vue-i18n';
 import ArtivactItemMediaCarousel from '../components/ArtivactItemMediaCarousel.vue';
 import {useProfilesStore} from '../stores/profiles';
 import {useApplicationSettingsStore} from '../stores/application-settings';
+import {useFavoritesStore} from '../stores/favorites';
 
 const quasar = useQuasar();
 const route = useRoute();
@@ -238,6 +255,7 @@ const userdataStore = useUserdataStore();
 const breadcrumbsStore = useBreadcrumbsStore();
 const profilesStore = useProfilesStore();
 const applicationSettingsStore = useApplicationSettingsStore();
+const favoritesStore = useFavoritesStore();
 
 const itemDataDetailsRef = ref();
 const propertiesDataRef = ref();
@@ -247,6 +265,8 @@ const openModelRef = ref(false);
 const showOperationInProgressModalRef = ref(false);
 
 const confirmDeleteRef = ref(false);
+
+const isFavoriteRef = ref(false);
 
 function loadData(itemId: string | string[]) {
   api
@@ -342,9 +362,65 @@ function deleteItem() {
     });
 }
 
+async function loadFavoriteStatus() {
+  if (!userdataStore.authenticated) {
+    return;
+  }
+  try {
+    isFavoriteRef.value = await favoritesStore.checkFavoriteStatus(
+      route.params.itemId as string
+    );
+  } catch (error) {
+    console.error('Failed to load favorite status:', error);
+  }
+}
+
+async function toggleFavorite() {
+  if (!itemDataDetailsRef.value) {
+    return;
+  }
+
+  const itemId = itemDataDetailsRef.value.id;
+  const title = translate(itemDataDetailsRef.value.title);
+  const thumbnailUrl =
+    itemDataDetailsRef.value.images.length > 0
+      ? itemDataDetailsRef.value.images[0].url
+      : null;
+
+  try {
+    if (isFavoriteRef.value) {
+      await favoritesStore.unmarkAsFavorite(itemId);
+      isFavoriteRef.value = false;
+      quasar.notify({
+        color: 'positive',
+        position: 'bottom',
+        message: i18n.t('ItemDetailsPage.messages.unfavorite.success'),
+        icon: 'star_border',
+      });
+    } else {
+      await favoritesStore.markAsFavorite(itemId, title, thumbnailUrl);
+      isFavoriteRef.value = true;
+      quasar.notify({
+        color: 'positive',
+        position: 'bottom',
+        message: i18n.t('ItemDetailsPage.messages.favorite.success'),
+        icon: 'star',
+      });
+    }
+  } catch (error) {
+    quasar.notify({
+      color: 'negative',
+      position: 'bottom',
+      message: i18n.t('ItemDetailsPage.messages.favorite.failed'),
+      icon: 'report_problem',
+    });
+  }
+}
+
 onMounted(() => {
   loadData(route.params.itemId);
   loadPropertiesData();
+  loadFavoriteStatus();
   if (route.query.model === 'true') {
     openModelRef.value = true;
   }

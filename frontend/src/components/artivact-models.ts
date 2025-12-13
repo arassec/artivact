@@ -38,6 +38,12 @@ export interface ItemCardData {
   hasModel: boolean;
 }
 
+export interface FavoriteItemData {
+  itemId: string;
+  title: string;
+  thumbnailUrl: string;
+}
+
 export interface ImageSet {
   modelInput: boolean;
   backgroundRemoved: boolean;

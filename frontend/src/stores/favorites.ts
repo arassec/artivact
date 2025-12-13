@@ -1,0 +1,74 @@
+import {defineStore} from 'pinia';
+import {FavoriteItemData} from 'components/artivact-models';
+import {api} from 'boot/axios';
+
+export const useFavoritesStore = defineStore('favorites', {
+  state: () => ({
+    favorites: [] as FavoriteItemData[],
+    loaded: false
+  }),
+
+  getters: {
+    favoritesList(state) {
+      return state.favorites;
+    },
+    isFavorite: (state) => (itemId: string) => {
+      return state.favorites.some(f => f.itemId === itemId);
+    }
+  },
+
+  actions: {
+    async loadFavorites() {
+      try {
+        const response = await api.get('/api/favorites');
+        this.favorites = response.data;
+        this.loaded = true;
+      } catch (error) {
+        console.error('Failed to load favorites:', error);
+      }
+    },
+
+    async markAsFavorite(itemId: string, title: string, thumbnailUrl: string | null) {
+      try {
+        await api.post(`/api/favorites/${itemId}`);
+        // Optimistically add to list
+        if (!this.isFavorite(itemId)) {
+          this.favorites.unshift({
+            itemId,
+            title,
+            thumbnailUrl: thumbnailUrl || ''
+          });
+        }
+      } catch (error) {
+        console.error('Failed to mark item as favorite:', error);
+        // Revert optimistic update
+        this.favorites = this.favorites.filter(f => f.itemId !== itemId);
+        throw error;
+      }
+    },
+
+    async unmarkAsFavorite(itemId: string) {
+      const previousFavorites = [...this.favorites];
+      try {
+        await api.delete(`/api/favorites/${itemId}`);
+        // Optimistically remove from list
+        this.favorites = this.favorites.filter(f => f.itemId !== itemId);
+      } catch (error) {
+        console.error('Failed to unmark item as favorite:', error);
+        // Revert optimistic update
+        this.favorites = previousFavorites;
+        throw error;
+      }
+    },
+
+    async checkFavoriteStatus(itemId: string): Promise<boolean> {
+      try {
+        const response = await api.get(`/api/favorites/${itemId}`);
+        return response.data;
+      } catch (error) {
+        console.error('Failed to check favorite status:', error);
+        return false;
+      }
+    }
+  }
+});
