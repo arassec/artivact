@@ -11,6 +11,7 @@ import com.arassec.artivact.application.port.in.item.LoadItemUseCase;
 import com.arassec.artivact.application.port.in.item.SaveItemUseCase;
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.in.search.ManageSearchIndexUseCase;
+import com.arassec.artivact.application.port.out.repository.FavoriteRepository;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.application.port.out.repository.ItemRepository;
 import com.arassec.artivact.domain.model.Roles;
@@ -60,6 +61,8 @@ public class ManageItemService implements CreateItemUseCase,
     private final LoadTagsConfigurationUseCase loadTagsConfigurationUseCase;
 
     private final LoadPropertiesConfigurationUseCase loadPropertiesConfigurationUseCase;
+
+    private final FavoriteRepository favoriteRepository;
 
     /**
      * {@inheritDoc}
@@ -179,6 +182,11 @@ public class ManageItemService implements CreateItemUseCase,
      */
     @Override
     public void delete(String itemId) {
+        try {
+            favoriteRepository.deleteByItemId(itemId);
+        } catch (Exception e) {
+            log.warn("Failed to delete favorites for item {}: {}", itemId, e.getMessage());
+        }
         itemRepository.deleteById(itemId);
         fileRepository.deleteDirAndEmptyParents(fileRepository.getDirFromId(useProjectDirsUseCase.getItemsDir(), itemId));
     }

@@ -74,9 +74,14 @@ export default {
   MainLayout: {
     login: "Login",
     logout: "Logout",
+    favorites: "Favorites",
+    noFavorites: "No favorites yet",
+    removeFavorite: "Remove from favorites",
     messages: {
       userDataFailed: "Loading user data failed!",
       logoutFailed: "Logout failed!",
+      favoriteRemoved: "Favorite removed",
+      favoriteRemoveFailed: "Failed to remove favorite",
     },
   },
 
@@ -267,6 +272,8 @@ export default {
         download: "Download item data as ZIP",
         sync: "Synchronize item with remote server",
         edit: "Edit item",
+        favorite: "Mark as favorite",
+        unfavorite: "Remove from favorites",
       },
     },
     dialog: {
@@ -281,6 +288,13 @@ export default {
       sync: {
         success: "Item synchronized",
         failed: "Synchronization failed",
+      },
+      favorite: {
+        success: "Item marked as favorite",
+        failed: "Failed to mark item as favorite",
+      },
+      unfavorite: {
+        success: "Item removed from favorites",
       },
     },
   },

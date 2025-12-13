@@ -264,9 +264,9 @@ class ExternalProgramModelEditorPeripheralTest {
         List<String> params = commandParamsCaptor.getValue();
         assertThat(params).hasSize(4);
         assertThat(params.get(0)).isEqualTo("--python");
-        assertThat(params.get(1)).contains("/project").contains("script.py");
+        assertThat(params.get(1)).contains("project").contains("script.py");
         assertThat(params.get(2)).isEqualTo("--");
-        assertThat(params.get(3)).contains("/project").contains("models").contains("model.blend");
+        assertThat(params.get(3)).contains("project").contains("models").contains("model.blend");
     }
 
     /**

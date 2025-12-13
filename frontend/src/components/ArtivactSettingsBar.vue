@@ -1,5 +1,6 @@
 <template>
   <div class="row gt-sm" data-test="artivact-settings-bar">
+
     <!-- LOCALE SELECTION -->
     <q-btn
       data-test="locale-selection-button"
@@ -45,6 +46,56 @@
               </q-item-section>
             </q-item>
           </template>
+        </q-list>
+      </q-menu>
+    </q-btn>
+
+    <!-- FAVORITES MENU -->
+    <q-btn
+      v-if="userdataStore.authenticated && favoritesStore.favoritesList.length > 0"
+      data-test="favorites-menu-button"
+      flat
+      color="white"
+      icon="star"
+      size="md"
+      class="q-mr-sm"
+    >
+      <q-tooltip>{{ $t('MainLayout.favorites') }}</q-tooltip>
+      <q-menu
+        anchor="bottom middle"
+        self="top middle"
+      >
+        <q-list style="min-width: 250px">
+          <div v-if="favoritesStore.favoritesList.length === 0" class="q-pa-md text-center text-grey">
+            {{ $t('MainLayout.noFavorites') }}
+          </div>
+          <q-item
+            v-for="favorite in favoritesStore.favoritesList"
+            :key="favorite.itemId"
+            clickable
+            @click="navigateToItem(favorite.itemId)"
+          >
+            <q-item-section avatar v-if="favorite.thumbnailUrl">
+              <q-avatar rounded>
+                <img alt="" :src="favorite.thumbnailUrl + '?imageSize=FAVORITE'"/>
+              </q-avatar>
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>{{ favorite.title }}</q-item-label>
+            </q-item-section>
+            <q-item-section side>
+              <q-btn
+                flat
+                round
+                dense
+                icon="close"
+                size="sm"
+                @click.stop="removeFavorite(favorite.itemId)"
+              >
+                <q-tooltip>{{ $t('MainLayout.removeFavorite') }}</q-tooltip>
+              </q-btn>
+            </q-item-section>
+          </q-item>
         </q-list>
       </q-menu>
     </q-btn>
@@ -672,7 +723,8 @@ import {QUploader, useQuasar} from 'quasar';
 import {useI18n} from 'vue-i18n';
 import {useProfilesStore} from '../stores/profiles';
 import ArtivactDialog from './ArtivactDialog.vue';
-import {useWizzardStore} from '../stores/wizzard';
+import {useFavoritesStore} from "../stores/favorites";
+import {useBreadcrumbsStore} from "../stores/breadcrumbs";
 
 const {locale} = useI18n({useScope: 'global'});
 
@@ -683,7 +735,8 @@ const i18n = useI18n();
 const userdataStore = useUserdataStore();
 const localeStore = useLocaleStore();
 const profilesStore = useProfilesStore();
-const wizzardStore = useWizzardStore();
+const favoritesStore = useFavoritesStore();
+const breadcrumbsStore = useBreadcrumbsStore();
 
 const accountsMenuOpen = ref(false);
 const itemMenuOpen = ref(false);
@@ -774,6 +827,31 @@ function itemImported() {
     icon: 'check',
   });
 }
+
+function navigateToItem(itemId: string) {
+  breadcrumbsStore.resetBreadcrumbs();
+  router.push(`/item/${itemId}`);
+}
+
+async function removeFavorite(itemId: string) {
+  try {
+    await favoritesStore.unmarkAsFavorite(itemId);
+    quasar.notify({
+      color: 'positive',
+      position: 'bottom',
+      message: i18n.t('MainLayout.messages.favoriteRemoved'),
+      icon: 'done',
+    });
+  } catch (error) {
+    quasar.notify({
+      color: 'negative',
+      position: 'bottom',
+      message: i18n.t('MainLayout.messages.favoriteRemoveFailed'),
+      icon: 'report_problem',
+    });
+  }
+}
+
 </script>
 
 <style scoped>

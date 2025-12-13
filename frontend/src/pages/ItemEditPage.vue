@@ -268,6 +268,7 @@ import ArtivactItemModelSetEditor from '../components/ArtivactItemModelSetEditor
 import {useProfilesStore} from '../stores/profiles';
 import {useWizzardStore} from '../stores/wizzard';
 import {usePeripheralsConfigStore} from '../stores/peripherals';
+import {useFavoritesStore} from "../stores/favorites";
 
 const quasar = useQuasar();
 const route = useRoute();
@@ -280,6 +281,7 @@ const userdataStore = useUserdataStore();
 const profilesStore = useProfilesStore();
 const wizzardStore = useWizzardStore();
 const peripheralsConfigStore = usePeripheralsConfigStore();
+const fagoritesStore = useFavoritesStore();
 
 const itemDataRef = ref<ItemDetails>();
 const propertiesDataRef = ref();
@@ -487,6 +489,7 @@ function saveItem(exitEditMode: boolean) {
     .put('/api/item', item)
     .then(() => {
       originalItemJson = JSON.stringify(itemDataRef.value);
+      fagoritesStore.loadFavorites();
       quasar.notify({
         color: 'positive',
         position: 'bottom',

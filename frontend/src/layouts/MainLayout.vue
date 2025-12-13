@@ -80,9 +80,13 @@ import ArtivactSettingsBar from '../components/ArtivactSettingsBar.vue';
 import {useI18n} from 'vue-i18n';
 import {useProfilesStore} from '../stores/profiles';
 import {useApplicationSettingsStore} from '../stores/application-settings';
+import {useFavoritesStore} from '../stores/favorites';
+import {useRouter} from 'vue-router';
 
 const quasar = useQuasar();
 const i18n = useI18n();
+const router = useRouter();
+const favoritesStore = useFavoritesStore();
 
 const userdataStore = useUserdataStore();
 const applicationSettingsStore = useApplicationSettingsStore();
@@ -137,6 +141,8 @@ function logout() {
       loadUserData();
       loadMenus();
       localeStore.setSelectedLocale(null);
+      favoritesStore.favorites = [];
+      favoritesStore.loaded = false;
     })
     .catch(() => {
       quasar.notify({
@@ -151,6 +157,9 @@ function logout() {
 onMounted(() => {
   loadApplicationLocale();
   loadMenus();
+  if (userdataStore.authenticated) {
+    favoritesStore.loadFavorites();
+  }
 });
 </script>
 

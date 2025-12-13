@@ -25,6 +25,7 @@ As user i want to mark items as favorites so that I can easily access them later
 - A filled star indicates that the item is marked as a favorite, while an empty star indicates that it is not.
 - The star-button must reflect the current favorite state when the item details page is loaded (no intermediate flicker
   from default state).
+- The respective button should be the most outer left of other action buttons (e.g., share, edit).
 
 **Backend / API hints (for implementation agents)**
 
@@ -43,6 +44,7 @@ As user i want to mark items as favorites so that I can easily access them later
 - A click on a favorite item in the list navigates the user to the item's details page.
 - Users can remove items from their favorites list by clicking the star-button again on the item's details or by
   clicking a remove icon next to the item in the "Favorites" menu.
+- The Favorites are ordered ascending by creation date (most recently favorited last).
 
 **Backend / API hints (for implementation agents)**
 
@@ -66,6 +68,11 @@ As user i want to mark items as favorites so that I can easily access them later
 - If an item is deleted from the system:
     - It must be automatically removed from all favorites lists, or at least not break favorites listing APIs.
     - Listing favorites must not fail because of deleted items; such entries must be skipped or cleaned up.
+- If an item's title is updated, the updated information must be reflected in the favorites
+  list.
+- If a user is deleted, their favorites list must also be deleted to avoid orphaned records in the favorites
+- If the user name changes, it must not affect the favorites functionality. I.e. favorites remain intact for the new
+  user name.
 
 **Persistence hints (for implementation agents)**
 
