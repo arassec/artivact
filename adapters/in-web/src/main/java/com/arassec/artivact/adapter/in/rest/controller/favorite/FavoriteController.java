@@ -8,15 +8,12 @@ import com.arassec.artivact.application.port.in.favorite.MarkItemAsFavoriteUseCa
 import com.arassec.artivact.application.port.in.favorite.UnmarkItemAsFavoriteUseCase;
 import com.arassec.artivact.application.port.in.item.LoadItemUseCase;
 import com.arassec.artivact.domain.model.favorite.Favorite;
-import com.arassec.artivact.domain.model.item.ImageSize;
-import com.arassec.artivact.domain.model.item.Item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * REST controller for managing favorites.
@@ -83,8 +80,8 @@ public class FavoriteController extends BaseController {
                         .map(item -> {
                             String thumbnailUrl = null;
                             if (item.getMediaContent() != null && !item.getMediaContent().getImages().isEmpty()) {
-                                String firstImage = item.getMediaContent().getImages().get(0);
-                                thumbnailUrl = createUrl(item.getId(), ImageSize.SMALL + "-" + firstImage, "image");
+                                String firstImage = item.getMediaContent().getImages().getFirst();
+                                thumbnailUrl = createUrl(item.getId(), firstImage, "image");
                             }
                             return FavoriteItemData.builder()
                                     .itemId(item.getId())

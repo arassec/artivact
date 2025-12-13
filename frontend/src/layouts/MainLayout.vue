@@ -30,8 +30,6 @@
           <q-tooltip>{{ $t('MainLayout.favorites') }}</q-tooltip>
           <q-menu>
             <q-list style="min-width: 250px">
-              <q-item-label header>{{ $t('MainLayout.favorites') }}</q-item-label>
-              <q-separator />
               <div v-if="favoritesStore.favoritesList.length === 0" class="q-pa-md text-center text-grey">
                 {{ $t('MainLayout.noFavorites') }}
               </div>
@@ -43,7 +41,7 @@
               >
                 <q-item-section avatar v-if="favorite.thumbnailUrl">
                   <q-avatar rounded>
-                    <img :src="favorite.thumbnailUrl" />
+                    <img alt="favorite-thumb" :src="favorite.thumbnailUrl + '?imageSize=FAVORITE'"/>
                   </q-avatar>
                 </q-item-section>
                 <q-item-section>

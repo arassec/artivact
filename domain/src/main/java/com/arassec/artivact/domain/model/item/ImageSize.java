@@ -26,7 +26,12 @@ public enum ImageSize {
     /**
      * Size for page title images.
      */
-    PAGE_TITLE(1600);
+    PAGE_TITLE(1600),
+
+    /**
+     * Size for favorite item thumbnails.
+     */
+    FAVORITE(50);
 
     /**
      * The image's width.

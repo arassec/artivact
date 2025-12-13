@@ -19,7 +19,7 @@ public interface FavoriteEntityRepository extends JpaRepository<FavoriteEntity, 
      * @param username The username.
      * @return List of favorites.
      */
-    List<FavoriteEntity> findByUsernameOrderByCreatedAtDesc(String username);
+    List<FavoriteEntity> findByUsernameOrderByCreatedAtAsc(String username);
 
     /**
      * Checks if a favorite exists for a given username and item ID.
