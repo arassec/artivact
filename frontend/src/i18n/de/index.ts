@@ -74,9 +74,14 @@ export default {
   MainLayout: {
     login: 'Login',
     logout: 'Logout',
+    favorites: 'Favoriten',
+    noFavorites: 'Noch keine Favoriten',
+    removeFavorite: 'Von Favoriten entfernen',
     messages: {
       userDataFailed: 'Laden der Benutzerdaten fehlgeschlagen!',
       logoutFailed: 'Logout fehlgeschlagen!',
+      favoriteRemoved: 'Favorit entfernt',
+      favoriteRemoveFailed: 'Entfernen des Favoriten fehlgeschlagen',
     },
   },
 
@@ -259,6 +264,8 @@ export default {
         download: 'Objekt-Inhalte als ZIP-Datei herunterladen',
         sync: 'Objekt mit zentralem Server synchronisieren',
         edit: 'Objekt bearbeiten',
+        favorite: 'Als Favorit markieren',
+        unfavorite: 'Von Favoriten entfernen',
       },
     },
     dialog: {
@@ -273,6 +280,13 @@ export default {
       sync: {
         success: 'Objekt synchronisiert',
         failed: 'Synchronisation fehlgeschlagen',
+      },
+      favorite: {
+        success: 'Objekt als Favorit markiert',
+        failed: 'Markierung als Favorit fehlgeschlagen',
+      },
+      unfavorite: {
+        success: 'Objekt von Favoriten entfernt',
       },
     },
   },
