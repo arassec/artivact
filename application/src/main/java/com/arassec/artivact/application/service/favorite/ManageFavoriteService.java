@@ -79,7 +79,8 @@ public class ManageFavoriteService implements MarkItemAsFavoriteUseCase,
 
     private String getCurrentUsername() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated()) {
+        if (authentication != null && authentication.isAuthenticated() 
+                && !"anonymousUser".equals(authentication.getName())) {
             return authentication.getName();
         }
         return null;

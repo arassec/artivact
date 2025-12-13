@@ -29,20 +29,23 @@ export const useFavoritesStore = defineStore('favorites', {
     },
 
     async markAsFavorite(itemId: string, title: string, thumbnailUrl: string | null) {
+      const wasAlreadyFavorite = this.isFavorite(itemId);
       try {
-        await api.post(`/api/favorites/${itemId}`);
         // Optimistically add to list
-        if (!this.isFavorite(itemId)) {
+        if (!wasAlreadyFavorite) {
           this.favorites.unshift({
             itemId,
             title,
             thumbnailUrl: thumbnailUrl || ''
           });
         }
+        await api.post(`/api/favorites/${itemId}`);
       } catch (error) {
         console.error('Failed to mark item as favorite:', error);
-        // Revert optimistic update
-        this.favorites = this.favorites.filter(f => f.itemId !== itemId);
+        // Revert optimistic update only if we added it
+        if (!wasAlreadyFavorite) {
+          this.favorites = this.favorites.filter(f => f.itemId !== itemId);
+        }
         throw error;
       }
     },
