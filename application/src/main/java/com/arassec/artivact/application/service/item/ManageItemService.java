@@ -182,7 +182,11 @@ public class ManageItemService implements CreateItemUseCase,
      */
     @Override
     public void delete(String itemId) {
-        favoriteRepository.deleteByItemId(itemId);
+        try {
+            favoriteRepository.deleteByItemId(itemId);
+        } catch (Exception e) {
+            log.warn("Failed to delete favorites for item {}: {}", itemId, e.getMessage());
+        }
         itemRepository.deleteById(itemId);
         fileRepository.deleteDirAndEmptyParents(fileRepository.getDirFromId(useProjectDirsUseCase.getItemsDir(), itemId));
     }

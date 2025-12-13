@@ -79,24 +79,20 @@ public class FavoriteController extends BaseController {
         List<Favorite> favorites = listFavoriteItemsUseCase.listFavorites();
 
         List<FavoriteItemData> favoriteItemDataList = favorites.stream()
-                .map(favorite -> {
-                    Optional<Item> itemOpt = loadItemUseCase.load(favorite.getItemId());
-                    if (itemOpt.isPresent()) {
-                        Item item = itemOpt.get();
-                        String thumbnailUrl = null;
-                        if (item.getMediaContent() != null && !item.getMediaContent().getImages().isEmpty()) {
-                            String firstImage = item.getMediaContent().getImages().get(0);
-                            thumbnailUrl = createUrl(item.getId(), ImageSize.SMALL + "-" + firstImage, "image");
-                        }
-                        return FavoriteItemData.builder()
-                                .itemId(item.getId())
-                                .title(item.getTitle() != null ? item.getTitle().getTranslatedValue() : "")
-                                .thumbnailUrl(thumbnailUrl)
-                                .build();
-                    }
-                    return null;
-                })
-                .filter(java.util.Objects::nonNull)
+                .flatMap(favorite -> loadItemUseCase.load(favorite.getItemId())
+                        .map(item -> {
+                            String thumbnailUrl = null;
+                            if (item.getMediaContent() != null && !item.getMediaContent().getImages().isEmpty()) {
+                                String firstImage = item.getMediaContent().getImages().get(0);
+                                thumbnailUrl = createUrl(item.getId(), ImageSize.SMALL + "-" + firstImage, "image");
+                            }
+                            return FavoriteItemData.builder()
+                                    .itemId(item.getId())
+                                    .title(item.getTitle() != null ? item.getTitle().getTranslatedValue() : "")
+                                    .thumbnailUrl(thumbnailUrl)
+                                    .build();
+                        })
+                        .stream())
                 .toList();
 
         return ResponseEntity.ok(favoriteItemDataList);
