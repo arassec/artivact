@@ -14,7 +14,7 @@ import java.util.List;
 public interface FavoriteEntityRepository extends JpaRepository<FavoriteEntity, FavoriteEntity.FavoriteId> {
 
     /**
-     * Finds all favorites for a given username, ordered by creation date descending (most recent first).
+     * Finds all favorites for a given username, ordered by creation date descending.
      *
      * @param username The username.
      * @return List of favorites.
