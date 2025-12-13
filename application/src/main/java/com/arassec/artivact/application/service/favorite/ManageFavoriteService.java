@@ -30,6 +30,11 @@ public class ManageFavoriteService implements MarkItemAsFavoriteUseCase,
 
     private final FavoriteRepository favoriteRepository;
 
+    /**
+     * Marks an item as favorite for the currently logged-in user.
+     *
+     * @param itemId The ID of the item to mark as favorite.
+     */
     @Override
     public void markAsFavorite(String itemId) {
         String username = getCurrentUsername();
@@ -45,6 +50,11 @@ public class ManageFavoriteService implements MarkItemAsFavoriteUseCase,
         }
     }
 
+    /**
+     * Removes an item from the favorites of the currently logged-in user.
+     *
+     * @param itemId The ID of the item to unmark.
+     */
     @Override
     public void unmarkAsFavorite(String itemId) {
         String username = getCurrentUsername();
@@ -57,6 +67,12 @@ public class ManageFavoriteService implements MarkItemAsFavoriteUseCase,
         log.debug("Unmarked item {} as favorite for user {}", itemId, username);
     }
 
+    /**
+     * Checks if an item is marked as favorite by the currently logged-in user.
+     *
+     * @param itemId The ID of the item to check.
+     * @return {@code true} if the item is a favorite, {@code false} otherwise.
+     */
     @Override
     public boolean isFavorite(String itemId) {
         String username = getCurrentUsername();
@@ -67,6 +83,11 @@ public class ManageFavoriteService implements MarkItemAsFavoriteUseCase,
         return favoriteRepository.isFavorite(username, itemId);
     }
 
+    /**
+     * Lists all favorite items for the currently logged-in user.
+     *
+     * @return A list of favorites.
+     */
     @Override
     public List<Favorite> listFavorites() {
         String username = getCurrentUsername();
