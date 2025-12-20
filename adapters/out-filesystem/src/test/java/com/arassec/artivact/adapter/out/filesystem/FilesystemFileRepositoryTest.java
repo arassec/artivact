@@ -219,6 +219,37 @@ class FilesystemFileRepositoryTest {
     }
 
     /**
+     * Tests moving a resource.
+     */
+    @Test
+    @SneakyThrows
+    void testMoveResource() {
+        Path source = targetDir.resolve("source-move.txt");
+        Path target = targetDir.resolve("target-move.txt");
+        Files.copy(sourceFile, source);
+
+        assertThat(Files.exists(source)).isTrue();
+        assertThat(Files.exists(target)).isFalse();
+
+        filesystemFileRepository.move(source, target);
+
+        assertThat(Files.exists(source)).isFalse();
+        assertThat(Files.exists(target)).isTrue();
+        assertThat(Files.readString(target)).isEqualTo("test file");
+    }
+
+    /**
+     * Tests error handling when moving a resource.
+     */
+    @Test
+    void moveResourceFail() {
+        try (MockedStatic<Files> filesMock = Mockito.mockStatic(Files.class)) {
+            filesMock.when(() -> Files.move(sourceFile, targetDir)).thenThrow(new IOException("test-exception"));
+            assertThrows(ArtivactException.class, () -> filesystemFileRepository.move(sourceFile, targetDir));
+        }
+    }
+
+    /**
      * Tests copying a file by path.
      */
     @Test

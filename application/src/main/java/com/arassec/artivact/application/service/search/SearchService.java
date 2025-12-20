@@ -20,6 +20,7 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Service for search-engine management and search handling.
@@ -91,7 +92,7 @@ public class SearchService
                             o -> Optional.ofNullable(o.getTitle()).map(TranslatableString::getValue).orElse(null),
                             Comparator.nullsLast(Comparator.naturalOrder())
                     ))
-                    .toList();
+                    .collect(Collectors.toList()); // Needs to be modifiable!
         }
 
         return itemRepository.findAllById(searchGateway.search(query, maxResults)).stream()
@@ -99,7 +100,7 @@ public class SearchService
                         o -> Optional.ofNullable(o.getTitle()).map(TranslatableString::getValue).orElse(null),
                         Comparator.nullsLast(Comparator.naturalOrder())
                 ))
-                .toList();
+                .collect(Collectors.toList()); // Needs to be modifiable!
     }
 
     /**

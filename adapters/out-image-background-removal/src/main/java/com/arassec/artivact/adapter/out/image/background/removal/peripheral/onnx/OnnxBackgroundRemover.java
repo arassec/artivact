@@ -13,10 +13,10 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Removes the background from an image using an ONNX model.
@@ -85,8 +85,7 @@ public class OnnxBackgroundRemover implements Runnable {
             BufferedImage resizedMaskImage = upscaleImage(maskImage, img.getWidth(), img.getHeight());
             BufferedImage finalImage = applyMask(img, resizedMaskImage);
 
-            String[] fileNameParts = inputFile.getFileName().toString().split("\\.");
-            String outputFilename = String.join(".", Arrays.copyOf(fileNameParts, fileNameParts.length - 1)) + ".png";
+            String outputFilename = String.join(".", UUID.randomUUID().toString(), "png");
             Path outputFile = params.getTargetDir().resolve(outputFilename);
 
             ImageIO.write(finalImage, "png", outputFile.toFile());

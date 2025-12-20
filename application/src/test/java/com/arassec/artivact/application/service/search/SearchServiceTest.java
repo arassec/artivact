@@ -10,6 +10,7 @@ import tools.jackson.databind.json.JsonMapper;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.*;
 
 class SearchServiceTest {
@@ -68,6 +69,7 @@ class SearchServiceTest {
         List<Item> result = searchService.search("*", 5);
 
         assertThat(result).containsExactly(item);
+        assertDoesNotThrow(() -> result.add(new Item())); // Ensure the result is mutable.
         verify(itemRepository).findAll(5);
         verifyNoInteractions(searchGateway);
     }
@@ -82,6 +84,7 @@ class SearchServiceTest {
         List<Item> result = searchService.search("abc", 3);
 
         assertThat(result).containsExactly(item1, item2);
+        assertDoesNotThrow(() -> result.add(new Item())); // Ensure the result is mutable.
         verify(searchGateway).search("abc", 3);
         verify(itemRepository).findAllById(List.of("id1", "id2"));
     }

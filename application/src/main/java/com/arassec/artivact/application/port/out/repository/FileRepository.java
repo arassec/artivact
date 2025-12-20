@@ -72,6 +72,15 @@ public interface FileRepository {
     void copy(Path source, Path target, CopyOption... copyOptions);
 
     /**
+     * Moves a file from source to target.
+     *
+     * @param source      The source path.
+     * @param target      The target path.
+     * @param copyOptions The options to use for moving.
+     */
+    void move(Path source, Path target, CopyOption... copyOptions);
+
+    /**
      * Copies a source InputStream to a target path.
      *
      * @param source      The source {@link InputStream}.

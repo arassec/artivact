@@ -108,7 +108,7 @@ public class CaptureItemImageService implements CaptureItemImageUseCase {
         if (captureImagesParams.isRemoveBackgrounds() && imageManipulatorPeripheral != null) {
             imageManipulatorPeripheral.teardown();
             fileRepository.delete(targetFile);
-            return imageManipulatorPeripheral.getModifiedImages().getFirst().getFileName().toString();
+            return renameManipulatedImages(List.of(targetFile), imageManipulatorPeripheral.getModifiedImages()).getFirst();
         }
 
         return targetFile.getFileName().toString();
@@ -248,13 +248,34 @@ public class CaptureItemImageService implements CaptureItemImageUseCase {
                         .backgroundRemoved(true)
                         .modelInput(true)
                         .build();
-                creationImageSet.getFiles().addAll(imagesWithoutBackground.stream()
-                        .map(image -> image.getFileName().toString())
-                        .toList());
+                creationImageSet.getFiles().addAll(renameManipulatedImages(capturedImages, imagesWithoutBackground));
                 result.add(creationImageSet);
             }
         }
 
+        return result;
+    }
+
+    /**
+     * Renames the manipulated images to match the original images, only changing the file extension.
+     *
+     * @param originalImages    The original images.
+     * @param manipulatedImages The manipulated images.
+     * @return List of new filenames of the manipulated images.
+     */
+    private List<String> renameManipulatedImages(List<Path> originalImages, List<Path> manipulatedImages) {
+        List<String> result = new LinkedList<>();
+        for (int i = 0; i < originalImages.size(); i++) {
+            Path originalImage = originalImages.get(i);
+            Path manipulatedImage = manipulatedImages.get(i);
+            String oldFilename = originalImage.getFileName().toString();
+            String oldExtension = fileRepository.getExtension(oldFilename).orElseThrow();
+            String newExtension = fileRepository.getExtension(manipulatedImage.getFileName().toString()).orElseThrow();
+            String newFilename = oldFilename.replace(oldExtension, newExtension);
+            Path newTargetFile = originalImage.getParent().resolve(newFilename);
+            fileRepository.move(manipulatedImage, newTargetFile);
+            result.add(newFilename);
+        }
         return result;
     }
 

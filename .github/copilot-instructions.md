@@ -116,6 +116,7 @@ Spring Boot backend and Quasar/Vue.js frontend.
 - **Java**: Use JUnit 5, Mockito, and AssertJ
 - **Frontend**: Use Vitest or Jest with Vue Test Utils
 - Remove tests that only verify implementation details
+- User getFirst() to access first element in collections in tests
 
 ## API Design
 

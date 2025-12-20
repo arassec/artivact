@@ -39,7 +39,8 @@ class OnnxBackgroundRemoverTest {
 
         backgroundRemover.run();
 
-        Path resultImage = Path.of("target/background-test.png");
+        assertThat(result).hasSize(1);
+        Path resultImage = result.getFirst();
 
         assertThat(resultImage).exists();
         assertThat(Files.size(resultImage)).isGreaterThan(0);

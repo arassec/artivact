@@ -150,6 +150,15 @@ public class OnnxImageBackgroundRemovalPeripheral extends BasePeripheral impleme
             }
         }
 
+        try {
+            session.close();
+            session = null;
+            environment.close();
+            environment = null;
+        } catch (OrtException e) {
+            throw new ArtivactException("Could not teardown ONNX session!", e);
+        }
+
         // Cleanup AFTER the threads have finished!
         super.teardown();
     }

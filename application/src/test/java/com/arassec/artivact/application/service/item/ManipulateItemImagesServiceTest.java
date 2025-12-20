@@ -6,6 +6,7 @@ import com.arassec.artivact.application.port.in.item.SaveItemUseCase;
 import com.arassec.artivact.application.port.in.operation.RunBackgroundOperationUseCase;
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.peripheral.ImageManipulatorPeripheral;
+import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.model.configuration.PeripheralImplementation;
 import com.arassec.artivact.domain.model.configuration.PeripheralsConfiguration;
 import com.arassec.artivact.domain.model.item.CreationImageSet;
@@ -52,6 +53,9 @@ class ManipulateItemImagesServiceTest {
     @Mock
     private ImageManipulatorPeripheral imageManipulatorPeripheral;
 
+    @Mock
+    private FileRepository fileRepository;
+
     @BeforeEach
     void setUp() {
         List<Peripheral> peripherals = new ArrayList<>();
@@ -63,6 +67,7 @@ class ManipulateItemImagesServiceTest {
                 loadItemUseCase,
                 saveItemUseCase,
                 loadAdapterConfigurationUseCase,
+                fileRepository,
                 peripherals
         );
     }
@@ -99,9 +104,14 @@ class ManipulateItemImagesServiceTest {
         when(useProjectDirsUseCase.getProjectRoot()).thenReturn(projectRoot);
         when(imageManipulatorPeripheral.supports(PeripheralImplementation.ONNX_IMAGE_BACKGROUND_REMOVAL_PERIPHERAL)).thenReturn(true);
         when(imageManipulatorPeripheral.getModifiedImages()).thenReturn(List.of(
-                Path.of("001-nobg.png"),
-                Path.of("002-nobg.png")
+                imagesDir.resolve("001-nobg.png"),
+                imagesDir.resolve("002-nobg.png")
         ));
+
+        when(fileRepository.getExtension(any())).thenReturn(java.util.Optional.of("png"));
+        when(fileRepository.getNextAssetNumber(any())).thenReturn(3, 4);
+        when(fileRepository.getAssetName(3, "png")).thenReturn("003.png");
+        when(fileRepository.getAssetName(4, "png")).thenReturn("004.png");
 
         doAnswer(invocation -> {
             BackgroundOperation backgroundOperation = invocation.getArgument(2);
@@ -114,6 +124,8 @@ class ManipulateItemImagesServiceTest {
         verify(imageManipulatorPeripheral).initialize(any(ProgressMonitor.class), any(PeripheralInitParams.class));
         verify(imageManipulatorPeripheral).removeBackgrounds(any());
         verify(imageManipulatorPeripheral).teardown();
+        verify(fileRepository).move(imagesDir.resolve("001-nobg.png"), imagesDir.resolve("003.png"));
+        verify(fileRepository).move(imagesDir.resolve("002-nobg.png"), imagesDir.resolve("004.png"));
         verify(saveItemUseCase).save(item);
     }
 

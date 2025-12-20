@@ -190,6 +190,18 @@ public class FilesystemFileRepository implements FileRepository {
      * {@inheritDoc}
      */
     @Override
+    public void move(Path source, Path target, CopyOption... copyOptions) {
+        try {
+            Files.move(source, target, copyOptions);
+        } catch (IOException e) {
+            throw new ArtivactException("Could not move resource!", e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     @SuppressWarnings("javasecurity:S2083") // Path is not entered by user!
     public void copy(InputStream source, Path target, CopyOption... copyOptions) {
         try {

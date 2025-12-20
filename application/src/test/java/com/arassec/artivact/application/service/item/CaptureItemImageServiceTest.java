@@ -10,6 +10,7 @@ import com.arassec.artivact.application.port.out.peripheral.ImageManipulatorPeri
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.model.configuration.PeripheralImplementation;
 import com.arassec.artivact.domain.model.configuration.PeripheralsConfiguration;
+import com.arassec.artivact.domain.model.media.CaptureImagesParams;
 import com.arassec.artivact.domain.model.misc.ProgressMonitor;
 import com.arassec.artivact.domain.model.peripheral.Peripheral;
 import com.arassec.artivact.domain.model.peripheral.PeripheralInitParams;
@@ -114,7 +115,6 @@ class CaptureItemImageServiceTest {
         String itemId = "item-123";
         Path imagesDir = Path.of("/project/items/item-123/images");
         Path projectRoot = Path.of("/project");
-
         PeripheralConfig cameraConfig = mock(PeripheralConfig.class);
         when(cameraConfig.getId()).thenReturn("camera-config-1");
         when(cameraConfig.getPeripheralImplementation()).thenReturn(PeripheralImplementation.PTP_CAMERA_PERIPHERAL);
@@ -133,13 +133,14 @@ class CaptureItemImageServiceTest {
         when(useProjectDirsUseCase.getProjectRoot()).thenReturn(projectRoot);
         when(fileRepository.getNextAssetNumber(imagesDir)).thenReturn(1);
         when(fileRepository.getAssetName(1, "jpg")).thenReturn("001.jpg");
+        when(fileRepository.getExtension("001.jpg")).thenReturn(java.util.Optional.of("jpg"));
+        when(fileRepository.getExtension("001-nobg.png")).thenReturn(java.util.Optional.of("png"));
         when(cameraPeripheral.supports(PeripheralImplementation.PTP_CAMERA_PERIPHERAL)).thenReturn(true);
         when(cameraPeripheral.captureImage(any(Path.class))).thenReturn(true);
         when(imageManipulatorPeripheral.supports(PeripheralImplementation.ONNX_IMAGE_BACKGROUND_REMOVAL_PERIPHERAL)).thenReturn(true);
         when(imageManipulatorPeripheral.getModifiedImages()).thenReturn(List.of(Path.of("001-nobg.png")));
 
-        com.arassec.artivact.domain.model.media.CaptureImagesParams params =
-                com.arassec.artivact.domain.model.media.CaptureImagesParams.builder()
+        CaptureImagesParams params = CaptureImagesParams.builder()
                         .cameraPeripheralConfigId("camera-config-1")
                         .imageBackgroundRemovalPeripheralConfigId("bg-removal-1")
                         .removeBackgrounds(true)
@@ -147,12 +148,15 @@ class CaptureItemImageServiceTest {
 
         String result = service.captureImage(itemId, params);
 
-        assertThat(result).isEqualTo("001-nobg.png");
+        assertThat(result).isEqualTo("001.png");
         verify(cameraPeripheral).initialize(any(ProgressMonitor.class), any(PeripheralInitParams.class));
         verify(imageManipulatorPeripheral).initialize(any(ProgressMonitor.class), any(PeripheralInitParams.class));
         verify(cameraPeripheral).captureImage(any(Path.class));
         verify(imageManipulatorPeripheral).removeBackground(any(Path.class));
         verify(cameraPeripheral).teardown();
         verify(imageManipulatorPeripheral).teardown();
+        verify(fileRepository).delete(any(Path.class));
+        verify(fileRepository).move(any(Path.class), any(Path.class));
     }
+
 }

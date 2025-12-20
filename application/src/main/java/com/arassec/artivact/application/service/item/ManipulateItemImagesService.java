@@ -7,6 +7,7 @@ import com.arassec.artivact.application.port.in.item.SaveItemUseCase;
 import com.arassec.artivact.application.port.in.operation.RunBackgroundOperationUseCase;
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.peripheral.ImageManipulatorPeripheral;
+import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.configuration.PeripheralsConfiguration;
 import com.arassec.artivact.domain.model.item.CreationImageSet;
@@ -21,7 +22,11 @@ import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.stream.Collectors;
 
+/**
+ * Service for manipulating item images.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -37,11 +42,20 @@ public class ManipulateItemImagesService implements ManipulateItemImagesUseCase 
 
     private final LoadPeripheralsConfigurationUseCase loadAdapterConfigurationUseCase;
 
+    private final FileRepository fileRepository;
+
     /**
      * List of all available adapters.
      */
     private final List<Peripheral> peripheralAdapters;
 
+    /**
+     * Removes backgrounds from all images in the image set with the given index.
+     *
+     * @param itemId                   The ID of the item to which the images belong.
+     * @param imageManipulatorConfigId The ID of the image-manipulator configuration to use.
+     * @param imageSetIndex            The index of the image-set to process images from.
+     */
     @Override
     public synchronized void removeBackgrounds(String itemId, String imageManipulatorConfigId, int imageSetIndex) {
         runBackgroundOperationUseCase.execute("manipulateImage", "backgroundRemovalStart", progressMonitor -> {
@@ -50,13 +64,20 @@ public class ManipulateItemImagesService implements ManipulateItemImagesUseCase 
             List<Path> imagesWithoutBackground = removeBackgrounds(itemId, imageManipulatorConfigId, item.getMediaCreationContent().getImageSets().get(imageSetIndex), progressMonitor);
 
             if (!imagesWithoutBackground.isEmpty()) {
+                List<String> assets = imagesWithoutBackground.stream()
+                        .map(imageWithoutBackground -> {
+                            String assetName = fileRepository.getAssetName(
+                                    fileRepository.getNextAssetNumber(imageWithoutBackground.getParent()), fileRepository.getExtension(imageWithoutBackground.getFileName().toString()).orElseThrow()
+                            );
+                            fileRepository.move(imageWithoutBackground, imageWithoutBackground.getParent().resolve(assetName));
+                            return assetName;
+                        })
+                        .collect(Collectors.toList());
+
                 item.getMediaCreationContent().getImageSets().add(CreationImageSet.builder()
                         .backgroundRemoved(true)
                         .modelInput(true)
-                        .files(imagesWithoutBackground.stream()
-                                .map(Path::getFileName)
-                                .map(Path::toString)
-                                .toList())
+                        .files(assets)
                         .build());
 
                 saveItemUseCase.save(item);
