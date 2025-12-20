@@ -128,13 +128,10 @@ public class ManagePageService
     @Override
     public void deletePage(String pageIdOrAlias) {
         Optional<Page> pageOptional = pageRepository.deleteById(pageIdOrAlias);
-        if (pageOptional.isPresent()) {
-            pageOptional.get().getPageContent().getWidgets().forEach(widget
-                    -> fileRepository.deleteDirAndEmptyParents(
-                    fileRepository.getDirFromId(useProjectDirsUseCase.getWidgetsDir(), widget.getId()))
-            );
-            pageRepository.deleteById(pageIdOrAlias);
-        }
+        pageOptional.ifPresent(page -> page.getPageContent().getWidgets().forEach(widget
+                -> fileRepository.deleteDirAndEmptyParents(
+                fileRepository.getDirFromId(useProjectDirsUseCase.getWidgetsDir(), widget.getId()))
+        ));
     }
 
     /**

@@ -5,15 +5,13 @@ import com.arassec.artivact.application.port.out.repository.ConfigurationReposit
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.application.port.out.repository.MenuRepository;
 import com.arassec.artivact.application.port.out.repository.PageRepository;
+import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.Roles;
 import com.arassec.artivact.domain.model.configuration.AppearanceConfiguration;
 import com.arassec.artivact.domain.model.configuration.ConfigurationType;
 import com.arassec.artivact.domain.model.configuration.MenuConfiguration;
 import com.arassec.artivact.domain.model.menu.Menu;
-import com.arassec.artivact.domain.model.page.FileProcessingWidget;
-import com.arassec.artivact.domain.model.page.Page;
-import com.arassec.artivact.domain.model.page.PageContent;
-import com.arassec.artivact.domain.model.page.Widget;
+import com.arassec.artivact.domain.model.page.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,6 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.multipart.MultipartFile;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -49,6 +48,9 @@ class ManagePageServiceTest {
 
     @Mock
     private UseProjectDirsUseCase useProjectDirsUseCase;
+
+    @Mock
+    private JsonMapper jsonMapper;
 
     @InjectMocks
     private ManagePageService service;
@@ -79,6 +81,22 @@ class ManagePageServiceTest {
     }
 
     @Test
+    void testDeletePage() {
+        Widget widget = mock(Widget.class);
+        when(widget.getId()).thenReturn("widget-1");
+        pageContent.getWidgets().add(widget);
+
+        when(pageRepository.deleteById("page-1")).thenReturn(Optional.of(page));
+        when(useProjectDirsUseCase.getWidgetsDir()).thenReturn(Path.of("widgets"));
+        when(fileRepository.getDirFromId(any(), eq("widget-1"))).thenReturn(Path.of("widgets/widget-1"));
+
+        service.deletePage("page-1");
+
+        verify(fileRepository).deleteDirAndEmptyParents(Path.of("widgets/widget-1"));
+        verify(pageRepository).deleteById("page-1");
+    }
+
+    @Test
     void testUpdatePageAlias() {
         when(pageRepository.findById("page-1")).thenReturn(Optional.of(page));
 
@@ -86,6 +104,35 @@ class ManagePageServiceTest {
 
         assertThat(page.getAlias()).isEqualTo("alias-123");
         verify(pageRepository).save(page);
+    }
+
+    @Test
+    void testLoadIndexPageIdAndAlias() {
+        AppearanceConfiguration config = new AppearanceConfiguration();
+        config.setIndexPageId("index-page-id");
+        when(configurationRepository.findByType(ConfigurationType.APPEARANCE, AppearanceConfiguration.class))
+                .thenReturn(Optional.of(config));
+
+        Page indexPage = new Page();
+        indexPage.setId("index-page-id");
+        indexPage.setAlias("index-alias");
+        when(pageRepository.findById("index-page-id")).thenReturn(Optional.of(indexPage));
+
+        Optional<PageIdAndAlias> result = service.loadIndexPageIdAndAlias();
+
+        assertThat(result).isPresent();
+        assertThat(result.get().getId()).isEqualTo("index-page-id");
+        assertThat(result.get().getAlias()).isEqualTo("index-alias");
+    }
+
+    @Test
+    void testLoadIndexPageIdAndAliasEmptyConfig() {
+        when(configurationRepository.findByType(ConfigurationType.APPEARANCE, AppearanceConfiguration.class))
+                .thenReturn(Optional.of(new AppearanceConfiguration()));
+
+        Optional<PageIdAndAlias> result = service.loadIndexPageIdAndAlias();
+
+        assertThat(result).isEmpty();
     }
 
     @Test
@@ -106,6 +153,93 @@ class ManagePageServiceTest {
 
         PageContent content = service.loadPageContent("page-1", Set.of(Roles.ROLE_USER));
         assertThat(content.getRestrictions()).contains(Roles.ROLE_USER);
+    }
+
+    @Test
+    void testLoadTranslatedRestrictedPageContent() {
+        Menu menu = new Menu();
+        menu.setTargetPageId("page-1");
+        when(menuRepository.load()).thenReturn(new MenuConfiguration(List.of(menu)));
+        when(pageRepository.findByIdOrAlias("page-1")).thenReturn(Optional.of(page));
+        when(configurationRepository.findByType(ConfigurationType.APPEARANCE, AppearanceConfiguration.class))
+                .thenReturn(Optional.of(new AppearanceConfiguration("appTitle", null, null, null, null, null, null)));
+
+        PageContent content = service.loadTranslatedRestrictedPageContent("page-1", Set.of());
+        assertThat(content).isNotNull();
+        verify(pageRepository).findByIdOrAlias("page-1");
+    }
+
+    @Test
+    void testSavePageContentImport() throws Exception {
+        String newPageId = "new-page-id";
+        when(pageRepository.findByIdOrAlias(newPageId)).thenReturn(Optional.empty());
+
+        PageContent newContent = new PageContent();
+        newContent.setId(newPageId);
+
+        when(jsonMapper.writeValueAsString(newContent)).thenReturn("{}");
+        when(jsonMapper.readValue("{}", PageContent.class)).thenReturn(new PageContent());
+
+        Menu menu = new Menu();
+        menu.setTargetPageId(newPageId);
+        when(menuRepository.load()).thenReturn(new MenuConfiguration(List.of(menu)));
+
+        PageContent savedContent = service.savePageContent(newPageId, Set.of(Roles.ROLE_ADMIN), newContent);
+
+        assertThat(savedContent).isNotNull();
+        verify(pageRepository).save(any(Page.class));
+    }
+
+    @Test
+    void testSavePageContentUpdate() {
+        when(pageRepository.findByIdOrAlias("page-1")).thenReturn(Optional.of(page));
+
+        Menu menu = new Menu();
+        menu.setTargetPageId("page-1");
+        when(menuRepository.load()).thenReturn(new MenuConfiguration(List.of(menu)));
+
+        PageContent newContent = new PageContent();
+        Widget keptWidget = mock(Widget.class);
+        when(keptWidget.getId()).thenReturn("widget-1");
+        newContent.getWidgets().add(keptWidget);
+
+        Widget existingWidget1 = mock(Widget.class);
+        when(existingWidget1.getId()).thenReturn("widget-1");
+
+        page.getWipPageContent().setWidgets(new ArrayList<>(List.of(existingWidget1)));
+        page.getPageContent().setWidgets(new ArrayList<>(List.of(existingWidget1)));
+        page.setVersion(1);
+
+        service.savePageContent("page-1", Set.of(Roles.ROLE_ADMIN), newContent);
+
+        verify(pageRepository).save(page);
+    }
+
+    @Test
+    void testSavePageContentThrowsIfMenuMissing() {
+        when(pageRepository.findByIdOrAlias("page-1")).thenReturn(Optional.of(page));
+        when(menuRepository.load()).thenReturn(new MenuConfiguration(List.of()));
+
+        PageContent content = new PageContent();
+        assertThrows(ArtivactException.class, () -> service.savePageContent("page-1", Set.of(), content));
+    }
+
+    @Test
+    void testSavePageContentThrowsIfNotEditable() {
+        when(pageRepository.findByIdOrAlias("page-1")).thenReturn(Optional.of(page));
+
+        Menu menu = new Menu();
+        menu.setTargetPageId("page-1");
+        when(menuRepository.load()).thenReturn(new MenuConfiguration(List.of(menu)));
+
+        Widget restrictedWidget = mock(Widget.class);
+        when(restrictedWidget.getRestrictions()).thenReturn(Set.of(Roles.ROLE_ADMIN));
+        page.getWipPageContent().getWidgets().add(restrictedWidget);
+
+        PageContent content = new PageContent();
+        Set<String> roles = Set.of(Roles.ROLE_USER);
+
+        assertThrows(ArtivactException.class, () -> service.savePageContent("page-1", roles, content));
     }
 
     @Test

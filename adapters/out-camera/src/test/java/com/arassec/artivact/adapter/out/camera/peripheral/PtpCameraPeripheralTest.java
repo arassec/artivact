@@ -6,6 +6,7 @@ import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.configuration.PeripheralImplementation;
 import com.arassec.artivact.domain.model.misc.ProgressMonitor;
 import com.arassec.artivact.domain.model.peripheral.PeripheralInitParams;
+import com.arassec.artivact.domain.model.peripheral.PeripheralStatus;
 import com.arassec.artivact.domain.model.peripheral.configs.PtpCameraPeripheralConfig;
 import com.arassec.jptp.core.datatype.complex.DataObject;
 import com.arassec.jptp.core.datatype.complex.DeviceInfo;
@@ -91,6 +92,80 @@ class PtpCameraPeripheralTest {
         when(imageCaptureDevice.captureImage()).thenReturn(Optional.empty());
         Path imagePath = Path.of("test.jpg");
         assertThrows(ArtivactException.class, () -> defaultCameraPeripheral.captureImage(imagePath));
+    }
+
+    @Test
+    void testInitializeFail() {
+        when(imageCaptureDevice.initialize(any(Duration.class), any(Duration.class))).thenReturn(false);
+
+        ProgressMonitor progressMonitor = mock(ProgressMonitor.class);
+        PeripheralInitParams peripheralInitParams = mock(PeripheralInitParams.class);
+        when(peripheralInitParams.getConfig()).thenReturn(new PtpCameraPeripheralConfig());
+
+        assertThrows(ArtivactException.class, () -> defaultCameraPeripheral.initialize(progressMonitor, peripheralInitParams));
+    }
+
+    @Test
+    void testGetStatusInUse() {
+        when(imageCaptureDevice.initialize(any(Duration.class), any(Duration.class))).thenReturn(true);
+        when(imageCaptureDevice.getDeviceInfo()).thenReturn(Optional.of(mock(DeviceInfo.class)));
+
+        ProgressMonitor progressMonitor = mock(ProgressMonitor.class);
+        PeripheralInitParams peripheralInitParams = mock(PeripheralInitParams.class);
+        when(peripheralInitParams.getConfig()).thenReturn(new PtpCameraPeripheralConfig());
+
+        defaultCameraPeripheral.initialize(progressMonitor, peripheralInitParams);
+
+        assertThat(defaultCameraPeripheral.getStatus(null)).isEqualTo(PeripheralStatus.AVAILABLE);
+    }
+
+    @Test
+    void testGetStatusAvailable() {
+        when(imageCaptureDevice.initialize(any(Duration.class), any(Duration.class))).thenReturn(true);
+
+        assertThat(defaultCameraPeripheral.getStatus(null)).isEqualTo(PeripheralStatus.AVAILABLE);
+
+        verify(imageCaptureDevice).teardown();
+    }
+
+    @Test
+    void testGetStatusDisconnected() {
+        when(imageCaptureDevice.initialize(any(Duration.class), any(Duration.class))).thenReturn(false);
+
+        assertThat(defaultCameraPeripheral.getStatus(null)).isEqualTo(PeripheralStatus.DISCONNECTED);
+    }
+
+    @Test
+    void testScanPeripheralsInUse() {
+        when(imageCaptureDevice.initialize(any(Duration.class), any(Duration.class))).thenReturn(true);
+        when(imageCaptureDevice.getDeviceInfo()).thenReturn(Optional.of(mock(DeviceInfo.class)));
+
+        ProgressMonitor progressMonitor = mock(ProgressMonitor.class);
+        PeripheralInitParams peripheralInitParams = mock(PeripheralInitParams.class);
+        when(peripheralInitParams.getConfig()).thenReturn(new PtpCameraPeripheralConfig());
+
+        defaultCameraPeripheral.initialize(progressMonitor, peripheralInitParams);
+
+        assertThat(defaultCameraPeripheral.scanPeripherals()).isEmpty();
+    }
+
+    @Test
+    void testScanPeripheralsFound() {
+        when(imageCaptureDevice.initialize(any(Duration.class), any(Duration.class))).thenReturn(true);
+
+        var result = defaultCameraPeripheral.scanPeripherals();
+
+        assertThat(result).hasSize(1);
+        assertThat(result.getFirst()).isInstanceOf(PtpCameraPeripheralConfig.class);
+
+        verify(imageCaptureDevice).teardown();
+    }
+
+    @Test
+    void testScanPeripheralsNotFound() {
+        when(imageCaptureDevice.initialize(any(Duration.class), any(Duration.class))).thenReturn(false);
+
+        assertThat(defaultCameraPeripheral.scanPeripherals()).isEmpty();
     }
 
 }
