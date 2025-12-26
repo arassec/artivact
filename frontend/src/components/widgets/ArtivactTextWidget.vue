@@ -13,7 +13,7 @@
         <h1 class="av-label-h1" v-if="widgetDataRef.heading">
           {{ translate(widgetDataRef.heading) }}
         </h1>
-        <div v-html="format(translate(widgetDataRef.content))"/>
+        <div v-html="formatMarkdown(translate(widgetDataRef.content))"/>
       </div>
     </template>
 
@@ -43,8 +43,7 @@ import {PropType, ref, toRef} from 'vue';
 import {TextWidgetData} from './artivact-widget-models';
 import ArtivactRestrictedTranslatableItemEditor from '../../components/ArtivactRestrictedTranslatableItemEditor.vue';
 import {useLocaleStore} from '../../stores/locale';
-import MarkdownIt from 'markdown-it';
-import {translate} from '../artivact-utils';
+import {formatMarkdown, translate} from '../artivact-utils';
 import ArtivactWidgetTemplate from '../../components/widgets/ArtivactWidgetTemplate.vue';
 
 const props = defineProps({
@@ -64,13 +63,6 @@ const localeStore = useLocaleStore();
 
 const widgetDataRef = toRef(props, 'widgetData');
 
-function format(text: string) {
-  if (!text) {
-    return;
-  }
-  let md = new MarkdownIt();
-  return md.render(text);
-}
 </script>
 
 <style scoped></style>

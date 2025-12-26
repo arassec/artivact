@@ -1,6 +1,7 @@
 import {TranslatableString} from './artivact-models';
 import {useLocaleStore} from '../stores/locale';
 import {useUserdataStore} from '../stores/userdata';
+import MarkdownIt from 'markdown-it';
 
 const localeStore = useLocaleStore();
 const userdataStore = useUserdataStore();
@@ -37,4 +38,12 @@ export function translate(translatableString: TranslatableString) {
     return translatableString.translatedValue;
   }
   return translatableString.value;
+}
+
+export function formatMarkdown(text: string) {
+  if (!text) {
+    return;
+  }
+  let md = new MarkdownIt();
+  return md.render(text);
 }

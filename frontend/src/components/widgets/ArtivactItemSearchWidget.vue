@@ -23,7 +23,7 @@
             </h1>
             <div
               v-if="widgetDataRef.content"
-              v-html="format(translate(widgetDataRef.content))"
+              v-html="formatMarkdown(translate(widgetDataRef.content))"
             />
           </div>
           <div v-if="widgetDataRef && !widgetDataRef.searchTerm">
@@ -183,8 +183,7 @@ import ArtivactItemCard from '../../components/ArtivactItemCard.vue';
 import ArtivactWidgetTemplate from '../../components/widgets/ArtivactWidgetTemplate.vue';
 import ArtivactRestrictedTranslatableItemEditor from '../../components/ArtivactRestrictedTranslatableItemEditor.vue';
 import {useLocaleStore} from '../../stores/locale';
-import {translate} from '../artivact-utils';
-import MarkdownIt from 'markdown-it';
+import {formatMarkdown, translate} from '../artivact-utils';
 
 const props = defineProps({
   inEditMode: {
@@ -218,14 +217,6 @@ const widgetDataStore = useWidgetdataStore();
 
 const searchResultRef = ref({} as SearchResult);
 const searchTermRef = ref('');
-
-function format(text: string) {
-  if (!text) {
-    return;
-  }
-  let md = new MarkdownIt();
-  return md.render(text);
-}
 
 function searchPreview() {
   if (widgetDataRef.value !== undefined) {

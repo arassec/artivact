@@ -18,7 +18,7 @@
           <h1 class="av-label-h1" v-if="widgetDataRef.heading">
             {{ translate(widgetDataRef.heading) }}
           </h1>
-          <div v-html="format(translate(widgetDataRef.content))"/>
+          <div v-html="formatMarkdown(translate(widgetDataRef.content))"/>
         </div>
         <div
           :class="getCarouselClasses()"
@@ -204,11 +204,10 @@
 import ArtivactWidgetTemplate from './ArtivactWidgetTemplate.vue';
 import {ImageGalleryWidgetData, ImageGalleryWidgetTextPosition,} from './artivact-widget-models';
 import {PropType, ref, toRef} from 'vue';
-import {translate} from '../artivact-utils';
+import {formatMarkdown, translate} from '../artivact-utils';
 import {useLocaleStore} from '../../stores/locale';
 import ArtivactRestrictedTranslatableItemEditor from '../ArtivactRestrictedTranslatableItemEditor.vue';
 import {QUploader, useQuasar} from 'quasar';
-import MarkdownIt from 'markdown-it';
 import Draggable from 'vuedraggable';
 
 const props = defineProps({
@@ -308,14 +307,6 @@ function getContentClasses(): string {
   }
   // Text-Position 'TOP' or undefined:
   return 'col-grow';
-}
-
-function format(text: string) {
-  if (!text) {
-    return;
-  }
-  let md = new MarkdownIt();
-  return md.render(text);
 }
 
 async function saveWidgetBeforeUpload() {
