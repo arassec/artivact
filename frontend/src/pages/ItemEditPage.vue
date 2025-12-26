@@ -206,6 +206,18 @@
 
           <!-- PROPERTIES -->
           <div v-show="tabRef == 'properties'">
+            <div class="q-mb-md">
+              <q-btn
+                data-test="paste-properties-button"
+                color="primary"
+                icon="content_paste"
+                :label="$t('ItemEditPage.button.tooltip.pasteProperties')"
+                @click="pasteProperties"
+                :disable="!favoritesStore.getCopiedProperties"
+              >
+                <q-tooltip>{{ $t('ItemEditPage.button.tooltip.pasteProperties') }}</q-tooltip>
+              </q-btn>
+            </div>
             <div v-if="propertiesDataRef && itemDataRef">
               <artivact-property-category-editor
                 v-for="(category, index) in propertiesDataRef"
@@ -281,7 +293,7 @@ const userdataStore = useUserdataStore();
 const profilesStore = useProfilesStore();
 const wizzardStore = useWizzardStore();
 const peripheralsConfigStore = usePeripheralsConfigStore();
-const fagoritesStore = useFavoritesStore();
+const favoritesStore = useFavoritesStore();
 
 const itemDataRef = ref<ItemDetails>();
 const propertiesDataRef = ref();
@@ -489,7 +501,7 @@ function saveItem(exitEditMode: boolean) {
     .put('/api/item', item)
     .then(() => {
       originalItemJson = JSON.stringify(itemDataRef.value);
-      fagoritesStore.loadFavorites();
+      favoritesStore.loadFavorites();
       quasar.notify({
         color: 'positive',
         position: 'bottom',
@@ -517,6 +529,33 @@ function saveItem(exitEditMode: boolean) {
 function exitEditMode() {
   breadcrumbsStore.removeLastBreadcrumb();
   saveItemIfNecessary(true);
+}
+
+function pasteProperties() {
+  const copiedProperties = favoritesStore.getCopiedProperties;
+  if (copiedProperties && itemDataRef.value) {
+    // Deep copy the properties to avoid reference issues
+    const propertiesToPaste = JSON.parse(JSON.stringify(copiedProperties));
+    
+    // Merge copied properties into current item properties
+    Object.keys(propertiesToPaste).forEach(key => {
+      itemDataRef.value.properties[key] = propertiesToPaste[key];
+    });
+
+    quasar.notify({
+      color: 'positive',
+      position: 'bottom',
+      message: i18n.t('ItemEditPage.messages.propertiesPasted'),
+      icon: 'content_paste',
+    });
+  } else {
+    quasar.notify({
+      color: 'negative',
+      position: 'bottom',
+      message: i18n.t('ItemEditPage.messages.propertiesPasteFailed'),
+      icon: 'report_problem',
+    });
+  }
 }
 
 onBeforeRouteLeave((to, from, next) => {

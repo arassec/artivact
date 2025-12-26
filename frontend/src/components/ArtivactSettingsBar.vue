@@ -84,16 +84,28 @@
               <q-item-label>{{ favorite.title }}</q-item-label>
             </q-item-section>
             <q-item-section side>
-              <q-btn
-                flat
-                round
-                dense
-                icon="close"
-                size="sm"
-                @click.stop="removeFavorite(favorite.itemId)"
-              >
-                <q-tooltip>{{ $t('MainLayout.removeFavorite') }}</q-tooltip>
-              </q-btn>
+              <div class="row q-gutter-xs">
+                <q-btn
+                  flat
+                  round
+                  dense
+                  icon="content_copy"
+                  size="sm"
+                  @click.stop="copyPropertiesFromFavorite(favorite.itemId)"
+                >
+                  <q-tooltip>{{ $t('MainLayout.copyProperties') }}</q-tooltip>
+                </q-btn>
+                <q-btn
+                  flat
+                  round
+                  dense
+                  icon="close"
+                  size="sm"
+                  @click.stop="removeFavorite(favorite.itemId)"
+                >
+                  <q-tooltip>{{ $t('MainLayout.removeFavorite') }}</q-tooltip>
+                </q-btn>
+              </div>
             </q-item-section>
           </q-item>
         </q-list>
@@ -847,6 +859,36 @@ async function removeFavorite(itemId: string) {
       color: 'negative',
       position: 'bottom',
       message: i18n.t('MainLayout.messages.favoriteRemoveFailed'),
+      icon: 'report_problem',
+    });
+  }
+}
+
+async function copyPropertiesFromFavorite(itemId: string) {
+  try {
+    const response = await api.get(`/api/item/${itemId}`);
+    const item = response.data;
+    if (item.properties) {
+      favoritesStore.copyProperties(item.properties);
+      quasar.notify({
+        color: 'positive',
+        position: 'bottom',
+        message: i18n.t('MainLayout.messages.propertiesCopied'),
+        icon: 'content_copy',
+      });
+    } else {
+      quasar.notify({
+        color: 'negative',
+        position: 'bottom',
+        message: i18n.t('MainLayout.messages.propertiesCopyFailed'),
+        icon: 'report_problem',
+      });
+    }
+  } catch (error) {
+    quasar.notify({
+      color: 'negative',
+      position: 'bottom',
+      message: i18n.t('MainLayout.messages.propertiesCopyFailed'),
       icon: 'report_problem',
     });
   }

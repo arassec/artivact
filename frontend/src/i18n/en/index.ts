@@ -77,11 +77,14 @@ export default {
     favorites: "Favorites",
     noFavorites: "No favorites yet",
     removeFavorite: "Remove from favorites",
+    copyProperties: "Copy properties",
     messages: {
       userDataFailed: "Loading user data failed!",
       logoutFailed: "Logout failed!",
       favoriteRemoved: "Favorite removed",
       favoriteRemoveFailed: "Failed to remove favorite",
+      propertiesCopied: "Properties copied to clipboard",
+      propertiesCopyFailed: "Failed to copy properties",
     },
   },
 
@@ -307,6 +310,7 @@ export default {
         addTag: "Add tag to item",
         removeTag: "Remove tag from item",
         deleteModel: "Deletes the model from the item",
+        pasteProperties: "Paste properties from favorites",
       },
     },
     tab: {
@@ -328,6 +332,10 @@ export default {
     editor: {
       title: "Title",
       description: "Description",
+    },
+    messages: {
+      propertiesPasted: "Properties pasted successfully",
+      propertiesPasteFailed: "No properties available to paste",
     },
   },
 

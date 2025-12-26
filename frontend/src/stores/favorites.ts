@@ -1,11 +1,12 @@
 import {defineStore} from 'pinia';
-import {FavoriteItemData} from '../components/artivact-models';
+import {FavoriteItemData, TranslatableString} from '../components/artivact-models';
 import {api} from '../boot/axios';
 
 export const useFavoritesStore = defineStore('favorites', {
   state: () => ({
     favorites: [] as FavoriteItemData[],
-    loaded: false
+    loaded: false,
+    copiedProperties: null as Record<string, TranslatableString> | null
   }),
 
   getters: {
@@ -14,6 +15,9 @@ export const useFavoritesStore = defineStore('favorites', {
     },
     isFavorite: (state) => (itemId: string) => {
       return state.favorites.some(f => f.itemId === itemId);
+    },
+    getCopiedProperties(state) {
+      return state.copiedProperties;
     }
   },
 
@@ -72,6 +76,10 @@ export const useFavoritesStore = defineStore('favorites', {
         console.error('Failed to check favorite status:', error);
         return false;
       }
+    },
+
+    copyProperties(properties: Record<string, TranslatableString>) {
+      this.copiedProperties = JSON.parse(JSON.stringify(properties));
     }
   }
 });
