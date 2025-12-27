@@ -3,6 +3,18 @@
     <div class="col items-center sticky gt-sm">
       <div class="absolute-top-right q-ma-md">
         <q-btn
+          v-if="tabRef == 'properties'"
+          data-test="paste-properties-button"
+          round
+          color="primary"
+          icon="content_paste"
+          class="main-nav-button q-mr-sm"
+          @click="pasteProperties"
+          :disable="!favoritesStore.getCopiedProperties"
+        >
+          <q-tooltip>{{ $t('ItemEditPage.button.tooltip.pasteProperties') }}</q-tooltip>
+        </q-btn>
+        <q-btn
           data-test="close-button"
           round
           color="primary"
@@ -281,7 +293,7 @@ const userdataStore = useUserdataStore();
 const profilesStore = useProfilesStore();
 const wizzardStore = useWizzardStore();
 const peripheralsConfigStore = usePeripheralsConfigStore();
-const fagoritesStore = useFavoritesStore();
+const favoritesStore = useFavoritesStore();
 
 const itemDataRef = ref<ItemDetails>();
 const propertiesDataRef = ref();
@@ -478,7 +490,7 @@ function saveItemIfNecessary(exitEditMode: boolean) {
   let currentPageContentJson = JSON.stringify(itemDataRef.value);
   if (currentPageContentJson !== originalItemJson) {
     saveItem(exitEditMode);
-  } else if (exitEditMode) {
+  } else if (exitEditMode && itemDataRef.value) {
     router.push('/item/' + itemDataRef.value.id);
   }
 }
@@ -489,7 +501,7 @@ function saveItem(exitEditMode: boolean) {
     .put('/api/item', item)
     .then(() => {
       originalItemJson = JSON.stringify(itemDataRef.value);
-      fagoritesStore.loadFavorites();
+      favoritesStore.loadFavorites();
       quasar.notify({
         color: 'positive',
         position: 'bottom',
@@ -498,7 +510,7 @@ function saveItem(exitEditMode: boolean) {
         }),
         icon: 'done',
       });
-      if (exitEditMode) {
+      if (exitEditMode && item) {
         router.push('/item/' + item.id);
       }
     })
@@ -517,6 +529,36 @@ function saveItem(exitEditMode: boolean) {
 function exitEditMode() {
   breadcrumbsStore.removeLastBreadcrumb();
   saveItemIfNecessary(true);
+}
+
+function pasteProperties() {
+  const copiedProperties = favoritesStore.getCopiedProperties;
+
+  if (copiedProperties && itemDataRef.value) {
+    // Deep copy the properties to avoid reference issues
+    const propertiesToPaste = JSON.parse(JSON.stringify(copiedProperties));
+
+    // Merge copied properties into current item properties by creating a new object reference
+    // This forces Vue to detect the change and update the UI immediately
+    itemDataRef.value.properties = {
+      ...itemDataRef.value.properties,
+      ...propertiesToPaste
+    };
+
+    quasar.notify({
+      color: 'positive',
+      position: 'bottom',
+      message: i18n.t('ItemEditPage.messages.propertiesPasted'),
+      icon: 'content_paste',
+    });
+  } else {
+    quasar.notify({
+      color: 'negative',
+      position: 'bottom',
+      message: i18n.t('ItemEditPage.messages.propertiesPasteFailed'),
+      icon: 'report_problem',
+    });
+  }
 }
 
 onBeforeRouteLeave((to, from, next) => {

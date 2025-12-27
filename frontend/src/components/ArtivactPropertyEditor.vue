@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, PropType, Ref, ref, toRef} from 'vue';
+import {computed, PropType, Ref, ref, toRef, watch} from 'vue';
 import {Property, SelectboxModel, TranslatableString} from './artivact-models';
 import {translate} from './artivact-utils';
 import ArtivactRestrictedTranslatableItemEditor from '../components/ArtivactRestrictedTranslatableItemEditor.vue';
@@ -85,6 +85,13 @@ const availableOptions = computed(() => {
     });
   });
   return options;
+});
+
+watch(propertiesRef, () => {
+  enteredValueRef.value = propertiesRef.value[propertyRef.value.id];
+  selectedValueRef.value = availableOptions.value.find((option) => {
+    return option.value === (propertiesRef.value[propertyRef.value.id] ? propertiesRef.value[propertyRef.value.id].value : undefined);
+  });
 });
 
 </script>

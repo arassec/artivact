@@ -77,11 +77,14 @@ export default {
     favorites: 'Favoriten',
     noFavorites: 'Noch keine Favoriten',
     removeFavorite: 'Von Favoriten entfernen',
+    copyProperties: 'Eigenschaften kopieren',
     messages: {
       userDataFailed: 'Laden der Benutzerdaten fehlgeschlagen!',
       logoutFailed: 'Logout fehlgeschlagen!',
       favoriteRemoved: 'Favorit entfernt',
       favoriteRemoveFailed: 'Entfernen des Favoriten fehlgeschlagen',
+      propertiesCopied: 'Eigenschaften in Zwischenablage kopiert',
+      propertiesCopyFailed: 'Kopieren der Eigenschaften fehlgeschlagen',
     },
   },
 
@@ -299,6 +302,7 @@ export default {
         addTag: 'Tag zu Objekt hinzufügen',
         removeTag: 'Tag von Objekt entfernen',
         deleteModel: 'Löscht das 3D-Modell vom Objekt',
+        pasteProperties: 'Eigenschaften von Favoriten einfügen',
       },
     },
     tab: {
@@ -320,6 +324,10 @@ export default {
     editor: {
       title: 'Titel',
       description: 'Beschreibung',
+    },
+    messages: {
+      propertiesPasted: 'Eigenschaften erfolgreich eingefügt',
+      propertiesPasteFailed: 'Keine Eigenschaften zum Einfügen verfügbar',
     },
   },
 
