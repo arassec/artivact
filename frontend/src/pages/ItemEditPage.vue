@@ -533,7 +533,6 @@ function exitEditMode() {
 
 function pasteProperties() {
   const copiedProperties = favoritesStore.getCopiedProperties;
-  const item = itemDataRef.value; // Lokale Referenz behebt TS-Fehler
 
   if (copiedProperties && itemDataRef.value) {
     // Deep copy the properties to avoid reference issues
