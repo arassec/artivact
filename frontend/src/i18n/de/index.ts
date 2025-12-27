@@ -1105,6 +1105,7 @@ export default {
       textPositionTop: 'Bilder unter dem Text',
       textPositionLeft: 'Bilder rechts vom Text',
       textPositionRight: 'Bilder links vom Text',
+      stretchImages: "Bilder skalieren um den verfügbaren Platz auszufüllen",
     },
   },
 

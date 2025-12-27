@@ -46,6 +46,7 @@ export interface ImageGalleryWidgetData extends Widget {
   textPosition: ImageGalleryWidgetTextPosition;
   iconMode: boolean;
   hideBorder: boolean;
+  stretchImages: boolean;
 }
 
 export interface ButtonsWidgetData extends Widget {

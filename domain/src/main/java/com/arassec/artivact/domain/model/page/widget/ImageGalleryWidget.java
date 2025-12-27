@@ -55,6 +55,11 @@ public class ImageGalleryWidget extends Widget implements FileProcessingWidget {
     private boolean hideBorder;
 
     /**
+     * If set to {@code true}, the widget's images will be stretched to fill the available space.
+     */
+    private boolean stretchImages;
+
+    /**
      * Creates a new instance.
      */
     public ImageGalleryWidget() {

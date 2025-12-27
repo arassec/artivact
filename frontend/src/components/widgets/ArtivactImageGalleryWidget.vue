@@ -27,7 +27,11 @@
           <q-carousel
             v-model="slide"
             v-model:fullscreen="fullscreen"
-            :class="!widgetDataRef.hideBorder ? 'shadow-1 rounded-borders' : ''"
+            :class="
+              !widgetDataRef.hideBorder
+                ? 'shadow-1 rounded-borders ' + fullscreen ? '' : 'bg-transparent'
+                : fullscreen ? '' : 'bg-transparent'
+            "
             transition-prev="slide-right"
             transition-next="slide-left"
             :height="widgetDataRef.iconMode && !fullscreen ? '200px' : '500px'"
@@ -55,7 +59,7 @@
             >
               <q-img
                 v-if="!fullscreen"
-                class="fit"
+                class="fit bg-transparent"
                 :src="
                   '/api/page/widget/' +
                   widgetDataRef.id +
@@ -64,7 +68,7 @@
                   (inEditMode ? '/wip' : '') +
                   '?imageSize=DETAIL'
                 "
-                fit="cover"
+                :fit="widgetDataRef.stretchImages ? 'fill' : 'cover'"
               />
               <q-img
                 class="fit"
@@ -159,6 +163,12 @@
               :label="$t('ImageGalleryWidget.label.hideBorder')"
             >
             </q-checkbox>
+            <q-checkbox
+              v-model="widgetDataRef.stretchImages"
+              class="q-ml-md col full-height"
+              :label="$t('ImageGalleryWidget.label.stretchImages')"
+            >
+            </q-checkbox>
           </div>
         </div>
 
@@ -181,6 +191,7 @@
                   @click="deleteImage(element)"
                 />
                 <q-img
+                  class="draggable"
                   group="widget-image-preview"
                   :src="
                     '/api/page/widget/' +
@@ -280,7 +291,7 @@ function getCarouselClasses(): string {
     } else if (
       widgetDataRef.value.textPosition === ImageGalleryWidgetTextPosition.RIGHT
     ) {
-      classes += ' q-pa-md q-mt-md';
+      classes += ' q-pr-md ';
     }
     if (widgetDataRef.value.iconMode) {
       classes += ' col-3';
@@ -340,7 +351,7 @@ async function saveWidgetBeforeUpload() {
   z-index: 2;
 }
 
-.q-carousel:hover {
+.draggable:hover {
   cursor: pointer;
 }
 </style>

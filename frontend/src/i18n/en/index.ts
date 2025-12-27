@@ -1125,6 +1125,7 @@ export default {
       textPositionTop: "Show images below text",
       textPositionLeft: "Show images right of text",
       textPositionRight: "Show images left of text",
+      stretchImages: "Scale images to fit available space",
     },
   },
 
