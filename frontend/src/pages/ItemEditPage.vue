@@ -3,6 +3,18 @@
     <div class="col items-center sticky gt-sm">
       <div class="absolute-top-right q-ma-md">
         <q-btn
+          v-if="tabRef == 'properties'"
+          data-test="paste-properties-button"
+          round
+          color="primary"
+          icon="content_paste"
+          class="main-nav-button q-mr-sm"
+          @click="pasteProperties"
+          :disable="!favoritesStore.getCopiedProperties"
+        >
+          <q-tooltip>{{ $t('ItemEditPage.button.tooltip.pasteProperties') }}</q-tooltip>
+        </q-btn>
+        <q-btn
           data-test="close-button"
           round
           color="primary"
@@ -206,18 +218,6 @@
 
           <!-- PROPERTIES -->
           <div v-show="tabRef == 'properties'">
-            <div class="q-mb-md">
-              <q-btn
-                data-test="paste-properties-button"
-                color="primary"
-                icon="content_paste"
-                :label="$t('ItemEditPage.button.tooltip.pasteProperties')"
-                @click="pasteProperties"
-                :disable="!favoritesStore.getCopiedProperties"
-              >
-                <q-tooltip>{{ $t('ItemEditPage.button.tooltip.pasteProperties') }}</q-tooltip>
-              </q-btn>
-            </div>
             <div v-if="propertiesDataRef && itemDataRef">
               <artivact-property-category-editor
                 v-for="(category, index) in propertiesDataRef"
@@ -490,7 +490,7 @@ function saveItemIfNecessary(exitEditMode: boolean) {
   let currentPageContentJson = JSON.stringify(itemDataRef.value);
   if (currentPageContentJson !== originalItemJson) {
     saveItem(exitEditMode);
-  } else if (exitEditMode) {
+  } else if (exitEditMode && itemDataRef.value) {
     router.push('/item/' + itemDataRef.value.id);
   }
 }
@@ -510,7 +510,7 @@ function saveItem(exitEditMode: boolean) {
         }),
         icon: 'done',
       });
-      if (exitEditMode) {
+      if (exitEditMode && item) {
         router.push('/item/' + item.id);
       }
     })
@@ -533,14 +533,18 @@ function exitEditMode() {
 
 function pasteProperties() {
   const copiedProperties = favoritesStore.getCopiedProperties;
+  const item = itemDataRef.value; // Lokale Referenz behebt TS-Fehler
+
   if (copiedProperties && itemDataRef.value) {
     // Deep copy the properties to avoid reference issues
     const propertiesToPaste = JSON.parse(JSON.stringify(copiedProperties));
-    
-    // Merge copied properties into current item properties
-    Object.keys(propertiesToPaste).forEach(key => {
-      itemDataRef.value.properties[key] = propertiesToPaste[key];
-    });
+
+    // Merge copied properties into current item properties by creating a new object reference
+    // This forces Vue to detect the change and update the UI immediately
+    itemDataRef.value.properties = {
+      ...itemDataRef.value.properties,
+      ...propertiesToPaste
+    };
 
     quasar.notify({
       color: 'positive',
