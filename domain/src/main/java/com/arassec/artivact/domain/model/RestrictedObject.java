@@ -28,6 +28,11 @@ public interface RestrictedObject {
         if (roles == null) {
             return true; // restrictions, but user has no roles
         }
+        /**
+         * Returns the restrictions.
+         *
+         * @return The result.
+         */
         return getRestrictions().stream().noneMatch(roles::contains);
     }
 

@@ -4,6 +4,9 @@ import com.arassec.artivact.domain.model.exchange.ImportContext;
 
 import java.nio.file.Path;
 
+/**
+ * Use case for import item operations.
+ */
 public interface ImportItemUseCase {
 
     /**
@@ -21,6 +24,12 @@ public interface ImportItemUseCase {
      */
     void importItem(Path contentExport);
 
+    /**
+     * Imports item.
+     *
+     * @param importContext The import context.
+     * @param itemId The item ID.
+     */
     void importItem(ImportContext importContext, String itemId);
 
 }

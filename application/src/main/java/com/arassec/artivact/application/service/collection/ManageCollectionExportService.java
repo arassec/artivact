@@ -64,10 +64,19 @@ public class ManageCollectionExportService
      */
     private final CollectionExportRepository collectionExportRepository;
 
+    /**
+     * Use case for load tags configuration.
+     */
     private final LoadTagsConfigurationUseCase loadTagsConfigurationUseCase;
 
+    /**
+     * Use case for load properties configuration.
+     */
     private final LoadPropertiesConfigurationUseCase loadPropertiesConfigurationUseCase;
 
+    /**
+     * Use case for load menu.
+     */
     private final LoadMenuUseCase loadMenuUseCase;
 
     /**
@@ -75,10 +84,19 @@ public class ManageCollectionExportService
      */
     private final JsonMapper jsonMapper;
 
+    /**
+     * Use case for export collection.
+     */
     private final ExportCollectionUseCase exportCollectionUseCase;
 
+    /**
+     * Use case for use project dirs.
+     */
     private final UseProjectDirsUseCase useProjectDirsUseCase;
 
+    /**
+     * Use case for run background operation.
+     */
     private final RunBackgroundOperationUseCase runBackgroundOperationUseCase;
 
     /**

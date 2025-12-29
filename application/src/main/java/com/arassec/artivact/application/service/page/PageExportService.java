@@ -31,19 +31,37 @@ import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.SEARCH_
 @Slf4j
 @Service
 @RequiredArgsConstructor
+/**
+ * Service for page export.
+ */
 public class PageExportService extends BaseExportService implements ExportPageUseCase {
 
     @Getter
+    /**
+     * The json mapper.
+     */
     private final JsonMapper jsonMapper;
 
     @Getter
+    /**
+     * Repository for file.
+     */
     private final FileRepository fileRepository;
 
     @Getter
+    /**
+     * Use case for use project dirs.
+     */
     private final UseProjectDirsUseCase useProjectDirsUseCase;
 
+    /**
+     * Use case for export item.
+     */
     private final ExportItemUseCase exportItemUseCase;
 
+    /**
+     * Use case for search items.
+     */
     private final SearchItemsUseCase searchItemsUseCase;
 
     /**

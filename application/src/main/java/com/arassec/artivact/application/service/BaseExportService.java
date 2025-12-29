@@ -27,8 +27,14 @@ public abstract class BaseExportService {
      */
     public abstract JsonMapper getJsonMapper();
 
+    /**
+     * Returns the file repository.
+     */
     public abstract FileRepository getFileRepository();
 
+    /**
+     * Returns the use project dirs use case.
+     */
     public abstract UseProjectDirsUseCase getUseProjectDirsUseCase();
 
     /**

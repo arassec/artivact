@@ -14,6 +14,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CreateModelParams {
 
+    /**
+     * The ID of the model creator peripheral configuration.
+     */
     private String modelCreatorPeripheralConfigId;
 
 }

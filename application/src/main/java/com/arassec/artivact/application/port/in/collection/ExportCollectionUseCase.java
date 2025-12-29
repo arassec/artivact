@@ -7,6 +7,9 @@ import com.arassec.artivact.domain.model.menu.Menu;
 
 import java.nio.file.Path;
 
+/**
+ * Use case for export collection operations.
+ */
 public interface ExportCollectionUseCase {
 
 

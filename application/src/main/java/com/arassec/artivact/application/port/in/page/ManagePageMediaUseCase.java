@@ -5,6 +5,9 @@ import com.arassec.artivact.domain.model.page.PageContent;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.web.multipart.MultipartFile;
 
+/**
+ * Use case for manage page media operations.
+ */
 public interface ManagePageMediaUseCase {
 
     /**

@@ -48,6 +48,11 @@ public class LuceneSearchGateway implements SearchGateway {
     private IndexWriter indexWriter;
 
 
+    /**
+     * Performs lucene search gateway operation.
+     *
+     * @return The result.
+     */
     public LuceneSearchGateway(FileRepository fileRepository,
                                UseProjectDirsUseCase useProjectDirsUseCase) {
         this.fileRepository = fileRepository;

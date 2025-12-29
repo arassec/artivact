@@ -31,25 +31,52 @@ import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.ITEM_EX
 @Slf4j
 @Service
 @RequiredArgsConstructor
+/**
+ * Service for item export.
+ */
 public class ItemExportService extends BaseExportService implements ExportItemUseCase {
 
     @Getter
+    /**
+     * Use case for use project dirs.
+     */
     private final UseProjectDirsUseCase useProjectDirsUseCase;
 
     @Getter
+    /**
+     * The json mapper.
+     */
     private final JsonMapper jsonMapper;
 
     @Getter
+    /**
+     * Repository for file.
+     */
     private final FileRepository fileRepository;
 
+    /**
+     * Use case for load item.
+     */
     private final LoadItemUseCase loadItemUseCase;
 
+    /**
+     * Use case for export properties configuration.
+     */
     private final ExportPropertiesConfigurationUseCase exportPropertiesConfigurationUseCase;
 
+    /**
+     * Use case for export tags configuration.
+     */
     private final ExportTagsConfigurationUseCase exportTagsConfigurationUseCase;
 
+    /**
+     * Use case for load properties configuration.
+     */
     private final LoadPropertiesConfigurationUseCase loadPropertiesConfigurationUseCase;
 
+    /**
+     * Use case for load tags configuration.
+     */
     private final LoadTagsConfigurationUseCase loadTagsConfigurationUseCase;
 
     /**
@@ -58,6 +85,11 @@ public class ItemExportService extends BaseExportService implements ExportItemUs
     @Override
     public Path exportItem(String itemId) {
         Item item = loadItemUseCase.loadTranslated(itemId);
+        /**
+         * Exports item.
+         *
+         * @return The result.
+         */
         return exportItem(item, loadPropertiesConfigurationUseCase.loadPropertiesConfiguration(), loadTagsConfigurationUseCase.loadTagsConfiguration());
     }
 

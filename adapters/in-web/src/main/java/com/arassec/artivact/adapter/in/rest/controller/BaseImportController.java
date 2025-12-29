@@ -10,11 +10,20 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Optional;
 
+/**
+ * REST controller for base import.
+ */
 public abstract class BaseImportController extends BaseController {
 
 
+    /**
+     * Returns the use project dirs use case.
+     */
     protected abstract UseProjectDirsUseCase getUseProjectDirsUseCase();
 
+    /**
+     * Returns the file repository.
+     */
     protected abstract FileRepository getFileRepository();
 
     /**

@@ -2,6 +2,9 @@ package com.arassec.artivact.application.port.in.configuration;
 
 import com.arassec.artivact.domain.model.configuration.TagsConfiguration;
 
+/**
+ * Use case for load tags configuration operations.
+ */
 public interface LoadTagsConfigurationUseCase {
 
     /**

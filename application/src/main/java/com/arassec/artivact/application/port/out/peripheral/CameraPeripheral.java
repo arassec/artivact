@@ -4,6 +4,9 @@ import com.arassec.artivact.domain.model.peripheral.Peripheral;
 
 import java.nio.file.Path;
 
+/**
+ * Interface for camera peripheral.
+ */
 public interface CameraPeripheral extends Peripheral {
 
     /**

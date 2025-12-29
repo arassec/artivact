@@ -22,20 +22,44 @@ import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.*;
 
 @Service
 @RequiredArgsConstructor
+/**
+ * Service for menu import.
+ */
 public class MenuImportService implements ImportMenuUseCase {
 
+    /**
+     * The json mapper.
+     */
     private final JsonMapper jsonMapper;
 
+    /**
+     * Repository for file.
+     */
     private final FileRepository fileRepository;
 
+    /**
+     * Use case for use project dirs.
+     */
     private final UseProjectDirsUseCase useProjectDirsUseCase;
 
+    /**
+     * Use case for import page.
+     */
     private final ImportPageUseCase importPageUseCase;
 
+    /**
+     * Use case for save menu.
+     */
     private final SaveMenuUseCase saveMenuUseCase;
 
+    /**
+     * Use case for import properties configuration.
+     */
     private final ImportPropertiesConfigurationUseCase importPropertiesConfigurationUseCase;
 
+    /**
+     * Use case for import tags configuration.
+     */
     private final ImportTagsConfigurationUseCase importTagsConfigurationUseCase;
 
     /**

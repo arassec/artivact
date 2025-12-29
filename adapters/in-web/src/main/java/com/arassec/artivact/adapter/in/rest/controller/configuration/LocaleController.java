@@ -16,13 +16,25 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/locale")
 @Profile("e2e")
+/**
+ * REST controller for locale.
+ */
 public class LocaleController {
 
+    /**
+     * Use case for load appearance configuration.
+     */
     private final LoadAppearanceConfigurationUseCase loadAppearanceConfigurationUseCase;
 
+    /**
+     * Use case for save appearance configuration.
+     */
     private final SaveAppearanceConfigurationUseCase saveAppearanceConfigurationUseCase;
 
     @GetMapping("/{locale}")
+    /**
+     * Sets the application locale.
+     */
     public void setApplicationLocale(@PathVariable String locale) {
         AppearanceConfiguration appearanceConfiguration = loadAppearanceConfigurationUseCase.loadTranslatedAppearanceConfiguration();
         appearanceConfiguration.setApplicationLocale(locale);

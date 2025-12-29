@@ -54,6 +54,9 @@ public class ApplicationConfiguration {
 
     @Bean("backgroundOperationExecutorService")
     @ConditionalOnMissingBean(ExecutorService.class)
+    /**
+     * Performs executor service.
+     */
     public ExecutorService executorService() {
         return Executors.newFixedThreadPool(1);
     }

@@ -5,14 +5,23 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+/**
+ * Configuration for an external program peripheral.
+ */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class ExternalProgramPeripheralConfig extends PeripheralConfig {
 
+    /**
+     * The command to execute.
+     */
     private String command;
 
+    /**
+     * The arguments for the command.
+     */
     private String arguments;
 
 }

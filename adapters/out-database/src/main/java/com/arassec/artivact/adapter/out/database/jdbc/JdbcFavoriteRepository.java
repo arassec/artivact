@@ -20,6 +20,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class JdbcFavoriteRepository implements FavoriteRepository {
 
+    /**
+     * Repository for favorite entity.
+     */
     private final FavoriteEntityRepository favoriteEntityRepository;
 
     @Override

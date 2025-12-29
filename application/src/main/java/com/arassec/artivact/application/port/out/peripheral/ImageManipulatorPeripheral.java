@@ -5,6 +5,9 @@ import com.arassec.artivact.domain.model.peripheral.Peripheral;
 import java.nio.file.Path;
 import java.util.List;
 
+/**
+ * Interface for image manipulator peripheral.
+ */
 public interface ImageManipulatorPeripheral extends Peripheral {
 
     /**

@@ -2,6 +2,9 @@ package com.arassec.artivact.application.port.in.collection;
 
 import java.nio.file.Path;
 
+/**
+ * Use case for import collection operations.
+ */
 public interface ImportCollectionUseCase {
 
     /**

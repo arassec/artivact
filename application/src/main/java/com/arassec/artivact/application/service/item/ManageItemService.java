@@ -49,6 +49,9 @@ public class ManageItemService implements CreateItemUseCase,
      */
     private final ItemRepository itemRepository;
 
+    /**
+     * Use case for manage search index.
+     */
     private final ManageSearchIndexUseCase manageSearchIndexUseCase;
 
     /**
@@ -56,12 +59,24 @@ public class ManageItemService implements CreateItemUseCase,
      */
     private final FileRepository fileRepository;
 
+    /**
+     * Use case for use project dirs.
+     */
     private final UseProjectDirsUseCase useProjectDirsUseCase;
 
+    /**
+     * Use case for load tags configuration.
+     */
     private final LoadTagsConfigurationUseCase loadTagsConfigurationUseCase;
 
+    /**
+     * Use case for load properties configuration.
+     */
     private final LoadPropertiesConfigurationUseCase loadPropertiesConfigurationUseCase;
 
+    /**
+     * Repository for favorite.
+     */
     private final FavoriteRepository favoriteRepository;
 
     /**

@@ -27,21 +27,42 @@ import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.MENU_EX
 
 @Service
 @RequiredArgsConstructor
+/**
+ * Service for menu export.
+ */
 public class MenuExportService extends BaseExportService implements ExportMenuUseCase {
 
     @Getter
+    /**
+     * The json mapper.
+     */
     private final JsonMapper jsonMapper;
 
     @Getter
+    /**
+     * Repository for file.
+     */
     private final FileRepository fileRepository;
 
     @Getter
+    /**
+     * Use case for use project dirs.
+     */
     private final UseProjectDirsUseCase useProjectDirsUseCase;
 
+    /**
+     * Use case for load page content.
+     */
     private final LoadPageContentUseCase loadPageContentUseCase;
 
+    /**
+     * Use case for export page.
+     */
     private final ExportPageUseCase exportPageUseCase;
 
+    /**
+     * Use case for load menu.
+     */
     private final LoadMenuUseCase loadMenuUseCase;
 
     /**

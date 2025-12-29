@@ -1,5 +1,8 @@
 package com.arassec.artivact.application.port.in.collection;
 
+/**
+ * Use case for delete collection export cover picture operations.
+ */
 public interface DeleteCollectionExportCoverPictureUseCase {
 
     /**

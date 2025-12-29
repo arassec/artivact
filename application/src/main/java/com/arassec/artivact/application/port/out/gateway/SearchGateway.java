@@ -4,6 +4,9 @@ import com.arassec.artivact.domain.model.item.Item;
 
 import java.util.List;
 
+/**
+ * Interface for search gateway.
+ */
 public interface SearchGateway {
 
     /**

@@ -3,6 +3,9 @@ package com.arassec.artivact.application.port.in.page;
 import com.arassec.artivact.domain.model.exchange.ExportContext;
 import com.arassec.artivact.domain.model.page.PageContent;
 
+/**
+ * Use case for export page operations.
+ */
 public interface ExportPageUseCase {
 
     /**

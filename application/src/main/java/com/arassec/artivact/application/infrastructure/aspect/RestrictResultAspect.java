@@ -42,6 +42,11 @@ public class RestrictResultAspect {
     public Object restrict(ProceedingJoinPoint joinPoint) throws Throwable {
         Object result = joinPoint.proceed();
         Set<String> roles = getRoles(SecurityContextHolder.getContext().getAuthentication());
+        /**
+         * Performs restrict if required operation.
+         *
+         * @return The result.
+         */
         return restrictIfRequired(result, roles);
     }
 
@@ -56,8 +61,18 @@ public class RestrictResultAspect {
         if (object instanceof RestrictedObject restrictedObject && (restrictedObject.isForbidden(roles))) {
             return null;
         } else if (object instanceof Collection<?> collectionToFilter) {
+            /**
+             * Performs filter collection operation.
+             *
+             * @return The result.
+             */
             return filterCollection(collectionToFilter, roles);
         }
+        /**
+         * Performs restrict properties if required operation.
+         *
+         * @return The result.
+         */
         return restrictPropertiesIfRequired(object, roles);
     }
 

@@ -2,6 +2,9 @@ package com.arassec.artivact.application.port.in.collection;
 
 import java.io.InputStream;
 
+/**
+ * Use case for save collection export cover picture operations.
+ */
 public interface SaveCollectionExportCoverPictureUseCase {
 
     /**

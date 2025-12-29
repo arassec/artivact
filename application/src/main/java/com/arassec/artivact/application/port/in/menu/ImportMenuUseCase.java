@@ -4,6 +4,9 @@ import com.arassec.artivact.domain.model.exchange.ImportContext;
 
 import java.nio.file.Path;
 
+/**
+ * Use case for import menu operations.
+ */
 public interface ImportMenuUseCase {
 
     /**

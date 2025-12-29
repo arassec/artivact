@@ -2,6 +2,9 @@ package com.arassec.artivact.application.port.in.collection;
 
 import java.io.InputStream;
 
+/**
+ * Use case for read collection export file operations.
+ */
 public interface ReadCollectionExportFileUseCase {
 
     /**

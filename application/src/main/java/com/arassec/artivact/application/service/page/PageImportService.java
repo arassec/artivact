@@ -28,18 +28,39 @@ import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.SEARCH_
 @Slf4j
 @Service
 @RequiredArgsConstructor
+/**
+ * Service for page import.
+ */
 public class PageImportService implements ImportPageUseCase {
 
+    /**
+     * The json mapper.
+     */
     private final JsonMapper jsonMapper;
 
+    /**
+     * Repository for file.
+     */
     private final FileRepository fileRepository;
 
+    /**
+     * Use case for use project dirs.
+     */
     private final UseProjectDirsUseCase useProjectDirsUseCase;
 
+    /**
+     * Use case for import item.
+     */
     private final ImportItemUseCase importItemUseCase;
 
+    /**
+     * Use case for save page content.
+     */
     private final SavePageContentUseCase savePageContentUseCase;
 
+    /**
+     * Use case for update page alias.
+     */
     private final UpdatePageAliasUseCase updatePageAliasUseCase;
 
     /**

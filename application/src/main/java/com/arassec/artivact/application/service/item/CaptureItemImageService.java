@@ -38,16 +38,34 @@ import java.util.List;
 public class CaptureItemImageService implements CaptureItemImageUseCase {
 
     @Getter
+    /**
+     * Use case for use project dirs.
+     */
     private final UseProjectDirsUseCase useProjectDirsUseCase;
 
+    /**
+     * Use case for run background operation.
+     */
     private final RunBackgroundOperationUseCase runBackgroundOperationUseCase;
 
+    /**
+     * Use case for load item.
+     */
     private final LoadItemUseCase loadItemUseCase;
 
+    /**
+     * Use case for save item.
+     */
     private final SaveItemUseCase saveItemUseCase;
 
+    /**
+     * Repository for file.
+     */
     private final FileRepository fileRepository;
 
+    /**
+     * Use case for load adapter configuration.
+     */
     private final LoadPeripheralsConfigurationUseCase loadAdapterConfigurationUseCase;
 
     /**
@@ -108,6 +126,11 @@ public class CaptureItemImageService implements CaptureItemImageUseCase {
         if (captureImagesParams.isRemoveBackgrounds() && imageManipulatorPeripheral != null) {
             imageManipulatorPeripheral.teardown();
             fileRepository.delete(targetFile);
+            /**
+             * Performs rename manipulated images operation.
+             *
+             * @return The result.
+             */
             return renameManipulatedImages(List.of(targetFile), imageManipulatorPeripheral.getModifiedImages()).getFirst();
         }
 

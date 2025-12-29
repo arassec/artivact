@@ -1,5 +1,8 @@
 package com.arassec.artivact.application.port.in.page;
 
+/**
+ * Use case for update page alias operations.
+ */
 public interface UpdatePageAliasUseCase {
 
     /**

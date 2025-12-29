@@ -44,29 +44,83 @@ import java.util.Map;
 @RequestMapping("/api/configuration")
 public class ConfigurationController extends BaseController {
 
+    /**
+     * Use case for load properties configuration.
+     */
     private final LoadPropertiesConfigurationUseCase loadPropertiesConfigurationUseCase;
 
+    /**
+     * Use case for save properties configuration.
+     */
     private final SavePropertiesConfigurationUseCase savePropertiesConfigurationUseCase;
 
+    /**
+     * Use case for export properties configuration.
+     */
     private final ExportPropertiesConfigurationUseCase exportPropertiesConfigurationUseCase;
 
+    /**
+     * Use case for export tags configuration.
+     */
     private final ExportTagsConfigurationUseCase exportTagsConfigurationUseCase;
 
+    /**
+     * Use case for load appearance configuration.
+     */
     private final LoadAppearanceConfigurationUseCase loadAppearanceConfigurationUseCase;
 
+    /**
+     * Use case for load exchange configuration.
+     */
     private final LoadExchangeConfigurationUseCase loadExchangeConfigurationUseCase;
 
+    /**
+     * Use case for check runtime configuration.
+     */
     private final CheckRuntimeConfigurationUseCase checkRuntimeConfigurationUseCase;
+    /**
+     * Use case for load tags configuration.
+     */
     private final LoadTagsConfigurationUseCase loadTagsConfigurationUseCase;
+    /**
+     * Use case for save appearance configuration.
+     */
     private final SaveAppearanceConfigurationUseCase saveAppearanceConfigurationUseCase;
+    /**
+     * Use case for save tags configuration.
+     */
     private final SaveTagsConfigurationUseCase saveTagsConfigurationUseCase;
+    /**
+     * Use case for save exchange configuration.
+     */
     private final SaveExchangeConfigurationUseCase saveExchangeConfigurationUseCase;
+    /**
+     * Use case for save peripheral configuration.
+     */
     private final SavePeripheralConfigurationUseCase savePeripheralConfigurationUseCase;
+    /**
+     * Use case for load peripheral configuration.
+     */
     private final LoadPeripheralsConfigurationUseCase loadPeripheralConfigurationUseCase;
+    /**
+     * Use case for cleanup export files.
+     */
     private final CleanupExportFilesUseCase cleanupExportFilesUseCase;
+    /**
+     * Use case for import properties configuration.
+     */
     private final ImportPropertiesConfigurationUseCase importPropertiesConfigurationUseCase;
+    /**
+     * Use case for import tags configuration.
+     */
     private final ImportTagsConfigurationUseCase importTagsConfigurationUseCase;
+    /**
+     * Use case for test peripheral configuration.
+     */
     private final TestPeripheralsConfigurationUseCase testPeripheralConfigurationUseCase;
+    /**
+     * Use case for scan peripheral configuration.
+     */
     private final ScanPeripheralsConfigurationUseCase scanPeripheralConfigurationUseCase;
 
     /**
@@ -92,6 +146,11 @@ public class ConfigurationController extends BaseController {
         applicationSettings.setColorTheme(appearanceConfiguration.getColorTheme());
         applicationSettings.setLicense(appearanceConfiguration.getLicense());
         applicationSettings.setProfiles(
+                /**
+                 * Performs profiles operation.
+                 *
+                 * @return The result.
+                 */
                 new Profiles(checkRuntimeConfigurationUseCase.isDesktopProfileEnabled(), checkRuntimeConfigurationUseCase.isE2eProfileEnabled()));
         applicationSettings.setAvailableRoles(List.of(Roles.ROLE_ADMIN, Roles.ROLE_USER));
 

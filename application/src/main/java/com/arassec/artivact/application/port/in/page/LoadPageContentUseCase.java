@@ -7,6 +7,9 @@ import com.arassec.artivact.domain.model.page.PageIdAndAlias;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * Use case for load page content operations.
+ */
 public interface LoadPageContentUseCase {
 
     /**

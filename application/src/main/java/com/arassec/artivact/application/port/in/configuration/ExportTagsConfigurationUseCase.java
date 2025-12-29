@@ -5,6 +5,9 @@ import com.arassec.artivact.domain.model.exchange.ExportContext;
 
 import java.nio.file.Path;
 
+/**
+ * Use case for export tags configuration operations.
+ */
 public interface ExportTagsConfigurationUseCase {
 
     /**

@@ -31,21 +31,39 @@ import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.TAGS_EX
 @Slf4j
 @Service
 @RequiredArgsConstructor
+/**
+ * Service for configuration export.
+ */
 public class ConfigurationExportService extends BaseExportService
         implements ExportPropertiesConfigurationUseCase,
         ExportTagsConfigurationUseCase {
 
     @Getter
+    /**
+     * The json mapper.
+     */
     private final JsonMapper jsonMapper;
 
     @Getter
+    /**
+     * Repository for file.
+     */
     private final FileRepository fileRepository;
 
     @Getter
+    /**
+     * Use case for use project dirs.
+     */
     private final UseProjectDirsUseCase useProjectDirsUseCase;
 
+    /**
+     * Use case for load tags configuration.
+     */
     private final LoadTagsConfigurationUseCase loadTagsConfigurationUseCase;
 
+    /**
+     * Use case for load properties configuration.
+     */
     private final LoadPropertiesConfigurationUseCase loadPropertiesConfigurationUseCase;
 
     /**

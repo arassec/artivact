@@ -5,6 +5,9 @@ import com.arassec.artivact.domain.model.property.PropertyCategory;
 
 import java.util.List;
 
+/**
+ * Use case for load properties configuration operations.
+ */
 public interface LoadPropertiesConfigurationUseCase {
 
     /**

@@ -20,10 +20,19 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ScanPeripheralsConfigurationService implements ScanPeripheralsConfigurationUseCase {
 
+    /**
+     * Use case for run background operation.
+     */
     private final RunBackgroundOperationUseCase runBackgroundOperationUseCase;
 
+    /**
+     * Use case for load peripherals configuration.
+     */
     private final LoadPeripheralsConfigurationUseCase loadPeripheralsConfigurationUseCase;
 
+    /**
+     * Use case for save peripheral configuration.
+     */
     private final SavePeripheralConfigurationUseCase savePeripheralConfigurationUseCase;
 
     /**

@@ -28,24 +28,54 @@ import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.*;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+/**
+ * Service for item import.
+ */
 public class ItemImportService implements ImportItemUseCase {
 
+    /**
+     * Use case for manage item images.
+     */
     private final ManageItemImagesUseCase manageItemImagesUseCase;
 
+    /**
+     * Use case for manage item models.
+     */
     private final ManageItemModelsUseCase manageItemModelsUseCase;
 
+    /**
+     * Use case for save item.
+     */
     private final SaveItemUseCase saveItemUseCase;
 
+    /**
+     * Use case for load account.
+     */
     private final LoadAccountUseCase loadAccountUseCase;
 
+    /**
+     * The json mapper.
+     */
     private final JsonMapper jsonMapper;
 
+    /**
+     * Repository for file.
+     */
     private final FileRepository fileRepository;
 
+    /**
+     * Use case for use project dirs.
+     */
     private final UseProjectDirsUseCase useProjectDirsUseCase;
 
+    /**
+     * Use case for import properties configuration.
+     */
     private final ImportPropertiesConfigurationUseCase importPropertiesConfigurationUseCase;
 
+    /**
+     * Use case for import tags configuration.
+     */
     private final ImportTagsConfigurationUseCase importTagsConfigurationUseCase;
 
     /**
