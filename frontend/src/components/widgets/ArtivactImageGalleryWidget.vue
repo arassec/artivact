@@ -29,7 +29,7 @@
             v-model:fullscreen="fullscreen"
             :class="
               !widgetDataRef.hideBorder
-                ? 'shadow-1 rounded-borders ' + fullscreen ? '' : 'bg-transparent'
+                ? 'shadow-1 rounded-borders image-border ' + (fullscreen ? '' : 'bg-transparent')
                 : fullscreen ? '' : 'bg-transparent'
             "
             transition-prev="slide-right"
@@ -343,6 +343,10 @@ async function saveWidgetBeforeUpload() {
   flex-wrap: wrap;
   gap: 10px;
   justify-content: center;
+}
+
+.image-border {
+  border: 1px solid var(--q-primary);
 }
 
 .delete-image-button {
