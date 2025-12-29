@@ -25,11 +25,11 @@ import java.util.Set;
 
 import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.MENU_EXCHANGE_FILE_SUFFIX;
 
-@Service
-@RequiredArgsConstructor
 /**
  * Service for menu export.
  */
+@Service
+@RequiredArgsConstructor
 public class MenuExportService extends BaseExportService implements ExportMenuUseCase {
 
     /**

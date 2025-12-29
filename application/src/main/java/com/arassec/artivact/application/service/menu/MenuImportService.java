@@ -20,11 +20,11 @@ import java.nio.file.Path;
 
 import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.*;
 
-@Service
-@RequiredArgsConstructor
 /**
  * Service for menu import.
  */
+@Service
+@RequiredArgsConstructor
 public class MenuImportService implements ImportMenuUseCase {
 
     /**
