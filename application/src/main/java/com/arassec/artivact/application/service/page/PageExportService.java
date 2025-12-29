@@ -42,16 +42,16 @@ public class PageExportService extends BaseExportService implements ExportPageUs
     @Getter
     private final JsonMapper jsonMapper;
 
-    @Getter
     /**
      * Repository for file.
      */
+    @Getter
     private final FileRepository fileRepository;
 
-    @Getter
     /**
      * Use case for use project dirs.
      */
+    @Getter
     private final UseProjectDirsUseCase useProjectDirsUseCase;
 
     /**

@@ -37,10 +37,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CaptureItemImageService implements CaptureItemImageUseCase {
 
-    @Getter
     /**
      * Use case for use project dirs.
      */
+    @Getter
     private final UseProjectDirsUseCase useProjectDirsUseCase;
 
     /**

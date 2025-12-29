@@ -39,10 +39,10 @@ import java.util.Optional;
  */
 public class CreateItemModelService implements CreateItemModelUseCase {
 
-    @Getter
     /**
      * Use case for use project dirs.
      */
+    @Getter
     private final UseProjectDirsUseCase useProjectDirsUseCase;
 
     /**

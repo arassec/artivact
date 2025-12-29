@@ -37,16 +37,16 @@ public class CollectionExportService extends BaseExportService implements Export
     @Getter
     private final FileRepository fileRepository;
 
-    @Getter
     /**
      * The json mapper.
      */
+    @Getter
     private final JsonMapper jsonMapper;
 
-    @Getter
     /**
      * Use case for use project dirs.
      */
+    @Getter
     private final UseProjectDirsUseCase useProjectDirsUseCase;
 
     /**

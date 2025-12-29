@@ -38,22 +38,22 @@ public class ConfigurationExportService extends BaseExportService
         implements ExportPropertiesConfigurationUseCase,
         ExportTagsConfigurationUseCase {
 
-    @Getter
     /**
      * The json mapper.
      */
+    @Getter
     private final JsonMapper jsonMapper;
 
-    @Getter
     /**
      * Repository for file.
      */
+    @Getter
     private final FileRepository fileRepository;
 
-    @Getter
     /**
      * Use case for use project dirs.
      */
+    @Getter
     private final UseProjectDirsUseCase useProjectDirsUseCase;
 
     /**

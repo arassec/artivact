@@ -35,16 +35,16 @@ import java.util.List;
 @RequestMapping("/api/item")
 public class ItemController extends BaseImportController {
 
-    @Getter
     /**
      * Use case for use project dirs.
      */
+    @Getter
     private final UseProjectDirsUseCase useProjectDirsUseCase;
 
-    @Getter
     /**
      * Repository for file.
      */
+    @Getter
     private final FileRepository fileRepository;
 
     /**

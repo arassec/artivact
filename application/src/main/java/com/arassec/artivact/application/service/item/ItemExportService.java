@@ -36,22 +36,22 @@ import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.ITEM_EX
  */
 public class ItemExportService extends BaseExportService implements ExportItemUseCase {
 
-    @Getter
     /**
      * Use case for use project dirs.
      */
+    @Getter
     private final UseProjectDirsUseCase useProjectDirsUseCase;
 
-    @Getter
     /**
      * The json mapper.
      */
+    @Getter
     private final JsonMapper jsonMapper;
 
-    @Getter
     /**
      * Repository for file.
      */
+    @Getter
     private final FileRepository fileRepository;
 
     /**
