@@ -10,12 +10,22 @@
   >
     <template v-slot:widget-content>
       <q-space/>
-      <div class="row full-width">
+      <div class="row full-width gt-sm">
         <div
           v-for="(buttonConfig, index) in widgetDataRef.buttonConfigs"
           :key="index"
           :class="'col-' + 12 / widgetDataRef.columns"
           class="flex justify-center"
+          :style="{ marginTop: index >= widgetDataRef.columns ? '16px' : '0' }"
+        >
+          <artivact-button :config="buttonConfig" :disabled="inEditMode"/>
+        </div>
+      </div>
+      <div class="row full-width lt-sm">
+        <div
+          v-for="(buttonConfig, index) in widgetDataRef.buttonConfigs"
+          :key="index"
+          class="col-12 flex justify-center q-mb-sm"
         >
           <artivact-button :config="buttonConfig" :disabled="inEditMode"/>
         </div>

@@ -64,7 +64,7 @@
           searchResultRef.data.length > 0
         "
         data-test="item-search-widget-results">
-        <div class="row">
+        <div class="row" :class="searchResultRef.data.length < 3 ? 'flex-center' : ''">
           <artivact-item-card
             :widget-id="widgetData.id"
             :artivact-card-data="resultEntry"

@@ -2,7 +2,6 @@
   <a :href="config.targetUrl">
     <q-btn
       :data-test="'button-' + config.label.value"
-      class="q-mb-md"
       no-caps
       :disable="disabled"
       :icon="

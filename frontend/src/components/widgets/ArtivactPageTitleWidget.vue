@@ -37,7 +37,7 @@
           </artivact-content>
         </template>
       </div>
-      <div class="lt-md full-width" v-if="widgetDataRef">
+      <div class="lt-md full-bleed" v-if="widgetDataRef">
         <div v-if="widgetDataRef && widgetDataRef.backgroundImage">
           <q-img
             :src="
@@ -48,6 +48,8 @@
               (inEditMode ? '/wip' : '') +
               '?imageSize=PAGE_TITLE'
             "
+            class="page-title-image-small"
+            fit="cover"
           >
             <div class="absolute-full flex flex-center page-title-small">
               <h2
@@ -157,6 +159,10 @@ function saveWidgetBeforeUpload() {
 
 .page-title-small {
   background: rgba(0, 0, 0, 0.25);
+}
+
+.page-title-image-small {
+  min-height: 12em;
 }
 
 .full-bleed {

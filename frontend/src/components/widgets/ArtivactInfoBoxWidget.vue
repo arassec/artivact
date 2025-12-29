@@ -10,16 +10,14 @@
   >
     <template v-slot:widget-content>
       <q-space/>
-
       <q-card :class="infoBoxStyle">
         <q-card-section class="text-white" v-if="widgetDataRef.heading">
-          <div class="av-text-h2">{{ translate(widgetDataRef.heading) }}</div>
+          <div class="av-text-h2 text-center">{{ translate(widgetDataRef.heading) }}</div>
           <template v-if="widgetDataRef.content">
-            <div v-html="formatMarkdown(translate(widgetDataRef.content))"/>
+            <div class="q-mt-sm" v-html="formatMarkdown(translate(widgetDataRef.content))"/>
           </template>
         </q-card-section>
       </q-card>
-
       <q-space/>
     </template>
 
@@ -85,8 +83,6 @@ const editingRef = ref(false);
 const localeStore = useLocaleStore();
 
 const widgetDataRef = toRef(props, 'widgetData');
-
-const infoBoxTypes = ['INFO', 'WARN', 'ALERT'];
 
 const infoBoxStyle = computed(() => {
   if (widgetDataRef.value.boxType === 'INFO') {

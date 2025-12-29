@@ -63,15 +63,16 @@
     <q-page-container>
       <q-page class="bg-accent" data-test="artivact-main-page">
         <router-view :key="$route.fullPath"/>
+        <div class="spacer"/>
       </q-page>
     </q-page-container>
+
   </q-layout>
 </template>
 
 <script setup lang="ts">
 import {onMounted} from 'vue';
 import {useQuasar} from 'quasar';
-import {api} from '../boot/axios';
 import {useUserdataStore} from '../stores/userdata';
 import {useLocaleStore} from '../stores/locale';
 import {useMenuStore} from '../stores/menu';
@@ -81,11 +82,11 @@ import {useI18n} from 'vue-i18n';
 import {useProfilesStore} from '../stores/profiles';
 import {useApplicationSettingsStore} from '../stores/application-settings';
 import {useFavoritesStore} from '../stores/favorites';
-import {useRouter} from 'vue-router';
+import {api} from "../boot/axios";
+import {AxiosResponse} from "axios";
 
 const quasar = useQuasar();
 const i18n = useI18n();
-const router = useRouter();
 const favoritesStore = useFavoritesStore();
 
 const userdataStore = useUserdataStore();
@@ -102,8 +103,8 @@ function loadApplicationLocale() {
 
 function loadMenus() {
   api
-    .get('/api/menu')
-    .then((response) => {
+    .get<any>('/api/menu')
+    .then((response: AxiosResponse) => {
       menuStore.setAvailableMenus(response.data);
     })
     .catch(() => {
@@ -120,8 +121,8 @@ function loadMenus() {
 
 function loadUserData() {
   api
-    .get('/api/configuration/public/user')
-    .then((response) => {
+    .get<any>('/api/configuration/public/user')
+    .then((response: AxiosResponse) => {
       userdataStore.setUserdata(response.data);
     })
     .catch(() => {
@@ -180,5 +181,9 @@ onMounted(() => {
 
 .cursor-pointer {
   cursor: pointer;
+}
+
+.spacer {
+  min-height: 10em;
 }
 </style>

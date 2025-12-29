@@ -13,7 +13,7 @@
         <h1 class="av-label-h1" v-if="widgetDataRef.heading">
           {{ translate(widgetDataRef.heading) }}
         </h1>
-        <div v-html="formatMarkdown(translate(widgetDataRef.content))"/>
+        <div class="formatted-text" v-html="formatMarkdown(translate(widgetDataRef.content))"/>
       </div>
     </template>
 
@@ -65,4 +65,10 @@ const widgetDataRef = toRef(props, 'widgetData');
 
 </script>
 
-<style scoped></style>
+<style scoped>
+
+.formatted-text {
+  margin-bottom: -15px;
+}
+
+</style>

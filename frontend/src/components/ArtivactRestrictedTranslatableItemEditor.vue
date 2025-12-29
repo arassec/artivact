@@ -34,7 +34,7 @@
         :type="textarea ? 'textarea' : 'text'"
         :autogrow="textarea"
         class="no-scroll column col-grow q-ml-md"
-        :disable="true"
+        :readonly="true"
         transition-show="slide-left"
         transition-hide="slide-right"
       />
