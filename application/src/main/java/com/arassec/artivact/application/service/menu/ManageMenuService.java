@@ -90,11 +90,6 @@ public class ManageMenuService
                     updatePageAliasUseCase.updatePageAlias(menuEntry.getTargetPageId(), menu.getTargetPageAlias()));
         });
 
-        /**
-         * Loads the translated restricted menus.
-         *
-         * @return The result.
-         */
         return loadTranslatedRestrictedMenus();
     }
 

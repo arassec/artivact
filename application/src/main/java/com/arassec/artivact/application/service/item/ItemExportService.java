@@ -85,11 +85,6 @@ public class ItemExportService extends BaseExportService implements ExportItemUs
     @Override
     public Path exportItem(String itemId) {
         Item item = loadItemUseCase.loadTranslated(itemId);
-        /**
-         * Exports item.
-         *
-         * @return The result.
-         */
         return exportItem(item, loadPropertiesConfigurationUseCase.loadPropertiesConfiguration(), loadTagsConfigurationUseCase.loadTagsConfiguration());
     }
 

@@ -98,11 +98,6 @@ public class ProjectDirService implements UseProjectDirsUseCase {
     private Path getAssetDir(String itemId, String assetSubDir) {
         var firstSubDir = getSubDir(itemId, 0);
         var secondSubDir = getSubDir(itemId, 1);
-        /**
-         * Returns the items dir.
-         *
-         * @return The result.
-         */
         return getItemsDir()
                 .resolve(firstSubDir)
                 .resolve(secondSubDir)

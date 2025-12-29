@@ -692,46 +692,16 @@ public class ManagePageService
 
             if (page.getPageContent().getMetaData() == null) {
                 page.getPageContent().setMetaData(new PageMetaData(
-                        /**
-                         * Performs translatable string operation.
-                         *
-                         * @return The result.
-                         */
                         new TranslatableString(appearanceConfiguration.getApplicationTitle()),
-                        /**
-                         * Performs translatable string operation.
-                         *
-                         * @return The result.
-                         */
                         new TranslatableString(""),
                         "",
-                        /**
-                         * Performs translatable string operation.
-                         *
-                         * @return The result.
-                         */
                         new TranslatableString("")));
             }
             if (page.getWipPageContent().getMetaData() == null) {
                 page.getWipPageContent().setMetaData(new PageMetaData(
-                        /**
-                         * Performs translatable string operation.
-                         *
-                         * @return The result.
-                         */
                         new TranslatableString(appearanceConfiguration.getApplicationTitle()),
-                        /**
-                         * Performs translatable string operation.
-                         *
-                         * @return The result.
-                         */
                         new TranslatableString(""),
                         "",
-                        /**
-                         * Performs translatable string operation.
-                         *
-                         * @return The result.
-                         */
                         new TranslatableString("")));
             }
         }

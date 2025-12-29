@@ -210,11 +210,6 @@ public class ArduinoTurntablePeripheral extends BasePeripheral implements Turnta
     private String getVersion(SerialPort port) {
         try {
             writeLine(port, "VERSION");
-            /**
-             * Reads line.
-             *
-             * @return The result.
-             */
             return readLine(port);
         } catch (IOException e) {
             log.debug("Error during getting turntable version on port {}: {}", port.getSystemPortName(), e.getMessage());
@@ -232,11 +227,6 @@ public class ArduinoTurntablePeripheral extends BasePeripheral implements Turnta
     private String move(SerialPort port, int value) {
         try {
             writeLine(port, "MOVE " + value);
-            /**
-             * Reads line.
-             *
-             * @return The result.
-             */
             return readLine(port);
         } catch (IOException e) {
             throw new ArtivactException("Error during moving turntable on port " + port.getSystemPortName(), e);

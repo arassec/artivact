@@ -103,9 +103,17 @@ public class ProjectInitializationService {
     private final String initialPassword;
 
     /**
-     * Performs project initialization service operation.
+     * Creates a new ProjectInitializationService with the provided dependencies.
      *
-     * @return The result.
+     * @param useProjectDirsUseCase Use case for project directories.
+     * @param loadAccountUseCase Use case for loading accounts.
+     * @param createAccountUseCase Use case for creating accounts.
+     * @param pageRepository Repository for pages.
+     * @param fileRepository Repository for files.
+     * @param importMenuUseCase Use case for importing menus.
+     * @param checkRuntimeConfigurationUseCase Use case for checking runtime configuration.
+     * @param configurationRepository Repository for configuration.
+     * @param initialPassword The initial administrator password.
      */
     public ProjectInitializationService(UseProjectDirsUseCase useProjectDirsUseCase,
                                         LoadAccountUseCase loadAccountUseCase,

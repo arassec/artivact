@@ -52,11 +52,13 @@ public class ApplicationConfiguration {
                 .build();
     }
 
+    /**
+     * Creates and configures an ExecutorService for background operations.
+     *
+     * @return The configured ExecutorService.
+     */
     @Bean("backgroundOperationExecutorService")
     @ConditionalOnMissingBean(ExecutorService.class)
-    /**
-     * Performs executor service.
-     */
     public ExecutorService executorService() {
         return Executors.newFixedThreadPool(1);
     }

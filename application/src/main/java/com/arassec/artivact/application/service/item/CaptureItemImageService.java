@@ -126,11 +126,6 @@ public class CaptureItemImageService implements CaptureItemImageUseCase {
         if (captureImagesParams.isRemoveBackgrounds() && imageManipulatorPeripheral != null) {
             imageManipulatorPeripheral.teardown();
             fileRepository.delete(targetFile);
-            /**
-             * Performs rename manipulated images operation.
-             *
-             * @return The result.
-             */
             return renameManipulatedImages(List.of(targetFile), imageManipulatorPeripheral.getModifiedImages()).getFirst();
         }
 
