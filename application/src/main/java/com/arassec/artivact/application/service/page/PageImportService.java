@@ -25,12 +25,12 @@ import java.util.Set;
 import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.PAGE_EXCHANGE_FILE_SUFFIX;
 import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.SEARCH_RESULT_FILE_SUFFIX;
 
-@Slf4j
-@Service
-@RequiredArgsConstructor
 /**
  * Service for page import.
  */
+@Slf4j
+@Service
+@RequiredArgsConstructor
 public class PageImportService implements ImportPageUseCase {
 
     /**

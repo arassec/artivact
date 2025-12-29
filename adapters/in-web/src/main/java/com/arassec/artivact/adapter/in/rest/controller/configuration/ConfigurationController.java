@@ -146,11 +146,6 @@ public class ConfigurationController extends BaseController {
         applicationSettings.setColorTheme(appearanceConfiguration.getColorTheme());
         applicationSettings.setLicense(appearanceConfiguration.getLicense());
         applicationSettings.setProfiles(
-                /**
-                 * Performs profiles operation.
-                 *
-                 * @return The result.
-                 */
                 new Profiles(checkRuntimeConfigurationUseCase.isDesktopProfileEnabled(), checkRuntimeConfigurationUseCase.isE2eProfileEnabled()));
         applicationSettings.setAvailableRoles(List.of(Roles.ROLE_ADMIN, Roles.ROLE_USER));
 

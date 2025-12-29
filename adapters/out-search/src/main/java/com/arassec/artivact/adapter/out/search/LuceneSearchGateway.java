@@ -49,9 +49,10 @@ public class LuceneSearchGateway implements SearchGateway {
 
 
     /**
-     * Performs lucene search gateway operation.
+     * Creates a new LuceneSearchGateway with the provided dependencies.
      *
-     * @return The result.
+     * @param fileRepository The file repository.
+     * @param useProjectDirsUseCase Use case for project directories.
      */
     public LuceneSearchGateway(FileRepository fileRepository,
                                UseProjectDirsUseCase useProjectDirsUseCase) {

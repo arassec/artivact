@@ -118,11 +118,6 @@ public class CollectionExportController extends BaseImportController {
     @PostMapping
     public List<CollectionExport> save(@RequestBody CollectionExport collectionExport) {
         saveCollectionExportUseCase.save(collectionExport);
-        /**
-         * Loads the collection exports.
-         *
-         * @return The result.
-         */
         return loadCollectionExports();
     }
 
@@ -135,11 +130,6 @@ public class CollectionExportController extends BaseImportController {
     @PostMapping("/sort")
     public List<CollectionExport> saveSortOrder(@RequestBody List<CollectionExport> collectionExports) {
         saveCollectionExportUseCase.saveSortOrder(collectionExports);
-        /**
-         * Loads the collection exports.
-         *
-         * @return The result.
-         */
         return loadCollectionExports();
     }
 
@@ -153,11 +143,6 @@ public class CollectionExportController extends BaseImportController {
         if (StringUtils.hasText(id)) {
             deleteCollectionExportUseCase.delete(id);
         }
-        /**
-         * Loads the collection exports.
-         *
-         * @return The result.
-         */
         return loadCollectionExports();
     }
 
@@ -271,11 +256,6 @@ public class CollectionExportController extends BaseImportController {
     @DeleteMapping("/{id}/cover-picture")
     public List<CollectionExport> deleteCoverPicture(@PathVariable String id) {
         deleteCollectionExportCoverPictureUseCase.deleteCoverPicture(id);
-        /**
-         * Loads the collection exports.
-         *
-         * @return The result.
-         */
         return loadCollectionExports();
     }
 

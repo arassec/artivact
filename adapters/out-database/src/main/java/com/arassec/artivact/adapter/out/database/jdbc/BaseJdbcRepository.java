@@ -29,11 +29,6 @@ public abstract class BaseJdbcRepository {
         if (object == null) {
             return null;
         }
-        /**
-         * Returns the json mapper.
-         *
-         * @return The result.
-         */
         return getJsonMapper().writeValueAsString(object);
     }
 
@@ -54,11 +49,6 @@ public abstract class BaseJdbcRepository {
                 throw new ArtivactException("Could not create default instance of object!", e);
             }
         }
-        /**
-         * Returns the json mapper.
-         *
-         * @return The result.
-         */
         return getJsonMapper().readValue(json, clazz);
 
     }

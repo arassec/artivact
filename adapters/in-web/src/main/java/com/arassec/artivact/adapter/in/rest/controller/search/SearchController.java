@@ -54,11 +54,6 @@ public class SearchController extends BaseController {
                                @RequestParam(value = "pageSize", required = false, defaultValue = "9") int pageSize,
                                @RequestParam(value = "maxResults", required = false, defaultValue = "100") int maxResults) {
         List<Item> items = searchItemsUseCase.searchTranslatedRestricted(searchTerm, maxResults);
-        /**
-         * Returns the search result.
-         *
-         * @return The result.
-         */
         return getSearchResult(items, pageNumber, pageSize);
     }
 

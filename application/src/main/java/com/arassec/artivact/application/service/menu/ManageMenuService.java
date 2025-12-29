@@ -154,11 +154,6 @@ public class ManageMenuService
 
         menuRepository.save(menuConfiguration);
 
-        /**
-         * Loads the translated restricted menus.
-         *
-         * @return The result.
-         */
         return loadTranslatedRestrictedMenus();
     }
 
@@ -174,11 +169,6 @@ public class ManageMenuService
     public List<Menu> deleteMenu(String menuId) {
         if (!StringUtils.hasText(menuId)) {
             log.warn("No menuId given to delete menu!");
-            /**
-             * Loads the translated restricted menus.
-             *
-             * @return The result.
-             */
             return loadTranslatedRestrictedMenus();
         }
 
@@ -218,11 +208,6 @@ public class ManageMenuService
 
         menuRepository.save(menuConfiguration);
 
-        /**
-         * Loads the translated restricted menus.
-         *
-         * @return The result.
-         */
         return loadTranslatedRestrictedMenus();
     }
 
@@ -238,11 +223,6 @@ public class ManageMenuService
     public List<Menu> addPageToMenu(String menuId) {
         if (!StringUtils.hasText(menuId)) {
             log.warn("No menuId given to add page to!");
-            /**
-             * Loads the translated restricted menus.
-             *
-             * @return The result.
-             */
             return loadTranslatedRestrictedMenus();
         }
 
@@ -258,11 +238,6 @@ public class ManageMenuService
 
         menuRepository.save(menuConfiguration);
 
-        /**
-         * Loads the translated restricted menus.
-         *
-         * @return The result.
-         */
         return loadTranslatedRestrictedMenus();
     }
 

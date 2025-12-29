@@ -28,18 +28,18 @@ import java.util.Set;
 import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.PAGE_EXCHANGE_FILE_SUFFIX;
 import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.SEARCH_RESULT_FILE_SUFFIX;
 
-@Slf4j
-@Service
-@RequiredArgsConstructor
 /**
  * Service for page export.
  */
+@Slf4j
+@Service
+@RequiredArgsConstructor
 public class PageExportService extends BaseExportService implements ExportPageUseCase {
 
-    @Getter
     /**
      * The json mapper.
      */
+    @Getter
     private final JsonMapper jsonMapper;
 
     @Getter

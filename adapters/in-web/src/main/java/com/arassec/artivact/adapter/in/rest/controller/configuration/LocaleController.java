@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * REST controller for locale.
+ */
 @Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/locale")
 @Profile("e2e")
-/**
- * REST controller for locale.
- */
 public class LocaleController {
 
     /**
@@ -31,10 +31,12 @@ public class LocaleController {
      */
     private final SaveAppearanceConfigurationUseCase saveAppearanceConfigurationUseCase;
 
-    @GetMapping("/{locale}")
     /**
      * Sets the application locale.
+     *
+     * @param locale The locale to set.
      */
+    @GetMapping("/{locale}")
     public void setApplicationLocale(@PathVariable String locale) {
         AppearanceConfiguration appearanceConfiguration = loadAppearanceConfigurationUseCase.loadTranslatedAppearanceConfiguration();
         appearanceConfiguration.setApplicationLocale(locale);
