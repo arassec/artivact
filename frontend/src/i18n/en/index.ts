@@ -1144,6 +1144,8 @@ export default {
     label: {
       bgImage: "Background Image",
       title: "Title",
+      subtitle: "Subtitle",
+      buttons: 'Buttons',
     },
   },
 

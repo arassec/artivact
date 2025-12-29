@@ -11,6 +11,7 @@ import tools.jackson.databind.SerializationFeature;
 import tools.jackson.databind.ValueDeserializer;
 import tools.jackson.databind.json.JsonMapper;
 
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -45,6 +46,13 @@ public class WidgetDeserializer extends ValueDeserializer<Widget> {
                 }
                 if (itemSearchWidget.getContent() == null) {
                     itemSearchWidget.setContent(TranslatableString.builder().value("").build());
+                }
+            } else if (widget instanceof PageTitleWidget pageTitleWidget) {
+                if (pageTitleWidget.getSubtitle() == null) {
+                    pageTitleWidget.setSubtitle(TranslatableString.builder().value("").build());
+                }
+                if (pageTitleWidget.getButtonConfigs() == null) {
+                    pageTitleWidget.setButtonConfigs(new LinkedList<>());
                 }
             }
             return widget;

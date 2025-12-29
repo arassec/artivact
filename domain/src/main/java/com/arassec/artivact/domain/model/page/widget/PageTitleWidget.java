@@ -5,6 +5,7 @@ import com.arassec.artivact.domain.model.page.FileProcessingOperation;
 import com.arassec.artivact.domain.model.page.FileProcessingWidget;
 import com.arassec.artivact.domain.model.page.Widget;
 import com.arassec.artivact.domain.model.page.WidgetType;
+import com.arassec.artivact.domain.model.page.widget.model.ButtonConfig;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,9 +24,19 @@ public class PageTitleWidget extends Widget implements FileProcessingWidget {
     private TranslatableString title;
 
     /**
+     * The subtitle of the page.
+     */
+    private TranslatableString subtitle;
+
+    /**
      * An optional background image for the title.
      */
     private String backgroundImage;
+
+    /**
+     * The button configurations.
+     */
+    private List<ButtonConfig> buttonConfigs;
 
     /**
      * Creates a new instance.

@@ -5,7 +5,9 @@ export interface SearchBasedWidgetData extends Widget {
 
 export interface PageTitleWidgetData extends Widget {
   title: TranslatableString;
+  subtitle: TranslatableString;
   backgroundImage: string;
+  buttonConfigs: ButtonConfig[];
 }
 
 export interface TextWidgetData extends Widget {
