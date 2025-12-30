@@ -185,11 +185,21 @@ public class ItemMediaCreationController extends BaseController {
      *
      * @param itemId        The item's ID.
      * @param modelSetIndex The index of the model-set containing the model to transfer.
-     * @param file          The model file to transfer.
+     */
+    @GetMapping("/transferable-model/{modelSetIndex}")
+    public boolean hasTransferableModel(@PathVariable String itemId, @PathVariable int modelSetIndex) {
+        return manageItemModelsUseCase.hasTransferableModel(itemId, modelSetIndex);
+    }
+
+    /**
+     * Transfers an item's model from media-creation to media.
+     *
+     * @param itemId        The item's ID.
+     * @param modelSetIndex The index of the model-set containing the model to transfer.
      */
     @PutMapping("/transfer-model/{modelSetIndex}")
-    public void transferModel(@PathVariable String itemId, @PathVariable int modelSetIndex, @RequestBody Asset file) {
-        manageItemModelsUseCase.transferModelToMedia(itemId, modelSetIndex, file);
+    public void transferModel(@PathVariable String itemId, @PathVariable int modelSetIndex) {
+        manageItemModelsUseCase.transferModelToMedia(itemId, modelSetIndex);
     }
 
     /**

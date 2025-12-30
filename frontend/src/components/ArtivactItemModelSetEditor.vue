@@ -86,6 +86,21 @@
           >
             <q-tooltip>{{ $t('ItemModelSetEditor.tooltip.edit') }}</q-tooltip>
           </q-btn>
+          <q-btn
+            v-if="hasTransferableModel(index)"
+            icon="move_up"
+            rounded
+            dense
+            flat
+            size="md"
+            color="primary"
+            @click="transferModel(index)"
+          >
+            <q-tooltip>{{
+                $t('ItemModelSetEditor.dialog.details.transfer')
+              }}
+            </q-tooltip>
+          </q-btn>
         </div>
         <q-space/>
         <q-btn
@@ -258,26 +273,6 @@
                 <div class="text-h6">{{ file.fileName }}</div>
               </div>
             </q-img>
-            <q-card-actions>
-              <div class="row full-width">
-                <q-btn
-                  v-if="file.transferable"
-                  icon="move_up"
-                  rounded
-                  dense
-                  flat
-                  size="md"
-                  color="primary"
-                  @click="transferModel(file, selectedModelSetIndexRef)"
-                >
-                  <q-tooltip>{{
-                      $t('ItemModelSetEditor.dialog.details.transfer')
-                    }}
-                  </q-tooltip>
-                </q-btn>
-                <q-space/>
-              </div>
-            </q-card-actions>
           </q-card>
         </div>
       </q-card-section>
@@ -455,7 +450,6 @@ function showEditModel(index: number) {
   }
 }
 
-
 function editModelDirectly(index: number) {
   selectedModelSetIndexRef.value = index;
   editModel();
@@ -502,14 +496,39 @@ function openModelDir(index: number) {
     });
 }
 
-function transferModel(file: Asset, modelSetIndex: number) {
+async function hasTransferableModel(modelSetIndex: number): boolean {
+  await api
+    .get(
+      '/api/item/' +
+      props.itemId +
+      '/media-creation/transferable-model/' +
+      modelSetIndex
+    )
+    .then((response) => {
+      if (response) {
+        return response.data;
+      } else {
+        return false;
+      }
+    })
+    .catch(() => {
+      quasar.notify({
+        color: 'negative',
+        position: 'bottom',
+        message: i18n.t('Common.messages.loading.failed', {item: i18n.t('Common.items.model')}),
+        icon: 'report_problem',
+      });
+    });
+
+}
+
+function transferModel(modelSetIndex: number) {
   api
     .put(
       '/api/item/' +
       props.itemId +
       '/media-creation/transfer-model/' +
-      modelSetIndex,
-      file,
+      modelSetIndex
     )
     .then((response) => {
       if (response) {
@@ -622,4 +641,5 @@ onMounted(() => {
   width: 200px;
   height: 200px;
 }
+
 </style>

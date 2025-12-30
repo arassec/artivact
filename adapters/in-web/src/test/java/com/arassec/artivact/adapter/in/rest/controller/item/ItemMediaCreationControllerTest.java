@@ -167,14 +167,23 @@ class ItemMediaCreationControllerTest {
     }
 
     @Test
+    void hasTransferableModelCallsManageItemModelsUseCase() {
+        String itemId = "item-123";
+        int modelSetIndex = 0;
+
+        controller.hasTransferableModel(itemId, modelSetIndex);
+
+        verify(manageItemModelsUseCase).hasTransferableModel(itemId, modelSetIndex);
+    }
+
+    @Test
     void transferModelCallsManageItemModelsUseCase() {
         String itemId = "item-123";
         int modelSetIndex = 0;
-        Asset file = Asset.builder().fileName("model.glb").build();
 
-        controller.transferModel(itemId, modelSetIndex, file);
+        controller.transferModel(itemId, modelSetIndex);
 
-        verify(manageItemModelsUseCase).transferModelToMedia(itemId, modelSetIndex, file);
+        verify(manageItemModelsUseCase).transferModelToMedia(itemId, modelSetIndex);
     }
 
     @Test

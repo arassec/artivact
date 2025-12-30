@@ -150,8 +150,25 @@ class ManageItemModelsServiceTest {
     }
 
     @Test
+    void testHasTransferableModel() {
+        Item item = mock(Item.class, RETURNS_DEEP_STUBS);
+        CreationModelSet modelSet = CreationModelSet.builder().directory("dir").build();
+
+        when(loadItemUseCase.loadTranslatedRestricted("id")).thenReturn(item);
+        when(item.getMediaCreationContent().getModelSets()).thenReturn(new LinkedList<>(List.of(modelSet)));
+        when(useProjectDirsUseCase.getProjectRoot()).thenReturn(Path.of("root"));
+
+        // Case 1: Model exists
+        when(fileRepository.list(Path.of("root/dir"))).thenReturn(List.of(Path.of("model.glb")));
+        assertThat(service.hasTransferableModel("id", 0)).isTrue();
+
+        // Case 2: No model exists
+        when(fileRepository.list(Path.of("root/dir"))).thenReturn(List.of(Path.of("image.png")));
+        assertThat(service.hasTransferableModel("id", 0)).isFalse();
+    }
+
+    @Test
     void testTransferModelToMediaCopiesAndSaves() throws Exception {
-        Asset asset = Asset.builder().fileName("m.glb").build();
         Path sourceDir = Files.createTempDirectory("src");
         Path targetDir = Files.createTempDirectory("target");
         Files.createFile(sourceDir.resolve("m.glb"));
@@ -167,28 +184,34 @@ class ManageItemModelsServiceTest {
         when(fileRepository.getExtension("m.glb")).thenReturn(Optional.of("glb"));
         when(fileRepository.getAssetName(1, "glb")).thenReturn("1.glb");
         when(item.getMediaContent().getModels()).thenReturn(new LinkedList<>());
+        when(fileRepository.list(sourceDir)).thenReturn(List.of(sourceDir.resolve("m.glb")));
 
-        service.transferModelToMedia("id", 0, asset);
+        service.transferModelToMedia("id", 0);
 
         verify(saveItemUseCase).save(item);
     }
 
     @Test
     void testTransferModelToMediaThrowsOnIOException() {
-        Asset asset = Asset.builder().fileName("notfound.glb").build();
-        Path sourceDir = Path.of("nonexistent");
+        Path sourceDir = Path.of("nonexistent-source-dir");
+        Path targetDir = Path.of("nonexistent-target-dir");
+
         Item item = mock(Item.class, RETURNS_DEEP_STUBS);
         CreationModelSet modelSet = CreationModelSet.builder().directory(sourceDir.toString()).build();
+
         when(loadItemUseCase.loadTranslatedRestricted("id")).thenReturn(item);
         when(item.getMediaCreationContent().getModelSets()).thenReturn(new LinkedList<>(List.of(modelSet)));
+
         when(useProjectDirsUseCase.getProjectRoot()).thenReturn(Path.of(""));
-        when(useProjectDirsUseCase.getModelsDir("id")).thenReturn(sourceDir);
-        when(fileRepository.getNextAssetNumber(sourceDir)).thenReturn(1);
-        when(fileRepository.getExtension("notfound.glb")).thenReturn(Optional.of("glb"));
+        when(useProjectDirsUseCase.getModelsDir("id")).thenReturn(targetDir);
+
+        when(fileRepository.list(sourceDir)).thenReturn(List.of(sourceDir.resolve("m.glb")));
+        when(fileRepository.getNextAssetNumber(targetDir)).thenReturn(1);
+        when(fileRepository.getExtension("m.glb")).thenReturn(Optional.of("glb"));
         when(fileRepository.getAssetName(1, "glb")).thenReturn("1.glb");
         when(item.getMediaContent().getModels()).thenReturn(new LinkedList<>());
 
-        assertThatThrownBy(() -> service.transferModelToMedia("id", 0, asset))
+        assertThatThrownBy(() -> service.transferModelToMedia("id", 0))
                 .isInstanceOf(ArtivactException.class)
                 .hasMessageContaining("Could not copy model!");
     }

@@ -63,13 +63,21 @@ public interface ManageItemModelsUseCase {
     List<Asset> getModelSetFiles(String itemId, int modelSetIndex);
 
     /**
+     * Checks whether a transferable model from an item's media-creation section exists or not.
+     *
+     * @param itemId        The item's ID.
+     * @param modelSetIndex Index to the model-set containing the model file.
+     * @return {@code true} if a transferable model exists, {@code false} otherwise.
+     */
+    boolean hasTransferableModel(String itemId, int modelSetIndex);
+
+    /**
      * Transfers a model from an item's media-creation section to its media.
      *
      * @param itemId        The item's ID.
      * @param modelSetIndex Index to the model-set containing the model file.
-     * @param model         The model to transfer.
      */
-    void transferModelToMedia(String itemId, int modelSetIndex, Asset model);
+    void transferModelToMedia(String itemId, int modelSetIndex);
 
     /**
      * Deletes an item's model-set.

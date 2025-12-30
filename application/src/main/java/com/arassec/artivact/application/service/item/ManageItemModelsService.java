@@ -24,12 +24,12 @@ import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.stream.Stream;
 
-@Slf4j
-@Service
-@RequiredArgsConstructor
 /**
  * Service for manage item models.
  */
+@Slf4j
+@Service
+@RequiredArgsConstructor
 public class ManageItemModelsService implements ManageItemModelsUseCase {
 
     /**
@@ -146,26 +146,43 @@ public class ManageItemModelsService implements ManageItemModelsUseCase {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasTransferableModel(String itemId, int modelSetIndex) {
+        Item item = loadItemUseCase.loadTranslatedRestricted(itemId);
+        CreationModelSet creationModelSet = item.getMediaCreationContent().getModelSets().get(modelSetIndex);
+
+        return fileRepository.list(useProjectDirsUseCase.getProjectRoot().resolve(creationModelSet.getDirectory())).stream()
+                .map(file -> file.getFileName().toString().endsWith("glb") || file.getFileName().toString().endsWith("gltf"))
+                .findAny()
+                .orElse(false);
+    }
+
+    /**
      * Transfers a model from an item's media-creation section to its media.
      *
      * @param itemId        The item's ID.
      * @param modelSetIndex Index to the model-set containing the model file.
-     * @param model         The model to transfer.
      */
     @Override
-    public void transferModelToMedia(String itemId, int modelSetIndex, Asset model) {
+    public void transferModelToMedia(String itemId, int modelSetIndex) {
         Item item = loadItemUseCase.loadTranslatedRestricted(itemId);
         CreationModelSet creationModelSet = item.getMediaCreationContent().getModelSets().get(modelSetIndex);
 
-        Path sourcePath = useProjectDirsUseCase.getProjectRoot().resolve(creationModelSet.getDirectory()).resolve(model.getFileName());
-        Path targetPath = getTransferTargetPath(itemId, model);
-        try {
-            Files.copy(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
-            item.getMediaContent().getModels().add(targetPath.getFileName().toString());
-            saveItemUseCase.save(item);
-        } catch (IOException e) {
-            throw new ArtivactException("Could not copy model!", e);
-        }
+        fileRepository.list(useProjectDirsUseCase.getProjectRoot().resolve(creationModelSet.getDirectory())).forEach(file -> {
+            if (file.getFileName().toString().endsWith("glb") || file.getFileName().toString().endsWith("gltf")) {
+                Path sourcePath = useProjectDirsUseCase.getProjectRoot().resolve(creationModelSet.getDirectory()).resolve(file.getFileName());
+                Path targetPath = getTransferTargetPath(itemId, file);
+                try {
+                    Files.copy(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
+                    item.getMediaContent().getModels().add(targetPath.getFileName().toString());
+                    saveItemUseCase.save(item);
+                } catch (IOException e) {
+                    throw new ArtivactException("Could not copy model!", e);
+                }
+            }
+        });
     }
 
     /**
@@ -221,14 +238,14 @@ public class ManageItemModelsService implements ManageItemModelsUseCase {
     /**
      * Returns the target path to transfer a model from media-creation to media.
      *
-     * @param itemId The item's ID.
-     * @param model  The model to transfer.
+     * @param itemId    The item's ID.
+     * @param modelFile The model to transfer.
      * @return The target path for the transferred model.
      */
-    private Path getTransferTargetPath(String itemId, Asset model) {
+    private Path getTransferTargetPath(String itemId, Path modelFile) {
         Path modelsDir = useProjectDirsUseCase.getModelsDir(itemId);
         int nextAssetNumber = fileRepository.getNextAssetNumber(modelsDir);
-        String extension = fileRepository.getExtension(model.getFileName()).orElseThrow();
+        String extension = fileRepository.getExtension(modelFile.getFileName().toString()).orElseThrow();
         return modelsDir.resolve(fileRepository.getAssetName(nextAssetNumber, extension));
     }
 
