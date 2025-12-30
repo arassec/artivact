@@ -108,18 +108,6 @@
       </q-card-section>
       <q-card-actions>
         <q-btn
-          :disable="imageSet.images.length === 0"
-          icon="search"
-          round
-          dense
-          flat
-          size="md"
-          color="primary"
-          @click="showImageDetails(imageSet)"
-        >
-          <q-tooltip>{{ $t('ItemImageSetEditor.tooltip.details') }}</q-tooltip>
-        </q-btn>
-        <q-btn
           :disable="
             imageSet.images.length === 0 ||
             !peripheralsConfigStore.isImageBackgroundRemovalSet
@@ -140,15 +128,46 @@
         </q-btn>
         <q-space/>
         <q-btn
-          icon="delete"
+          text-color="primary"
           round
           dense
           flat
-          size="md"
-          color="primary"
-          @click="showDeleteImageSetConfirm(index)"
+          color="accent"
+          icon="more_vert"
         >
-          <q-tooltip>{{ $t('ItemImageSetEditor.tooltip.delete') }}</q-tooltip>
+          <q-menu
+            anchor="top right"
+            self="top left"
+            auto-close
+            transition-show="jump-right"
+            transition-hide="jump-left"
+          >
+            <div class="row no-wrap q-pa-sm">
+              <q-btn
+                :disable="imageSet.images.length === 0"
+                icon="search"
+                round
+                dense
+                flat
+                size="md"
+                color="primary"
+                @click="showImageDetails(imageSet)"
+              >
+                <q-tooltip>{{ $t('ItemImageSetEditor.tooltip.details') }}</q-tooltip>
+              </q-btn>
+              <q-btn
+                icon="delete"
+                round
+                dense
+                flat
+                size="md"
+                color="primary"
+                @click="showDeleteImageSetConfirm(index)"
+              >
+                <q-tooltip>{{ $t('ItemImageSetEditor.tooltip.delete') }}</q-tooltip>
+              </q-btn>
+            </div>
+          </q-menu>
         </q-btn>
       </q-card-actions>
     </q-card>

@@ -10,7 +10,7 @@
       flat
       color="accent"
       icon="add_circle"
-      @click="showCreateModel()"
+      @click="createModel()"
     >
       <q-tooltip>{{ $t('ItemModelSetEditor.tooltip.create') }}</q-tooltip>
     </q-btn>
@@ -30,6 +30,18 @@
         transition-hide="jump-left"
       >
         <div class="row no-wrap q-pa-sm">
+          <q-btn
+            text-color="primary"
+            round
+            dense
+            color="accent"
+            icon="playlist_add"
+            @click="showCreateModel()"
+            class="q-mr-md"
+            :disable="peripheralsConfigStore.peripheralsConfig.modelCreatorPeripheralConfigs.length < 2"
+          >
+            <q-tooltip>{{ $t('ItemModelSetEditor.tooltip.createSelection') }}</q-tooltip>
+          </q-btn>
           <q-btn
             text-color="primary"
             round
@@ -61,54 +73,86 @@
         </div>
       </q-img>
       <q-card-actions>
-        <q-btn
-          icon="search"
-          round
-          dense
-          flat
-          size="md"
-          color="primary"
-          @click="showModelSetDetails(index)"
-        >
-          <q-tooltip>{{ $t('ItemModelSetEditor.tooltip.details') }}</q-tooltip>
-        </q-btn>
-        <q-btn
-          icon="folder"
-          round
-          dense
-          flat
-          size="md"
-          color="primary"
-          @click="openModelDir(index)"
-        >
-          <q-tooltip>{{
-              $t('ItemModelSetEditor.tooltip.openModel')
-            }}
-          </q-tooltip>
-        </q-btn>
-        <q-btn
-          :disable="!peripheralsConfigStore.isModelEditorSet"
-          icon="edit"
-          round
-          dense
-          flat
-          size="md"
-          color="primary"
-          @click="showEditModel(index)"
-        >
-          <q-tooltip>{{ $t('ItemModelSetEditor.tooltip.edit') }}</q-tooltip>
-        </q-btn>
+        <div>
+          <q-btn
+            :disable="!peripheralsConfigStore.isModelEditorSet"
+            icon="edit"
+            round
+            dense
+            flat
+            size="md"
+            color="primary"
+            @click="editModelDirectly(index)"
+          >
+            <q-tooltip>{{ $t('ItemModelSetEditor.tooltip.edit') }}</q-tooltip>
+          </q-btn>
+        </div>
         <q-space/>
         <q-btn
-          icon="delete"
+          text-color="primary"
           round
           dense
           flat
-          size="md"
-          color="primary"
-          @click="showDeleteModelSetConfirm(index)"
+          color="accent"
+          icon="more_vert"
         >
-          <q-tooltip>{{ $t('ItemModelSetEditor.tooltip.delete') }}</q-tooltip>
+          <q-menu
+            anchor="top right"
+            self="top left"
+            auto-close
+            transition-show="jump-right"
+            transition-hide="jump-left"
+          >
+            <div class="row no-wrap q-pa-sm">
+              <q-btn
+                icon="edit_note"
+                round
+                dense
+                flat
+                size="md"
+                color="primary"
+                @click="showEditModel(index)"
+              >
+                <q-tooltip>{{ $t('ItemModelSetEditor.tooltip.editSelection') }}</q-tooltip>
+              </q-btn>
+              <q-btn
+                icon="folder"
+                round
+                dense
+                flat
+                size="md"
+                color="primary"
+                @click="openModelDir(index)"
+              >
+                <q-tooltip>{{
+                    $t('ItemModelSetEditor.tooltip.openModel')
+                  }}
+                </q-tooltip>
+              </q-btn>
+              <q-btn
+                icon="search"
+                round
+                dense
+                flat
+                size="md"
+                color="primary"
+                @click="showModelSetDetails(index)"
+              >
+                <q-tooltip>{{ $t('ItemModelSetEditor.tooltip.details') }}</q-tooltip>
+              </q-btn>
+              <q-btn
+                icon="delete"
+                round
+                dense
+                flat
+                size="md"
+                color="primary"
+                @click="showDeleteModelSetConfirm(index)"
+              >
+                <q-tooltip>{{ $t('ItemModelSetEditor.tooltip.delete') }}</q-tooltip>
+              </q-btn>
+            </div>
+          </q-menu>
         </q-btn>
       </q-card-actions>
     </q-card>
@@ -409,6 +453,12 @@ function showEditModel(index: number) {
   } else {
     editModel();
   }
+}
+
+
+function editModelDirectly(index: number) {
+  selectedModelSetIndexRef.value = index;
+  editModel();
 }
 
 function editModel() {

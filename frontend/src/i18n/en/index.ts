@@ -1044,11 +1044,13 @@ export default {
 
   ItemModelSetEditor: {
     tooltip: {
-      create: "Create model from image sets",
+      create: "Create model from image sets with favorite photogrammetry application",
+      createSelection: "Create model with selected photogrammetry application",
       open: "Open directory containing model directories",
       details: "Show model files",
       openModel: "Open directory containing model files",
       edit: "Edit 3D model in editor",
+      editSelection: "Edit 3D model with selected editor",
       delete: "Delete 3D model",
     },
     dialog: {
@@ -1201,6 +1203,7 @@ export default {
       failed: "Importing images failed!",
     },
     createModel: {
+      start: "Starting model creation in external editor.",
       createModelStart: "Creating model in external editor.",
       copyImages: "Copying images...",
       failed: "Error during model creation!",

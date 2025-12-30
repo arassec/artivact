@@ -1023,11 +1023,13 @@ export default {
 
   ItemModelSetEditor: {
     tooltip: {
-      create: '3D-Modell aus Bilder-Sets erzeugen',
+      create: '3D-Modell aus Bilder-Sets erzeugen mit bevorzugter Anwendung',
+      createSelection: "3D-Modell mit ausgewählter Anwendung erstellen",
       open: 'Verzeichnis mit 3D-Modellen öffnen',
       details: '3D-Modell-Dateien anzeigen',
       openModel: 'Verzeichnis mit 3D-Modell-Dateien öffnen',
       edit: '3D-Modell in Editor bearbeiten',
+      editSelection: "3D-Modell mit ausgewähltem Editor bearbeiten",
       delete: '3D-Modell löschen',
     },
     dialog: {
@@ -1181,6 +1183,7 @@ export default {
       failed: 'Fehler beim Hinzufügen von Bildern zu Bilder-Set!',
     },
     createModel: {
+      start: "Starte 3D-Modell Erstellung aus Bilder-Set.",
       createModelStart: 'Erstelle 3D-Modell in externem Editor.',
       copyImages: 'Kopiere Bilder...',
       failed: 'Fehler bei der Erstellung des 3D-Modells!',
