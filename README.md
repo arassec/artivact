@@ -7,6 +7,8 @@ Artivact is an open source application to create virtual items and manage them i
 It is written in Java using [Spring Boot](https://spring.io/projects/spring-boot) and provides an
 easy-to-use web-frontend based on the [Quasar](https://quasar.dev/) framework.
 
+You can find out more about the project on the official website: [artivact.io](https://artivact.io).
+
 ### On the Desktop
 
 The application's desktop variant can be used to create 3D models for virtual items using third party tools
@@ -21,20 +23,21 @@ system.
 
 Items can either be created directly in the browser, or uploaded from the desktop installation.
 
-Pages from the CMS can then be exported as virtual exhibitions, which can be experienced using ArtivactVR in the future.
+Pages from the CMS can then be exported as virtual exhibitions, which can be experienced using Artivact XR in the
+future.
 
-### In the Metaverse
+### In XR
 
-The ["Artivact XR"](https://github.com/arassec/artivact-xr) app is currently in development.
+The ["Artivact XR"](https://github.com/arassec/artivact-xr) app is still in development.
 
-It will support browsing virtual collections created with the Artivact desktop or web server variants.
+The current state supports browsing virtual collections created with the Artivact desktop or web server variants.
 
 ## Reference Documentation
 
 The reference documentation is distributed within the application.
-The documentation of the latest, **stable** release is also available online at:
 
-[Artivact Documentation](https://arassec.github.io/artivact/)
+The documentation of the **latest** release is also available online
+at: [Artivact Documentation](https://arassec.github.io/artivact/)
 
 ## License
 
