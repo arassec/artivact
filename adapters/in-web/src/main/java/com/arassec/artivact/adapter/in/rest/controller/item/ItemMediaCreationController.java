@@ -181,6 +181,17 @@ public class ItemMediaCreationController extends BaseController {
     }
 
     /**
+     * Transfers a fixed number of the item's images from media-creation to media.
+     *
+     * @param itemId     The item's ID.
+     * @param imageSetId The image to transfer.
+     */
+    @PutMapping("/transfer-images/{imageSetId}")
+    public void transferImages(@PathVariable String itemId, @PathVariable int imageSetId) {
+        manageItemImagesUseCase.transferImagesToMedia(itemId, imageSetId);
+    }
+
+    /**
      * Transfers an item's model from media-creation to media.
      *
      * @param itemId        The item's ID.

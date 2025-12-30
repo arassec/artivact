@@ -969,6 +969,7 @@ export default {
       backgrounds: "Remove image backgrounds",
       delete: "Delete image set",
       directCapture: "Capture single photo into item media",
+      transferImages: "Transfer three different images to item media",
     },
     label: {
       numPhotos: "Number of photos",

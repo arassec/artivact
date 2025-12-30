@@ -167,6 +167,15 @@ class ItemMediaCreationControllerTest {
     }
 
     @Test
+    void transferImagesCallsManageItemImagesUseCase() {
+        String itemId = "item-123";
+
+        controller.transferImages(itemId, 123);
+
+        verify(manageItemImagesUseCase).transferImagesToMedia(itemId, 123);
+    }
+
+    @Test
     void hasTransferableModelCallsManageItemModelsUseCase() {
         String itemId = "item-123";
         int modelSetIndex = 0;

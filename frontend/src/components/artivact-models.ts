@@ -221,9 +221,9 @@ export interface CaptureImageParams {
   numPhotos: number;
   useTurnTable: boolean;
   removeBackgrounds: boolean;
-  cameraPeripheralConfigId: string;
-  turntablePeripheralConfigId: string;
-  imageBackgroundRemovalPeripheralConfigId: string;
+  cameraPeripheralConfigId: string | null;
+  turntablePeripheralConfigId: string | null;
+  imageBackgroundRemovalPeripheralConfigId: string | null;
 }
 
 export interface CreateModelParams {

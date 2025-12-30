@@ -947,6 +947,7 @@ export default {
       backgrounds: 'Bilder freistellen',
       delete: 'Bilder-Set löschen',
       directCapture: 'Einzelfoto per Kamera aufnehmen und in Medien übernehmen',
+      transferImages: "Drei unterschiedliche Bilder in Objekt-Medien kopieren",
     },
     label: {
       numPhotos: 'Anzahl Fotos',

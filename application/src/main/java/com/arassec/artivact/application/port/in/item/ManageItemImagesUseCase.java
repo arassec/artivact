@@ -63,6 +63,14 @@ public interface ManageItemImagesUseCase {
     void transferImageToMedia(String itemId, Asset image);
 
     /**
+     * Transfers a fixed number image of images from the selected image set to the item's media.
+     *
+     * @param itemId        The item's ID.
+     * @param imageSetIndex The index of the image set to transfer images from.
+     */
+    void transferImagesToMedia(String itemId, int imageSetIndex);
+
+    /**
      * Deletes an item's image-set.
      *
      * @param itemId        The item's ID.

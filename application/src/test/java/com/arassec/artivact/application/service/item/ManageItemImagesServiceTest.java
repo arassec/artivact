@@ -172,6 +172,44 @@ class ManageItemImagesServiceTest {
     }
 
     @Test
+    void testTransferImagesToMediaHandlesInvalidIndex() {
+        Item item = mock(Item.class, RETURNS_DEEP_STUBS);
+        when(loadItemUseCase.loadTranslatedRestricted("id")).thenReturn(item);
+        when(item.getMediaCreationContent().getImageSets()).thenReturn(null);
+
+        service.transferImagesToMedia("id", 0);
+
+        verify(saveItemUseCase, never()).save(any());
+    }
+
+    @Test
+    void testTransferImagesToMediaTransfersSelectedImages() {
+        Item item = mock(Item.class, RETURNS_DEEP_STUBS);
+        when(loadItemUseCase.loadTranslatedRestricted("id")).thenReturn(item);
+
+        List<String> files = List.of("1.png", "2.png");
+        CreationImageSet set = CreationImageSet.builder().files(files).build();
+        List<CreationImageSet> sets = List.of(set);
+
+        when(item.getMediaCreationContent().getImageSets()).thenReturn(sets);
+        when(item.getMediaContent().getImages()).thenReturn(new LinkedList<>());
+
+        Path imagesDir = Path.of("images");
+        when(useProjectDirsUseCase.getImagesDir("id")).thenReturn(imagesDir);
+
+        when(fileRepository.getNextAssetNumber(imagesDir)).thenReturn(1, 2);
+        when(fileRepository.getExtension(anyString())).thenReturn(Optional.of("png"));
+        when(fileRepository.getAssetName(1, "png")).thenReturn("asset1.png");
+        when(fileRepository.getAssetName(2, "png")).thenReturn("asset2.png");
+
+        service.transferImagesToMedia("id", 0);
+
+        verify(fileRepository, times(2)).copy(any(Path.class), any(), any());
+        verify(saveItemUseCase).save(item);
+        assertThat(item.getMediaContent().getImages()).contains("asset1.png", "asset2.png");
+    }
+
+    @Test
     void testDeleteImageSetRemovesAndSaves() {
         Item item = mock(Item.class, RETURNS_DEEP_STUBS);
         when(loadItemUseCase.loadTranslatedRestricted("id")).thenReturn(item);

@@ -126,6 +126,21 @@
             }}
           </q-tooltip>
         </q-btn>
+        <q-btn
+          :disable="imageSet.images.length == 0"
+          icon="move_up"
+          round
+          dense
+          flat
+          size="md"
+          color="primary"
+          @click="transferImagesToMedia(index)"
+        >
+          <q-tooltip>{{
+              $t('ItemImageSetEditor.tooltip.transferImages')
+            }}
+          </q-tooltip>
+        </q-btn>
         <q-space/>
         <q-btn
           text-color="primary"
@@ -814,6 +829,30 @@ function openImagesDir() {
 function transferImageToMedia(image: Asset) {
   api
     .put('/api/item/' + props.itemId + '/media-creation/transfer-image', image)
+    .then((response) => {
+      if (response) {
+        emit('update-item');
+        quasar.notify({
+          color: 'positive',
+          position: 'bottom',
+          message: i18n.t('ItemImageSetEditor.messages.transferred'),
+          icon: 'check',
+        });
+      }
+    })
+    .catch(() => {
+      quasar.notify({
+        color: 'negative',
+        position: 'bottom',
+        message: i18n.t('ItemImageSetEditor.messages.transferFailed'),
+        icon: 'report_problem',
+      });
+    });
+}
+
+function transferImagesToMedia(imageSetIndex: number) {
+  api
+    .put('/api/item/' + props.itemId + '/media-creation/transfer-images/' + imageSetIndex)
     .then((response) => {
       if (response) {
         emit('update-item');
