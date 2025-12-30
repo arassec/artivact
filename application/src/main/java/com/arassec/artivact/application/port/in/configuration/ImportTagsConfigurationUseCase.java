@@ -7,6 +7,11 @@ import com.arassec.artivact.domain.model.exchange.ImportContext;
  */
 public interface ImportTagsConfigurationUseCase {
 
+    /**
+     * Imports the tags configuration from the given String.
+     *
+     * @param tagsConfiguration The tags configuration as String.
+     */
     void importTagsConfiguration(String tagsConfiguration);
 
     /**

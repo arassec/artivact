@@ -7,6 +7,12 @@ import com.arassec.artivact.domain.model.page.PageContent;
  */
 public interface PublishWipPageContentUseCase {
 
+    /**
+     * Publishes the WIP content of a page.
+     *
+     * @param pageIdOrAlias The page's ID or alias.
+     * @return The published page content.
+     */
     PageContent publishWipPageContent(String pageIdOrAlias);
 
 }

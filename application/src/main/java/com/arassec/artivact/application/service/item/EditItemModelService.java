@@ -20,12 +20,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Service for editing item models.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
-/**
- * Service for edit item model.
- */
 public class EditItemModelService implements EditItemModelUseCase {
 
     /**

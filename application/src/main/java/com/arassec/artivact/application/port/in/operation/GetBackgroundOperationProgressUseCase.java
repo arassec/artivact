@@ -7,6 +7,11 @@ import com.arassec.artivact.domain.model.misc.ProgressMonitor;
  */
 public interface GetBackgroundOperationProgressUseCase {
 
+    /**
+     * Gets the progress of background operations.
+     *
+     * @return The progress monitor.
+     */
     ProgressMonitor getProgress();
 
 }

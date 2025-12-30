@@ -31,12 +31,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service for item model creation.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
-/**
- * Service for create item model.
- */
 public class CreateItemModelService implements CreateItemModelUseCase {
 
     /**

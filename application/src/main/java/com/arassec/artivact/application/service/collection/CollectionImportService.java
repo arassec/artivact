@@ -23,12 +23,12 @@ import java.nio.file.StandardCopyOption;
 
 import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.*;
 
-@Slf4j
-@Service
-@RequiredArgsConstructor
 /**
  * Service for collection import.
  */
+@Slf4j
+@Service
+@RequiredArgsConstructor
 public class CollectionImportService implements ImportCollectionUseCase {
 
     /**

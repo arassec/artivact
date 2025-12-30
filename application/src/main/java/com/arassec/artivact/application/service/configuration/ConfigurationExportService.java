@@ -28,12 +28,12 @@ import java.util.List;
 import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.PROPERTIES_EXCHANGE_FILENAME_JSON;
 import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.TAGS_EXCHANGE_FILENAME_JSON;
 
-@Slf4j
-@Service
-@RequiredArgsConstructor
 /**
  * Service for configuration export.
  */
+@Slf4j
+@Service
+@RequiredArgsConstructor
 public class ConfigurationExportService extends BaseExportService
         implements ExportPropertiesConfigurationUseCase,
         ExportTagsConfigurationUseCase {

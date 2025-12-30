@@ -25,12 +25,12 @@ import java.nio.file.Path;
 
 import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.*;
 
+/**
+ * Service for item imports.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
-/**
- * Service for item import.
- */
 public class ItemImportService implements ImportItemUseCase {
 
     /**

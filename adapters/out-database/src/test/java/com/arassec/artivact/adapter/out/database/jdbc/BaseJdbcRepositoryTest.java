@@ -3,6 +3,7 @@ package com.arassec.artivact.adapter.out.database.jdbc;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.DeserializationFeature;
@@ -56,15 +57,14 @@ class BaseJdbcRepositoryTest {
      * Test class without no-args constructor to test exception handling.
      */
     public static class NoDefaultConstructorObject {
+
+        @Getter
         private final String name;
 
         public NoDefaultConstructorObject(String name) {
             this.name = name;
         }
 
-        public String getName() {
-            return name;
-        }
     }
 
     private final TestableBaseJdbcRepository repository = new TestableBaseJdbcRepository();

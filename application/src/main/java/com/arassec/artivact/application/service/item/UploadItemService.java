@@ -18,12 +18,12 @@ import org.springframework.util.StringUtils;
 
 import java.nio.file.Path;
 
+/**
+ * Service for item uploads.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
-/**
- * Service for upload item.
- */
 public class UploadItemService implements UploadItemUseCase {
 
     /**

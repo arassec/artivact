@@ -7,6 +7,11 @@ import com.arassec.artivact.domain.model.configuration.PeripheralsConfiguration;
  */
 public interface LoadPeripheralsConfigurationUseCase {
 
+    /**
+     * Loads the current peripherals configuration of the application.
+     *
+     * @return The current peripherals configuration.
+     */
     PeripheralsConfiguration loadPeripheralConfiguration();
 
 }

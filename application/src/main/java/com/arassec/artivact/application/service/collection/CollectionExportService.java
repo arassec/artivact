@@ -23,12 +23,12 @@ import tools.jackson.databind.json.JsonMapper;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
-@Slf4j
-@Service
-@RequiredArgsConstructor
 /**
  * Service for collection export.
  */
+@Slf4j
+@Service
+@RequiredArgsConstructor
 public class CollectionExportService extends BaseExportService implements ExportCollectionUseCase {
 
     /**

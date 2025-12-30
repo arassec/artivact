@@ -7,6 +7,11 @@ import com.arassec.artivact.domain.model.exchange.ImportContext;
  */
 public interface ImportPropertiesConfigurationUseCase {
 
+    /**
+     * Imports the properties configuration from the given String.
+     *
+     * @param propertiesConfiguration The properties configuration as String.
+     */
     void importPropertiesConfiguration(String propertiesConfiguration);
 
     /**

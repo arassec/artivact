@@ -12,7 +12,6 @@ import java.nio.file.Path;
  */
 public interface ExportCollectionUseCase {
 
-
     /**
      * Exports parts of or the complete collection.
      *

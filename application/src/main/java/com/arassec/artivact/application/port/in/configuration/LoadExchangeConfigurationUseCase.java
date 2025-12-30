@@ -7,6 +7,11 @@ import com.arassec.artivact.domain.model.configuration.ExchangeConfiguration;
  */
 public interface LoadExchangeConfigurationUseCase {
 
+    /**
+     * Loads the current exchange configuration of the application.
+     *
+     * @return The current exchange configuration.
+     */
     ExchangeConfiguration loadExchangeConfiguration();
 
 }
