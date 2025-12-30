@@ -58,6 +58,7 @@
               :peripheral-status="peripheralStatus(peripheralConfig.id).value"
               @delete-config="deleteTurntableConfig(index)"
               @edit-config="editTurntableConfig(index)"
+              @toggle-favorite="toggleTurntableFavorite(index)"
             ></artivact-peripheral-config-overview>
             <div class="row q-mt-md">
               <div class="col"></div>
@@ -119,6 +120,7 @@
               :peripheral-status="peripheralStatus(peripheralConfig.id).value"
               @delete-config="deleteCameraConfig(index)"
               @edit-config="editCameraConfig(index)"
+              @toggle-favorite="toggleCameraFavorite(index)"
             ></artivact-peripheral-config-overview>
             <div class="row q-mt-md">
               <div class="col"></div>
@@ -189,6 +191,7 @@
               "
               @delete-config="deleteBackgroundRemovalConfig(index)"
               @edit-config="editBackgroundRemovalConfig(index)"
+              @toggle-favorite="toggleBackgroundRemovalFavorite(index)"
             ></artivact-peripheral-config-overview>
             <div class="row q-mt-md">
               <div class="col"></div>
@@ -251,6 +254,7 @@
               :peripheral-status="peripheralStatus(peripheralConfig.id).value"
               @delete-config="deleteModelCreatorConfig(index)"
               @edit-config="editModelCreatorConfig(index)"
+              @toggle-favorite="toggleModelCreatorFavorite(index)"
             ></artivact-peripheral-config-overview>
             <div class="row q-mt-md">
               <div class="col"></div>
@@ -313,6 +317,7 @@
               :peripheral-status="peripheralStatus(peripheralConfig.id).value"
               @delete-config="deleteModelEditorConfig(index)"
               @edit-config="editModelEditorConfig(index)"
+              @toggle-favorite="toggleModelEditorFavorite(index)"
             ></artivact-peripheral-config-overview>
             <div class="row q-mt-md">
               <div class="col"></div>
@@ -438,7 +443,14 @@
 
 <script setup lang="ts">
 import {computed, PropType, ref, toRef} from 'vue';
-import {PeripheralConfig, PeripheralImplementation, PeripheralsConfiguration, SelectboxModel,} from './artivact-models';
+import {
+  ArduinoTurntablePeripheralConfig,
+  PeripheralConfig,
+  PeripheralImplementation,
+  PeripheralsConfiguration,
+  PtpCameraPeripheralConfig,
+  SelectboxModel,
+} from './artivact-models';
 import ArtivactPeripheralConfigOverview from './ArtivactPeripheralConfigOverview.vue';
 import ArtivactPeripheralConfigEditor from './ArtivactPeripheralConfigEditor.vue';
 import {useI18n} from 'vue-i18n';
@@ -477,7 +489,9 @@ const peripheralStatus = (id: string) =>
 function addTurntableConfig() {
   curPeripheralConfigRef.value = {
     label: i18n.t('ArtivactPeripheralConfigEditor.label.default'),
-  } as PeripheralConfig;
+    favourite: false,
+    delayInMilliseconds: 50,
+  } as ArduinoTurntablePeripheralConfig;
   curPeripheralConfigRef.value.peripheralImplementation =
     PeripheralImplementation[availableTurntableOptions[0].value];
   curPeripheralConfigIndexRef.value = null;
@@ -510,10 +524,18 @@ function saveTurntableConfig() {
   curPeripheralConfigRef.value = null;
 }
 
+function toggleTurntableFavorite(index: number) {
+  const config =
+    peripheralConfigurationRef.value.turntablePeripheralConfigs[index];
+  config.favourite = !config.favourite;
+}
+
 function addCameraConfig() {
   curPeripheralConfigRef.value = {
     label: i18n.t('ArtivactPeripheralConfigEditor.label.default'),
-  } as PeripheralConfig;
+    favourite: false,
+    delayInMilliseconds: 50,
+  } as PtpCameraPeripheralConfig;
   curPeripheralConfigRef.value.peripheralImplementation =
     PeripheralImplementation[availableCameraOptions[0].value];
   curPeripheralConfigIndexRef.value = null;
@@ -544,6 +566,12 @@ function saveCameraConfig() {
   }
   showCameraPeripheralConfigEditorRef.value = false;
   curPeripheralConfigRef.value = null;
+}
+
+function toggleCameraFavorite(index: number) {
+  const config =
+    peripheralConfigurationRef.value.cameraPeripheralConfigs[index];
+  config.favourite = !config.favourite;
 }
 
 function addBackgroundRemovalConfig() {
@@ -587,6 +615,12 @@ function saveBackgroundRemovalConfig() {
   curPeripheralConfigRef.value = null;
 }
 
+function toggleBackgroundRemovalFavorite(index: number) {
+  const config =
+    peripheralConfigurationRef.value.imageBackgroundRemovalPeripheralConfigs[index];
+  config.favourite = !config.favourite;
+}
+
 function addModelCreatorConfig() {
   curPeripheralConfigRef.value = {
     label: i18n.t('ArtivactPeripheralConfigEditor.label.default'),
@@ -626,6 +660,12 @@ function saveModelCreatorConfig() {
   curPeripheralConfigRef.value = null;
 }
 
+function toggleModelCreatorFavorite(index: number) {
+  const config =
+    peripheralConfigurationRef.value.modelCreatorPeripheralConfigs[index];
+  config.favourite = !config.favourite;
+}
+
 function addModelEditorConfig() {
   curPeripheralConfigRef.value = {
     label: i18n.t('ArtivactPeripheralConfigEditor.label.default'),
@@ -663,6 +703,12 @@ function saveModelEditorConfig() {
   }
   showModelEditorPeripheralConfigEditorRef.value = false;
   curPeripheralConfigRef.value = null;
+}
+
+function toggleModelEditorFavorite(index: number) {
+  const config =
+    peripheralConfigurationRef.value.modelEditorPeripheralConfigs[index];
+  config.favourite = !config.favourite;
 }
 
 function isDisabled(

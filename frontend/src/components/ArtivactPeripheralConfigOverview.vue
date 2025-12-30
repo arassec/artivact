@@ -1,8 +1,19 @@
 <template>
   <div class="full-width bg-primary q-mb-sm row rounded-borders">
+    <div>
+      <q-btn
+        class="q-ma-xs"
+        round
+        dense
+        flat
+        @click="$emit('toggle-favorite')"
+        :icon="peripheralConfigRef.favourite ? 'star' : 'star_outline'"
+        color="white"
+      >
+        <q-tooltip>{{ $t('ArtivactPeripheralConfigEditor.label.favourite') }}</q-tooltip>
+      </q-btn>
+    </div>
     <div class="col text-white q-ma-sm config-label">
-      <q-icon name="star" v-if="peripheralConfigRef.favourite"/>
-      <q-icon name="star_outline" v-if="!peripheralConfigRef.favourite"/>
       {{ peripheralConfigRef.label }}
     </div>
     <div>

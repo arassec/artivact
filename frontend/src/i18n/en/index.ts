@@ -1237,6 +1237,7 @@ export default {
         "Scanning for image background removal support...",
       scanModelCreators: "Scanning for photogrammetry software...",
       scanModelEditors: "Scanning for 3D model editors...",
+      failed: "Scanning for peripherals failed! Please see the log for details.",
     },
   },
 

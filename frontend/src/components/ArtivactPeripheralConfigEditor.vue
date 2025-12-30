@@ -143,12 +143,6 @@
           v-model="peripheralConfigRef.label"
         />
 
-        <q-checkbox
-          class="q-mb-sm"
-          :label="$t('ArtivactPeripheralConfigEditor.label.favourite')"
-          v-model="peripheralConfigRef.favourite"
-        />
-
         <q-select
           :disable="availableOptionsRef.length == 1"
           class="q-mb-md"

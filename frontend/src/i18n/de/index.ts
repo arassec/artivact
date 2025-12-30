@@ -1218,6 +1218,7 @@ export default {
         'Suche Konfigurationen zum Entfernen von Bildhintergründen...',
       scanModelCreators: 'Suche nach Photogrammetrie-Software...',
       scanModelEditors: 'Suche nach 3D-Editoren...',
+      failed: "Scanning fehlgeschlagen! Bitte prüfen Sie die Logdatei.",
     },
   },
 
