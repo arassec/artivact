@@ -87,7 +87,7 @@ public class ManageMenuService
                 updatePageAliasUseCase.updatePageAlias(menu.getTargetPageId(), menu.getTargetPageAlias());
             }
             menu.getMenuEntries().forEach(menuEntry ->
-                    updatePageAliasUseCase.updatePageAlias(menuEntry.getTargetPageId(), menu.getTargetPageAlias()));
+                    updatePageAliasUseCase.updatePageAlias(menuEntry.getTargetPageId(), menuEntry.getTargetPageAlias()));
         });
 
         return loadTranslatedRestrictedMenus();
