@@ -35,24 +35,60 @@ import java.util.List;
 @RequestMapping("/api/item")
 public class ItemController extends BaseImportController {
 
+    /**
+     * Use case for use project dirs.
+     */
     @Getter
     private final UseProjectDirsUseCase useProjectDirsUseCase;
 
+    /**
+     * Repository for file.
+     */
     @Getter
     private final FileRepository fileRepository;
 
+    /**
+     * Use case for import item.
+     */
     private final ImportItemUseCase importItemUseCase;
 
+    /**
+     * Use case for create item.
+     */
     private final CreateItemUseCase createItemUseCase;
+    /**
+     * Use case for save item.
+     */
     private final SaveItemUseCase saveItemUseCase;
+    /**
+     * Use case for load item.
+     */
     private final LoadItemUseCase loadItemUseCase;
+    /**
+     * Use case for manage item images.
+     */
     private final ManageItemImagesUseCase manageItemImagesUseCase;
+    /**
+     * Use case for manage item models.
+     */
     private final ManageItemModelsUseCase manageItemModelsUseCase;
 
+    /**
+     * Use case for export item.
+     */
     private final ExportItemUseCase exportItemUseCase;
+    /**
+     * Use case for delete item.
+     */
     private final DeleteItemUseCase deleteItemUseCase;
+    /**
+     * Use case for upload item.
+     */
     private final UploadItemUseCase uploadItemUseCase;
 
+    /**
+     * Use case for get project root.
+     */
     private final UseProjectDirsUseCase getProjectRootUseCase;
 
     /**

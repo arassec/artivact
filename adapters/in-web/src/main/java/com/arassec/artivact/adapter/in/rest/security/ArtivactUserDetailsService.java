@@ -24,6 +24,9 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class ArtivactUserDetailsService implements UserDetailsService {
 
+    /**
+     * Use case for load account.
+     */
     private final LoadAccountUseCase loadAccountUseCase;
 
     /**

@@ -8,6 +8,9 @@ import com.arassec.artivact.domain.model.item.Item;
 import java.io.OutputStream;
 import java.nio.file.Path;
 
+/**
+ * Use case for export item operations.
+ */
 public interface ExportItemUseCase {
 
     /**

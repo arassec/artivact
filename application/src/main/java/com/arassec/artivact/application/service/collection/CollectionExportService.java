@@ -26,6 +26,9 @@ import java.nio.file.StandardCopyOption;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+/**
+ * Service for collection export.
+ */
 public class CollectionExportService extends BaseExportService implements ExportCollectionUseCase {
 
     /**
@@ -34,16 +37,31 @@ public class CollectionExportService extends BaseExportService implements Export
     @Getter
     private final FileRepository fileRepository;
 
+    /**
+     * The json mapper.
+     */
     @Getter
     private final JsonMapper jsonMapper;
 
+    /**
+     * Use case for use project dirs.
+     */
     @Getter
     private final UseProjectDirsUseCase useProjectDirsUseCase;
 
+    /**
+     * Use case for export properties configuration.
+     */
     private final ExportPropertiesConfigurationUseCase exportPropertiesConfigurationUseCase;
 
+    /**
+     * Use case for export tags configuration.
+     */
     private final ExportTagsConfigurationUseCase exportTagsConfigurationUseCase;
 
+    /**
+     * Use case for export menu.
+     */
     private final ExportMenuUseCase exportMenuUseCase;
 
     /**

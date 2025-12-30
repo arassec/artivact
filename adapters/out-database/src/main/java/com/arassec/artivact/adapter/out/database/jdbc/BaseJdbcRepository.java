@@ -7,6 +7,9 @@ import tools.jackson.databind.json.JsonMapper;
 
 import java.lang.reflect.InvocationTargetException;
 
+/**
+ * Repository for base jdbc.
+ */
 public abstract class BaseJdbcRepository {
 
     /**

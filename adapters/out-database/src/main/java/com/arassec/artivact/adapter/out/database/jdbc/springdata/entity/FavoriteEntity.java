@@ -44,7 +44,13 @@ public class FavoriteEntity {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class FavoriteId implements Serializable {
+        /**
+         * The username.
+         */
         private String username;
+        /**
+         * The ID of the item.
+         */
         private String itemId;
     }
 

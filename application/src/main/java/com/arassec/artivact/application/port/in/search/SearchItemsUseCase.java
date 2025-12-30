@@ -4,6 +4,9 @@ import com.arassec.artivact.domain.model.item.Item;
 
 import java.util.List;
 
+/**
+ * Use case for search items operations.
+ */
 public interface SearchItemsUseCase {
 
     /**

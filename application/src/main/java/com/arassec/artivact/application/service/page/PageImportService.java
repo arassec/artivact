@@ -25,21 +25,42 @@ import java.util.Set;
 import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.PAGE_EXCHANGE_FILE_SUFFIX;
 import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.SEARCH_RESULT_FILE_SUFFIX;
 
+/**
+ * Service for page import.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class PageImportService implements ImportPageUseCase {
 
+    /**
+     * The json mapper.
+     */
     private final JsonMapper jsonMapper;
 
+    /**
+     * Repository for file.
+     */
     private final FileRepository fileRepository;
 
+    /**
+     * Use case for use project dirs.
+     */
     private final UseProjectDirsUseCase useProjectDirsUseCase;
 
+    /**
+     * Use case for import item.
+     */
     private final ImportItemUseCase importItemUseCase;
 
+    /**
+     * Use case for save page content.
+     */
     private final SavePageContentUseCase savePageContentUseCase;
 
+    /**
+     * Use case for update page alias.
+     */
     private final UpdatePageAliasUseCase updatePageAliasUseCase;
 
     /**

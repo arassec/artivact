@@ -4,6 +4,9 @@ import com.arassec.artivact.domain.model.page.PageContent;
 
 import java.util.Set;
 
+/**
+ * Use case for save page content operations.
+ */
 public interface SavePageContentUseCase {
 
     /**

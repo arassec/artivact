@@ -23,14 +23,29 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+/**
+ * Service for edit item model.
+ */
 public class EditItemModelService implements EditItemModelUseCase {
 
+    /**
+     * Use case for run background operation.
+     */
     private final RunBackgroundOperationUseCase runBackgroundOperationUseCase;
 
+    /**
+     * Use case for use project dirs.
+     */
     private final UseProjectDirsUseCase useProjectDirsUseCase;
 
+    /**
+     * Use case for load item.
+     */
     private final LoadItemUseCase loadItemUseCase;
 
+    /**
+     * Use case for load adapter configuration.
+     */
     private final LoadPeripheralsConfigurationUseCase loadAdapterConfigurationUseCase;
 
     /**

@@ -31,25 +31,52 @@ import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.ITEM_EX
 @Slf4j
 @Service
 @RequiredArgsConstructor
+/**
+ * Service for item export.
+ */
 public class ItemExportService extends BaseExportService implements ExportItemUseCase {
 
+    /**
+     * Use case for use project dirs.
+     */
     @Getter
     private final UseProjectDirsUseCase useProjectDirsUseCase;
 
+    /**
+     * The json mapper.
+     */
     @Getter
     private final JsonMapper jsonMapper;
 
+    /**
+     * Repository for file.
+     */
     @Getter
     private final FileRepository fileRepository;
 
+    /**
+     * Use case for load item.
+     */
     private final LoadItemUseCase loadItemUseCase;
 
+    /**
+     * Use case for export properties configuration.
+     */
     private final ExportPropertiesConfigurationUseCase exportPropertiesConfigurationUseCase;
 
+    /**
+     * Use case for export tags configuration.
+     */
     private final ExportTagsConfigurationUseCase exportTagsConfigurationUseCase;
 
+    /**
+     * Use case for load properties configuration.
+     */
     private final LoadPropertiesConfigurationUseCase loadPropertiesConfigurationUseCase;
 
+    /**
+     * Use case for load tags configuration.
+     */
     private final LoadTagsConfigurationUseCase loadTagsConfigurationUseCase;
 
     /**

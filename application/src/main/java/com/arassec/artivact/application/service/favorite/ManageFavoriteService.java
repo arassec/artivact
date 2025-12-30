@@ -28,6 +28,9 @@ public class ManageFavoriteService implements MarkItemAsFavoriteUseCase,
         IsItemFavoriteUseCase,
         ListFavoriteItemsUseCase {
 
+    /**
+     * Repository for favorite.
+     */
     private final FavoriteRepository favoriteRepository;
 
     /**

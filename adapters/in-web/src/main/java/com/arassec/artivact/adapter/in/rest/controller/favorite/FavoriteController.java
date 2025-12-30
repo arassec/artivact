@@ -25,10 +25,25 @@ import java.util.Optional;
 @RequestMapping("/api/favorites")
 public class FavoriteController extends BaseController {
 
+    /**
+     * Use case for mark item as favorite.
+     */
     private final MarkItemAsFavoriteUseCase markItemAsFavoriteUseCase;
+    /**
+     * Use case for unmark item as favorite.
+     */
     private final UnmarkItemAsFavoriteUseCase unmarkItemAsFavoriteUseCase;
+    /**
+     * Indicates whether item favorite use case.
+     */
     private final IsItemFavoriteUseCase isItemFavoriteUseCase;
+    /**
+     * Use case for list favorite items.
+     */
     private final ListFavoriteItemsUseCase listFavoriteItemsUseCase;
+    /**
+     * Use case for load item.
+     */
     private final LoadItemUseCase loadItemUseCase;
 
     /**

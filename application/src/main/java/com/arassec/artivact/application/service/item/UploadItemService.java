@@ -21,20 +21,44 @@ import java.nio.file.Path;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+/**
+ * Service for upload item.
+ */
 public class UploadItemService implements UploadItemUseCase {
 
+    /**
+     * Use case for export item.
+     */
     private final ExportItemUseCase exportItemUseCase;
 
+    /**
+     * Use case for run background operation.
+     */
     private final RunBackgroundOperationUseCase runBackgroundOperationUseCase;
 
+    /**
+     * Use case for load item.
+     */
     private final LoadItemUseCase loadItemUseCase;
 
+    /**
+     * Use case for save item.
+     */
     private final SaveItemUseCase saveItemUseCase;
 
+    /**
+     * Use case for load exchange configuration.
+     */
     private final LoadExchangeConfigurationUseCase loadExchangeConfigurationUseCase;
 
+    /**
+     * Repository for file.
+     */
     private final FileRepository fileRepository;
 
+    /**
+     * The artivact api adapter.
+     */
     private final ArtivactGateway artivactApiAdapter;
 
     /**

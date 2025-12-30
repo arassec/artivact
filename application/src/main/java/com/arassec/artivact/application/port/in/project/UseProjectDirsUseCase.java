@@ -2,6 +2,9 @@ package com.arassec.artivact.application.port.in.project;
 
 import java.nio.file.Path;
 
+/**
+ * Use case for use project dirs operations.
+ */
 public interface UseProjectDirsUseCase {
 
     Path getProjectRoot();

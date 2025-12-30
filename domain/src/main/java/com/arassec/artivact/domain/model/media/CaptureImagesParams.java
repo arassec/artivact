@@ -29,10 +29,19 @@ public class CaptureImagesParams {
      */
     private boolean removeBackgrounds;
 
+    /**
+     * The ID of the camera peripheral configuration.
+     */
     private String cameraPeripheralConfigId;
 
+    /**
+     * The ID of the turntable peripheral configuration.
+     */
     private String turntablePeripheralConfigId;
 
+    /**
+     * The ID of the image background removal peripheral configuration.
+     */
     private String imageBackgroundRemovalPeripheralConfigId;
 
 }

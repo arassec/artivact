@@ -26,22 +26,49 @@ import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.*;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+/**
+ * Service for collection import.
+ */
 public class CollectionImportService implements ImportCollectionUseCase {
 
+    /**
+     * Use case for run background operation.
+     */
     private final RunBackgroundOperationUseCase runBackgroundOperationUseCase;
 
+    /**
+     * Use case for get project root.
+     */
     private final UseProjectDirsUseCase getProjectRootUseCase;
 
+    /**
+     * Repository for file.
+     */
     private final FileRepository fileRepository;
 
+    /**
+     * Use case for import tags configuration.
+     */
     private final ImportTagsConfigurationUseCase importTagsConfigurationUseCase;
 
+    /**
+     * Use case for import properties configuration.
+     */
     private final ImportPropertiesConfigurationUseCase importPropertiesConfigurationUseCase;
 
+    /**
+     * Use case for import menu.
+     */
     private final ImportMenuUseCase importMenuUseCase;
 
+    /**
+     * Repository for collection export.
+     */
     private final CollectionExportRepository collectionExportRepository;
 
+    /**
+     * The json mapper.
+     */
     private final JsonMapper jsonMapper;
 
     /**

@@ -5,6 +5,9 @@ import com.arassec.artivact.domain.model.menu.Menu;
 
 import java.nio.file.Path;
 
+/**
+ * Use case for export menu operations.
+ */
 public interface ExportMenuUseCase {
 
     /**

@@ -45,6 +45,9 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class OnnxImageBackgroundRemovalPeripheral extends BasePeripheral implements ImageManipulatorPeripheral {
 
+    /**
+     * Repository for file.
+     */
     private final FileRepository fileRepository;
 
     /**

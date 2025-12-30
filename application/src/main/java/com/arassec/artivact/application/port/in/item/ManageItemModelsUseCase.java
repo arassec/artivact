@@ -7,6 +7,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.InputStream;
 import java.util.List;
 
+/**
+ * Use case for manage item models operations.
+ */
 public interface ManageItemModelsUseCase {
 
     /**

@@ -28,16 +28,34 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+/**
+ * Service for manage item images.
+ */
 public class ManageItemImagesService implements ManageItemImagesUseCase {
 
+    /**
+     * Use case for run background operation.
+     */
     private final RunBackgroundOperationUseCase runBackgroundOperationUseCase;
 
+    /**
+     * Use case for use project dirs.
+     */
     private final UseProjectDirsUseCase useProjectDirsUseCase;
 
+    /**
+     * Use case for load item.
+     */
     private final LoadItemUseCase loadItemUseCase;
 
+    /**
+     * Use case for save item.
+     */
     private final SaveItemUseCase saveItemUseCase;
 
+    /**
+     * Repository for file.
+     */
     private final FileRepository fileRepository;
 
     /**

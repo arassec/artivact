@@ -1,5 +1,8 @@
 package com.arassec.artivact.application.port.in.item;
 
+/**
+ * Use case for edit item model operations.
+ */
 public interface EditItemModelUseCase {
 
     /**

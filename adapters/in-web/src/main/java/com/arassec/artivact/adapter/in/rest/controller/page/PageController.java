@@ -28,14 +28,29 @@ import java.util.Set;
 @RequestMapping("/api/page")
 public class PageController {
 
+    /**
+     * Use case for load page content.
+     */
     private final LoadPageContentUseCase loadPageContentUseCase;
 
+    /**
+     * Use case for save page content.
+     */
     private final SavePageContentUseCase savePageContentUseCase;
 
+    /**
+     * Use case for manage page media.
+     */
     private final ManagePageMediaUseCase managePageMediaUseCase;
 
+    /**
+     * Use case for reset wip page content.
+     */
     private final ResetWipPageContentUseCase resetWipPageContentUseCase;
 
+    /**
+     * Use case for publish wip page content.
+     */
     private final PublishWipPageContentUseCase publishWipPageContentUseCase;
 
     /**

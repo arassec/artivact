@@ -28,22 +28,40 @@ import java.util.Set;
 import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.PAGE_EXCHANGE_FILE_SUFFIX;
 import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.SEARCH_RESULT_FILE_SUFFIX;
 
+/**
+ * Service for page export.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class PageExportService extends BaseExportService implements ExportPageUseCase {
 
+    /**
+     * The json mapper.
+     */
     @Getter
     private final JsonMapper jsonMapper;
 
+    /**
+     * Repository for file.
+     */
     @Getter
     private final FileRepository fileRepository;
 
+    /**
+     * Use case for use project dirs.
+     */
     @Getter
     private final UseProjectDirsUseCase useProjectDirsUseCase;
 
+    /**
+     * Use case for export item.
+     */
     private final ExportItemUseCase exportItemUseCase;
 
+    /**
+     * Use case for search items.
+     */
     private final SearchItemsUseCase searchItemsUseCase;
 
     /**

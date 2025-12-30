@@ -23,16 +23,34 @@ import java.util.List;
 @RequestMapping("/api/item/{itemId}/media-creation")
 public class ItemMediaCreationController extends BaseController {
 
+    /**
+     * Use case for capture images.
+     */
     private final CaptureItemImageUseCase captureImagesUseCase;
 
+    /**
+     * Use case for manipulate images.
+     */
     private final ManipulateItemImagesUseCase manipulateImagesUseCase;
 
+    /**
+     * Use case for manage item images.
+     */
     private final ManageItemImagesUseCase manageItemImagesUseCase;
 
+    /**
+     * Use case for manage item models.
+     */
     private final ManageItemModelsUseCase manageItemModelsUseCase;
 
+    /**
+     * Use case for create item model.
+     */
     private final CreateItemModelUseCase createItemModelUseCase;
 
+    /**
+     * Use case for edit item model.
+     */
     private final EditItemModelUseCase editItemModelUseCase;
 
     /**

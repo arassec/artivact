@@ -7,6 +7,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 
+/**
+ * Use case for manage item images operations.
+ */
 public interface ManageItemImagesUseCase {
 
     /**

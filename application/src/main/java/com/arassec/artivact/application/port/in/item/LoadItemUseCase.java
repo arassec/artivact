@@ -5,6 +5,9 @@ import com.arassec.artivact.domain.model.item.Item;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Use case for load item operations.
+ */
 public interface LoadItemUseCase {
 
     /**

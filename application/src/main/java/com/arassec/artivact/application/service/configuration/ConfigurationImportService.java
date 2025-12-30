@@ -21,6 +21,9 @@ import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.TAGS_EX
 @Slf4j
 @Service
 @RequiredArgsConstructor
+/**
+ * Service for configuration import.
+ */
 public class ConfigurationImportService implements ImportPropertiesConfigurationUseCase, ImportTagsConfigurationUseCase {
 
     /**
@@ -28,10 +31,19 @@ public class ConfigurationImportService implements ImportPropertiesConfiguration
      */
     private final JsonMapper jsonMapper;
 
+    /**
+     * Repository for file.
+     */
     private final FileRepository fileRepository;
 
+    /**
+     * Use case for save tags configuration.
+     */
     private final SaveTagsConfigurationUseCase saveTagsConfigurationUseCase;
 
+    /**
+     * Use case for save properties configuration.
+     */
     private final SavePropertiesConfigurationUseCase savePropertiesConfigurationUseCase;
 
 

@@ -57,10 +57,19 @@ public class ProjectInitializationService {
      */
     private static final String WELCOME_EXPORT_PATH = "utils/Setup/welcome.artivact.collection.zip";
 
+    /**
+     * Use case for use project dirs.
+     */
     private final UseProjectDirsUseCase useProjectDirsUseCase;
 
+    /**
+     * Use case for load account.
+     */
     private final LoadAccountUseCase loadAccountUseCase;
 
+    /**
+     * Use case for create account.
+     */
     private final CreateAccountUseCase createAccountUseCase;
 
     /**
@@ -78,8 +87,14 @@ public class ProjectInitializationService {
      */
     private final ImportMenuUseCase importMenuUseCase;
 
+    /**
+     * Use case for check runtime configuration.
+     */
     private final CheckRuntimeConfigurationUseCase checkRuntimeConfigurationUseCase;
 
+    /**
+     * Repository for configuration.
+     */
     private final ConfigurationRepository configurationRepository;
 
     /**
@@ -87,6 +102,19 @@ public class ProjectInitializationService {
      */
     private final String initialPassword;
 
+    /**
+     * Creates a new ProjectInitializationService with the provided dependencies.
+     *
+     * @param useProjectDirsUseCase Use case for project directories.
+     * @param loadAccountUseCase Use case for loading accounts.
+     * @param createAccountUseCase Use case for creating accounts.
+     * @param pageRepository Repository for pages.
+     * @param fileRepository Repository for files.
+     * @param importMenuUseCase Use case for importing menus.
+     * @param checkRuntimeConfigurationUseCase Use case for checking runtime configuration.
+     * @param configurationRepository Repository for configuration.
+     * @param initialPassword The initial administrator password.
+     */
     public ProjectInitializationService(UseProjectDirsUseCase useProjectDirsUseCase,
                                         LoadAccountUseCase loadAccountUseCase,
                                         CreateAccountUseCase createAccountUseCase,

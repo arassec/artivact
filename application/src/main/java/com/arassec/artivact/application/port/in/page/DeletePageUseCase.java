@@ -1,5 +1,8 @@
 package com.arassec.artivact.application.port.in.page;
 
+/**
+ * Use case for delete page operations.
+ */
 public interface DeletePageUseCase {
 
     /**

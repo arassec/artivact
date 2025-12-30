@@ -1,5 +1,8 @@
 package com.arassec.artivact.application.port.in.configuration;
 
+/**
+ * Use case for check runtime configuration operations.
+ */
 public interface CheckRuntimeConfigurationUseCase {
 
     /**

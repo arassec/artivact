@@ -4,6 +4,9 @@ import com.arassec.artivact.domain.model.page.Page;
 
 import java.util.Set;
 
+/**
+ * Use case for create page operations.
+ */
 public interface CreatePageUseCase {
 
     /**

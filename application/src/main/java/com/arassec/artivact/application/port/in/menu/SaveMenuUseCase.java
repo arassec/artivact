@@ -4,6 +4,9 @@ import com.arassec.artivact.domain.model.menu.Menu;
 
 import java.util.List;
 
+/**
+ * Use case for save menu operations.
+ */
 public interface SaveMenuUseCase {
 
     /**

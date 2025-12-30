@@ -32,16 +32,34 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ManipulateItemImagesService implements ManipulateItemImagesUseCase {
 
+    /**
+     * Use case for run background operation.
+     */
     private final RunBackgroundOperationUseCase runBackgroundOperationUseCase;
 
+    /**
+     * Use case for use project dirs.
+     */
     private final UseProjectDirsUseCase useProjectDirsUseCase;
 
+    /**
+     * Use case for load item.
+     */
     private final LoadItemUseCase loadItemUseCase;
 
+    /**
+     * Use case for save item.
+     */
     private final SaveItemUseCase saveItemUseCase;
 
+    /**
+     * Use case for load adapter configuration.
+     */
     private final LoadPeripheralsConfigurationUseCase loadAdapterConfigurationUseCase;
 
+    /**
+     * Repository for file.
+     */
     private final FileRepository fileRepository;
 
     /**

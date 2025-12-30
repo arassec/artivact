@@ -2,6 +2,9 @@ package com.arassec.artivact.application.port.in.page;
 
 import com.arassec.artivact.domain.model.exchange.ImportContext;
 
+/**
+ * Use case for import page operations.
+ */
 public interface ImportPageUseCase {
 
     /**

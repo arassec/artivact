@@ -5,6 +5,9 @@ import com.arassec.artivact.domain.model.exchange.CollectionExport;
 import java.io.OutputStream;
 import java.util.List;
 
+/**
+ * Use case for create collection export infos operations.
+ */
 public interface CreateCollectionExportInfosUseCase {
 
     /**

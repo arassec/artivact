@@ -21,8 +21,14 @@ import java.util.List;
 @RequestMapping("/api/search")
 public class SearchController extends BaseController {
 
+    /**
+     * Use case for manage search index.
+     */
     private final ManageSearchIndexUseCase manageSearchIndexUseCase;
 
+    /**
+     * Use case for search items.
+     */
     private final SearchItemsUseCase searchItemsUseCase;
 
     /**

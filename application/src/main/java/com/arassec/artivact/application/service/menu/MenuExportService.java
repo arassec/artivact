@@ -25,23 +25,44 @@ import java.util.Set;
 
 import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.MENU_EXCHANGE_FILE_SUFFIX;
 
+/**
+ * Service for menu export.
+ */
 @Service
 @RequiredArgsConstructor
 public class MenuExportService extends BaseExportService implements ExportMenuUseCase {
 
+    /**
+     * The json mapper.
+     */
     @Getter
     private final JsonMapper jsonMapper;
 
+    /**
+     * Repository for file.
+     */
     @Getter
     private final FileRepository fileRepository;
 
+    /**
+     * Use case for use project dirs.
+     */
     @Getter
     private final UseProjectDirsUseCase useProjectDirsUseCase;
 
+    /**
+     * Use case for load page content.
+     */
     private final LoadPageContentUseCase loadPageContentUseCase;
 
+    /**
+     * Use case for export page.
+     */
     private final ExportPageUseCase exportPageUseCase;
 
+    /**
+     * Use case for load menu.
+     */
     private final LoadMenuUseCase loadMenuUseCase;
 
     /**

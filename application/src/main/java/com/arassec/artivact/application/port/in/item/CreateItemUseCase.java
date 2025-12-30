@@ -2,6 +2,9 @@ package com.arassec.artivact.application.port.in.item;
 
 import com.arassec.artivact.domain.model.item.Item;
 
+/**
+ * Use case for create item operations.
+ */
 public interface CreateItemUseCase {
 
     /**

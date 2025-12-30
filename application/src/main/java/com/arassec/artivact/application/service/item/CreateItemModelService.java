@@ -34,19 +34,40 @@ import java.util.Optional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+/**
+ * Service for create item model.
+ */
 public class CreateItemModelService implements CreateItemModelUseCase {
 
+    /**
+     * Use case for use project dirs.
+     */
     @Getter
     private final UseProjectDirsUseCase useProjectDirsUseCase;
 
+    /**
+     * Use case for run background operation.
+     */
     private final RunBackgroundOperationUseCase runBackgroundOperationUseCase;
 
+    /**
+     * Use case for load item.
+     */
     private final LoadItemUseCase loadItemUseCase;
 
+    /**
+     * Use case for save item.
+     */
     private final SaveItemUseCase saveItemUseCase;
 
+    /**
+     * Repository for file.
+     */
     private final FileRepository fileRepository;
 
+    /**
+     * Use case for load adapter configuration.
+     */
     private final LoadPeripheralsConfigurationUseCase loadAdapterConfigurationUseCase;
 
     /**

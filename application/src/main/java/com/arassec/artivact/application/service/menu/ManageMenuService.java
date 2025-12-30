@@ -43,10 +43,19 @@ public class ManageMenuService
      */
     private final MenuRepository menuRepository;
 
+    /**
+     * Use case for update page alias.
+     */
     private final UpdatePageAliasUseCase updatePageAliasUseCase;
 
+    /**
+     * Use case for create page.
+     */
     private final CreatePageUseCase createPageUseCase;
 
+    /**
+     * Use case for delete page.
+     */
     private final DeletePageUseCase deletePageUseCase;
 
     /**
