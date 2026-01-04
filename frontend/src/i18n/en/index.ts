@@ -176,6 +176,7 @@ export default {
         content:
           "Do you really want to publish the current page configuration?",
         approve: "Publish",
+        success: "Page published",
       },
     },
     tour: {

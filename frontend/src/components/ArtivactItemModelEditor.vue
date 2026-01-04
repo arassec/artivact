@@ -2,7 +2,6 @@
   <h2 class="av-text-h2">
     {{ $t('Common.items.models') }}
     <q-btn
-      v-if="profilesStore.isDesktopModeEnabled"
       text-color="primary"
       round
       dense

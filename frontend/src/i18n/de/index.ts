@@ -178,6 +178,7 @@ export default {
         content:
           'Möchten Sie die aktuelle Seitenkonfiguration veröffentlichen?',
         approve: 'Veröffentlichen',
+        success: "Seite veröffentlicht",
       },
     },
     tour: {

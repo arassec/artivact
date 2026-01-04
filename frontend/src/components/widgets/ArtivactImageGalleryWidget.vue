@@ -358,4 +358,5 @@ async function saveWidgetBeforeUpload() {
 .draggable:hover {
   cursor: pointer;
 }
+
 </style>

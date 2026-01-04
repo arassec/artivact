@@ -2,7 +2,6 @@
   <h2 class="av-text-h2">
     {{ $t('Common.items.images') }}
     <q-btn
-      v-if="profilesStore.isDesktopModeEnabled"
       text-color="primary"
       round
       dense
@@ -164,11 +163,13 @@ import {useI18n} from 'vue-i18n';
 import {api} from '../boot/axios';
 import ArtivactDialog from '../components/ArtivactDialog.vue';
 import {useProfilesStore} from '../stores/profiles';
+import {useUserdataStore} from "../stores/userdata";
 
 const quasar = useQuasar();
 const i18n = useI18n();
 
 const profilesStore = useProfilesStore();
+const userDataStore = useUserdataStore();
 
 const props = defineProps({
   itemId: {

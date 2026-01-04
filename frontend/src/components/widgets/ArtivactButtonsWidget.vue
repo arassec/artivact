@@ -21,7 +21,7 @@
           <artivact-button :config="buttonConfig" :disabled="inEditMode"/>
         </div>
       </div>
-      <div class="row full-width lt-sm">
+      <div class="row full-width lt-md">
         <div
           v-for="(buttonConfig, index) in widgetDataRef.buttonConfigs"
           :key="index"

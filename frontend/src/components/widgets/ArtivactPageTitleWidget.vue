@@ -23,10 +23,10 @@
             class="av-darkened-parallax-container"
           >
             <artivact-content>
-              <h1 class="page-title full-width">
+              <h1 class="page-title full-width av-label-h1">
                 {{ translate(widgetDataRef.title) }}
               </h1>
-              <h2 class="page-subtitle full-width" v-if="widgetDataRef.subtitle">
+              <h2 class="page-subtitle full-width av-label-h2" v-if="widgetDataRef.subtitle">
                 {{ translate(widgetDataRef.subtitle) }}
               </h2>
               <div class="row">
@@ -42,7 +42,7 @@
             <h1 class="av-label-h1 gt-sm full-width text-center">
               {{ translate(widgetDataRef.title) }}
             </h1>
-            <h2 v-if="widgetDataRef.subtitle" class="full-width text-center">
+            <h2 v-if="widgetDataRef.subtitle" class="av-label-h2 page-subtitle-small full-width text-center">
               {{ translate(widgetDataRef.subtitle) }}
             </h2>
             <div v-for="(buttonConfig, index) in widgetDataRef.buttonConfigs" :key="index"
@@ -68,13 +68,13 @@
           >
             <div class="absolute-full flex flex-center page-title-small">
               <h2
-                class="page-title-heading-small full-width text-center"
+                class="page-title full-width text-center av-label-h2"
                 v-if="widgetDataRef.title"
               >
                 {{ translate(widgetDataRef.title) }}
               </h2>
               <h3
-                class="page-subtitle-heading-small full-width text-center"
+                class="full-width text-center av-label-h3"
                 v-if="widgetDataRef.subtitle"
               >
                 {{ translate(widgetDataRef.subtitle) }}
@@ -90,12 +90,13 @@
             {{ translate(widgetDataRef.title) }}
           </h2>
           <h3
-            class="page-subtitle-heading-small full-width text-center text-primary"
+            class="page-subtitle-small full-width text-center text-primary"
             v-if="widgetDataRef.subtitle"
           >
             {{ translate(widgetDataRef.subtitle) }}
           </h3>
-          <div v-for="(buttonConfig, index) in widgetDataRef.buttonConfigs" :key="index" class="q-mr-sm q-mb-sm ">
+          <div v-for="(buttonConfig, index) in widgetDataRef.buttonConfigs" :key="index"
+               class="q-mr-sm q-mb-sm text-center full-width">
             <artivact-button class="page-button" :config="buttonConfig" :disabled="inEditMode"/>
           </div>
         </template>
@@ -248,43 +249,31 @@ function deleteButton(index) {
 
 <style scoped>
 .page-title {
-  font-weight: bold;
-  font-size: 6rem;
-  line-height: 6.5rem;
+  font-size: clamp(2rem, 4vw, 5rem);
+  line-height: clamp(2rem, 4vw, 4rem);
   color: white;
-  margin-top: 0;
-  margin-bottom: 0.1em;
+  filter: none;
+  font-weight: bold;
+  margin-bottom: .5em;
 }
 
 .page-subtitle {
-  font-weight: bold;
-  font-size: 2rem;
-  line-height: 2.5rem;
   color: white;
   filter: none;
-  margin-bottom: 0.5em;
+  font-size: clamp(1rem, 4vw, 2rem);
+  font-weight: bold;
+  line-height: clamp(1rem, 5vw, 1.5rem);
+  margin-bottom: .75em;
+}
+
+.page-subtitle-small {
+  font-size: clamp(1rem, 4vw, 2rem);
+  line-height: clamp(1rem, 5vw, 1.5rem);
+  margin-bottom: .75em;
 }
 
 .page-button {
   filter: none;
-}
-
-.page-title-heading-small {
-  font-weight: bold;
-  font-size: 2rem;
-  line-height: 2.5rem;
-  color: white;
-  filter: none;
-  margin-top: 0;
-  margin-bottom: 0.1em;
-}
-
-.page-subtitle-heading-small {
-  font-size: 1rem;
-  line-height: 1.5rem;
-  color: white;
-  filter: none;
-  margin-bottom: 0.5em;
 }
 
 .page-title-small {
