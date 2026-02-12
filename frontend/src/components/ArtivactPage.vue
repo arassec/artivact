@@ -100,7 +100,7 @@
         <li
           v-for="item in navigationItems"
           :key="item.id"
-          class="side-navigation-item"
+          :class="['side-navigation-item', { 'side-navigation-item-active': activeWidgetIdRef === item.id }]"
         >
           <a
             :href="'#' + NAV_ANCHOR_PREFIX + item.id"
@@ -507,6 +507,7 @@ const hasLeadingPageTitleWidget = computed(() => {
 });
 
 const pageTitleBottomRef = ref(0);
+const activeWidgetIdRef = ref('');
 
 const sideNavigationStyle = computed(() => {
   if (hasLeadingPageTitleWidget.value) {
@@ -525,6 +526,7 @@ function onScroll() {
   if (!scrollRafId) {
     scrollRafId = requestAnimationFrame(() => {
       updatePageTitleBottom();
+      updateActiveWidget();
       scrollRafId = 0;
     });
   }
@@ -538,6 +540,24 @@ function updatePageTitleBottom() {
       pageTitleBottomRef.value = Math.max(el.getBoundingClientRect().bottom, 0);
     }
   }
+}
+
+function updateActiveWidget() {
+  if (!navigationItems.value.length) return;
+
+  let activeId = navigationItems.value[0].id;
+
+  for (const item of navigationItems.value) {
+    const el = document.getElementById(NAV_ANCHOR_PREFIX + item.id);
+    if (el) {
+      const rect = el.getBoundingClientRect();
+      if (rect.top <= HEADER_HEIGHT_PX + 20) {
+        activeId = item.id;
+      }
+    }
+  }
+
+  activeWidgetIdRef.value = activeId;
 }
 
 const availableWidgetTypes = [
@@ -729,6 +749,7 @@ onMounted(async () => {
 
   window.addEventListener('scroll', onScroll, { passive: true });
   updatePageTitleBottom();
+  updateActiveWidget();
 
   const hash = window.location.hash;
   if (hash) {
@@ -775,8 +796,8 @@ onBeforeUnmount(() => {
 .side-navigation {
   position: fixed;
   top: 4em;
-  left: 0;
-  padding: 1em;
+  left: calc(50% + 33.5rem);
+  padding: 1em 1em 1em 0;
   max-height: calc(100vh - 4em);
   overflow-y: auto;
   z-index: 1;
@@ -791,6 +812,12 @@ onBeforeUnmount(() => {
 
 .side-navigation-item {
   margin-bottom: 0.5em;
+  border-left: 2px solid #ccc;
+  padding-left: 0.75em;
+}
+
+.side-navigation-item-active {
+  border-left: 4px solid #999;
 }
 
 .side-navigation-item a {
