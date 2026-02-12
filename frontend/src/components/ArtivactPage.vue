@@ -477,6 +477,7 @@ const showEditMetadataDialogRef = ref(false);
 
 const NAV_ANCHOR_PREFIX = 'nav-';
 const HEADER_HEIGHT_PX = 64;
+const ACTIVE_WIDGET_THRESHOLD_PX = 20;
 
 const navigationItems = computed(() => {
   if (!pageContentRef.value?.widgets) return [];
@@ -551,7 +552,7 @@ function updateActiveWidget() {
     const el = document.getElementById(NAV_ANCHOR_PREFIX + item.id);
     if (el) {
       const rect = el.getBoundingClientRect();
-      if (rect.top <= HEADER_HEIGHT_PX + 20) {
+      if (rect.top <= HEADER_HEIGHT_PX + ACTIVE_WIDGET_THRESHOLD_PX) {
         activeId = item.id;
       }
     }
