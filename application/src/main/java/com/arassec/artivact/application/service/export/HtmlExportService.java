@@ -300,7 +300,6 @@ public class HtmlExportService implements ExportHtmlUseCase {
     /**
      * Resolves the first image from item data.
      */
-    @SuppressWarnings("unchecked")
     private String resolveFirstImage(Map<String, Object> itemData) {
         Object mediaContent = itemData.get("mediaContent");
         if (mediaContent instanceof Map<?, ?> mc) {
@@ -315,7 +314,6 @@ public class HtmlExportService implements ExportHtmlUseCase {
     /**
      * Resolves a translatable value from a raw map structure.
      */
-    @SuppressWarnings("unchecked")
     private String resolveTranslatableMap(Object translatableObj, String locale) {
         if (translatableObj instanceof Map<?, ?> map) {
             if (!locale.isEmpty()) {
