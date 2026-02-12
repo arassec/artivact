@@ -476,6 +476,7 @@ const deleteWidgetRef = ref(-1);
 const showEditMetadataDialogRef = ref(false);
 
 const NAV_ANCHOR_PREFIX = 'nav-';
+const HEADER_HEIGHT_PX = 64;
 
 const navigationItems = computed(() => {
   if (!pageContentRef.value?.widgets) return [];
@@ -509,8 +510,7 @@ const pageTitleBottomRef = ref(0);
 
 const sideNavigationStyle = computed(() => {
   if (hasLeadingPageTitleWidget.value) {
-    const headerHeight = 64;
-    const effectiveTop = Math.max(pageTitleBottomRef.value, headerHeight);
+    const effectiveTop = Math.max(pageTitleBottomRef.value, HEADER_HEIGHT_PX);
     return {
       top: effectiveTop + 'px',
       maxHeight: `calc(100vh - ${effectiveTop}px)`,
@@ -518,6 +518,17 @@ const sideNavigationStyle = computed(() => {
   }
   return {};
 });
+
+let scrollRafId = 0;
+
+function onScroll() {
+  if (!scrollRafId) {
+    scrollRafId = requestAnimationFrame(() => {
+      updatePageTitleBottom();
+      scrollRafId = 0;
+    });
+  }
+}
 
 function updatePageTitleBottom() {
   if (hasLeadingPageTitleWidget.value && pageContentRef.value?.widgets?.length > 0) {
@@ -716,7 +727,7 @@ onMounted(async () => {
 
   await nextTick();
 
-  window.addEventListener('scroll', updatePageTitleBottom, { passive: true });
+  window.addEventListener('scroll', onScroll, { passive: true });
   updatePageTitleBottom();
 
   const hash = window.location.hash;
@@ -729,7 +740,10 @@ onMounted(async () => {
 });
 
 onBeforeUnmount(() => {
-  window.removeEventListener('scroll', updatePageTitleBottom);
+  window.removeEventListener('scroll', onScroll);
+  if (scrollRafId) {
+    cancelAnimationFrame(scrollRafId);
+  }
 });
 </script>
 
