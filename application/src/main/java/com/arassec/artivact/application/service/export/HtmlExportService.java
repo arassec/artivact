@@ -69,8 +69,6 @@ public class HtmlExportService implements ExportHtmlUseCase {
 
         copyCssFile(exportContext);
 
-        List<NavigationItem> navigationItems = buildNavigationItems(menu);
-
         for (String locale : locales) {
             String localePrefix = locale.isEmpty() ? "" : locale + "/";
 
@@ -78,8 +76,10 @@ public class HtmlExportService implements ExportHtmlUseCase {
                 fileRepository.createDirIfRequired(exportContext.getExportDir().resolve(locale));
             }
 
-            generateHomePage(exportContext, collectionExport, navigationItems, locales, locale, localePrefix);
-            generateMenuPages(exportContext, menu, navigationItems, locales, locale, localePrefix);
+            List<NavigationItem> localizedNavItems = buildNavigationItems(menu, locale);
+
+            generateHomePage(exportContext, collectionExport, localizedNavItems, locales, locale, localePrefix);
+            generateMenuPages(exportContext, menu, localizedNavItems, locales, locale, localePrefix);
         }
     }
 
@@ -101,17 +101,17 @@ public class HtmlExportService implements ExportHtmlUseCase {
     /**
      * Builds the navigation items from the menu structure.
      */
-    private List<NavigationItem> buildNavigationItems(Menu menu) {
+    private List<NavigationItem> buildNavigationItems(Menu menu, String locale) {
         List<NavigationItem> items = new ArrayList<>();
 
-        items.add(new NavigationItem("Home", "Home", "index.html", List.of()));
+        items.add(new NavigationItem("Home", "index.html", List.of()));
 
         if (menu.getMenuEntries() != null) {
             for (Menu entry : menu.getMenuEntries()) {
                 if (entry.isHidden()) {
                     continue;
                 }
-                items.add(buildNavigationItem(entry));
+                items.add(buildNavigationItem(entry, locale));
             }
         }
 
@@ -121,9 +121,8 @@ public class HtmlExportService implements ExportHtmlUseCase {
     /**
      * Builds a single navigation item from a menu entry.
      */
-    private NavigationItem buildNavigationItem(Menu menuEntry) {
-        String label = resolveTranslatableValue(menuEntry, "");
-        String translatedLabel = label;
+    private NavigationItem buildNavigationItem(Menu menuEntry, String locale) {
+        String label = resolveTranslatableValue(menuEntry, locale);
 
         List<NavigationItem> children = new ArrayList<>();
         if (menuEntry.getMenuEntries() != null) {
@@ -131,7 +130,7 @@ public class HtmlExportService implements ExportHtmlUseCase {
                 if (child.isHidden()) {
                     continue;
                 }
-                children.add(buildNavigationItem(child));
+                children.add(buildNavigationItem(child, locale));
             }
         }
 
@@ -139,7 +138,7 @@ public class HtmlExportService implements ExportHtmlUseCase {
                 ? menuEntry.getTargetPageId() + ".html"
                 : (children.isEmpty() ? "#" : children.getFirst().filename());
 
-        return new NavigationItem(label, translatedLabel, filename, children);
+        return new NavigationItem(label, filename, children);
     }
 
     /**
@@ -337,7 +336,7 @@ public class HtmlExportService implements ExportHtmlUseCase {
     private Context createBaseContext(List<NavigationItem> navigationItems, List<String> locales,
                                      String locale, String currentPageFilename) {
         Context context = new Context();
-        context.setVariable("navigationItems", resolveNavigationLabels(navigationItems, locale));
+        context.setVariable("navigationItems", navigationItems);
         context.setVariable("locales", locales);
         context.setVariable("currentLocale", locale);
         context.setVariable("currentPageFilename", currentPageFilename);
@@ -349,23 +348,6 @@ public class HtmlExportService implements ExportHtmlUseCase {
         context.setVariable("localeBasePath", localeBasePath);
 
         return context;
-    }
-
-    /**
-     * Resolves navigation labels for a specific locale.
-     */
-    private List<NavigationItem> resolveNavigationLabels(List<NavigationItem> items, String locale) {
-        List<NavigationItem> resolved = new ArrayList<>();
-        for (NavigationItem item : items) {
-            String label = "Home".equals(item.label()) ? "Home" : item.label();
-            resolved.add(new NavigationItem(
-                    label,
-                    item.translatedLabel(),
-                    item.filename(),
-                    resolveNavigationLabels(item.children(), locale)
-            ));
-        }
-        return resolved;
     }
 
     /**
@@ -385,12 +367,11 @@ public class HtmlExportService implements ExportHtmlUseCase {
     /**
      * A navigation item for the menu bar.
      *
-     * @param label           The default label.
-     * @param translatedLabel The translated label.
-     * @param filename        The target HTML filename.
-     * @param children        Child navigation items.
+     * @param label    The label.
+     * @param filename The target HTML filename.
+     * @param children Child navigation items.
      */
-    public record NavigationItem(String label, String translatedLabel, String filename,
+    public record NavigationItem(String label, String filename,
                                  List<NavigationItem> children) {
     }
 

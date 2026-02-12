@@ -4,9 +4,9 @@
         <div th:if="${widget.content != null and !widget.content.isEmpty()}" th:utext="${widget.content}" class="item-search-text"></div>
         <div th:if="${widget.items != null and !widget.items.isEmpty()}" class="item-grid">
             <div th:each="item : ${widget.items}" class="item-card">
-                <a th:if="${item.image != null}" class="item-card-image-link">
+                <div th:if="${item.image != null}" class="item-card-image-link">
                     <img th:src="${localeBasePath} + ${item.image}" th:alt="${item.title}" class="item-card-image"/>
-                </a>
+                </div>
                 <div class="item-card-title" th:text="${item.title}">Item Title</div>
             </div>
         </div>
