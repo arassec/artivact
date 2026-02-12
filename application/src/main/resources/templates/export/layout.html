@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="layout(pageTitle, content)">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="${pageTitle}">Artivact Export</title>
+    <link rel="stylesheet" th:href="${cssPath}"/>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="navbar-content">
+        <div class="navbar-menu">
+            <th:block th:each="item : ${navigationItems}">
+                <div th:if="${item.children.isEmpty()}" class="nav-item">
+                    <a th:href="${item.filename}" th:text="${item.label}" class="nav-link">Link</a>
+                </div>
+                <div th:unless="${item.children.isEmpty()}" class="nav-item nav-dropdown">
+                    <a href="#" th:text="${item.label}" class="nav-link dropdown-toggle">Dropdown</a>
+                    <div class="dropdown-menu">
+                        <a th:each="child : ${item.children}"
+                           th:href="${child.filename}"
+                           th:text="${child.label}"
+                           class="dropdown-item">Child</a>
+                    </div>
+                </div>
+            </th:block>
+        </div>
+        <div class="navbar-locales" th:if="${locales.size() > 1}">
+            <th:block th:each="loc, stat : ${locales}">
+                <span th:if="${!stat.first}" class="locale-separator">|</span>
+                <a th:href="${localeBasePath} + ${loc} + '/' + ${currentPageFilename}"
+                   th:text="${loc}"
+                   th:classappend="${currentLocale == loc ? 'locale-active' : ''}"
+                   class="locale-link">locale</a>
+            </th:block>
+        </div>
+    </div>
+</nav>
+
+<main class="main-content">
+    <th:block th:insert="${content}"/>
+</main>
+
+</body>
+</html>

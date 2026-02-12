@@ -2,9 +2,12 @@ package com.arassec.artivact.application.service.collection;
 
 import com.arassec.artivact.application.port.in.configuration.ExportPropertiesConfigurationUseCase;
 import com.arassec.artivact.application.port.in.configuration.ExportTagsConfigurationUseCase;
+import com.arassec.artivact.application.port.in.configuration.LoadAppearanceConfigurationUseCase;
+import com.arassec.artivact.application.port.in.export.ExportHtmlUseCase;
 import com.arassec.artivact.application.port.in.menu.ExportMenuUseCase;
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
+import com.arassec.artivact.domain.model.configuration.AppearanceConfiguration;
 import com.arassec.artivact.domain.model.configuration.PropertiesConfiguration;
 import com.arassec.artivact.domain.model.configuration.TagsConfiguration;
 import com.arassec.artivact.domain.model.exchange.CollectionExport;
@@ -48,6 +51,12 @@ class CollectionExportServiceTest {
     @Mock
     private ExportMenuUseCase exportMenuUseCase;
 
+    @Mock
+    private ExportHtmlUseCase exportHtmlUseCase;
+
+    @Mock
+    private LoadAppearanceConfigurationUseCase loadAppearanceConfigurationUseCase;
+
     @InjectMocks
     private CollectionExportService service;
 
@@ -57,6 +66,7 @@ class CollectionExportServiceTest {
     void setup() {
         exportsDir = Path.of("exports");
         when(useProjectDirsUseCase.getExportsDir()).thenReturn(exportsDir);
+        when(loadAppearanceConfigurationUseCase.loadTranslatedAppearanceConfiguration()).thenReturn(new AppearanceConfiguration());
     }
 
     @Test
@@ -82,6 +92,7 @@ class CollectionExportServiceTest {
         verify(fileRepository).pack(any(), eq(result));
         verify(fileRepository).delete(any());
         verify(fileRepository, never()).copy(any(), any());
+        verify(exportHtmlUseCase).exportHtml(any(), eq(collectionExport), eq(menu), any());
 
         ArgumentCaptor<File> argCap = ArgumentCaptor.forClass(File.class);
         verify(jsonMapper).writeValue(argCap.capture(), any(ExchangeMainData.class));

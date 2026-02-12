@@ -1,0 +1,17 @@
+<div xmlns:th="http://www.thymeleaf.org" th:fragment="widget(widget)"
+     class="widget widget-image-gallery"
+     th:classappend="${widget.hideBorder ? 'no-border' : ''}">
+    <div class="image-gallery-content">
+        <h2 th:if="${widget.heading != null and !widget.heading.isEmpty()}" th:text="${widget.heading}">Heading</h2>
+        <div th:if="${widget.content != null and !widget.content.isEmpty()}" th:utext="${widget.content}" class="gallery-text"></div>
+        <div th:if="${widget.images != null and !widget.images.isEmpty()}" class="gallery-grid"
+             th:classappend="${widget.iconMode ? 'icon-mode' : ''}">
+            <div th:each="image : ${widget.images}" class="gallery-item">
+                <img th:src="${localeBasePath} + ${widget.id} + '/' + ${image}"
+                     alt="Gallery image"
+                     th:classappend="${widget.stretchImages ? 'stretch' : ''}"
+                     class="gallery-image"/>
+            </div>
+        </div>
+    </div>
+</div>

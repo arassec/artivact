@@ -3,10 +3,13 @@ package com.arassec.artivact.application.service.collection;
 import com.arassec.artivact.application.port.in.collection.ExportCollectionUseCase;
 import com.arassec.artivact.application.port.in.configuration.ExportPropertiesConfigurationUseCase;
 import com.arassec.artivact.application.port.in.configuration.ExportTagsConfigurationUseCase;
+import com.arassec.artivact.application.port.in.configuration.LoadAppearanceConfigurationUseCase;
+import com.arassec.artivact.application.port.in.export.ExportHtmlUseCase;
 import com.arassec.artivact.application.port.in.menu.ExportMenuUseCase;
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.application.service.BaseExportService;
+import com.arassec.artivact.domain.model.configuration.AppearanceConfiguration;
 import com.arassec.artivact.domain.model.configuration.PropertiesConfiguration;
 import com.arassec.artivact.domain.model.configuration.TagsConfiguration;
 import com.arassec.artivact.domain.model.exchange.CollectionExport;
@@ -22,6 +25,8 @@ import tools.jackson.databind.json.JsonMapper;
 
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Service for collection export.
@@ -65,6 +70,16 @@ public class CollectionExportService extends BaseExportService implements Export
     private final ExportMenuUseCase exportMenuUseCase;
 
     /**
+     * Use case for generating static HTML pages.
+     */
+    private final ExportHtmlUseCase exportHtmlUseCase;
+
+    /**
+     * Use case for loading appearance configuration.
+     */
+    private final LoadAppearanceConfigurationUseCase loadAppearanceConfigurationUseCase;
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -90,6 +105,13 @@ public class CollectionExportService extends BaseExportService implements Export
                         .resolve("cover-picture." + collectionExport.getCoverPictureExtension()), StandardCopyOption.REPLACE_EXISTING);
             }
         }
+
+        AppearanceConfiguration appearanceConfiguration = loadAppearanceConfigurationUseCase.loadTranslatedAppearanceConfiguration();
+        List<String> availableLocales = StringUtils.hasText(appearanceConfiguration.getAvailableLocales())
+                ? Arrays.asList(appearanceConfiguration.getAvailableLocales().split(","))
+                : List.of();
+
+        exportHtmlUseCase.exportHtml(exportContext, collectionExport, menu, availableLocales);
 
         fileRepository.pack(exportContext.getExportDir(), exportContext.getExportFile());
         fileRepository.delete(exportContext.getExportDir());

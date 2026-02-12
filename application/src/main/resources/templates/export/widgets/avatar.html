@@ -1,0 +1,11 @@
+<div xmlns:th="http://www.thymeleaf.org" th:fragment="widget(widget)" class="widget widget-avatar">
+    <div class="avatar-content">
+        <img th:if="${widget.avatarImage != null and !widget.avatarImage.isEmpty()}"
+             th:src="${localeBasePath} + ${widget.id} + '/' + ${widget.avatarImage}"
+             alt="Avatar"
+             class="avatar-image"/>
+        <p th:if="${widget.avatarSubtext != null and !widget.avatarSubtext.isEmpty()}"
+           th:text="${widget.avatarSubtext}"
+           class="avatar-subtext"></p>
+    </div>
+</div>

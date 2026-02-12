@@ -1,0 +1,13 @@
+<div xmlns:th="http://www.thymeleaf.org" th:fragment="widget(widget)" class="widget widget-page-title">
+    <div th:if="${widget.backgroundImage != null and !widget.backgroundImage.isEmpty()}" class="page-title-background"
+         th:style="'background-image: url(' + ${localeBasePath} + ${widget.id} + '/' + ${widget.backgroundImage} + ')'">
+        <div class="page-title-overlay">
+            <h1 th:if="${widget.title != null and !widget.title.isEmpty()}" th:text="${widget.title}">Title</h1>
+            <p th:if="${widget.subtitle != null and !widget.subtitle.isEmpty()}" th:text="${widget.subtitle}" class="subtitle">Subtitle</p>
+        </div>
+    </div>
+    <div th:if="${widget.backgroundImage == null or widget.backgroundImage.isEmpty()}" class="page-title-simple">
+        <h1 th:if="${widget.title != null and !widget.title.isEmpty()}" th:text="${widget.title}">Title</h1>
+        <p th:if="${widget.subtitle != null and !widget.subtitle.isEmpty()}" th:text="${widget.subtitle}" class="subtitle">Subtitle</p>
+    </div>
+</div>

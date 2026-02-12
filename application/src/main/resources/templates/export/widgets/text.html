@@ -1,0 +1,6 @@
+<div xmlns:th="http://www.thymeleaf.org" th:fragment="widget(widget)" class="widget widget-text">
+    <div class="text-content">
+        <h2 th:if="${widget.heading != null and !widget.heading.isEmpty()}" th:text="${widget.heading}">Heading</h2>
+        <div th:if="${widget.content != null and !widget.content.isEmpty()}" th:utext="${widget.content}" class="text-body"></div>
+    </div>
+</div>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{export/layout :: layout('Page', ~{::mainContent})}">
+<body>
+<th:block th:fragment="mainContent">
+    <div class="page-widgets">
+        <th:block th:each="widget : ${widgets}">
+            <th:block th:switch="${widget.type}">
+                <th:block th:case="'PAGE_TITLE'" th:insert="~{export/widgets/page-title :: widget(${widget})}"/>
+                <th:block th:case="'TEXT'" th:insert="~{export/widgets/text :: widget(${widget})}"/>
+                <th:block th:case="'AVATAR'" th:insert="~{export/widgets/avatar :: widget(${widget})}"/>
+                <th:block th:case="'INFO_BOX'" th:insert="~{export/widgets/info-box :: widget(${widget})}"/>
+                <th:block th:case="'ITEM_SEARCH'" th:insert="~{export/widgets/item-search :: widget(${widget})}"/>
+                <th:block th:case="'IMAGE_GALLERY'" th:insert="~{export/widgets/image-gallery :: widget(${widget})}"/>
+            </th:block>
+        </th:block>
+    </div>
+</th:block>
+</body>
+</html>
