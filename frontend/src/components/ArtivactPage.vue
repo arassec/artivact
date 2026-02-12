@@ -102,7 +102,7 @@
           class="side-navigation-item"
         >
           <a
-            :href="'#nav-' + item.id"
+            :href="'#' + NAV_ANCHOR_PREFIX + item.id"
             @click.prevent="scrollToWidget(item.id)"
           >
             {{ item.label }}
@@ -120,7 +120,7 @@
       @dragend="$emit('update-page-content')"
     >
       <template #item="{ element, index }">
-        <div class="bg-accent widget-anchor" :id="'nav-' + element.id">
+        <div class="bg-accent widget-anchor" :id="NAV_ANCHOR_PREFIX + element.id">
           <artivact-page-title-widget
             v-if="element.type === 'PAGE_TITLE'"
             group="widgets"
@@ -474,17 +474,18 @@ const deleteWidgetRef = ref(-1);
 
 const showEditMetadataDialogRef = ref(false);
 
+const NAV_ANCHOR_PREFIX = 'nav-';
+
 const navigationItems = computed(() => {
   if (!pageContentRef.value?.widgets) return [];
   return pageContentRef.value.widgets
-    .filter((widget) => {
+    .reduce((items: { id: string; label: string }[], widget) => {
       const label = translate(widget.navigationTitle);
-      return label && label.trim() !== '';
-    })
-    .map((widget) => ({
-      id: widget.id,
-      label: translate(widget.navigationTitle),
-    }));
+      if (label && label.trim() !== '') {
+        items.push({ id: widget.id, label });
+      }
+      return items;
+    }, []);
 });
 
 const showSideNavigation = computed(() => {
@@ -492,7 +493,7 @@ const showSideNavigation = computed(() => {
 });
 
 function scrollToWidget(id: string) {
-  const element = document.getElementById('nav-' + id);
+  const element = document.getElementById(NAV_ANCHOR_PREFIX + id);
   if (element) {
     element.scrollIntoView({ behavior: 'smooth' });
   }
