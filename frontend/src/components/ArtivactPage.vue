@@ -94,6 +94,7 @@
       v-if="showSideNavigation"
       class="side-navigation gt-sm"
       aria-label="Page navigation"
+      :style="sideNavigationStyle"
     >
       <ul class="side-navigation-list">
         <li
@@ -395,7 +396,7 @@
 
 <script setup lang="ts">
 import Draggable from 'vuedraggable';
-import {computed, nextTick, onMounted, PropType, ref, toRef} from 'vue';
+import {computed, nextTick, onBeforeUnmount, onMounted, PropType, ref, toRef} from 'vue';
 import {ButtonConfig, PageContent, TranslatableString,} from './artivact-models';
 import {translate} from './artivact-utils';
 import {useUserdataStore} from '../stores/userdata';
@@ -496,6 +497,35 @@ function scrollToWidget(id: string) {
   const element = document.getElementById(NAV_ANCHOR_PREFIX + id);
   if (element) {
     element.scrollIntoView({ behavior: 'smooth' });
+  }
+}
+
+const hasLeadingPageTitleWidget = computed(() => {
+  return pageContentRef.value?.widgets?.length > 0
+    && pageContentRef.value.widgets[0].type === 'PAGE_TITLE';
+});
+
+const pageTitleBottomRef = ref(0);
+
+const sideNavigationStyle = computed(() => {
+  if (hasLeadingPageTitleWidget.value) {
+    const headerHeight = 64;
+    const effectiveTop = Math.max(pageTitleBottomRef.value, headerHeight);
+    return {
+      top: effectiveTop + 'px',
+      maxHeight: `calc(100vh - ${effectiveTop}px)`,
+    };
+  }
+  return {};
+});
+
+function updatePageTitleBottom() {
+  if (hasLeadingPageTitleWidget.value && pageContentRef.value?.widgets?.length > 0) {
+    const firstWidgetId = pageContentRef.value.widgets[0].id;
+    const el = document.getElementById(NAV_ANCHOR_PREFIX + firstWidgetId);
+    if (el) {
+      pageTitleBottomRef.value = Math.max(el.getBoundingClientRect().bottom, 0);
+    }
   }
 }
 
@@ -686,6 +716,9 @@ onMounted(async () => {
 
   await nextTick();
 
+  window.addEventListener('scroll', updatePageTitleBottom, { passive: true });
+  updatePageTitleBottom();
+
   const hash = window.location.hash;
   if (hash) {
     const element = document.getElementById(hash.substring(1));
@@ -693,6 +726,10 @@ onMounted(async () => {
       element.scrollIntoView({ behavior: 'smooth' });
     }
   }
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('scroll', updatePageTitleBottom);
 });
 </script>
 
