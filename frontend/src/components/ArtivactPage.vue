@@ -90,6 +90,27 @@
       ></q-btn>
     </div>
 
+    <nav
+      v-if="showSideNavigation"
+      class="side-navigation gt-sm"
+      aria-label="Page navigation"
+    >
+      <ul class="side-navigation-list">
+        <li
+          v-for="item in navigationItems"
+          :key="item.id"
+          class="side-navigation-item"
+        >
+          <a
+            :href="'#nav-' + item.id"
+            @click.prevent="scrollToWidget(item.id)"
+          >
+            {{ item.label }}
+          </a>
+        </li>
+      </ul>
+    </nav>
+
     <Draggable
       v-model="pageContentRef.widgets"
       item-key="id"
@@ -99,7 +120,7 @@
       @dragend="$emit('update-page-content')"
     >
       <template #item="{ element, index }">
-        <div class="bg-accent">
+        <div class="bg-accent widget-anchor" :id="'nav-' + element.id">
           <artivact-page-title-widget
             v-if="element.type === 'PAGE_TITLE'"
             group="widgets"
@@ -374,8 +395,9 @@
 
 <script setup lang="ts">
 import Draggable from 'vuedraggable';
-import {onMounted, PropType, ref, toRef} from 'vue';
+import {computed, nextTick, onMounted, PropType, ref, toRef} from 'vue';
 import {ButtonConfig, PageContent, TranslatableString,} from './artivact-models';
+import {translate} from './artivact-utils';
 import {useUserdataStore} from '../stores/userdata';
 import {
   AvatarWidgetData,
@@ -451,6 +473,30 @@ const showDeleteWidgetDialogRef = ref(false);
 const deleteWidgetRef = ref(-1);
 
 const showEditMetadataDialogRef = ref(false);
+
+const navigationItems = computed(() => {
+  if (!pageContentRef.value?.widgets) return [];
+  return pageContentRef.value.widgets
+    .filter((widget) => {
+      const label = translate(widget.navigationTitle);
+      return label && label.trim() !== '';
+    })
+    .map((widget) => ({
+      id: widget.id,
+      label: translate(widget.navigationTitle),
+    }));
+});
+
+const showSideNavigation = computed(() => {
+  return !inEditModeRef.value && navigationItems.value.length > 1;
+});
+
+function scrollToWidget(id: string) {
+  const element = document.getElementById('nav-' + id);
+  if (element) {
+    element.scrollIntoView({ behavior: 'smooth' });
+  }
+}
 
 const availableWidgetTypes = [
   'PAGE_TITLE',
@@ -630,11 +676,21 @@ async function saveWidgetBeforeUpload({resolve, reject}) {
   emit('save-widget-before-upload', {resolve, reject})
 }
 
-onMounted(() => {
+onMounted(async () => {
   if (pageStore.isNewPageCreated) {
     pageStore.setNewPageCreated(false);
     showAddWidgetDialogRef.value = true;
     emit('enter-edit-mode');
+  }
+
+  await nextTick();
+
+  const hash = window.location.hash;
+  if (hash) {
+    const element = document.getElementById(hash.substring(1));
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
   }
 });
 </script>
@@ -662,6 +718,40 @@ onMounted(() => {
   height: 100%;
   width: 100%;
   position: absolute;
+}
+
+.side-navigation {
+  position: fixed;
+  top: 4em;
+  left: 0;
+  padding: 1em;
+  max-height: calc(100vh - 4em);
+  overflow-y: auto;
+  z-index: 1;
+  width: 180px;
+}
+
+.side-navigation-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.side-navigation-item {
+  margin-bottom: 0.5em;
+}
+
+.side-navigation-item a {
+  text-decoration: none;
+  color: var(--q-primary);
+}
+
+.side-navigation-item a:hover {
+  text-decoration: underline;
+}
+
+.widget-anchor {
+  scroll-margin-top: 4em;
 }
 
 </style>
