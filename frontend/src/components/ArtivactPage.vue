@@ -92,7 +92,7 @@
 
     <nav
       v-if="showSideNavigation"
-      class="side-navigation gt-sm"
+      class="side-navigation gt-sm float-right"
       aria-label="Page navigation"
       :style="sideNavigationStyle"
     >
@@ -477,7 +477,7 @@ const showEditMetadataDialogRef = ref(false);
 
 const NAV_ANCHOR_PREFIX = 'nav-';
 const HEADER_HEIGHT_PX = 64;
-const ACTIVE_WIDGET_THRESHOLD_PX = 20;
+const ACTIVE_WIDGET_THRESHOLD_PX = 150;
 
 const navigationItems = computed(() => {
   if (!pageContentRef.value?.widgets) return [];
@@ -492,7 +492,7 @@ const navigationItems = computed(() => {
 });
 
 const showSideNavigation = computed(() => {
-  return !inEditModeRef.value && navigationItems.value.length > 1;
+  return !inEditModeRef.value && navigationItems.value.length > 3;
 });
 
 function scrollToWidget(id: string) {
@@ -678,6 +678,9 @@ function addWidget() {
       images: [],
       fullscreenAllowed: true,
       textPosition: ImageGalleryWidgetTextPosition.TOP,
+      iconMode: false,
+      hideBorder: false,
+      stretchImages: true
     } as ImageGalleryWidgetData);
   } else if (selectedWidgetTypeRef.value === 'BUTTONS') {
     pageContentRef.value?.widgets.splice(index, 0, {
@@ -797,7 +800,7 @@ onBeforeUnmount(() => {
 .side-navigation {
   position: fixed;
   top: 4em;
-  left: calc(50% + 33.5rem);
+  left: calc(50% + 40rem);
   padding: 1em 1em 1em 0;
   max-height: calc(100vh - 4em);
   overflow-y: auto;
@@ -809,16 +812,16 @@ onBeforeUnmount(() => {
   list-style: none;
   padding: 0;
   margin: 0;
+  border-left: 1px solid #ccc;
 }
 
 .side-navigation-item {
   margin-bottom: 0.5em;
-  border-left: 2px solid #ccc;
   padding-left: 0.75em;
 }
 
 .side-navigation-item-active {
-  border-left: 4px solid #999;
+  border-left: 2px solid #999;
 }
 
 .side-navigation-item a {

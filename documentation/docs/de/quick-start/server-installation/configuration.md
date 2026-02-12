@@ -56,4 +56,3 @@ Folgendes (unter anderem) kann direkt in der Anwendung konfiguriert werden:
 - Erscheinungsbild der Anwendung wie Farbthema, Titel, Favicons etc.
 - Unterstützte Sprachen für die Internationalisierung (I18N).
 - Eigenschaften von Objekten, Tags und Lizenzinformationen für Mediendateien.
-- 
