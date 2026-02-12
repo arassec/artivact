@@ -90,6 +90,28 @@
       ></q-btn>
     </div>
 
+    <nav
+      v-if="showSideNavigation"
+      class="side-navigation gt-sm float-right"
+      aria-label="Page navigation"
+      :style="sideNavigationStyle"
+    >
+      <ul class="side-navigation-list">
+        <li
+          v-for="item in navigationItems"
+          :key="item.id"
+          :class="['side-navigation-item', { 'side-navigation-item-active': activeWidgetIdRef === item.id }]"
+        >
+          <a
+            :href="'#' + NAV_ANCHOR_PREFIX + item.id"
+            @click.prevent="scrollToWidget(item.id)"
+          >
+            {{ item.label }}
+          </a>
+        </li>
+      </ul>
+    </nav>
+
     <Draggable
       v-model="pageContentRef.widgets"
       item-key="id"
@@ -99,7 +121,7 @@
       @dragend="$emit('update-page-content')"
     >
       <template #item="{ element, index }">
-        <div class="bg-accent">
+        <div class="bg-accent widget-anchor" :id="NAV_ANCHOR_PREFIX + element.id">
           <artivact-page-title-widget
             v-if="element.type === 'PAGE_TITLE'"
             group="widgets"
@@ -374,8 +396,9 @@
 
 <script setup lang="ts">
 import Draggable from 'vuedraggable';
-import {onMounted, PropType, ref, toRef} from 'vue';
+import {computed, nextTick, onBeforeUnmount, onMounted, PropType, ref, toRef} from 'vue';
 import {ButtonConfig, PageContent, TranslatableString,} from './artivact-models';
+import {translate} from './artivact-utils';
 import {useUserdataStore} from '../stores/userdata';
 import {
   AvatarWidgetData,
@@ -451,6 +474,93 @@ const showDeleteWidgetDialogRef = ref(false);
 const deleteWidgetRef = ref(-1);
 
 const showEditMetadataDialogRef = ref(false);
+
+const NAV_ANCHOR_PREFIX = 'nav-';
+const HEADER_HEIGHT_PX = 64;
+const ACTIVE_WIDGET_THRESHOLD_PX = 150;
+
+const navigationItems = computed(() => {
+  if (!pageContentRef.value?.widgets) return [];
+  return pageContentRef.value.widgets
+    .reduce((items: { id: string; label: string }[], widget) => {
+      const label = translate(widget.navigationTitle);
+      if (label && label.trim() !== '') {
+        items.push({ id: widget.id, label });
+      }
+      return items;
+    }, []);
+});
+
+const showSideNavigation = computed(() => {
+  return !inEditModeRef.value && navigationItems.value.length > 3;
+});
+
+function scrollToWidget(id: string) {
+  activeWidgetIdRef.value = id;
+  const element = document.getElementById(NAV_ANCHOR_PREFIX + id);
+  if (element) {
+    element.scrollIntoView({ behavior: 'smooth' });
+  }
+}
+
+const hasLeadingPageTitleWidget = computed(() => {
+  return pageContentRef.value?.widgets?.length > 0
+    && pageContentRef.value.widgets[0].type === 'PAGE_TITLE';
+});
+
+const pageTitleBottomRef = ref(0);
+const activeWidgetIdRef = ref('');
+
+const sideNavigationStyle = computed(() => {
+  if (hasLeadingPageTitleWidget.value) {
+    const effectiveTop = Math.max(pageTitleBottomRef.value, HEADER_HEIGHT_PX);
+    return {
+      top: effectiveTop + 'px',
+      maxHeight: `calc(100vh - ${effectiveTop}px)`,
+    };
+  }
+  return {};
+});
+
+let scrollRafId = 0;
+
+function onScroll() {
+  if (!scrollRafId) {
+    scrollRafId = requestAnimationFrame(() => {
+      updatePageTitleBottom();
+      updateActiveWidget();
+      scrollRafId = 0;
+    });
+  }
+}
+
+function updatePageTitleBottom() {
+  if (hasLeadingPageTitleWidget.value && pageContentRef.value?.widgets?.length > 0) {
+    const firstWidgetId = pageContentRef.value.widgets[0].id;
+    const el = document.getElementById(NAV_ANCHOR_PREFIX + firstWidgetId);
+    if (el) {
+      pageTitleBottomRef.value = Math.max(el.getBoundingClientRect().bottom, 0);
+    }
+  }
+}
+
+function updateActiveWidget() {
+  if (!navigationItems.value.length) return;
+
+  let activeId = navigationItems.value[0].id;
+
+  for (const item of navigationItems.value) {
+    const el = document.getElementById(NAV_ANCHOR_PREFIX + item.id);
+    if (el) {
+      const rect = el.getBoundingClientRect();
+      if (rect.top <= HEADER_HEIGHT_PX + ACTIVE_WIDGET_THRESHOLD_PX) {
+        activeId = item.id;
+      }
+    }
+  }
+
+  activeWidgetIdRef.value = activeId;
+}
 
 const availableWidgetTypes = [
   'PAGE_TITLE',
@@ -569,6 +679,9 @@ function addWidget() {
       images: [],
       fullscreenAllowed: true,
       textPosition: ImageGalleryWidgetTextPosition.TOP,
+      iconMode: false,
+      hideBorder: false,
+      stretchImages: true
     } as ImageGalleryWidgetData);
   } else if (selectedWidgetTypeRef.value === 'BUTTONS') {
     pageContentRef.value?.widgets.splice(index, 0, {
@@ -630,11 +743,32 @@ async function saveWidgetBeforeUpload({resolve, reject}) {
   emit('save-widget-before-upload', {resolve, reject})
 }
 
-onMounted(() => {
+onMounted(async () => {
   if (pageStore.isNewPageCreated) {
     pageStore.setNewPageCreated(false);
     showAddWidgetDialogRef.value = true;
     emit('enter-edit-mode');
+  }
+
+  await nextTick();
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  updatePageTitleBottom();
+  updateActiveWidget();
+
+  const hash = window.location.hash;
+  if (hash) {
+    const element = document.getElementById(hash.substring(1));
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('scroll', onScroll);
+  if (scrollRafId) {
+    cancelAnimationFrame(scrollRafId);
   }
 });
 </script>
@@ -662,6 +796,46 @@ onMounted(() => {
   height: 100%;
   width: 100%;
   position: absolute;
+}
+
+.side-navigation {
+  position: fixed;
+  top: 4em;
+  left: calc(50% + 40rem);
+  padding: 1em 1em 1em 0;
+  max-height: calc(100vh - 4em);
+  overflow-y: auto;
+  z-index: 1;
+  width: 180px;
+}
+
+.side-navigation-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-left: 1px solid #ccc;
+}
+
+.side-navigation-item {
+  margin-bottom: 0.5em;
+  padding-left: 0.75em;
+}
+
+.side-navigation-item-active {
+  border-left: 2px solid #999;
+}
+
+.side-navigation-item a {
+  text-decoration: none;
+  color: var(--q-primary);
+}
+
+.side-navigation-item a:hover {
+  text-decoration: underline;
+}
+
+.widget-anchor {
+  scroll-margin-top: 4em;
 }
 
 </style>
