@@ -496,6 +496,7 @@ const showSideNavigation = computed(() => {
 });
 
 function scrollToWidget(id: string) {
+  activeWidgetIdRef.value = id;
   const element = document.getElementById(NAV_ANCHOR_PREFIX + id);
   if (element) {
     element.scrollIntoView({ behavior: 'smooth' });
