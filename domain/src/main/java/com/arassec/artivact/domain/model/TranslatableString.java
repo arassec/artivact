@@ -12,7 +12,6 @@ import java.util.Map;
  */
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
 @ToString
@@ -46,6 +45,21 @@ public class TranslatableString implements TranslatableObject {
     public TranslatableString(String value) {
         this.value = value;
         this.translations = new HashMap<>();
+    }
+
+    /**
+     * Creates a new instance with the specified parameters.
+     *
+     * @param value           The untranslated value.
+     * @param translatedValue The translated value.
+     * @param translations    Configured translations for the value, indexed by locale.
+     */
+    public TranslatableString(String value, String translatedValue, Map<String, String> translations) {
+        this.value = value;
+        this.translatedValue = translatedValue;
+        if (translations != null) {
+            this.translations = translations;
+        }
     }
 
     /**

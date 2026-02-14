@@ -1,7 +1,10 @@
 package com.arassec.artivact.domain.model.configuration;
 
 import com.arassec.artivact.domain.model.peripheral.configs.PeripheralConfig;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -12,7 +15,6 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @Builder
 public class PeripheralsConfiguration {
 
@@ -75,5 +77,51 @@ public class PeripheralsConfiguration {
      */
     @Builder.Default
     private List<PeripheralImplementation> availableModelEditorPeripheralImplementations = new LinkedList<>();
+
+    /**
+     * Creates a new peripherals configuration with the specified configurations and available implementations.
+     */
+    @SuppressWarnings("java:S107") // This constructor is required as fallback for Jackson JSON deserialization.
+    public PeripheralsConfiguration(List<PeripheralConfig> turntablePeripheralConfigs,
+                                    List<PeripheralImplementation> availableTurntablePeripheralImplementations,
+                                    List<PeripheralConfig> cameraPeripheralConfigs,
+                                    List<PeripheralImplementation> availableCameraPeripheralImplementations,
+                                    List<PeripheralConfig> imageBackgroundRemovalPeripheralConfigs,
+                                    List<PeripheralImplementation> availableImageManipulatorPeripheralImplementations,
+                                    List<PeripheralConfig> modelCreatorPeripheralConfigs,
+                                    List<PeripheralImplementation> availableModelCreatorPeripheralImplementations,
+                                    List<PeripheralConfig> modelEditorPeripheralConfigs,
+                                    List<PeripheralImplementation> availableModelEditorPeripheralImplementations) {
+        if (turntablePeripheralConfigs != null) {
+            this.turntablePeripheralConfigs = turntablePeripheralConfigs;
+        }
+        if (availableTurntablePeripheralImplementations != null) {
+            this.availableTurntablePeripheralImplementations = availableTurntablePeripheralImplementations;
+        }
+        if (cameraPeripheralConfigs != null) {
+            this.cameraPeripheralConfigs = cameraPeripheralConfigs;
+        }
+        if (availableCameraPeripheralImplementations != null) {
+            this.availableCameraPeripheralImplementations = availableCameraPeripheralImplementations;
+        }
+        if (imageBackgroundRemovalPeripheralConfigs != null) {
+            this.imageBackgroundRemovalPeripheralConfigs = imageBackgroundRemovalPeripheralConfigs;
+        }
+        if (availableImageManipulatorPeripheralImplementations != null) {
+            this.availableImageManipulatorPeripheralImplementations = availableImageManipulatorPeripheralImplementations;
+        }
+        if (modelCreatorPeripheralConfigs != null) {
+            this.modelCreatorPeripheralConfigs = modelCreatorPeripheralConfigs;
+        }
+        if (availableModelCreatorPeripheralImplementations != null) {
+            this.availableModelCreatorPeripheralImplementations = availableModelCreatorPeripheralImplementations;
+        }
+        if (modelEditorPeripheralConfigs != null) {
+            this.modelEditorPeripheralConfigs = modelEditorPeripheralConfigs;
+        }
+        if (availableModelEditorPeripheralImplementations != null) {
+            this.availableModelEditorPeripheralImplementations = availableModelEditorPeripheralImplementations;
+        }
+    }
 
 }

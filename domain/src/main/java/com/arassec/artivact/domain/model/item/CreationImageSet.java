@@ -1,6 +1,5 @@
 package com.arassec.artivact.domain.model.item;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,7 +12,6 @@ import java.util.List;
  */
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
 public class CreationImageSet {
 
@@ -32,5 +30,16 @@ public class CreationImageSet {
      */
     @Builder.Default
     private List<String> files = new LinkedList<>();
+
+    /**
+     * Creates a new CreationImageSet.
+     */
+    public CreationImageSet(boolean modelInput, Boolean backgroundRemoved, List<String> files) {
+        this.modelInput = modelInput;
+        this.backgroundRemoved = backgroundRemoved;
+        if (files != null) {
+            this.files = files;
+        }
+    }
 
 }

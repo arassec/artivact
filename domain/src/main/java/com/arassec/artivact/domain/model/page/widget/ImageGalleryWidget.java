@@ -67,6 +67,26 @@ public class ImageGalleryWidget extends Widget implements FileProcessingWidget {
     }
 
     /**
+     * Creates a new instance.
+     */
+    @SuppressWarnings("java:S107") // This constructor is required as fallback for Jackson JSON deserialization.
+    public ImageGalleryWidget(WidgetType type, TranslatableString heading, TranslatableString content,
+                              List<String> images, boolean fullscreenAllowed, String textPosition,
+                              boolean iconMode, boolean hideBorder, boolean stretchImages) {
+        super(type);
+        this.heading = heading;
+        this.content = content;
+        if (images != null) {
+            this.images = images;
+        }
+        this.fullscreenAllowed = fullscreenAllowed;
+        this.textPosition = textPosition;
+        this.iconMode = iconMode;
+        this.hideBorder = hideBorder;
+        this.stretchImages = stretchImages;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override

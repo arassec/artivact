@@ -1,6 +1,9 @@
 package com.arassec.artivact.domain.model;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.util.HashSet;
@@ -13,7 +16,6 @@ import java.util.Set;
 @Setter
 @SuperBuilder
 @NoArgsConstructor
-@AllArgsConstructor
 public abstract class BaseRestrictedObject implements IdentifiedObject, RestrictedObject {
 
     /**
@@ -26,5 +28,15 @@ public abstract class BaseRestrictedObject implements IdentifiedObject, Restrict
      */
     @Builder.Default
     private Set<String> restrictions = new HashSet<>();
+
+    /**
+     * Creates a new base restricted object with the specified ID and restrictions.
+     */
+    protected BaseRestrictedObject(String id, Set<String> restrictions) {
+        this.id = id;
+        if (restrictions != null) {
+            this.restrictions = restrictions;
+        }
+    }
 
 }

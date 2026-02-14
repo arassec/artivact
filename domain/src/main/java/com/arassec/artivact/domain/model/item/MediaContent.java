@@ -1,6 +1,7 @@
 package com.arassec.artivact.domain.model.item;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.List;
  * Contains all media content of an item.
  */
 @Data
+@NoArgsConstructor
 public class MediaContent {
 
     /**
@@ -20,5 +22,17 @@ public class MediaContent {
      * Models of the item.
      */
     private List<String> models = new LinkedList<>();
+
+    /**
+     * Creates a new media content instance.
+     */
+    public MediaContent(List<String> images, List<String> models) {
+        if (images != null) {
+            this.images = images;
+        }
+        if (models != null) {
+            this.models = models;
+        }
+    }
 
 }

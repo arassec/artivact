@@ -1,7 +1,10 @@
 package com.arassec.artivact.domain.model.configuration;
 
 import com.arassec.artivact.domain.model.tag.Tag;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -12,7 +15,6 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @Builder
 public class TagsConfiguration {
 
@@ -21,5 +23,16 @@ public class TagsConfiguration {
      */
     @Builder.Default
     private List<Tag> tags = new LinkedList<>();
+
+    /**
+     * Creates a new tags configuration with the specified tags.
+     *
+     * @param tags The available tags.
+     */
+    public TagsConfiguration(List<Tag> tags) {
+        if (tags != null) {
+            this.tags = tags;
+        }
+    }
 
 }

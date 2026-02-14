@@ -50,6 +50,9 @@ public class ProjectInitializationService {
      */
     private static final String INITIAL_USERNAME = "admin";
 
+    /**
+     * ID of the initial index page.
+     */
     private static final String INITIAL_INDEX_PAGE_ID = "8b2ae4ac-51cb-4de0-b2ee-ad531e01b176";
 
     /**
