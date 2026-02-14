@@ -29,6 +29,7 @@ public class ButtonsWidget extends Widget {
     /**
      * Creates a new instance.
      */
+    @SuppressWarnings("unused")
     public ButtonsWidget() {
         super(WidgetType.BUTTONS);
     }
@@ -40,6 +41,7 @@ public class ButtonsWidget extends Widget {
      * @param columns       Number of columns in the grid.
      * @param buttonConfigs The button configurations.
      */
+    @SuppressWarnings("unused") // Used by Jackson.
     public ButtonsWidget(WidgetType type, int columns, List<ButtonConfig> buttonConfigs) {
         super(type);
         this.columns = columns;

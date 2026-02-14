@@ -109,9 +109,9 @@
                        class="bg-warning text-white q-pa-sm q-mb-sm">
                       {{ $t('ArtivactCollectionExportEditor.label.exportFileMissing') }}
                     </p>
-                    <h3 class="av-label-h2">
+                    <h2>
                       {{ element.description.translatedValue }}
-                    </h3>
+                    </h2>
                     <p v-if="element.filePresent">
                       {{
                         $t('ArtivactCollectionExportEditor.label.lastModified') + new Date(element.fileLastModified)

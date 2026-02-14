@@ -27,6 +27,10 @@ public class PropertyCategory extends BaseTranslatableRestrictedObject {
     @Builder.Default
     private List<Property> properties = new LinkedList<>();
 
+    /**
+     * Creates a new property category instance.
+     */
+    @SuppressWarnings("unused") // Used by Jackson.
     public PropertyCategory(String value, String translatedValue, Map<String, String> translations, String id, Set<String> restrictions, List<Property> properties) {
         super(value, translatedValue, translations, id, restrictions);
         if (properties != null) {

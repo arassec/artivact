@@ -26,6 +26,7 @@ public class MediaCreationContent {
     /**
      * Creates a new media-creation content instance.
      */
+    @SuppressWarnings("unused") // Used by Jackson.
     public MediaCreationContent(List<CreationImageSet> imageSets, List<CreationModelSet> modelSets) {
         if (imageSets != null) {
             this.imageSets = imageSets;

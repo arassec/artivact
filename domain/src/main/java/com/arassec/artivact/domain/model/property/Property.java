@@ -27,6 +27,10 @@ public class Property extends BaseTranslatableRestrictedObject {
     @Builder.Default
     private List<BaseTranslatableRestrictedObject> valueRange = new LinkedList<>();
 
+    /**
+     * Creates a new property instance.
+     */
+    @SuppressWarnings("unused") // Used by Jackson.
     public Property(String value, String translatedValue, Map<String, String> translations, String id, Set<String> restrictions, List<BaseTranslatableRestrictedObject> valueRange) {
         super(value, translatedValue, translations, id, restrictions);
         if (valueRange != null) {

@@ -26,6 +26,7 @@ public class MediaContent {
     /**
      * Creates a new media content instance.
      */
+    @SuppressWarnings("unused") // Used by Jackson.
     public MediaContent(List<String> images, List<String> models) {
         if (images != null) {
             this.images = images;
