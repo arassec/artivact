@@ -133,6 +133,8 @@ public class PersistEntityAsJsonAspect {
         fileRepository.createDirIfRequired(jsonFilePath.getParent());
         byte[] jsonBytes = jsonMapper.writeValueAsBytes(entity);
         fileRepository.write(jsonFilePath, jsonBytes);
+
+        log.debug("Persisted entity {} as JSON: {}", id, jsonFilePath);
     }
 
     /**
