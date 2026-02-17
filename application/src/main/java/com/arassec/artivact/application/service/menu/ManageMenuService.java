@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Service for menu handling.
@@ -198,9 +197,7 @@ public class ManageMenuService
                         .filter(menuEntry -> !menuEntry.getId().equals(menuId))
                         .toList()));
 
-        menus = menus.stream()
-                .filter(existingMenu -> !existingMenu.getId().equals(menuId))
-                .collect(Collectors.toList());
+        menus.removeIf(existingMenu -> existingMenu.getId().equals(menuId));
 
         saveMenuList(menus);
 
@@ -303,9 +300,10 @@ public class ManageMenuService
     }
 
     /**
-     * Loads all menus sorted by their index.
+     * Loads all menus sorted by their index. The result list must be modifiable
+     * as callers (e.g. saveMenu, relocateMenu) add or remove entries.
      *
-     * @return Sorted list of menus.
+     * @return Sorted modifiable list of menus.
      */
     @SuppressWarnings("java:S6204") // The result list of menus needs to be modifiable!
     private List<Menu> loadMenusSorted() {
