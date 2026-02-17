@@ -9,7 +9,6 @@ import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.Roles;
 import com.arassec.artivact.domain.model.configuration.AppearanceConfiguration;
 import com.arassec.artivact.domain.model.configuration.ConfigurationType;
-import com.arassec.artivact.domain.model.configuration.MenuConfiguration;
 import com.arassec.artivact.domain.model.menu.Menu;
 import com.arassec.artivact.domain.model.page.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -146,7 +145,7 @@ class ManagePageServiceTest {
         Menu menu = new Menu();
         menu.setTargetPageId("page-1");
         menu.setRestrictions(Set.of(Roles.ROLE_USER));
-        when(menuRepository.load()).thenReturn(new MenuConfiguration(List.of(menu)));
+        when(menuRepository.load()).thenReturn(List.of(menu));
         when(pageRepository.findByIdOrAlias("page-1")).thenReturn(Optional.of(page));
         when(configurationRepository.findByType(ConfigurationType.APPEARANCE, AppearanceConfiguration.class))
                 .thenReturn(Optional.of(new AppearanceConfiguration("appTitle", null, null, null, null, null, null)));
@@ -159,7 +158,7 @@ class ManagePageServiceTest {
     void testLoadTranslatedRestrictedPageContent() {
         Menu menu = new Menu();
         menu.setTargetPageId("page-1");
-        when(menuRepository.load()).thenReturn(new MenuConfiguration(List.of(menu)));
+        when(menuRepository.load()).thenReturn(List.of(menu));
         when(pageRepository.findByIdOrAlias("page-1")).thenReturn(Optional.of(page));
         when(configurationRepository.findByType(ConfigurationType.APPEARANCE, AppearanceConfiguration.class))
                 .thenReturn(Optional.of(new AppearanceConfiguration("appTitle", null, null, null, null, null, null)));
@@ -182,7 +181,7 @@ class ManagePageServiceTest {
 
         Menu menu = new Menu();
         menu.setTargetPageId(newPageId);
-        when(menuRepository.load()).thenReturn(new MenuConfiguration(List.of(menu)));
+        when(menuRepository.load()).thenReturn(List.of(menu));
 
         PageContent savedContent = service.savePageContent(newPageId, Set.of(Roles.ROLE_ADMIN), newContent);
 
@@ -196,7 +195,7 @@ class ManagePageServiceTest {
 
         Menu menu = new Menu();
         menu.setTargetPageId("page-1");
-        when(menuRepository.load()).thenReturn(new MenuConfiguration(List.of(menu)));
+        when(menuRepository.load()).thenReturn(List.of(menu));
 
         PageContent newContent = new PageContent();
         Widget keptWidget = mock(Widget.class);
@@ -218,7 +217,7 @@ class ManagePageServiceTest {
     @Test
     void testSavePageContentThrowsIfMenuMissing() {
         when(pageRepository.findByIdOrAlias("page-1")).thenReturn(Optional.of(page));
-        when(menuRepository.load()).thenReturn(new MenuConfiguration(List.of()));
+        when(menuRepository.load()).thenReturn(List.of());
 
         PageContent content = new PageContent();
         assertThrows(ArtivactException.class, () -> service.savePageContent("page-1", Set.of(), content));
@@ -230,7 +229,7 @@ class ManagePageServiceTest {
 
         Menu menu = new Menu();
         menu.setTargetPageId("page-1");
-        when(menuRepository.load()).thenReturn(new MenuConfiguration(List.of(menu)));
+        when(menuRepository.load()).thenReturn(List.of(menu));
 
         Widget restrictedWidget = mock(Widget.class);
         when(restrictedWidget.getRestrictions()).thenReturn(Set.of(Roles.ROLE_ADMIN));
@@ -291,7 +290,7 @@ class ManagePageServiceTest {
     @Test
     void testLoadTranslatedRestrictedWipPageContentInitializesWipDir() {
 
-        when(menuRepository.load()).thenReturn(new MenuConfiguration(List.of(new Menu())));
+        when(menuRepository.load()).thenReturn(List.of(new Menu()));
         when(pageRepository.findByIdOrAlias("page-1")).thenReturn(Optional.of(page));
         Path widgetsPath = Path.of("widgets");
         when(useProjectDirsUseCase.getWidgetsDir()).thenReturn(widgetsPath);

@@ -1,6 +1,8 @@
 package com.arassec.artivact.application.port.out.repository;
 
-import com.arassec.artivact.domain.model.configuration.MenuConfiguration;
+import com.arassec.artivact.domain.model.menu.Menu;
+
+import java.util.List;
 
 /**
  * Repository for menus.
@@ -8,13 +10,24 @@ import com.arassec.artivact.domain.model.configuration.MenuConfiguration;
 public interface MenuRepository {
 
     /**
-     * Loads the current {@link MenuConfiguration}.
+     * Loads all {@link Menu}s.
+     *
+     * @return List of all menus.
      */
-    MenuConfiguration load();
+    List<Menu> load();
 
     /**
-     * Saves the {@link MenuConfiguration}.
+     * Saves a single {@link Menu}.
+     *
+     * @param menu The menu to save.
      */
-    void save(MenuConfiguration menuConfiguration);
+    void save(Menu menu);
+
+    /**
+     * Deletes the menu with the given ID.
+     *
+     * @param menuId The ID of the menu to delete.
+     */
+    void delete(String menuId);
 
 }
