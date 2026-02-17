@@ -19,6 +19,11 @@ import java.util.Set;
 public class Menu extends BaseTranslatableRestrictedObject {
 
     /**
+     * The index of this menu in the list of menus, used for ordering.
+     */
+    private int index;
+
+    /**
      * Optional menu ID of a parent menu.
      */
     private String parentId;

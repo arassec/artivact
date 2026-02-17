@@ -5,7 +5,6 @@ import com.arassec.artivact.application.port.in.page.DeletePageUseCase;
 import com.arassec.artivact.application.port.in.page.UpdatePageAliasUseCase;
 import com.arassec.artivact.application.port.out.repository.MenuRepository;
 import com.arassec.artivact.domain.exception.ArtivactException;
-import com.arassec.artivact.domain.model.configuration.MenuConfiguration;
 import com.arassec.artivact.domain.model.menu.Menu;
 import com.arassec.artivact.domain.model.page.Page;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +20,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,38 +41,38 @@ class ManageMenuServiceTest {
     @InjectMocks
     private ManageMenuService manageMenuService;
 
-    private MenuConfiguration menuConfiguration;
+    private List<Menu> menus;
 
     @BeforeEach
     void setup() {
-        menuConfiguration = new MenuConfiguration();
-        menuConfiguration.setMenus(new LinkedList<>());
-        lenient().when(menuRepository.load()).thenReturn(menuConfiguration);
+        menus = new LinkedList<>();
+        lenient().when(menuRepository.load()).thenReturn(menus);
     }
 
     @Test
     void testLoadTranslatedRestrictedMenus() {
-        menuConfiguration.setMenus(List.of(new Menu()));
+        menus.add(new Menu());
         assertThat(manageMenuService.loadTranslatedRestrictedMenus()).hasSize(1);
     }
 
     @Test
     void testSaveMenusUpdatesAndSaves() {
         Menu menu = new Menu();
+        menu.setId("menu1");
         menu.setTargetPageId("page1");
         menu.setTargetPageAlias("alias1");
         menu.setMenuEntries(List.of(new Menu()));
 
         List<Menu> result = manageMenuService.saveMenus(List.of(menu));
 
-        verify(menuRepository).save(any(MenuConfiguration.class));
+        verify(menuRepository).save(any(Menu.class), anyInt());
         verify(updatePageAliasUseCase).updatePageAlias("page1", "alias1");
         assertThat(result).isNotNull();
     }
 
     @Test
     void testSaveMenuNullReturnsExisting() {
-        menuConfiguration.setMenus(List.of(new Menu()));
+        menus.add(new Menu());
         List<Menu> result = manageMenuService.saveMenu(null);
         assertThat(result).hasSize(1);
     }
@@ -115,8 +115,8 @@ class ManageMenuServiceTest {
 
         manageMenuService.saveMenu(menu);
 
-        verify(menuRepository).save(any(MenuConfiguration.class));
-        assertThat(menuConfiguration.getMenus()).contains(menu);
+        verify(menuRepository).save(any(Menu.class), anyInt());
+        assertThat(menus).contains(menu);
     }
 
     @Test
@@ -125,7 +125,7 @@ class ManageMenuServiceTest {
         existing.setId("menu1");
         existing.setValue("Old");
 
-        menuConfiguration.setMenus(List.of(existing));
+        menus.add(existing);
 
         Menu updated = new Menu();
         updated.setId("menu1");
@@ -133,12 +133,12 @@ class ManageMenuServiceTest {
 
         manageMenuService.saveMenu(updated);
 
-        assertThat(menuConfiguration.getMenus().getFirst().getValue()).isEqualTo("New Title");
+        assertThat(menus.getFirst().getValue()).isEqualTo("New Title");
     }
 
     @Test
     void testDeleteMenuWithEmptyIdReturnsExisting() {
-        menuConfiguration.setMenus(List.of(new Menu()));
+        menus.add(new Menu());
         List<Menu> result = manageMenuService.deleteMenu("");
         assertThat(result).hasSize(1);
     }
@@ -148,18 +148,17 @@ class ManageMenuServiceTest {
         Menu menu = new Menu();
         menu.setId("menu1");
         menu.setTargetPageId("page1");
-        menuConfiguration.setMenus(List.of(menu));
+        menus.add(menu);
 
         manageMenuService.deleteMenu("menu1");
 
         verify(deletePageUseCase).deletePage("page1");
-        verify(menuRepository).save(any(MenuConfiguration.class));
-        assertThat(menuConfiguration.getMenus()).isEmpty();
+        verify(menuRepository).deleteAll();
     }
 
     @Test
     void testAddPageToMenuWithEmptyIdReturnsExisting() {
-        menuConfiguration.setMenus(List.of(new Menu()));
+        menus.add(new Menu());
         List<Menu> result = manageMenuService.addPageToMenu("");
         assertThat(result).hasSize(1);
     }
@@ -168,7 +167,7 @@ class ManageMenuServiceTest {
     void testAddPageToMenuAddsPage() {
         Menu menu = new Menu();
         menu.setId("menu1");
-        menuConfiguration.setMenus(List.of(menu));
+        menus.add(menu);
 
         Page createdPage = new Page();
         createdPage.setId("page1");
@@ -177,7 +176,7 @@ class ManageMenuServiceTest {
 
         manageMenuService.addPageToMenu("menu1");
 
-        verify(menuRepository).save(any(MenuConfiguration.class));
+        verify(menuRepository).save(any(Menu.class), anyInt());
         assertThat(menu.getTargetPageId()).isEqualTo("page1");
     }
 
@@ -185,9 +184,7 @@ class ManageMenuServiceTest {
     void testLoadMenuFindsMenu() {
         Menu menu = new Menu();
         menu.setId("menu1");
-        List<Menu> menus = new LinkedList<>();
         menus.add(menu);
-        menuConfiguration.setMenus(menus);
 
         Menu result = manageMenuService.loadMenu("menu1");
         assertThat(result).isEqualTo(menu);
@@ -195,7 +192,6 @@ class ManageMenuServiceTest {
 
     @Test
     void testLoadMenuThrowsIfNotFound() {
-        menuConfiguration.setMenus(List.of());
         assertThatThrownBy(() -> manageMenuService.loadMenu("unknown"))
                 .isInstanceOf(Exception.class);
     }

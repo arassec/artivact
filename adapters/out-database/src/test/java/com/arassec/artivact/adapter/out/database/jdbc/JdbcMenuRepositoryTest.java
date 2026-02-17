@@ -2,7 +2,6 @@ package com.arassec.artivact.adapter.out.database.jdbc;
 
 import com.arassec.artivact.adapter.out.database.jdbc.springdata.entity.MenuEntity;
 import com.arassec.artivact.adapter.out.database.jdbc.springdata.repository.MenuEntityRepository;
-import com.arassec.artivact.domain.model.configuration.MenuConfiguration;
 import com.arassec.artivact.domain.model.menu.Menu;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
@@ -46,7 +45,7 @@ class JdbcMenuRepositoryTest {
     private JsonMapper jsonMapper;
 
     /**
-     * Tests loading the menu configuration.
+     * Tests loading all menus.
      */
     @Test
     @SneakyThrows
@@ -65,36 +64,67 @@ class JdbcMenuRepositoryTest {
 
         when(menuEntityRepository.findAll()).thenReturn(List.of(second, first));
 
-        MenuConfiguration menuConfiguration = jdbcMenuRepository.load();
+        List<Menu> menus = jdbcMenuRepository.load();
 
-        assertEquals(List.of(firstMenu, secondMenu), menuConfiguration.getMenus());
+        assertEquals(List.of(firstMenu, secondMenu), menus);
     }
 
     /**
-     * Tests saving the menu configuration.
+     * Tests saving a single menu.
      */
     @Test
     void testSave() {
-        Menu first = new Menu();
-        first.setId("first-id");
-        Menu second = new Menu();
-        second.setId("second-id");
+        Menu menu = new Menu();
+        menu.setId("menu-id");
 
-        MenuEntity firstEntity = new MenuEntity();
-        when(menuEntityRepository.findById("first-id")).thenReturn(Optional.of(firstEntity));
+        MenuEntity existingEntity = new MenuEntity();
+        when(menuEntityRepository.findById("menu-id")).thenReturn(Optional.of(existingEntity));
 
-        MenuConfiguration menuConfiguration = new MenuConfiguration();
-        menuConfiguration.setMenus(List.of(first, second));
-
-        jdbcMenuRepository.save(menuConfiguration);
+        jdbcMenuRepository.save(menu, 0);
 
         ArgumentCaptor<MenuEntity> argCap = ArgumentCaptor.forClass(MenuEntity.class);
-        verify(menuEntityRepository, times(2)).save(argCap.capture());
+        verify(menuEntityRepository, times(1)).save(argCap.capture());
 
-        assertThat(argCap.getAllValues().get(0).getSortOrder()).isZero();
-        assertThat(argCap.getAllValues().get(1).getSortOrder()).isEqualTo(1);
+        assertThat(argCap.getValue().getSortOrder()).isZero();
+        assertThat(argCap.getValue().getId()).isEqualTo("menu-id");
+    }
 
-        verify(menuEntityRepository).deleteWhereIdNotIn(Set.of("first-id", "second-id"));
+    /**
+     * Tests saving a new menu (not yet in database).
+     */
+    @Test
+    void testSaveNewMenu() {
+        Menu menu = new Menu();
+        menu.setId("new-menu-id");
+
+        when(menuEntityRepository.findById("new-menu-id")).thenReturn(Optional.empty());
+
+        jdbcMenuRepository.save(menu, 1);
+
+        ArgumentCaptor<MenuEntity> argCap = ArgumentCaptor.forClass(MenuEntity.class);
+        verify(menuEntityRepository, times(1)).save(argCap.capture());
+
+        assertThat(argCap.getValue().getSortOrder()).isEqualTo(1);
+        assertThat(argCap.getValue().getId()).isEqualTo("new-menu-id");
+    }
+
+    /**
+     * Tests deleting menus whose IDs are not in the given set.
+     */
+    @Test
+    void testDeleteWhereIdNotIn() {
+        Set<String> menuIds = Set.of("id1", "id2");
+        jdbcMenuRepository.deleteWhereIdNotIn(menuIds);
+        verify(menuEntityRepository).deleteWhereIdNotIn(menuIds);
+    }
+
+    /**
+     * Tests deleting all menus.
+     */
+    @Test
+    void testDeleteAll() {
+        jdbcMenuRepository.deleteAll();
+        verify(menuEntityRepository).deleteAll();
     }
 
 }

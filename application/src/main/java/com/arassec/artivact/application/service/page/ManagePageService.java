@@ -595,7 +595,7 @@ public class ManagePageService
      * @return Set of restrictions from the corresponding menu.
      */
     private Set<String> findMenuRestrictions(String pageId) {
-        for (Menu menu : menuRepository.load().getMenus()) {
+        for (Menu menu : menuRepository.load()) {
             if (pageId.equals(menu.getTargetPageId())) {
                 return menu.getRestrictions();
             }
@@ -619,7 +619,7 @@ public class ManagePageService
      * @return The menu whose target page is the given one.
      */
     private Optional<Menu> findMenu(String pageId) {
-        for (Menu menu : menuRepository.load().getMenus()) {
+        for (Menu menu : menuRepository.load()) {
             if (pageId.equals(menu.getTargetPageId())) {
                 return Optional.of(menu);
             }

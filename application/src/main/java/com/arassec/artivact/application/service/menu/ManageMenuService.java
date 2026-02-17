@@ -11,7 +11,6 @@ import com.arassec.artivact.application.port.in.page.DeletePageUseCase;
 import com.arassec.artivact.application.port.in.page.UpdatePageAliasUseCase;
 import com.arassec.artivact.application.port.out.repository.MenuRepository;
 import com.arassec.artivact.domain.exception.ArtivactException;
-import com.arassec.artivact.domain.model.configuration.MenuConfiguration;
 import com.arassec.artivact.domain.model.menu.Menu;
 import com.arassec.artivact.domain.model.page.Page;
 import jakarta.transaction.Transactional;
@@ -20,10 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Service for menu handling.
@@ -66,7 +63,7 @@ public class ManageMenuService
     @TranslateResult
     @Override
     public List<Menu> loadTranslatedRestrictedMenus() {
-        return menuRepository.load().getMenus();
+        return loadMenusSorted();
     }
 
     /**
@@ -78,13 +75,9 @@ public class ManageMenuService
     @TranslateResult
     @Override
     public List<Menu> saveMenus(List<Menu> menus) {
-        MenuConfiguration menuConfiguration = menuRepository.load();
+        saveMenuList(menus);
 
-        menuConfiguration.setMenus(menus);
-
-        menuRepository.save(menuConfiguration);
-
-        menuConfiguration.getMenus().forEach(menu -> {
+        menus.forEach(menu -> {
             if (StringUtils.hasText(menu.getTargetPageId())) {
                 updatePageAliasUseCase.updatePageAlias(menu.getTargetPageId(), menu.getTargetPageAlias());
             }
@@ -118,9 +111,9 @@ public class ManageMenuService
             }
         });
 
-        MenuConfiguration menuConfiguration = menuRepository.load();
+        List<Menu> menus = loadMenusSorted();
 
-        Optional<Menu> existingMenuOptional = menuConfiguration.getMenus().stream()
+        Optional<Menu> existingMenuOptional = menus.stream()
                 .filter(existingMenu -> existingMenu.getId().equals(menu.getId()))
                 .findFirst();
 
@@ -135,7 +128,7 @@ public class ManageMenuService
             existingMenu.setMenuEntries(menu.getMenuEntries());
             existingMenu.setExternal(menu.getExternal());
         } else {
-            menuConfiguration.getMenus().add(menu);
+            menus.add(menu);
         }
 
         if (StringUtils.hasText(menu.getTargetPageId())) {
@@ -146,7 +139,7 @@ public class ManageMenuService
         );
 
         // We add pages for sub-menu entries automatically, except when they point to external pages:
-        menuConfiguration.getMenus().forEach(existingMenu ->
+        menus.forEach(existingMenu ->
                 existingMenu.getMenuEntries().forEach(existingMenuEntry -> {
                     if (!StringUtils.hasText(existingMenuEntry.getTargetPageId()) && !StringUtils.hasText(existingMenuEntry.getExternal())) {
                         Page page = createPageUseCase.createPage(existingMenuEntry.getRestrictions());
@@ -155,7 +148,7 @@ public class ManageMenuService
                     }
                 }));
 
-        menuRepository.save(menuConfiguration);
+        saveMenuList(menus);
 
         return loadTranslatedRestrictedMenus();
     }
@@ -176,11 +169,11 @@ public class ManageMenuService
             return loadTranslatedRestrictedMenus();
         }
 
-        MenuConfiguration menuConfiguration = menuRepository.load();
+        List<Menu> menus = loadMenusSorted();
 
         List<String> pagesToDelete = new LinkedList<>();
 
-        menuConfiguration.getMenus().forEach(menu -> {
+        menus.forEach(menu -> {
             if (menu.getId().equals(menuId)) {
                 // Main menu to delete:
                 pagesToDelete.addAll(menu.getMenuEntries().stream()
@@ -201,16 +194,15 @@ public class ManageMenuService
                 .forEach(deletePageUseCase::deletePage);
 
         // Delete sub-menus:
-        menuConfiguration.getMenus()
-                .forEach(menu -> menu.setMenuEntries(menu.getMenuEntries().stream()
+        menus.forEach(menu -> menu.setMenuEntries(menu.getMenuEntries().stream()
                         .filter(menuEntry -> !menuEntry.getId().equals(menuId))
                         .toList()));
 
-        menuConfiguration.setMenus(menuConfiguration.getMenus().stream()
+        menus = menus.stream()
                 .filter(existingMenu -> !existingMenu.getId().equals(menuId))
-                .toList());
+                .collect(Collectors.toList());
 
-        menuRepository.save(menuConfiguration);
+        saveMenuList(menus);
 
         return loadTranslatedRestrictedMenus();
     }
@@ -230,9 +222,9 @@ public class ManageMenuService
             return loadTranslatedRestrictedMenus();
         }
 
-        MenuConfiguration menuConfiguration = menuRepository.load();
+        List<Menu> menus = loadMenusSorted();
 
-        menuConfiguration.getMenus().forEach(menu -> {
+        menus.forEach(menu -> {
             if (menu.getId().equals(menuId)) {
                 Page page = createPageUseCase.createPage(menu.getRestrictions());
                 page.setAlias(menu.getTargetPageAlias());
@@ -240,7 +232,7 @@ public class ManageMenuService
             }
         });
 
-        menuRepository.save(menuConfiguration);
+        saveMenuList(menus);
 
         return loadTranslatedRestrictedMenus();
     }
@@ -272,8 +264,7 @@ public class ManageMenuService
     @Override
     public void relocateMenu(String menuId, String newParentMenuId) {
 
-        MenuConfiguration menuConfiguration = menuRepository.load();
-        List<Menu> menus = menuConfiguration.getMenus();
+        List<Menu> menus = loadMenusSorted();
 
         List<Menu> flattenedMenus = new LinkedList<>();
         flattenedMenus.addAll(menus);
@@ -308,7 +299,39 @@ public class ManageMenuService
             menus.remove(sourceMenu);
         }
 
-        menuRepository.save(menuConfiguration);
+        saveMenuList(menus);
+    }
+
+    /**
+     * Loads all menus sorted by their index.
+     *
+     * @return Sorted list of menus.
+     */
+    @SuppressWarnings("java:S6204") // The result list of menus needs to be modifiable!
+    private List<Menu> loadMenusSorted() {
+        List<Menu> menus = menuRepository.load();
+        menus.sort(Comparator.comparingInt(Menu::getIndex));
+        return menus;
+    }
+
+    /**
+     * Saves all menus, calculating and setting the index for each menu.
+     *
+     * @param menus The list of menus to save.
+     */
+    private void saveMenuList(List<Menu> menus) {
+        Set<String> existingMenuIds = new HashSet<>();
+        for (int i = 0; i < menus.size(); i++) {
+            Menu menu = menus.get(i);
+            menu.setIndex(i);
+            existingMenuIds.add(menu.getId());
+            menuRepository.save(menu, i);
+        }
+        if (existingMenuIds.isEmpty()) {
+            menuRepository.deleteAll();
+        } else {
+            menuRepository.deleteWhereIdNotIn(existingMenuIds);
+        }
     }
 
 }
