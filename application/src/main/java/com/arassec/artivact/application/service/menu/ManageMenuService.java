@@ -1,7 +1,9 @@
 package com.arassec.artivact.application.service.menu;
 
 
+import com.arassec.artivact.application.infrastructure.aspect.DeleteEntityJson;
 import com.arassec.artivact.application.infrastructure.aspect.GenerateIds;
+import com.arassec.artivact.application.infrastructure.aspect.PersistAsJson;
 import com.arassec.artivact.application.infrastructure.aspect.RestrictResult;
 import com.arassec.artivact.application.infrastructure.aspect.TranslateResult;
 import com.arassec.artivact.application.port.in.menu.*;
@@ -74,6 +76,7 @@ public class ManageMenuService
     @GenerateIds
     @RestrictResult
     @TranslateResult
+    @PersistAsJson("menus")
     @Override
     public List<Menu> saveMenus(List<Menu> menus) {
         MenuConfiguration menuConfiguration = menuRepository.load();
@@ -99,6 +102,7 @@ public class ManageMenuService
     @GenerateIds
     @RestrictResult
     @TranslateResult
+    @PersistAsJson("menus")
     @Override
     public List<Menu> saveMenu(Menu menu) {
         if (menu == null) {
@@ -165,6 +169,7 @@ public class ManageMenuService
      */
     @RestrictResult
     @TranslateResult
+    @DeleteEntityJson("menus")
     @Override
     public List<Menu> deleteMenu(String menuId) {
         if (!StringUtils.hasText(menuId)) {
