@@ -1,6 +1,7 @@
 package com.arassec.artivact.application.service.page;
 
 import com.arassec.artivact.application.infrastructure.aspect.GenerateIds;
+import com.arassec.artivact.application.infrastructure.aspect.PersistEntityAsJson;
 import com.arassec.artivact.application.infrastructure.aspect.RestrictResult;
 import com.arassec.artivact.application.infrastructure.aspect.TranslateResult;
 import com.arassec.artivact.application.port.in.page.*;
@@ -125,6 +126,7 @@ public class ManagePageService
      *
      * @param pageIdOrAlias The page's ID or alias.
      */
+    @PersistEntityAsJson(entityDir = "pages", entityType = PageContent.class, delete = true)
     @Override
     public void deletePage(String pageIdOrAlias) {
         Optional<Page> pageOptional = pageRepository.deleteById(pageIdOrAlias);
@@ -265,6 +267,7 @@ public class ManagePageService
      * @return The updated page content.
      */
     @GenerateIds
+    @PersistEntityAsJson(entityDir = "pages", entityType = PageContent.class)
     @TranslateResult
     @RestrictResult
     @Override

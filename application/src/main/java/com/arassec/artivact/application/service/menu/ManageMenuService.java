@@ -2,6 +2,7 @@ package com.arassec.artivact.application.service.menu;
 
 
 import com.arassec.artivact.application.infrastructure.aspect.GenerateIds;
+import com.arassec.artivact.application.infrastructure.aspect.PersistEntityAsJson;
 import com.arassec.artivact.application.infrastructure.aspect.RestrictResult;
 import com.arassec.artivact.application.infrastructure.aspect.TranslateResult;
 import com.arassec.artivact.application.port.in.menu.*;
@@ -72,6 +73,7 @@ public class ManageMenuService
      * {@inheritDoc}
      */
     @GenerateIds
+    @PersistEntityAsJson(entityDir = "menus", entityType = Menu.class)
     @RestrictResult
     @TranslateResult
     @Override
@@ -97,6 +99,7 @@ public class ManageMenuService
      * {@inheritDoc}
      */
     @GenerateIds
+    @PersistEntityAsJson(entityDir = "menus", entityType = Menu.class)
     @RestrictResult
     @TranslateResult
     @Override
@@ -163,6 +166,7 @@ public class ManageMenuService
      * @param menuId The ID of the menu to delete.
      * @return All remaining application menus, translated.
      */
+    @PersistEntityAsJson(entityDir = "menus", entityType = Menu.class, delete = true)
     @RestrictResult
     @TranslateResult
     @Override
