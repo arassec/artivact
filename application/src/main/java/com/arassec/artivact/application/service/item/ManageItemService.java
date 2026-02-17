@@ -1,6 +1,7 @@
 package com.arassec.artivact.application.service.item;
 
 import com.arassec.artivact.application.infrastructure.aspect.GenerateIds;
+import com.arassec.artivact.application.infrastructure.aspect.PersistEntityAsJson;
 import com.arassec.artivact.application.infrastructure.aspect.RestrictResult;
 import com.arassec.artivact.application.infrastructure.aspect.TranslateResult;
 import com.arassec.artivact.application.port.in.configuration.LoadPropertiesConfigurationUseCase;
@@ -161,6 +162,7 @@ public class ManageItemService implements CreateItemUseCase,
      * {@inheritDoc}
      */
     @GenerateIds
+    @PersistEntityAsJson(entityDir = "items", entityType = Item.class)
     @Override
     public Item save(Item item) {
         String itemId = item.getId();
@@ -195,6 +197,7 @@ public class ManageItemService implements CreateItemUseCase,
     /**
      * {@inheritDoc}
      */
+    @PersistEntityAsJson(entityDir = "items", entityType = Item.class, delete = true)
     @Override
     public void delete(String itemId) {
         try {
