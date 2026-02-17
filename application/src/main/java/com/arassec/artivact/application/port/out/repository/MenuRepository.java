@@ -19,21 +19,15 @@ public interface MenuRepository {
     /**
      * Saves a single {@link Menu}.
      *
-     * @param menu  The menu to save.
-     * @param index The index for ordering.
+     * @param menu The menu to save.
      */
-    void save(Menu menu, int index);
+    void save(Menu menu);
 
     /**
-     * Deletes menus whose IDs are not in the given set.
+     * Deletes the menu with the given ID.
      *
-     * @param menuIds The IDs of menus to keep.
+     * @param menuId The ID of the menu to delete.
      */
-    void deleteWhereIdNotIn(java.util.Set<String> menuIds);
-
-    /**
-     * Deletes all menus.
-     */
-    void deleteAll();
+    void delete(String menuId);
 
 }

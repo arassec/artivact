@@ -318,18 +318,19 @@ public class ManageMenuService
      * @param menus The list of menus to save.
      */
     private void saveMenuList(List<Menu> menus) {
-        Set<String> existingMenuIds = new HashSet<>();
+        Set<String> currentMenuIds = new HashSet<>();
         for (int i = 0; i < menus.size(); i++) {
             Menu menu = menus.get(i);
             menu.setIndex(i);
-            existingMenuIds.add(menu.getId());
-            menuRepository.save(menu, i);
+            currentMenuIds.add(menu.getId());
+            menuRepository.save(menu);
         }
-        if (existingMenuIds.isEmpty()) {
-            menuRepository.deleteAll();
-        } else {
-            menuRepository.deleteWhereIdNotIn(existingMenuIds);
-        }
+
+        // Delete menus that are no longer in the list:
+        menuRepository.load().stream()
+                .map(Menu::getId)
+                .filter(id -> !currentMenuIds.contains(id))
+                .forEach(menuRepository::delete);
     }
 
 }

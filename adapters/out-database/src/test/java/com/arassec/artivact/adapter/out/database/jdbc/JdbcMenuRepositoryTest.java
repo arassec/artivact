@@ -14,7 +14,6 @@ import tools.jackson.databind.json.JsonMapper;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -76,11 +75,12 @@ class JdbcMenuRepositoryTest {
     void testSave() {
         Menu menu = new Menu();
         menu.setId("menu-id");
+        menu.setIndex(0);
 
         MenuEntity existingEntity = new MenuEntity();
         when(menuEntityRepository.findById("menu-id")).thenReturn(Optional.of(existingEntity));
 
-        jdbcMenuRepository.save(menu, 0);
+        jdbcMenuRepository.save(menu);
 
         ArgumentCaptor<MenuEntity> argCap = ArgumentCaptor.forClass(MenuEntity.class);
         verify(menuEntityRepository, times(1)).save(argCap.capture());
@@ -96,10 +96,11 @@ class JdbcMenuRepositoryTest {
     void testSaveNewMenu() {
         Menu menu = new Menu();
         menu.setId("new-menu-id");
+        menu.setIndex(1);
 
         when(menuEntityRepository.findById("new-menu-id")).thenReturn(Optional.empty());
 
-        jdbcMenuRepository.save(menu, 1);
+        jdbcMenuRepository.save(menu);
 
         ArgumentCaptor<MenuEntity> argCap = ArgumentCaptor.forClass(MenuEntity.class);
         verify(menuEntityRepository, times(1)).save(argCap.capture());
@@ -109,22 +110,12 @@ class JdbcMenuRepositoryTest {
     }
 
     /**
-     * Tests deleting menus whose IDs are not in the given set.
+     * Tests deleting a menu by its ID.
      */
     @Test
-    void testDeleteWhereIdNotIn() {
-        Set<String> menuIds = Set.of("id1", "id2");
-        jdbcMenuRepository.deleteWhereIdNotIn(menuIds);
-        verify(menuEntityRepository).deleteWhereIdNotIn(menuIds);
-    }
-
-    /**
-     * Tests deleting all menus.
-     */
-    @Test
-    void testDeleteAll() {
-        jdbcMenuRepository.deleteAll();
-        verify(menuEntityRepository).deleteAll();
+    void testDelete() {
+        jdbcMenuRepository.delete("menu-id");
+        verify(menuEntityRepository).deleteById("menu-id");
     }
 
 }

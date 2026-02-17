@@ -53,12 +53,12 @@ public class JdbcMenuRepository extends BaseJdbcRepository implements MenuReposi
      * {@inheritDoc}
      */
     @Override
-    public void save(Menu menu, int index) {
+    public void save(Menu menu) {
         Optional<MenuEntity> menuEntityOptional = menuEntityRepository.findById(menu.getId());
         MenuEntity menuEntity = menuEntityOptional.orElseGet(MenuEntity::new);
 
         menuEntity.setId(menu.getId());
-        menuEntity.setSortOrder(index);
+        menuEntity.setSortOrder(menu.getIndex());
         menuEntity.setContentJson(toJson(menu));
 
         menuEntityRepository.save(menuEntity);
@@ -68,16 +68,8 @@ public class JdbcMenuRepository extends BaseJdbcRepository implements MenuReposi
      * {@inheritDoc}
      */
     @Override
-    public void deleteWhereIdNotIn(Set<String> menuIds) {
-        menuEntityRepository.deleteWhereIdNotIn(menuIds);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void deleteAll() {
-        menuEntityRepository.deleteAll();
+    public void delete(String menuId) {
+        menuEntityRepository.deleteById(menuId);
     }
 
 }

@@ -20,7 +20,6 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -65,7 +64,7 @@ class ManageMenuServiceTest {
 
         List<Menu> result = manageMenuService.saveMenus(List.of(menu));
 
-        verify(menuRepository).save(any(Menu.class), anyInt());
+        verify(menuRepository).save(any(Menu.class));
         verify(updatePageAliasUseCase).updatePageAlias("page1", "alias1");
         assertThat(result).isNotNull();
     }
@@ -115,7 +114,7 @@ class ManageMenuServiceTest {
 
         manageMenuService.saveMenu(menu);
 
-        verify(menuRepository).save(any(Menu.class), anyInt());
+        verify(menuRepository).save(any(Menu.class));
         assertThat(menus).contains(menu);
     }
 
@@ -153,7 +152,6 @@ class ManageMenuServiceTest {
         manageMenuService.deleteMenu("menu1");
 
         verify(deletePageUseCase).deletePage("page1");
-        verify(menuRepository).deleteAll();
     }
 
     @Test
@@ -176,7 +174,7 @@ class ManageMenuServiceTest {
 
         manageMenuService.addPageToMenu("menu1");
 
-        verify(menuRepository).save(any(Menu.class), anyInt());
+        verify(menuRepository).save(any(Menu.class));
         assertThat(menu.getTargetPageId()).isEqualTo("page1");
     }
 
