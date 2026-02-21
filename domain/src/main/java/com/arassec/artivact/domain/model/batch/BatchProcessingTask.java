@@ -28,6 +28,11 @@ public enum BatchProcessingTask {
     /**
      * Updates the search index of items.
      */
-    UPDATE_SEARCH_INDEX
+    UPDATE_SEARCH_INDEX,
+
+    /**
+     * Cleans up project files.
+     */
+    CLEANUP_PROJECT_FILES
 
 }

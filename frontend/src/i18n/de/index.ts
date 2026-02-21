@@ -1275,4 +1275,5 @@ export default {
   REMOVE_TAG_FROM_ITEM: 'Tag entfernen',
   UPLOAD_MODIFIED_ITEM: 'Geänderte Objekte hochladen',
   UPDATE_SEARCH_INDEX: 'Suchindex aktualisieren',
+  CLEANUP_PROJECT_FILES: 'Projektdateien bereinigen'
 };

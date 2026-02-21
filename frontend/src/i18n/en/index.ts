@@ -1289,4 +1289,5 @@ export default {
   REMOVE_TAG_FROM_ITEM: "Remove tag",
   UPLOAD_MODIFIED_ITEM: "Upload modified item",
   UPDATE_SEARCH_INDEX: "Update search index",
+  CLEANUP_PROJECT_FILES: 'Cleanup project files'
 };

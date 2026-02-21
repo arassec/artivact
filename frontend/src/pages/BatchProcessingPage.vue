@@ -27,7 +27,9 @@
           batchProcessingParamersRef.task !==
             BatchProcessingTask.UPLOAD_MODIFIED_ITEM &&
           batchProcessingParamersRef.task !==
-            BatchProcessingTask.UPDATE_SEARCH_INDEX
+            BatchProcessingTask.UPDATE_SEARCH_INDEX &&
+          batchProcessingParamersRef.task !==
+            BatchProcessingTask.CLEANUP_PROJECT_FILES
         "
       >
         <div class="q-mt-lg">
@@ -126,7 +128,7 @@
 
     <!-- LONG-RUNNING OPERATION -->
     <artivact-operation-in-progress-dialog
-      v-if="showOperationInProgressModalRef == true"
+      v-if="showOperationInProgressModalRef"
       :dialog-model="showOperationInProgressModalRef"
       @close-dialog="showOperationInProgressModalRef = false"
       :success-message="'BatchProcessingPage.messages.process.success'"
