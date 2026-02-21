@@ -244,7 +244,7 @@ export enum ContentSource {
 
 export interface ExportConfiguration {
   applyRestrictions: boolean;
-  optimizeSize: boolean;
+  xrExport: boolean;
   excludeItems: boolean;
 }
 

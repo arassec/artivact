@@ -8,6 +8,7 @@ import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.model.configuration.PropertiesConfiguration;
 import com.arassec.artivact.domain.model.configuration.TagsConfiguration;
 import com.arassec.artivact.domain.model.exchange.ImportContext;
+import com.arassec.artivact.domain.model.misc.DirectoryDefinitions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -59,7 +60,8 @@ public class ConfigurationImportService implements ImportPropertiesConfiguration
      */
     @Override
     public void importPropertiesConfiguration(ImportContext importContext) {
-        Path propertiesConfigurationJson = importContext.getImportDir().resolve(PROPERTIES_EXCHANGE_FILENAME_JSON);
+        Path propertiesConfigurationJson = importContext.getImportDir().resolve(DirectoryDefinitions.CONFIGS_DIR)
+                .resolve(PROPERTIES_EXCHANGE_FILENAME_JSON);
         if (fileRepository.exists(propertiesConfigurationJson)) {
             PropertiesConfiguration propertiesConfiguration;
             propertiesConfiguration = jsonMapper.readValue(fileRepository.read(propertiesConfigurationJson), PropertiesConfiguration.class);
@@ -78,7 +80,8 @@ public class ConfigurationImportService implements ImportPropertiesConfiguration
      */
     @Override
     public void importTagsConfiguration(ImportContext importContext) {
-        Path tagsConfigurationJson = importContext.getImportDir().resolve(TAGS_EXCHANGE_FILENAME_JSON);
+        Path tagsConfigurationJson = importContext.getImportDir().resolve(DirectoryDefinitions.CONFIGS_DIR)
+                .resolve(TAGS_EXCHANGE_FILENAME_JSON);
         if (fileRepository.exists(tagsConfigurationJson)) {
             TagsConfiguration tagsConfiguration;
             tagsConfiguration = jsonMapper.readValue(fileRepository.read(tagsConfigurationJson), TagsConfiguration.class);

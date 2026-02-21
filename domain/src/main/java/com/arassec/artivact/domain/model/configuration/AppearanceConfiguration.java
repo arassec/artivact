@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AppearanceConfiguration {
+public class AppearanceConfiguration implements ConfigurationTypeProvider {
 
     /**
      * The application title.
@@ -48,5 +48,13 @@ public class AppearanceConfiguration {
      * The ID of the index page.
      */
     private String indexPageId;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ConfigurationType getConfigurationType() {
+        return ConfigurationType.APPEARANCE;
+    }
 
 }

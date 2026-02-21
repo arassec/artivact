@@ -4,17 +4,16 @@ import com.arassec.artivact.application.port.in.account.LoadAccountUseCase;
 import com.arassec.artivact.application.port.in.configuration.ImportPropertiesConfigurationUseCase;
 import com.arassec.artivact.application.port.in.configuration.ImportTagsConfigurationUseCase;
 import com.arassec.artivact.application.port.in.item.ImportItemUseCase;
-import com.arassec.artivact.application.port.in.item.ManageItemImagesUseCase;
-import com.arassec.artivact.application.port.in.item.ManageItemModelsUseCase;
 import com.arassec.artivact.application.port.in.item.SaveItemUseCase;
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.account.Account;
+import com.arassec.artivact.domain.model.exchange.ContentSource;
 import com.arassec.artivact.domain.model.exchange.ExchangeMainData;
 import com.arassec.artivact.domain.model.exchange.ImportContext;
 import com.arassec.artivact.domain.model.item.Item;
-import com.arassec.artivact.domain.model.item.MediaCreationContent;
+import com.arassec.artivact.domain.model.misc.DirectoryDefinitions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -34,16 +33,6 @@ import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.*;
 public class ItemImportService implements ImportItemUseCase {
 
     /**
-     * Use case for manage item images.
-     */
-    private final ManageItemImagesUseCase manageItemImagesUseCase;
-
-    /**
-     * Use case for manage item models.
-     */
-    private final ManageItemModelsUseCase manageItemModelsUseCase;
-
-    /**
      * Use case for save item.
      */
     private final SaveItemUseCase saveItemUseCase;
@@ -54,7 +43,7 @@ public class ItemImportService implements ImportItemUseCase {
     private final LoadAccountUseCase loadAccountUseCase;
 
     /**
-     * The json mapper.
+     * The JSON mapper.
      */
     private final JsonMapper jsonMapper;
 
@@ -88,7 +77,7 @@ public class ItemImportService implements ImportItemUseCase {
         }
 
         Account account = loadAccountUseCase.loadByApiToken(apiToken).orElseThrow();
-        if (!(Boolean.TRUE.equals(account.getUser()) || !account.getAdmin())) {
+        if (!Boolean.TRUE.equals(account.getUser()) && !Boolean.TRUE.equals(account.getAdmin())) {
             throw new ArtivactException("Item import not allowed!");
         }
 
@@ -110,7 +99,13 @@ public class ItemImportService implements ImportItemUseCase {
         try {
             ExchangeMainData exchangeMainData =
                     jsonMapper.readValue(importContext.getImportDir().resolve(CONTENT_EXCHANGE_MAIN_DATA_FILENAME_JSON).toFile(), ExchangeMainData.class);
-            importItem(importContext, exchangeMainData.getSourceId());
+
+            if (!ContentSource.ITEM.equals(exchangeMainData.getContentSource())) {
+                throw new ArtivactException("Invalid content source for item import: " + exchangeMainData.getContentSource());
+            }
+
+            exchangeMainData.getSourceIds().forEach(itemId -> importItem(importContext, itemId));
+
             importPropertiesConfigurationUseCase.importPropertiesConfiguration(importContext);
             importTagsConfigurationUseCase.importTagsConfiguration(importContext);
 
@@ -126,18 +121,20 @@ public class ItemImportService implements ImportItemUseCase {
      */
     @Override
     public void importItem(ImportContext importContext, String itemId) {
-        Path itemDir = importContext.getImportDir().resolve(itemId);
-        String itemJson = fileRepository.read(itemDir.resolve(ITEM_EXCHANGE_FILENAME_JSON));
+        Path itemSourceDir = fileRepository.getDirFromId(importContext.getImportDir().resolve(DirectoryDefinitions.ITEMS_DIR), itemId);
+        Path itemJsonFile = itemSourceDir.resolve(ITEM_EXCHANGE_FILENAME_JSON);
+        if (!fileRepository.exists(itemJsonFile)) {
+            log.warn("No item json file found for item import with id '{}'. Skipping item import.", itemId);
+            return;
+        }
 
+        String itemJson = fileRepository.read(itemJsonFile);
         Item item = jsonMapper.readValue(itemJson, Item.class);
 
-        item.setMediaCreationContent(new MediaCreationContent());
-
-        item.getMediaContent().getImages()
-                .forEach(image -> manageItemImagesUseCase.saveImage(item.getId(), image, fileRepository.readStream(itemDir.resolve(image)), true));
-
-        item.getMediaContent().getModels()
-                .forEach(model -> manageItemModelsUseCase.saveModel(item.getId(), model, fileRepository.readStream(itemDir.resolve(model)), true));
+        Path itemTargetDir = fileRepository.getDirFromId(useProjectDirsUseCase.getItemsDir(), itemId);
+        fileRepository.createDirIfRequired(itemTargetDir);
+        fileRepository.copy(itemSourceDir.resolve(DirectoryDefinitions.IMAGES_DIR), itemTargetDir.resolve(DirectoryDefinitions.IMAGES_DIR));
+        fileRepository.copy(itemSourceDir.resolve(DirectoryDefinitions.MODELS_DIR), itemTargetDir.resolve(DirectoryDefinitions.MODELS_DIR));
 
         saveItemUseCase.save(item);
     }

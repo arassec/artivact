@@ -67,7 +67,7 @@ public class CollectionImportService implements ImportCollectionUseCase {
     private final CollectionExportRepository collectionExportRepository;
 
     /**
-     * The json mapper.
+     * The JSON mapper.
      */
     private final JsonMapper jsonMapper;
 
@@ -117,14 +117,14 @@ public class CollectionImportService implements ImportCollectionUseCase {
             ExchangeMainData exchangeMainData =
                     jsonMapper.readValue(importContext.getImportDir().resolve(CONTENT_EXCHANGE_MAIN_DATA_FILENAME_JSON).toFile(), ExchangeMainData.class);
 
-            if (!ContentSource.MENU.equals(exchangeMainData.getContentSource())) {
+            if (!ContentSource.COLLECTION.equals(exchangeMainData.getContentSource())) {
                 throw new ArtivactException("Unsupported content source: " + exchangeMainData.getContentSource());
             }
 
             if (!onlyForDistribution) {
                 importPropertiesConfigurationUseCase.importPropertiesConfiguration(importContext);
                 importTagsConfigurationUseCase.importTagsConfiguration(importContext);
-                importMenuUseCase.importMenu(importContext, exchangeMainData.getSourceId(), true);
+                exchangeMainData.getSourceIds().forEach(menuId -> importMenuUseCase.importMenu(importContext, menuId, true));
             }
 
             fileRepository.copy(file, getProjectRootUseCase.getExportsDir()
@@ -162,9 +162,10 @@ public class CollectionImportService implements ImportCollectionUseCase {
         result.setId(exchangeMainData.getId());
         result.setTitle(exchangeMainData.getTitle());
         result.setDescription(exchangeMainData.getDescription());
+        result.setContent(exchangeMainData.getContent());
         result.setExportConfiguration(exchangeMainData.getExportConfiguration());
         result.setContentSource(ContentSource.MENU);
-        result.setSourceId(exchangeMainData.getSourceId());
+        result.setSourceId(exchangeMainData.getSourceIds().getFirst());
         result.setCoverPictureExtension(exchangeMainData.getCoverPictureExtension());
         result.setDistributionOnly(distributionOnly);
         return result;

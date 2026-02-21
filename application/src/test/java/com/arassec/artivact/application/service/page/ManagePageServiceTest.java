@@ -91,7 +91,7 @@ class ManagePageServiceTest {
 
         service.deletePage("page-1");
 
-        verify(fileRepository).deleteDirAndEmptyParents(Path.of("widgets/widget-1"));
+        verify(fileRepository).deleteAndPruneEmptyParents(Path.of("widgets/widget-1"));
         verify(pageRepository).deleteById("page-1");
     }
 
@@ -169,7 +169,7 @@ class ManagePageServiceTest {
     }
 
     @Test
-    void testSavePageContentImport() throws Exception {
+    void testSavePageContentImport() {
         String newPageId = "new-page-id";
         when(pageRepository.findByIdOrAlias(newPageId)).thenReturn(Optional.empty());
 

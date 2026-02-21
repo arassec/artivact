@@ -6,7 +6,7 @@ import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.model.configuration.PropertiesConfiguration;
 import com.arassec.artivact.domain.model.configuration.TagsConfiguration;
 import com.arassec.artivact.domain.model.exchange.ImportContext;
-import org.junit.jupiter.api.BeforeEach;
+import com.arassec.artivact.domain.model.misc.DirectoryDefinitions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,10 +16,15 @@ import tools.jackson.databind.json.JsonMapper;
 
 import java.nio.file.Path;
 
+import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.PROPERTIES_EXCHANGE_FILENAME_JSON;
+import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.TAGS_EXCHANGE_FILENAME_JSON;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ConfigurationImportServiceTest {
+
+    @InjectMocks
+    private ConfigurationImportService service;
 
     @Mock
     private JsonMapper jsonMapper;
@@ -33,82 +38,139 @@ class ConfigurationImportServiceTest {
     @Mock
     private SavePropertiesConfigurationUseCase savePropertiesConfigurationUseCase;
 
-    @InjectMocks
-    private ConfigurationImportService service;
-
-    private ImportContext importContext;
-    private Path importDir;
-
-    @BeforeEach
-    void setUp() {
-        importDir = Path.of("/tmp/import");
-        importContext = ImportContext.builder().importDir(importDir).build();
-    }
+    // --- importPropertiesConfiguration(String) ---
 
     @Test
-    void testImportPropertiesConfigurationFromString() {
+    void testImportPropertiesConfigurationFromStringDeserializesAndSaves() {
+        // Given
         String json = "{\"key\":\"value\"}";
         PropertiesConfiguration config = new PropertiesConfiguration();
+
         when(jsonMapper.readValue(json, PropertiesConfiguration.class)).thenReturn(config);
 
+        // When
         service.importPropertiesConfiguration(json);
 
+        // Then
+        verify(jsonMapper).readValue(json, PropertiesConfiguration.class);
         verify(savePropertiesConfigurationUseCase).savePropertiesConfiguration(config);
     }
 
+    // --- importPropertiesConfiguration(ImportContext) ---
+
     @Test
-    void testImportPropertiesConfigurationFromImportContextWhenFileExists() {
-        Path file = importDir.resolve("artivact.properties-configuration.json");
-        when(fileRepository.exists(file)).thenReturn(true);
-        when(fileRepository.read(file)).thenReturn("valid-json");
+    void testImportPropertiesConfigurationFromContextWhenFileExists() {
+        // Given
+        ImportContext importContext = ImportContext.builder()
+                .importDir(Path.of("import"))
+                .build();
+
+        Path propertiesJson = Path.of("import")
+                .resolve(DirectoryDefinitions.CONFIGS_DIR)
+                .resolve(PROPERTIES_EXCHANGE_FILENAME_JSON);
+
+        when(fileRepository.exists(propertiesJson)).thenReturn(true);
+
+        String jsonContent = "{\"properties\":true}";
+        when(fileRepository.read(propertiesJson)).thenReturn(jsonContent);
 
         PropertiesConfiguration config = new PropertiesConfiguration();
-        when(jsonMapper.readValue("valid-json", PropertiesConfiguration.class)).thenReturn(config);
+        when(jsonMapper.readValue(jsonContent, PropertiesConfiguration.class)).thenReturn(config);
 
+        // When
         service.importPropertiesConfiguration(importContext);
 
+        // Then
+        verify(fileRepository).read(propertiesJson);
         verify(savePropertiesConfigurationUseCase).savePropertiesConfiguration(config);
     }
 
     @Test
-    void testImportPropertiesConfigurationFromImportContextWhenFileDoesNotExist() {
-        Path file = importDir.resolve("artivact.properties-configuration.json");
-        when(fileRepository.exists(file)).thenReturn(false);
+    void testImportPropertiesConfigurationFromContextSkipsWhenFileDoesNotExist() {
+        // Given
+        ImportContext importContext = ImportContext.builder()
+                .importDir(Path.of("import"))
+                .build();
 
+        Path propertiesJson = Path.of("import")
+                .resolve(DirectoryDefinitions.CONFIGS_DIR)
+                .resolve(PROPERTIES_EXCHANGE_FILENAME_JSON);
+
+        when(fileRepository.exists(propertiesJson)).thenReturn(false);
+
+        // When
         service.importPropertiesConfiguration(importContext);
 
-        verifyNoInteractions(savePropertiesConfigurationUseCase);
+        // Then
+        verify(fileRepository, never()).read(any());
+        verify(savePropertiesConfigurationUseCase, never()).savePropertiesConfiguration(any());
     }
 
+    // --- importTagsConfiguration(String) ---
+
     @Test
-    void testImportTagsConfigurationFromString() {
-        String json = "{\"tag\":\"value\"}";
+    void testImportTagsConfigurationFromStringDeserializesAndSaves() {
+        // Given
+        String json = "{\"tags\":[]}";
         TagsConfiguration config = new TagsConfiguration();
+
         when(jsonMapper.readValue(json, TagsConfiguration.class)).thenReturn(config);
 
+        // When
         service.importTagsConfiguration(json);
 
+        // Then
+        verify(jsonMapper).readValue(json, TagsConfiguration.class);
         verify(saveTagsConfigurationUseCase).saveTagsConfiguration(config);
     }
 
+    // --- importTagsConfiguration(ImportContext) ---
+
     @Test
-    void testImportTagsConfigurationFromImportContextWhenFileExists() {
-        Path file = importDir.resolve("artivact.tags-configuration.json");
-        when(fileRepository.exists(file)).thenReturn(true);
-        when(fileRepository.read(file)).thenReturn("valid-json");
+    void testImportTagsConfigurationFromContextWhenFileExists() {
+        // Given
+        ImportContext importContext = ImportContext.builder()
+                .importDir(Path.of("import"))
+                .build();
+
+        Path tagsJson = Path.of("import")
+                .resolve(DirectoryDefinitions.CONFIGS_DIR)
+                .resolve(TAGS_EXCHANGE_FILENAME_JSON);
+
+        when(fileRepository.exists(tagsJson)).thenReturn(true);
+
+        String jsonContent = "{\"tags\":[\"tag1\"]}";
+        when(fileRepository.read(tagsJson)).thenReturn(jsonContent);
 
         TagsConfiguration config = new TagsConfiguration();
-        when(jsonMapper.readValue("valid-json", TagsConfiguration.class)).thenReturn(config);
+        when(jsonMapper.readValue(jsonContent, TagsConfiguration.class)).thenReturn(config);
 
+        // When
         service.importTagsConfiguration(importContext);
 
+        // Then
+        verify(fileRepository).read(tagsJson);
         verify(saveTagsConfigurationUseCase).saveTagsConfiguration(config);
     }
 
     @Test
-    void testImportTagsConfigurationFromImportContextWhenFileDoesNotExist() {
-        service.importTagsConfiguration(importContext);
-        verifyNoInteractions(saveTagsConfigurationUseCase);
-    }
+    void testImportTagsConfigurationFromContextSkipsWhenFileDoesNotExist() {
+        // Given
+        ImportContext importContext = ImportContext.builder()
+                .importDir(Path.of("import"))
+                .build();
 
+        Path tagsJson = Path.of("import")
+                .resolve(DirectoryDefinitions.CONFIGS_DIR)
+                .resolve(TAGS_EXCHANGE_FILENAME_JSON);
+
+        when(fileRepository.exists(tagsJson)).thenReturn(false);
+
+        // When
+        service.importTagsConfiguration(importContext);
+
+        // Then
+        verify(fileRepository, never()).read(any());
+        verify(saveTagsConfigurationUseCase, never()).saveTagsConfiguration(any());
+    }
 }

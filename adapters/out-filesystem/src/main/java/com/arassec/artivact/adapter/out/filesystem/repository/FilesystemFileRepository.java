@@ -483,7 +483,7 @@ public class FilesystemFileRepository implements FileRepository {
      * {@inheritDoc}
      */
     @Override
-    public void deleteDirAndEmptyParents(Path directory) {
+    public void deleteAndPruneEmptyParents(Path directory) {
         delete(directory);
 
         Path firstParent = directory.getParent();

@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.PAGE_EXCHANGE_FILE_SUFFIX;
-import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.SEARCH_RESULT_FILE_SUFFIX;
+import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.PAGE_EXCHANGE_FILENAME_JSON;
+import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.SEARCH_RESULT_FILENAME_JSON;
 
 /**
  * Service for page export.
@@ -37,7 +37,7 @@ import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.SEARCH_
 public class PageExportService extends BaseExportService implements ExportPageUseCase {
 
     /**
-     * The json mapper.
+     * The JSON mapper.
      */
     @Getter
     private final JsonMapper jsonMapper;
@@ -80,7 +80,10 @@ public class PageExportService extends BaseExportService implements ExportPageUs
             exportWidget(exportContext, widget);
         });
 
-        writeJsonFile(exportContext.getExportDir().resolve(targetPageId + PAGE_EXCHANGE_FILE_SUFFIX), pageContent);
+        Path pageExportDir = fileRepository.getDirFromId(exportContext.getExportDir().resolve(DirectoryDefinitions.PAGES_DIR), pageContent.getId());
+        fileRepository.createDirIfRequired(pageExportDir);
+
+        writeJsonFile(pageExportDir.resolve(PAGE_EXCHANGE_FILENAME_JSON), pageContent);
     }
 
     /**
@@ -142,7 +145,11 @@ public class PageExportService extends BaseExportService implements ExportPageUs
                     }
                     exportItemUseCase.exportItem(exportContext, item);
                 }
-                writeJsonFile(exportContext.getExportDir().resolve(itemSearchWidget.getId() + SEARCH_RESULT_FILE_SUFFIX),
+
+                Path widgetExportDir = fileRepository.getDirFromId(exportContext.getExportDir().resolve(DirectoryDefinitions.WIDGETS_DIR), itemSearchWidget.getId());
+                fileRepository.createDirIfRequired(widgetExportDir);
+
+                writeJsonFile(widgetExportDir.resolve(SEARCH_RESULT_FILENAME_JSON),
                         searchResult.stream().map(Item::getId).filter(itemId -> !excludedItemIds.contains(itemId)).toArray());
             }
         }
@@ -158,7 +165,7 @@ public class PageExportService extends BaseExportService implements ExportPageUs
     private void copyWidgetFile(ExportContext exportContext, Widget widget, String file) {
         if (StringUtils.hasText(file)) {
             Path sourceDir = fileRepository.getDirFromId(useProjectDirsUseCase.getProjectRoot().resolve(DirectoryDefinitions.WIDGETS_DIR), widget.getId());
-            Path targetDir = exportContext.getExportDir().resolve(widget.getId());
+            Path targetDir = fileRepository.getDirFromId(exportContext.getExportDir().resolve(DirectoryDefinitions.WIDGETS_DIR), widget.getId());
             fileRepository.createDirIfRequired(targetDir);
             fileRepository.copy(sourceDir.resolve(file), targetDir.resolve(file));
         }

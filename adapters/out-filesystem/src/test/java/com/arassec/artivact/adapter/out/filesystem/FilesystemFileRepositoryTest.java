@@ -643,7 +643,7 @@ class FilesystemFileRepositoryTest {
     @Test
     @SneakyThrows
     void testGetNextAssetNumber() {
-        assertThat(filesystemFileRepository.getNextAssetNumber(Path.of("invalid-does-not-exist-path"))).isEqualTo(1);
+        assertThat(filesystemFileRepository.getNextAssetNumber(Path.of("target/invalid-does-not-exist-path"))).isEqualTo(1);
 
         Files.copy(sourceImage, targetDir.resolve(sourceImage.getFileName()));
         assertThat(filesystemFileRepository.getNextAssetNumber(targetDir)).isEqualTo(24);
@@ -669,18 +669,18 @@ class FilesystemFileRepositoryTest {
      */
     @Test
     @SneakyThrows
-    void testDeleteDirAndEmptyParents() {
+    void testDeleteAndPruneEmptyParents() {
         // Both parent directories are deleted:
         Path dirToDelete = targetDir.resolve("one/two/three");
         Files.createDirectories(dirToDelete);
-        filesystemFileRepository.deleteDirAndEmptyParents(dirToDelete);
+        filesystemFileRepository.deleteAndPruneEmptyParents(dirToDelete);
         assertThat(Files.exists(targetDir.resolve("one"))).isFalse();
 
         // One parent dir is deleted:
         dirToDelete = targetDir.resolve("one/two/three");
         Files.createDirectories(dirToDelete);
         Files.copy(sourceImage, targetDir.resolve("one").resolve(sourceImage.getFileName()));
-        filesystemFileRepository.deleteDirAndEmptyParents(dirToDelete);
+        filesystemFileRepository.deleteAndPruneEmptyParents(dirToDelete);
         assertThat(Files.exists(targetDir.resolve("one").resolve(sourceImage.getFileName()))).isTrue();
         FileUtils.deleteDirectory(targetDir.resolve("one").toFile());
 
@@ -688,7 +688,7 @@ class FilesystemFileRepositoryTest {
         dirToDelete = targetDir.resolve("one/two/three");
         Files.createDirectories(dirToDelete);
         Files.copy(sourceImage, targetDir.resolve("one/two").resolve(sourceImage.getFileName()));
-        filesystemFileRepository.deleteDirAndEmptyParents(dirToDelete);
+        filesystemFileRepository.deleteAndPruneEmptyParents(dirToDelete);
         assertThat(Files.exists(targetDir.resolve("one/two").resolve(sourceImage.getFileName()))).isTrue();
     }
 

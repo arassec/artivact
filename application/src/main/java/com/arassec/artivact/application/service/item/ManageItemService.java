@@ -1,7 +1,6 @@
 package com.arassec.artivact.application.service.item;
 
 import com.arassec.artivact.application.infrastructure.aspect.GenerateIds;
-import com.arassec.artivact.application.infrastructure.aspect.PersistEntityAsJson;
 import com.arassec.artivact.application.infrastructure.aspect.RestrictResult;
 import com.arassec.artivact.application.infrastructure.aspect.TranslateResult;
 import com.arassec.artivact.application.port.in.configuration.LoadPropertiesConfigurationUseCase;
@@ -162,7 +161,6 @@ public class ManageItemService implements CreateItemUseCase,
      * {@inheritDoc}
      */
     @GenerateIds
-    @PersistEntityAsJson(entityDir = "items", entityType = Item.class)
     @Override
     public Item save(Item item) {
         String itemId = item.getId();
@@ -179,6 +177,15 @@ public class ManageItemService implements CreateItemUseCase,
             }
         });
 
+        List<String> missingImages = new LinkedList<>();
+        item.getMediaContent().getImages().forEach(image -> {
+            Path originalImage = fileRepository.getSubdirFilePath(itemsDir, itemId, DirectoryDefinitions.IMAGES_DIR).resolve(image);
+            if (!fileRepository.exists(originalImage)) {
+                missingImages.add(image);
+            }
+        });
+        item.getMediaContent().getImages().removeAll(missingImages);
+
         List<String> modelsInItem = item.getMediaContent().getModels();
 
         List<String> modelsToDelete = fileRepository.listNamesWithoutScaledImages(fileRepository.getDirFromId(itemsDir, itemId).resolve(DirectoryDefinitions.MODELS_DIR));
@@ -186,6 +193,15 @@ public class ManageItemService implements CreateItemUseCase,
         modelsToDelete.forEach(modelToDelete ->
                 fileRepository.delete(fileRepository.getSubdirFilePath(itemsDir, itemId, DirectoryDefinitions.MODELS_DIR).resolve(modelToDelete))
         );
+
+        List<String> missingModels = new LinkedList<>();
+        item.getMediaContent().getModels().forEach(model -> {
+            Path modelPath = fileRepository.getSubdirFilePath(itemsDir, itemId, DirectoryDefinitions.MODELS_DIR).resolve(model);
+            if (!fileRepository.exists(modelPath)) {
+                missingModels.add(model);
+            }
+        });
+        item.getMediaContent().getModels().removeAll(missingModels);
 
         item = itemRepository.save(item);
 
@@ -197,7 +213,6 @@ public class ManageItemService implements CreateItemUseCase,
     /**
      * {@inheritDoc}
      */
-    @PersistEntityAsJson(entityDir = "items", entityType = Item.class, delete = true)
     @Override
     public void delete(String itemId) {
         try {
@@ -206,7 +221,7 @@ public class ManageItemService implements CreateItemUseCase,
             log.warn("Failed to delete favorites for item {}: {}", itemId, e.getMessage());
         }
         itemRepository.deleteById(itemId);
-        fileRepository.deleteDirAndEmptyParents(fileRepository.getDirFromId(useProjectDirsUseCase.getItemsDir(), itemId));
+        fileRepository.deleteAndPruneEmptyParents(fileRepository.getDirFromId(useProjectDirsUseCase.getItemsDir(), itemId));
     }
 
     /**

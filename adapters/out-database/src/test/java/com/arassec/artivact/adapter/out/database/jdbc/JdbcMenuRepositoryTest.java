@@ -113,8 +113,8 @@ class JdbcMenuRepositoryTest {
      * Tests deleting a menu by its ID.
      */
     @Test
-    void testDelete() {
-        jdbcMenuRepository.delete("menu-id");
+    void testDeleteById() {
+        jdbcMenuRepository.deleteById("menu-id");
         verify(menuEntityRepository).deleteById("menu-id");
     }
 

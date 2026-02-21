@@ -2,10 +2,13 @@ package com.arassec.artivact.adapter.out.database.jdbc;
 
 import com.arassec.artivact.adapter.out.database.jdbc.springdata.entity.ItemEntity;
 import com.arassec.artivact.adapter.out.database.jdbc.springdata.repository.ItemEntityRepository;
+import com.arassec.artivact.application.infrastructure.aspect.PersistEntityAsJson;
 import com.arassec.artivact.application.port.out.repository.ItemRepository;
 import com.arassec.artivact.domain.model.item.Item;
 import com.arassec.artivact.domain.model.item.MediaContent;
 import com.arassec.artivact.domain.model.item.MediaCreationContent;
+import com.arassec.artivact.domain.model.misc.DirectoryDefinitions;
+import com.arassec.artivact.domain.model.misc.ExchangeDefinitions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +45,7 @@ public class JdbcItemRepository extends BaseJdbcRepository implements ItemReposi
     /**
      * {@inheritDoc}
      */
+    @PersistEntityAsJson(entityDir = DirectoryDefinitions.ITEMS_DIR, entityType = Item.class, filename = ExchangeDefinitions.ITEM_EXCHANGE_FILENAME_JSON)
     @Override
     public Item save(Item item) {
         ItemEntity itemEntity = itemEntityRepository.findById(item.getId()).orElse(new ItemEntity());
@@ -60,6 +64,7 @@ public class JdbcItemRepository extends BaseJdbcRepository implements ItemReposi
     /**
      * {@inheritDoc}
      */
+    @PersistEntityAsJson(entityDir = DirectoryDefinitions.ITEMS_DIR, entityType = Item.class, delete = true, filename = ExchangeDefinitions.ITEM_EXCHANGE_FILENAME_JSON)
     @Override
     public void deleteById(String itemId) {
         itemEntityRepository.deleteById(itemId);

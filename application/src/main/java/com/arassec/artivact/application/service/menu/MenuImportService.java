@@ -8,9 +8,11 @@ import com.arassec.artivact.application.port.in.page.ImportPageUseCase;
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.exception.ArtivactException;
+import com.arassec.artivact.domain.model.exchange.ContentSource;
 import com.arassec.artivact.domain.model.exchange.ExchangeMainData;
 import com.arassec.artivact.domain.model.exchange.ImportContext;
 import com.arassec.artivact.domain.model.menu.Menu;
+import com.arassec.artivact.domain.model.misc.DirectoryDefinitions;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -28,7 +30,7 @@ import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.*;
 public class MenuImportService implements ImportMenuUseCase {
 
     /**
-     * The json mapper.
+     * The JSON mapper.
      */
     private final JsonMapper jsonMapper;
 
@@ -77,10 +79,19 @@ public class MenuImportService implements ImportMenuUseCase {
         try {
             ExchangeMainData exchangeMainData =
                     jsonMapper.readValue(importContext.getImportDir().resolve(CONTENT_EXCHANGE_MAIN_DATA_FILENAME_JSON).toFile(), ExchangeMainData.class);
-            importMenu(importContext, exchangeMainData.getSourceId(), true);
+
+            if (!ContentSource.MENU.equals(exchangeMainData.getContentSource()) &&
+                    !(ContentSource.COLLECTION.equals(exchangeMainData.getContentSource()) && !exchangeMainData.getSourceIds().isEmpty())) {
+                throw new ArtivactException("Invalid content source for menu import: " + exchangeMainData.getContentSource());
+            }
+
+            exchangeMainData.getSourceIds().forEach(menuId -> importMenu(importContext, menuId, true));
+
             importPropertiesConfigurationUseCase.importPropertiesConfiguration(importContext);
             importTagsConfigurationUseCase.importTagsConfiguration(importContext);
+
             fileRepository.delete(importContext.getImportDir());
+
         } catch (Exception e) {
             throw new ArtivactException("Could not import data!", e);
         }
@@ -91,7 +102,8 @@ public class MenuImportService implements ImportMenuUseCase {
      */
     @Override
     public void importMenu(ImportContext importContext, String menuId, boolean saveMenu) {
-        Path menuJson = importContext.getImportDir().resolve(menuId + MENU_EXCHANGE_FILE_SUFFIX);
+        Path menuJson = fileRepository.getDirFromId(importContext.getImportDir().resolve(DirectoryDefinitions.MENUS_DIR), menuId)
+                .resolve(MENU_EXCHANGE_FILENAME_JSON);
         Menu menu = jsonMapper.readValue(fileRepository.read(menuJson), Menu.class);
 
         if (saveMenu) {

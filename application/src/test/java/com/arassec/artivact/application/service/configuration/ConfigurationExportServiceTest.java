@@ -71,7 +71,7 @@ class ConfigurationExportServiceTest {
 
         ArgumentCaptor<File> argCap = ArgumentCaptor.forClass(File.class);
         verify(jsonMapper).writeValue(argCap.capture(), any(TagsConfiguration.class));
-        assertThat(argCap.getValue().toString()).endsWith("artivact.tags-configuration.json");
+        assertThat(argCap.getValue().toString()).endsWith("tags.artivact.configuration.json");
     }
 
     @Test
@@ -92,7 +92,7 @@ class ConfigurationExportServiceTest {
 
         ArgumentCaptor<File> argCap = ArgumentCaptor.forClass(File.class);
         verify(jsonMapper).writeValue(argCap.capture(), any(PropertiesConfiguration.class));
-        assertThat(argCap.getValue().toString()).endsWith("artivact.properties-configuration.json");
+        assertThat(argCap.getValue().toString()).endsWith("properties.artivact.configuration.json");
     }
 
     @Test

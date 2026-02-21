@@ -28,6 +28,6 @@ public interface MenuRepository {
      *
      * @param menuId The ID of the menu to delete.
      */
-    void delete(String menuId);
+    void deleteById(String menuId);
 
 }

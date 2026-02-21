@@ -12,6 +12,7 @@ import com.arassec.artivact.domain.model.exchange.ContentSource;
 import com.arassec.artivact.domain.model.exchange.ExportConfiguration;
 import com.arassec.artivact.domain.model.exchange.ExportContext;
 import com.arassec.artivact.domain.model.menu.Menu;
+import com.arassec.artivact.domain.model.misc.DirectoryDefinitions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.MENU_EXCHANGE_FILE_SUFFIX;
+import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.MENU_EXCHANGE_FILENAME_JSON;
 
 /**
  * Service for menu export.
@@ -33,7 +34,7 @@ import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.MENU_EX
 public class MenuExportService extends BaseExportService implements ExportMenuUseCase {
 
     /**
-     * The json mapper.
+     * The JSON mapper.
      */
     @Getter
     private final JsonMapper jsonMapper;
@@ -74,18 +75,16 @@ public class MenuExportService extends BaseExportService implements ExportMenuUs
 
         ExportContext exportContext = createExportContext(menu.getId(), ExportConfiguration.builder()
                 .applyRestrictions(false)
-                .optimizeSize(false)
+                .xrExport(false)
                 .excludeItems(true)
                 .build());
 
         prepareExport(exportContext);
 
         exportMainData(exportContext, ContentSource.MENU, menu.getId(), null, null, null);
-
         exportMenu(exportContext, menu);
 
-        fileRepository.pack(exportContext.getExportDir(), exportContext.getExportFile());
-        fileRepository.delete(exportContext.getExportDir());
+        cleanupExport(exportContext);
 
         return exportContext.getExportFile();
     }
@@ -105,7 +104,10 @@ public class MenuExportService extends BaseExportService implements ExportMenuUs
         cleanupTranslations(menu);
         Optional.ofNullable(menu.getMenuEntries()).orElse(List.of()).forEach(this::cleanupTranslations);
 
-        writeJsonFile(exportContext.getExportDir().resolve(menu.getId() + MENU_EXCHANGE_FILE_SUFFIX), menu);
+        Path menuExportDir = fileRepository.getDirFromId(exportContext.getExportDir().resolve(DirectoryDefinitions.MENUS_DIR), menu.getId());
+        fileRepository.createDirIfRequired(menuExportDir);
+
+        writeJsonFile(menuExportDir.resolve(MENU_EXCHANGE_FILENAME_JSON), menu);
 
         // Export (previously filtered) menu entries:
         Optional.ofNullable(menu.getMenuEntries()).orElse(List.of())

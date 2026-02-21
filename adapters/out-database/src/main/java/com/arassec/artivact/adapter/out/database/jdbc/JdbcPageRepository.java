@@ -2,7 +2,10 @@ package com.arassec.artivact.adapter.out.database.jdbc;
 
 import com.arassec.artivact.adapter.out.database.jdbc.springdata.entity.PageEntity;
 import com.arassec.artivact.adapter.out.database.jdbc.springdata.repository.PageEntityRepository;
+import com.arassec.artivact.application.infrastructure.aspect.PersistEntityAsJson;
 import com.arassec.artivact.application.port.out.repository.PageRepository;
+import com.arassec.artivact.domain.model.misc.DirectoryDefinitions;
+import com.arassec.artivact.domain.model.misc.ExchangeDefinitions;
 import com.arassec.artivact.domain.model.page.Page;
 import com.arassec.artivact.domain.model.page.PageContent;
 import lombok.Getter;
@@ -41,6 +44,7 @@ public class JdbcPageRepository extends BaseJdbcRepository implements PageReposi
     /**
      * {@inheritDoc}
      */
+    @PersistEntityAsJson(entityDir = DirectoryDefinitions.PAGES_DIR, entityType = Page.class, filename = ExchangeDefinitions.PAGE_EXCHANGE_FILENAME_JSON)
     @Override
     public void save(Page page) {
         Optional<PageEntity> pageEntityOptional = pageEntityRepository.findById(page.getId());
@@ -62,6 +66,7 @@ public class JdbcPageRepository extends BaseJdbcRepository implements PageReposi
     /**
      * {@inheritDoc}
      */
+    @PersistEntityAsJson(entityDir = DirectoryDefinitions.PAGES_DIR, entityType = Page.class, delete = true, filename = ExchangeDefinitions.PAGE_EXCHANGE_FILENAME_JSON)
     @Override
     public Optional<Page> deleteById(String pageId) {
         Optional<Page> pageOptional = findById(pageId);

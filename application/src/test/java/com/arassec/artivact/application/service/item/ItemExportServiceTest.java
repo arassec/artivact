@@ -1,15 +1,9 @@
 package com.arassec.artivact.application.service.item;
 
-import com.arassec.artivact.application.port.in.configuration.ExportPropertiesConfigurationUseCase;
-import com.arassec.artivact.application.port.in.configuration.ExportTagsConfigurationUseCase;
-import com.arassec.artivact.application.port.in.configuration.LoadPropertiesConfigurationUseCase;
-import com.arassec.artivact.application.port.in.configuration.LoadTagsConfigurationUseCase;
 import com.arassec.artivact.application.port.in.item.LoadItemUseCase;
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.model.TranslatableString;
-import com.arassec.artivact.domain.model.configuration.PropertiesConfiguration;
-import com.arassec.artivact.domain.model.configuration.TagsConfiguration;
 import com.arassec.artivact.domain.model.exchange.ExportConfiguration;
 import com.arassec.artivact.domain.model.exchange.ExportContext;
 import com.arassec.artivact.domain.model.item.Item;
@@ -48,18 +42,6 @@ class ItemExportServiceTest {
     @Mock
     private LoadItemUseCase loadItemUseCase;
 
-    @Mock
-    private ExportPropertiesConfigurationUseCase exportPropertiesConfigurationUseCase;
-
-    @Mock
-    private ExportTagsConfigurationUseCase exportTagsConfigurationUseCase;
-
-    @Mock
-    private LoadPropertiesConfigurationUseCase loadPropertiesConfigurationUseCase;
-
-    @Mock
-    private LoadTagsConfigurationUseCase loadTagsConfigurationUseCase;
-
     @InjectMocks
     private ItemExportService service;
 
@@ -80,68 +62,26 @@ class ItemExportServiceTest {
     @SneakyThrows
     void testExportItemById() {
         Item item = createItem("item1", List.of(), List.of());
-        PropertiesConfiguration propsConfig = PropertiesConfiguration.builder().build();
-        TagsConfiguration tagsConfig = new TagsConfiguration();
 
+        when(useProjectDirsUseCase.getProjectRoot()).thenReturn(Path.of("root"));
         when(useProjectDirsUseCase.getExportsDir()).thenReturn(exportsDir);
         when(useProjectDirsUseCase.getItemsDir()).thenReturn(Path.of("items"));
 
         when(fileRepository.getDirFromId(any(Path.class), anyString())).thenReturn(Path.of("."));
 
         when(loadItemUseCase.loadTranslated("item1")).thenReturn(item);
-        when(loadPropertiesConfigurationUseCase.loadPropertiesConfiguration()).thenReturn(propsConfig);
-        when(loadTagsConfigurationUseCase.loadTagsConfiguration()).thenReturn(tagsConfig);
 
         Path result = service.exportItem("item1");
 
         assertThat(result.toString()).endsWith("item1.artivact.collection.zip");
         verify(loadItemUseCase).loadTranslated("item1");
-        verify(exportPropertiesConfigurationUseCase).exportPropertiesConfiguration(any(), eq(propsConfig));
-        verify(exportTagsConfigurationUseCase).exportTagsConfiguration(any(), eq(tagsConfig));
+
         verify(fileRepository).pack(any(), eq(result));
         verify(fileRepository).delete(any());
 
         ArgumentCaptor<File> argCap = ArgumentCaptor.forClass(File.class);
         verify(jsonMapper).writeValue(argCap.capture(), any(Item.class));
         assertThat(argCap.getValue().toString()).endsWith("artivact.item.json");
-    }
-
-    @Test
-    void testExportItemSkipsIfAlreadyExported() {
-        Item item = createItem("item2", List.of(), List.of());
-        ExportContext ctx = ExportContext.builder()
-                .exportDir(exportsDir)
-                .exportConfiguration(new ExportConfiguration())
-                .build();
-
-        Path itemDir = exportsDir.resolve("item2");
-        when(fileRepository.exists(itemDir)).thenReturn(true);
-
-        service.exportItem(ctx, item);
-
-        verify(fileRepository, never()).createDirIfRequired(any());
-        verify(fileRepository, never()).copy(any(Path.class), any(Path.class));
-    }
-
-    @Test
-    void testExportItemWritesJsonIfNotExists() {
-        Item item = createItem("item3", List.of("img1.png"), List.of("model1.glb"));
-        ExportContext ctx = ExportContext.builder()
-                .exportDir(exportsDir)
-                .exportConfiguration(new ExportConfiguration())
-                .build();
-
-        when(useProjectDirsUseCase.getItemsDir()).thenReturn(Path.of("items"));
-
-        when(fileRepository.getDirFromId(any(Path.class), anyString())).thenReturn(Path.of("."));
-
-        Path itemDir = exportsDir.resolve("item3");
-        when(fileRepository.exists(itemDir)).thenReturn(false);
-
-        service.exportItem(ctx, item);
-
-        verify(fileRepository).createDirIfRequired(itemDir);
-        verify(fileRepository, atLeastOnce()).copy(any(Path.class), any(Path.class));
     }
 
     @Test
@@ -156,55 +96,207 @@ class ItemExportServiceTest {
     }
 
     @Test
-    void testCopyItemMediaFilesOptimizedWithModel() {
-        List<String> images = new LinkedList<>();
-        images.add("img.png");
-        List<String> models = new LinkedList<>();
-        models.add("model.glb");
+    @SneakyThrows
+    void testExportItemDirectlyWithItemObject() {
+        // Given
+        Item item = createItem("item-direct", new LinkedList<>(List.of("img.png")), new LinkedList<>(List.of("model.glb")));
 
-        Item item = createItem("item4", images, models);
-        ExportContext ctx = ExportContext.builder()
-                .exportDir(exportsDir)
-                .exportConfiguration(ExportConfiguration.builder().optimizeSize(true).build())
-                .build();
-
-        Path itemDir = exportsDir.resolve("item4");
-        when(fileRepository.exists(itemDir)).thenReturn(false);
-
+        when(useProjectDirsUseCase.getProjectRoot()).thenReturn(Path.of("root"));
+        when(useProjectDirsUseCase.getExportsDir()).thenReturn(exportsDir);
         when(useProjectDirsUseCase.getItemsDir()).thenReturn(Path.of("items"));
-
         when(fileRepository.getDirFromId(any(Path.class), anyString())).thenReturn(Path.of("."));
 
-        service.exportItem(ctx, item);
+        // When
+        Path result = service.exportItem(item);
 
-        verify(fileRepository).copy(any(Path.class), argThat(p -> p.toString().endsWith("model.glb")), eq(StandardCopyOption.REPLACE_EXISTING));
-        assertThat(item.getMediaContent().getModels()).containsExactly("model.glb");
-        assertThat(item.getMediaContent().getImages()).isEmpty();
+        // Then
+        assertThat(result.toString()).endsWith("item-direct.artivact.collection.zip");
+        verify(fileRepository).pack(any(), eq(result));
+        verify(fileRepository).delete(any());
     }
 
     @Test
-    void testCopyItemMediaFilesOptimizedWithImageOnly() {
-        List<String> images = new LinkedList<>();
-        images.add("img.png");
-        List<String> models = new LinkedList<>();
-        Item item = createItem("item5", images, models);
+    void testExportItemStandardCopiesAllMediaFiles() {
+        // Given
+        List<String> images = new LinkedList<>(List.of("img1.png", "img2.png"));
+        List<String> models = new LinkedList<>(List.of("model1.glb", "model2.glb"));
+        Item item = createItem("item-std", images, models);
+
         ExportContext ctx = ExportContext.builder()
                 .exportDir(exportsDir)
-                .exportConfiguration(ExportConfiguration.builder().optimizeSize(true).build())
+                .exportConfiguration(ExportConfiguration.builder().xrExport(false).build())
                 .build();
 
         when(useProjectDirsUseCase.getItemsDir()).thenReturn(Path.of("items"));
-
         when(fileRepository.getDirFromId(any(Path.class), anyString())).thenReturn(Path.of("."));
+        when(fileRepository.exists(any(Path.class))).thenReturn(false);
 
-        Path itemDir = exportsDir.resolve("item5");
-        when(fileRepository.exists(itemDir)).thenReturn(false);
-
+        // When
         service.exportItem(ctx, item);
 
-        verify(fileRepository).copy(any(Path.class), argThat(p -> p.toString().endsWith("img.png")), eq(StandardCopyOption.REPLACE_EXISTING));
-        assertThat(item.getMediaContent().getImages()).containsExactly("img.png");
+        // Then - all images and models should be copied (2 images + 2 models = 4 copy calls + dirs)
+        verify(fileRepository, times(4)).copy(any(Path.class), any(Path.class));
+        assertThat(item.getMediaContent().getImages()).containsExactly("img1.png", "img2.png");
+        assertThat(item.getMediaContent().getModels()).containsExactly("model1.glb", "model2.glb");
+        assertThat(item.getMediaCreationContent()).isNull();
+    }
+
+    @Test
+    void testExportItemClearsTranslatedValues() {
+        // Given
+        Item item = createItem("item-trans", new LinkedList<>(), new LinkedList<>());
+        item.getTitle().setTranslatedValue("translated-title");
+        item.getDescription().setTranslatedValue("translated-desc");
+
+        ExportContext ctx = ExportContext.builder()
+                .exportDir(exportsDir)
+                .exportConfiguration(new ExportConfiguration())
+                .build();
+
+        when(useProjectDirsUseCase.getItemsDir()).thenReturn(Path.of("items"));
+        when(fileRepository.getDirFromId(any(Path.class), anyString())).thenReturn(Path.of("."));
+        when(fileRepository.exists(any(Path.class))).thenReturn(false);
+
+        // When
+        service.exportItem(ctx, item);
+
+        // Then
+        assertThat(item.getTitle().getTranslatedValue()).isNull();
+        assertThat(item.getDescription().getTranslatedValue()).isNull();
+    }
+
+    @Test
+    void testXrExportWithNoMediaFiles() {
+        // Given
+        List<String> images = new LinkedList<>();
+        List<String> models = new LinkedList<>();
+        Item item = createItem("item-empty-xr", images, models);
+
+        ExportContext ctx = ExportContext.builder()
+                .exportDir(exportsDir)
+                .exportConfiguration(ExportConfiguration.builder().xrExport(true).build())
+                .build();
+
+        when(useProjectDirsUseCase.getItemsDir()).thenReturn(Path.of("items"));
+        when(fileRepository.getDirFromId(any(Path.class), anyString())).thenReturn(Path.of("."));
+        when(fileRepository.exists(any(Path.class))).thenReturn(false);
+
+        // When
+        service.exportItem(ctx, item);
+
+        // Then - no media files copied with REPLACE_EXISTING
+        verify(fileRepository, never()).copy(any(Path.class), any(Path.class), any(StandardCopyOption.class));
+        assertThat(item.getMediaContent().getImages()).isEmpty();
         assertThat(item.getMediaContent().getModels()).isEmpty();
+        assertThat(item.getMediaCreationContent()).isNull();
+    }
+
+    @Test
+    void testExportItemSkipsAlreadyExportedItem() {
+        // Given
+        Item item = createItem("item-exists", new LinkedList<>(), new LinkedList<>());
+
+        ExportContext ctx = ExportContext.builder()
+                .exportDir(exportsDir)
+                .exportConfiguration(new ExportConfiguration())
+                .build();
+
+        when(fileRepository.getDirFromId(any(Path.class), anyString())).thenReturn(Path.of("existing-dir"));
+        when(fileRepository.exists(Path.of("existing-dir"))).thenReturn(true);
+
+        // When
+        service.exportItem(ctx, item);
+
+        // Then - no further interactions beyond exists check
+        verify(fileRepository, never()).createDirIfRequired(any());
+        verify(fileRepository, never()).copy(any(Path.class), any(Path.class));
+        verify(jsonMapper, never()).writeValue(any(File.class), any());
+    }
+
+    @Test
+    void testXrExportWithModelsExportsFirstModelOnly() {
+        // Given
+        List<String> images = new LinkedList<>(List.of("img1.png", "img2.png"));
+        List<String> models = new LinkedList<>(List.of("model1.glb", "model2.glb"));
+        Item item = createItem("item-xr-models", images, models);
+
+        ExportContext ctx = ExportContext.builder()
+                .exportDir(exportsDir)
+                .exportConfiguration(ExportConfiguration.builder().xrExport(true).build())
+                .build();
+
+        Path itemExportDir = Path.of("item-export-dir");
+        when(useProjectDirsUseCase.getItemsDir()).thenReturn(Path.of("items"));
+        when(fileRepository.getDirFromId(any(Path.class), anyString())).thenReturn(itemExportDir);
+        when(fileRepository.exists(itemExportDir)).thenReturn(false);
+
+        // When
+        service.exportItem(ctx, item);
+
+        // Then - only first model is copied with REPLACE_EXISTING
+        verify(fileRepository).copy(
+                any(Path.class),
+                eq(itemExportDir.resolve("model1.glb")),
+                eq(StandardCopyOption.REPLACE_EXISTING)
+        );
+        assertThat(item.getMediaContent().getModels()).containsExactly("model1.glb");
+        assertThat(item.getMediaContent().getImages()).isEmpty();
+        assertThat(item.getMediaCreationContent()).isNull();
+    }
+
+    @Test
+    void testXrExportWithOnlyImagesExportsFirstImageOnly() {
+        // Given
+        List<String> images = new LinkedList<>(List.of("img1.png", "img2.png"));
+        List<String> models = new LinkedList<>();
+        Item item = createItem("item-xr-images", images, models);
+
+        ExportContext ctx = ExportContext.builder()
+                .exportDir(exportsDir)
+                .exportConfiguration(ExportConfiguration.builder().xrExport(true).build())
+                .build();
+
+        Path itemExportDir = Path.of("item-export-dir");
+        when(useProjectDirsUseCase.getItemsDir()).thenReturn(Path.of("items"));
+        when(fileRepository.getDirFromId(any(Path.class), anyString())).thenReturn(itemExportDir);
+        when(fileRepository.exists(itemExportDir)).thenReturn(false);
+
+        // When
+        service.exportItem(ctx, item);
+
+        // Then - only first image is copied with REPLACE_EXISTING
+        verify(fileRepository).copy(
+                any(Path.class),
+                eq(itemExportDir.resolve("img1.png")),
+                eq(StandardCopyOption.REPLACE_EXISTING)
+        );
+        assertThat(item.getMediaContent().getImages()).containsExactly("img1.png");
+        assertThat(item.getMediaContent().getModels()).isEmpty();
+        assertThat(item.getMediaCreationContent()).isNull();
+    }
+
+    @Test
+    void testExportItemCreatesRequiredDirectories() {
+        // Given
+        Item item = createItem("item-dirs", new LinkedList<>(), new LinkedList<>());
+
+        ExportContext ctx = ExportContext.builder()
+                .exportDir(exportsDir)
+                .exportConfiguration(ExportConfiguration.builder().xrExport(false).build())
+                .build();
+
+        Path itemExportDir = Path.of("item-export-dir");
+        when(useProjectDirsUseCase.getItemsDir()).thenReturn(Path.of("items"));
+        when(fileRepository.getDirFromId(any(Path.class), anyString())).thenReturn(itemExportDir);
+        when(fileRepository.exists(itemExportDir)).thenReturn(false);
+
+        // When
+        service.exportItem(ctx, item);
+
+        // Then - item dir + images dir + models dir = 3 createDirIfRequired calls
+        verify(fileRepository).createDirIfRequired(itemExportDir);
+        verify(fileRepository).createDirIfRequired(itemExportDir.resolve("images"));
+        verify(fileRepository).createDirIfRequired(itemExportDir.resolve("models"));
     }
 
 }

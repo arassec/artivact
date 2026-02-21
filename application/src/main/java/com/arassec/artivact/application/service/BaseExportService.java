@@ -8,6 +8,7 @@ import com.arassec.artivact.domain.model.exchange.ContentSource;
 import com.arassec.artivact.domain.model.exchange.ExchangeMainData;
 import com.arassec.artivact.domain.model.exchange.ExportConfiguration;
 import com.arassec.artivact.domain.model.exchange.ExportContext;
+import com.arassec.artivact.domain.model.misc.DirectoryDefinitions;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.nio.file.Path;
@@ -75,6 +76,16 @@ public abstract class BaseExportService {
     }
 
     /**
+     * Cleans up after the export finished.
+     *
+     * @param exportContext The export context.
+     */
+    protected void cleanupExport(ExportContext exportContext) {
+        getFileRepository().pack(exportContext.getExportDir(), exportContext.getExportFile());
+        getFileRepository().delete(exportContext.getExportDir());
+    }
+
+    /**
      * Creates the export context.
      *
      * @param id                  The ID of the export.
@@ -108,7 +119,7 @@ public abstract class BaseExportService {
                                   TranslatableString content) {
         ExchangeMainData exchangeMainData = new ExchangeMainData();
         exchangeMainData.setContentSource(contentSource);
-        exchangeMainData.setSourceId(exportSourceId);
+        exchangeMainData.getSourceIds().add(exportSourceId);
         exchangeMainData.setTitle(Optional.ofNullable(title).orElse(new TranslatableString()));
         exchangeMainData.getTitle().setTranslatedValue(null);
         exchangeMainData.setDescription(Optional.ofNullable(description).orElse(new TranslatableString()));
@@ -119,6 +130,16 @@ public abstract class BaseExportService {
         exchangeMainData.setExportConfiguration(exportContext.getExportConfiguration());
         exchangeMainData.setCoverPictureExtension(exportContext.getCoverPictureExtension());
         writeJsonFile(exportContext.getExportDir().resolve(CONTENT_EXCHANGE_MAIN_DATA_FILENAME_JSON), exchangeMainData);
+    }
+
+    /**
+     * Exports all available config files.
+     *
+     * @param exportContext The export context.
+     */
+    protected void exportConfigs(ExportContext exportContext) {
+        getFileRepository().copy(getUseProjectDirsUseCase().getProjectRoot().resolve(DirectoryDefinitions.CONFIGS_DIR),
+                exportContext.getExportDir().resolve(DirectoryDefinitions.CONFIGS_DIR));
     }
 
 }

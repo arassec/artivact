@@ -16,7 +16,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @Builder
-public class TagsConfiguration {
+public class TagsConfiguration implements ConfigurationTypeProvider {
 
     /**
      * The available tags.
@@ -33,6 +33,14 @@ public class TagsConfiguration {
         if (tags != null) {
             this.tags = tags;
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ConfigurationType getConfigurationType() {
+        return ConfigurationType.TAGS;
     }
 
 }

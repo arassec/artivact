@@ -72,8 +72,8 @@ class CollectionImportServiceTest {
         tempDir = Path.of("/tmp/temp");
         exchangeMainData = new ExchangeMainData();
         exchangeMainData.setId("id1");
-        exchangeMainData.setSourceId("source");
-        exchangeMainData.setContentSource(ContentSource.MENU);
+        exchangeMainData.getSourceIds().add("source");
+        exchangeMainData.setContentSource(ContentSource.COLLECTION);
         exchangeMainData.setCoverPictureExtension("jpg");
     }
 

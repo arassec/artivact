@@ -94,7 +94,7 @@
           :url="'/api/configuration/import/properties'"
           :label="$t('PropertiesConfigurationPage.import.button')"
           class="q-mt-md q-mb-md"
-          accept=".artivact.properties-configuration.json"
+          accept=".properties.artivact.configuration.json"
           field-name="file"
           auto-upload
           :no-thumbnails="true"

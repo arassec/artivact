@@ -5,6 +5,8 @@ package com.arassec.artivact.domain.model.exchange;
  */
 public enum ContentSource {
 
+    COLLECTION,
+
     MENU,
 
     ITEM

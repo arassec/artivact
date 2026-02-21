@@ -26,14 +26,39 @@ public final class ExchangeDefinitions {
     public static final String COLLECTION_EXPORT_OVERVIEWS_JSON_FILE = "artivact.collection-export-overviews.json";
 
     /**
+     * Filename of a configuration export JSON file.
+     */
+    public static final String CONFIGURATION_EXCHANGE_FILENAME_JSON = ".artivact.configuration.json";
+
+    /**
      * Filename of the properties export JSON file.
      */
-    public static final String PROPERTIES_EXCHANGE_FILENAME_JSON = "artivact.properties-configuration.json";
+    public static final String PROPERTIES_EXCHANGE_FILENAME_JSON = "properties.artivact.configuration.json";
 
     /**
      * Filename of the tags export JSON file.
      */
-    public static final String TAGS_EXCHANGE_FILENAME_JSON = "artivact.tags-configuration.json";
+    public static final String TAGS_EXCHANGE_FILENAME_JSON = "tags.artivact.configuration.json";
+
+    /**
+     * Filename of the menu export JSON file.
+     */
+    public static final String MENU_EXCHANGE_FILENAME_JSON = "artivact.menu.json";
+
+    /**
+     * Filename of the page export JSON file.
+     */
+    public static final String PAGE_EXCHANGE_FILENAME_JSON = "artivact.page.json";
+
+    /**
+     * Filename for exported items JSON data files.
+     */
+    public static final String ITEM_EXCHANGE_FILENAME_JSON = "artivact.item.json";
+
+    /**
+     * Filename for exported search results.
+     */
+    public static final String SEARCH_RESULT_FILENAME_JSON = "artivact.search-result.json";
 
     /**
      * Filename of the menu export ZIP file.
@@ -49,26 +74,6 @@ public final class ExchangeDefinitions {
      * Filename of the main export file.
      */
     public static final String CONTENT_EXCHANGE_MAIN_DATA_FILENAME_JSON = "artivact.content.json";
-
-    /**
-     * Filename for exported items JSON data files.
-     */
-    public static final String ITEM_EXCHANGE_FILENAME_JSON = "artivact.item.json";
-
-    /**
-     * File suffix for exported menus.
-     */
-    public static final String MENU_EXCHANGE_FILE_SUFFIX = ".artivact.menu.json";
-
-    /**
-     * File suffix for exported pages.
-     */
-    public static final String PAGE_EXCHANGE_FILE_SUFFIX = ".artivact.page-content.json";
-
-    /**
-     * File suffix for exported search results.
-     */
-    public static final String SEARCH_RESULT_FILE_SUFFIX = ".artivact.search-result.json";
 
     /**
      * Creates a new instance.

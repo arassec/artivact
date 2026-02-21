@@ -18,6 +18,7 @@ import com.arassec.artivact.domain.model.property.PropertyCategory;
 import com.arassec.artivact.domain.model.tag.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -143,19 +144,30 @@ class ManageItemServiceTest {
         Item item = new Item();
         item.setId("id1");
         item.setMediaContent(new MediaContent());
-        item.getMediaContent().setImages(List.of("img1.jpg"));
-        item.getMediaContent().setModels(List.of("model1.glb"));
+
+        List<String> images = new LinkedList<>();
+        images.add("img1.jpg");
+        images.add("img3.jpg");
+        item.getMediaContent().setImages(images);
+
+        List<String> models = new LinkedList<>();
+        models.add("model1.glb");
+        models.add("model3.glb");
+        item.getMediaContent().setModels(models);
+
         item.setMediaCreationContent(new MediaCreationContent());
 
         when(useProjectDirsUseCase.getItemsDir()).thenReturn(Path.of("items"));
 
-        // Mock images: img1.jpg is in item, img2.jpg is dangling
+        // Mock images: img1.jpg is in item, img2.jpg is dangling, img3.jpg is missing in the filesystem
         when(fileRepository.getDirFromId(any(), any())).thenReturn(Path.of("items/id1"));
         when(fileRepository.listNamesWithoutScaledImages(Path.of("items/id1/images"))).thenReturn(new ArrayList<>(List.of("img1.jpg", "img2.jpg")));
+        lenient().when(fileRepository.exists(Path.of("items/id1/images/img1.jpg"))).thenReturn(true);
         when(fileRepository.getSubdirFilePath(any(), any(), eq(DirectoryDefinitions.IMAGES_DIR))).thenReturn(Path.of("items/id1/images"));
 
-        // Mock models: model1.glb is in item, model2.glb is dangling
+        // Mock models: model1.glb is in item, model2.glb is dangling, model3.glb is missing in the filesystem
         when(fileRepository.listNamesWithoutScaledImages(Path.of("items/id1/models"))).thenReturn(new ArrayList<>(List.of("model1.glb", "model2.glb")));
+        lenient().when(fileRepository.exists(Path.of("items/id1/models/model1.glb"))).thenReturn(true);
         when(fileRepository.getSubdirFilePath(any(), any(), eq(DirectoryDefinitions.MODELS_DIR))).thenReturn(Path.of("items/id1/models"));
 
         when(itemRepository.save(item)).thenReturn(item);
@@ -163,6 +175,12 @@ class ManageItemServiceTest {
         Item result = service.save(item);
 
         assertThat(result).isSameAs(item);
+
+        // Verify missing files are removed from item
+        ArgumentCaptor<Item> argCap = ArgumentCaptor.forClass(Item.class);
+        verify(itemRepository).save(argCap.capture());
+        assertThat(argCap.getValue().getMediaContent().getImages()).hasSize(1).containsExactly("img1.jpg");
+        assertThat(argCap.getValue().getMediaContent().getModels()).hasSize(1).containsExactly("model1.glb");
 
         // Verify dangling image deletion (original + scaled versions)
         verify(fileRepository).delete(Path.of("items/id1/images/img2.jpg"));
@@ -189,7 +207,7 @@ class ManageItemServiceTest {
 
         verify(favoriteRepository).deleteByItemId("id");
         verify(itemRepository).deleteById("id");
-        verify(fileRepository).deleteDirAndEmptyParents(itemDirPath);
+        verify(fileRepository).deleteAndPruneEmptyParents(itemDirPath);
     }
 
     /**
@@ -208,7 +226,7 @@ class ManageItemServiceTest {
 
         verify(favoriteRepository).deleteByItemId("id");
         verify(itemRepository).deleteById("id");
-        verify(fileRepository).deleteDirAndEmptyParents(itemDirPath);
+        verify(fileRepository).deleteAndPruneEmptyParents(itemDirPath);
     }
 
     /**

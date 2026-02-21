@@ -2,8 +2,11 @@ package com.arassec.artivact.adapter.out.database.jdbc;
 
 import com.arassec.artivact.adapter.out.database.jdbc.springdata.entity.MenuEntity;
 import com.arassec.artivact.adapter.out.database.jdbc.springdata.repository.MenuEntityRepository;
+import com.arassec.artivact.application.infrastructure.aspect.PersistEntityAsJson;
 import com.arassec.artivact.application.port.out.repository.MenuRepository;
 import com.arassec.artivact.domain.model.menu.Menu;
+import com.arassec.artivact.domain.model.misc.DirectoryDefinitions;
+import com.arassec.artivact.domain.model.misc.ExchangeDefinitions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +14,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.json.JsonMapper;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -53,6 +59,7 @@ public class JdbcMenuRepository extends BaseJdbcRepository implements MenuReposi
      * {@inheritDoc}
      */
     @Override
+    @PersistEntityAsJson(entityDir = DirectoryDefinitions.MENUS_DIR, entityType = Menu.class, filename = ExchangeDefinitions.MENU_EXCHANGE_FILENAME_JSON)
     public void save(Menu menu) {
         Optional<MenuEntity> menuEntityOptional = menuEntityRepository.findById(menu.getId());
         MenuEntity menuEntity = menuEntityOptional.orElseGet(MenuEntity::new);
@@ -68,7 +75,8 @@ public class JdbcMenuRepository extends BaseJdbcRepository implements MenuReposi
      * {@inheritDoc}
      */
     @Override
-    public void delete(String menuId) {
+    @PersistEntityAsJson(entityDir = DirectoryDefinitions.MENUS_DIR, entityType = Menu.class, delete = true, filename = ExchangeDefinitions.MENU_EXCHANGE_FILENAME_JSON)
+    public void deleteById(String menuId) {
         menuEntityRepository.deleteById(menuId);
     }
 

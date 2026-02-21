@@ -1,16 +1,10 @@
 package com.arassec.artivact.application.service.item;
 
-import com.arassec.artivact.application.port.in.configuration.ExportPropertiesConfigurationUseCase;
-import com.arassec.artivact.application.port.in.configuration.ExportTagsConfigurationUseCase;
-import com.arassec.artivact.application.port.in.configuration.LoadPropertiesConfigurationUseCase;
-import com.arassec.artivact.application.port.in.configuration.LoadTagsConfigurationUseCase;
 import com.arassec.artivact.application.port.in.item.ExportItemUseCase;
 import com.arassec.artivact.application.port.in.item.LoadItemUseCase;
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.application.service.BaseExportService;
-import com.arassec.artivact.domain.model.configuration.PropertiesConfiguration;
-import com.arassec.artivact.domain.model.configuration.TagsConfiguration;
 import com.arassec.artivact.domain.model.exchange.ContentSource;
 import com.arassec.artivact.domain.model.exchange.ExportContext;
 import com.arassec.artivact.domain.model.item.Item;
@@ -43,7 +37,7 @@ public class ItemExportService extends BaseExportService implements ExportItemUs
     private final UseProjectDirsUseCase useProjectDirsUseCase;
 
     /**
-     * The json mapper.
+     * The JSON mapper.
      */
     @Getter
     private final JsonMapper jsonMapper;
@@ -60,32 +54,30 @@ public class ItemExportService extends BaseExportService implements ExportItemUs
     private final LoadItemUseCase loadItemUseCase;
 
     /**
-     * Use case for export properties configuration.
-     */
-    private final ExportPropertiesConfigurationUseCase exportPropertiesConfigurationUseCase;
-
-    /**
-     * Use case for export tags configuration.
-     */
-    private final ExportTagsConfigurationUseCase exportTagsConfigurationUseCase;
-
-    /**
-     * Use case for load properties configuration.
-     */
-    private final LoadPropertiesConfigurationUseCase loadPropertiesConfigurationUseCase;
-
-    /**
-     * Use case for load tags configuration.
-     */
-    private final LoadTagsConfigurationUseCase loadTagsConfigurationUseCase;
-
-    /**
      * {@inheritDoc}
      */
     @Override
     public Path exportItem(String itemId) {
         Item item = loadItemUseCase.loadTranslated(itemId);
-        return exportItem(item, loadPropertiesConfigurationUseCase.loadPropertiesConfiguration(), loadTagsConfigurationUseCase.loadTagsConfiguration());
+        return exportItem(item);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Path exportItem(Item item) {
+        ExportContext exportContext = createExportContext(item.getId(), null);
+
+        prepareExport(exportContext);
+
+        exportMainData(exportContext, ContentSource.ITEM, item.getId(), item.getTitle(), item.getDescription(), null);
+        exportConfigs(exportContext);
+        exportItem(exportContext, item);
+
+        cleanupExport(exportContext);
+
+        return exportContext.getExportFile();
     }
 
     /**
@@ -93,7 +85,7 @@ public class ItemExportService extends BaseExportService implements ExportItemUs
      */
     @Override
     public void exportItem(ExportContext exportContext, Item item) {
-        Path itemExportDir = exportContext.getExportDir().resolve(item.getId());
+        Path itemExportDir = fileRepository.getDirFromId(exportContext.getExportDir().resolve(DirectoryDefinitions.ITEMS_DIR), item.getId());
 
         // Already exported by another widget / exporter? Skip item...
         if (fileRepository.exists(itemExportDir)) {
@@ -108,28 +100,6 @@ public class ItemExportService extends BaseExportService implements ExportItemUs
         item.getDescription().setTranslatedValue(null);
 
         writeJsonFile(itemExportDir.resolve(ITEM_EXCHANGE_FILENAME_JSON), item);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Path exportItem(Item item, PropertiesConfiguration propertiesConfiguration, TagsConfiguration tagsConfiguration) {
-        ExportContext exportContext = createExportContext(item.getId(), null);
-
-        prepareExport(exportContext);
-
-        exportMainData(exportContext, ContentSource.ITEM, item.getId(), item.getTitle(), item.getDescription(), null);
-
-        exportPropertiesConfigurationUseCase.exportPropertiesConfiguration(exportContext, propertiesConfiguration);
-        exportTagsConfigurationUseCase.exportTagsConfiguration(exportContext, tagsConfiguration);
-
-        exportItem(exportContext, item);
-
-        fileRepository.pack(exportContext.getExportDir(), exportContext.getExportFile());
-        fileRepository.delete(exportContext.getExportDir());
-
-        return exportContext.getExportFile();
     }
 
     /**
@@ -155,14 +125,18 @@ public class ItemExportService extends BaseExportService implements ExportItemUs
         List<String> images = item.getMediaContent().getImages();
         List<String> models = item.getMediaContent().getModels();
 
-        item.setMediaCreationContent(null); // Not needed in standard exports at the moment.
-
         Path imagesSourceDir = fileRepository.getDirFromId(useProjectDirsUseCase.getItemsDir(), item.getId())
                 .resolve(DirectoryDefinitions.IMAGES_DIR);
         Path modelsSourceDir = fileRepository.getDirFromId(useProjectDirsUseCase.getItemsDir(), item.getId())
                 .resolve(DirectoryDefinitions.MODELS_DIR);
 
-        if (exportContext.getExportConfiguration().isOptimizeSize()) {
+        Path imagesTargetDir = itemExportDir.resolve(DirectoryDefinitions.IMAGES_DIR);
+        fileRepository.createDirIfRequired(imagesTargetDir);
+        Path modelsTargetDir = itemExportDir.resolve(DirectoryDefinitions.MODELS_DIR);
+        fileRepository.createDirIfRequired(modelsTargetDir);
+
+        if (exportContext.getExportConfiguration().isXrExport()) {
+            item.setMediaCreationContent(null); // Not needed in XR exports!
             if (!models.isEmpty()) {
                 String firstModel = models.getFirst();
                 fileRepository.copy(modelsSourceDir.resolve(firstModel), itemExportDir.resolve(firstModel), StandardCopyOption.REPLACE_EXISTING);
@@ -175,10 +149,22 @@ public class ItemExportService extends BaseExportService implements ExportItemUs
                 item.getMediaContent().getImages().retainAll(List.of(firstImage));
             }
         } else {
-            item.getMediaContent().getModels()
-                    .forEach(model -> fileRepository.copy(modelsSourceDir.resolve(model), itemExportDir.resolve(model)));
             item.getMediaContent().getImages()
-                    .forEach(image -> fileRepository.copy(imagesSourceDir.resolve(image), itemExportDir.resolve(image)));
+                    .forEach(image -> fileRepository.copy(imagesSourceDir.resolve(image), imagesTargetDir.resolve(image)));
+            item.getMediaContent().getModels()
+                    .forEach(model -> fileRepository.copy(modelsSourceDir.resolve(model), modelsTargetDir.resolve(model)));
+            // TODO: Add option to include media creation files when exporting an item.
+            item.setMediaCreationContent(null);
+            /*
+            item.getMediaCreationContent().getImageSets()
+                    .forEach(imageSet -> imageSet.getFiles()
+                            .forEach(image -> fileRepository.copy(imagesSourceDir.resolve(image), imagesTargetDir.resolve(image))));
+            item.getMediaCreationContent().getModelSets()
+                    .forEach(modelSet -> fileRepository.copy(
+                            useProjectDirsUseCase.getProjectRoot().resolve(modelSet.getDirectory()),
+                            exportContext.getExportDir().resolve(modelSet.getDirectory())
+                    ));
+             */
         }
     }
 

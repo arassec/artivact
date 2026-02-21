@@ -34,4 +34,11 @@ public @interface PersistEntityAsJson {
      */
     boolean delete() default false;
 
+    /**
+     * The filename to use for the JSON file.
+     *
+     * @return The name of the JSON file.
+     */
+    String filename();
+
 }

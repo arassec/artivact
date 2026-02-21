@@ -4,8 +4,6 @@ import com.arassec.artivact.application.infrastructure.aspect.GenerateIds;
 import com.arassec.artivact.application.infrastructure.aspect.RestrictResult;
 import com.arassec.artivact.application.infrastructure.aspect.TranslateResult;
 import com.arassec.artivact.application.port.in.collection.*;
-import com.arassec.artivact.application.port.in.configuration.LoadPropertiesConfigurationUseCase;
-import com.arassec.artivact.application.port.in.configuration.LoadTagsConfigurationUseCase;
 import com.arassec.artivact.application.port.in.menu.LoadMenuUseCase;
 import com.arassec.artivact.application.port.in.operation.RunBackgroundOperationUseCase;
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
@@ -63,16 +61,6 @@ public class ManageCollectionExportService
      * Repository for collection export access.
      */
     private final CollectionExportRepository collectionExportRepository;
-
-    /**
-     * Use case for load tags configuration.
-     */
-    private final LoadTagsConfigurationUseCase loadTagsConfigurationUseCase;
-
-    /**
-     * Use case for load properties configuration.
-     */
-    private final LoadPropertiesConfigurationUseCase loadPropertiesConfigurationUseCase;
 
     /**
      * Use case for load menu.
@@ -210,9 +198,7 @@ public class ManageCollectionExportService
         runBackgroundOperationUseCase.execute("collectionExport", "export", progressMonitor -> {
             CollectionExport collectionExport = collectionExportRepository.findById(id).orElseThrow();
             Path exportedFile = exportCollectionUseCase.exportCollection(collectionExport,
-                    loadMenuUseCase.loadMenu(collectionExport.getSourceId()),
-                    loadPropertiesConfigurationUseCase.loadPropertiesConfiguration(),
-                    loadTagsConfigurationUseCase.loadTagsConfiguration());
+                    loadMenuUseCase.loadMenu(collectionExport.getSourceId()));
             log.info("Build export: {}", exportedFile);
 
             collectionExportRepository.save(collectionExport);

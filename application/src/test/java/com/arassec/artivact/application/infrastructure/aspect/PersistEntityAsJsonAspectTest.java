@@ -49,33 +49,9 @@ class PersistEntityAsJsonAspectTest {
     }
 
     @Test
-    void testDoesNothingWhenDisabled() throws Exception {
+    void testDoesNothingWhenDisabled() {
         aspect.persistEntityAsJson(joinPoint);
         verifyNoInteractions(jsonMapper, fileRepository, useProjectDirsUseCase);
-    }
-
-    @Test
-    void testPersistsItemAsJson() throws Exception {
-        enableAspect();
-
-        Item item = new Item();
-        item.setId("abc123def456");
-
-        Method method = TestAnnotatedMethods.class.getMethod("saveItem", Item.class);
-        when(joinPoint.getSignature()).thenReturn(methodSignature);
-        when(methodSignature.getMethod()).thenReturn(method);
-        when(joinPoint.getArgs()).thenReturn(new Object[]{item});
-        when(useProjectDirsUseCase.getProjectRoot()).thenReturn(Path.of("testRoot"));
-        when(fileRepository.getSubDir("abc123def456", 0)).thenReturn("abc");
-        when(fileRepository.getSubDir("abc123def456", 1)).thenReturn("123");
-        when(jsonMapper.writeValueAsBytes(item)).thenReturn("{}".getBytes());
-
-        aspect.persistEntityAsJson(joinPoint);
-
-        Path expectedDir = Path.of("testRoot", "items", "abc", "123");
-        Path expectedFile = expectedDir.resolve("abc123def456.json");
-        verify(fileRepository).createDirIfRequired(expectedDir);
-        verify(fileRepository).write(expectedFile, "{}".getBytes());
     }
 
     @Test
@@ -90,72 +66,14 @@ class PersistEntityAsJsonAspectTest {
         when(methodSignature.getMethod()).thenReturn(method);
         when(joinPoint.getArgs()).thenReturn(new Object[]{menu});
         when(useProjectDirsUseCase.getProjectRoot()).thenReturn(Path.of("testRoot"));
-        when(fileRepository.getSubDir("menu12345678", 0)).thenReturn("men");
-        when(fileRepository.getSubDir("menu12345678", 1)).thenReturn("u12");
         when(jsonMapper.writeValueAsBytes(menu)).thenReturn("{}".getBytes());
-
+        when(fileRepository.getSubdirFilePath(eq(Path.of("testRoot/menus")), eq("menu12345678"), eq("menu.json")))
+                .thenReturn(Path.of("testRoot", "menus", "men", "u12", "menu12345678", "menu.json"));
         aspect.persistEntityAsJson(joinPoint);
 
-        Path expectedDir = Path.of("testRoot", "menus", "men", "u12");
+        Path expectedDir = Path.of("testRoot", "menus", "men", "u12", "menu12345678");
         verify(fileRepository).createDirIfRequired(expectedDir);
-        verify(fileRepository).write(expectedDir.resolve("menu12345678.json"), "{}".getBytes());
-    }
-
-    @Test
-    void testPersistsPageContentAsJson() throws Exception {
-        enableAspect();
-
-        PageContent pageContent = new PageContent();
-        pageContent.setId("page12345678");
-
-        Method method = TestAnnotatedMethods.class.getMethod("savePageContent", String.class, PageContent.class);
-        when(joinPoint.getSignature()).thenReturn(methodSignature);
-        when(methodSignature.getMethod()).thenReturn(method);
-        when(joinPoint.getArgs()).thenReturn(new Object[]{"someAlias", pageContent});
-        when(useProjectDirsUseCase.getProjectRoot()).thenReturn(Path.of("testRoot"));
-        when(fileRepository.getSubDir("page12345678", 0)).thenReturn("pag");
-        when(fileRepository.getSubDir("page12345678", 1)).thenReturn("e12");
-        when(jsonMapper.writeValueAsBytes(pageContent)).thenReturn("{}".getBytes());
-
-        aspect.persistEntityAsJson(joinPoint);
-
-        Path expectedDir = Path.of("testRoot", "pages", "pag", "e12");
-        verify(fileRepository).createDirIfRequired(expectedDir);
-        verify(fileRepository).write(expectedDir.resolve("page12345678.json"), "{}".getBytes());
-    }
-
-    @Test
-    void testDeletesItemJsonFile() throws Exception {
-        enableAspect();
-
-        String itemId = "abc123def456";
-
-        Method method = TestAnnotatedMethods.class.getMethod("deleteItem", String.class);
-        when(joinPoint.getSignature()).thenReturn(methodSignature);
-        when(methodSignature.getMethod()).thenReturn(method);
-        when(joinPoint.getArgs()).thenReturn(new Object[]{itemId});
-        when(useProjectDirsUseCase.getProjectRoot()).thenReturn(Path.of("testRoot"));
-        when(fileRepository.getSubDir(itemId, 0)).thenReturn("abc");
-        when(fileRepository.getSubDir(itemId, 1)).thenReturn("123");
-
-        Path expectedFile = Path.of("testRoot", "items", "abc", "123", "abc123def456.json");
-        when(fileRepository.exists(expectedFile)).thenReturn(true);
-
-        Path secondSubDir = Path.of("testRoot", "items", "abc", "123");
-        when(fileRepository.exists(secondSubDir)).thenReturn(true);
-        when(fileRepository.isDir(secondSubDir)).thenReturn(true);
-        when(fileRepository.list(secondSubDir)).thenReturn(List.of());
-
-        Path firstSubDir = Path.of("testRoot", "items", "abc");
-        when(fileRepository.exists(firstSubDir)).thenReturn(true);
-        when(fileRepository.isDir(firstSubDir)).thenReturn(true);
-        when(fileRepository.list(firstSubDir)).thenReturn(List.of());
-
-        aspect.persistEntityAsJson(joinPoint);
-
-        verify(fileRepository).delete(expectedFile);
-        verify(fileRepository).delete(secondSubDir);
-        verify(fileRepository).delete(firstSubDir);
+        verify(fileRepository).write(expectedDir.resolve("menu.json"), "{}".getBytes());
     }
 
     @Test
@@ -190,34 +108,6 @@ class PersistEntityAsJsonAspectTest {
         aspect.persistEntityAsJson(joinPoint);
 
         verify(fileRepository, never()).write(any(), any(byte[].class));
-    }
-
-    @Test
-    void testHandlesCollectionOfMenus() throws Exception {
-        enableAspect();
-
-        Menu menu1 = new Menu();
-        menu1.setId("menu11111111");
-        Menu menu2 = new Menu();
-        menu2.setId("menu22222222");
-        List<Menu> menus = List.of(menu1, menu2);
-
-        Method method = TestAnnotatedMethods.class.getMethod("saveMenus", List.class);
-        when(joinPoint.getSignature()).thenReturn(methodSignature);
-        when(methodSignature.getMethod()).thenReturn(method);
-        when(joinPoint.getArgs()).thenReturn(new Object[]{menus});
-        when(useProjectDirsUseCase.getProjectRoot()).thenReturn(Path.of("testRoot"));
-        when(fileRepository.getSubDir("menu11111111", 0)).thenReturn("men");
-        when(fileRepository.getSubDir("menu11111111", 1)).thenReturn("u11");
-        when(fileRepository.getSubDir("menu22222222", 0)).thenReturn("men");
-        when(fileRepository.getSubDir("menu22222222", 1)).thenReturn("u22");
-        when(jsonMapper.writeValueAsBytes(menu1)).thenReturn("{}".getBytes());
-        when(jsonMapper.writeValueAsBytes(menu2)).thenReturn("{}".getBytes());
-
-        aspect.persistEntityAsJson(joinPoint);
-
-        verify(fileRepository).write(Path.of("testRoot", "menus", "men", "u11", "menu11111111.json"), "{}".getBytes());
-        verify(fileRepository).write(Path.of("testRoot", "menus", "men", "u22", "menu22222222.json"), "{}".getBytes());
     }
 
     @Test
@@ -257,43 +147,137 @@ class PersistEntityAsJsonAspectTest {
         when(methodSignature.getMethod()).thenReturn(method);
         when(joinPoint.getArgs()).thenReturn(new Object[]{itemId});
         when(useProjectDirsUseCase.getProjectRoot()).thenReturn(Path.of("testRoot"));
-        when(fileRepository.getSubDir(itemId, 0)).thenReturn("abc");
-        when(fileRepository.getSubDir(itemId, 1)).thenReturn("123");
 
-        Path expectedFile = Path.of("testRoot", "items", "abc", "123", "abc123def456.json");
-        when(fileRepository.exists(expectedFile)).thenReturn(true);
-
+        Path expectedFile = Path.of("testRoot", "items", "abc", "123", "abc123def456", "item.json");
         Path secondSubDir = Path.of("testRoot", "items", "abc", "123");
-        when(fileRepository.exists(secondSubDir)).thenReturn(true);
-        when(fileRepository.isDir(secondSubDir)).thenReturn(true);
-        when(fileRepository.list(secondSubDir)).thenReturn(List.of(Path.of("otherFile.json")));
+
+        when(fileRepository.getSubdirFilePath(eq(Path.of("testRoot/items")), eq("abc123def456"), eq("item.json")))
+                .thenReturn(expectedFile);
 
         aspect.persistEntityAsJson(joinPoint);
 
-        verify(fileRepository).delete(expectedFile);
+        verify(fileRepository).deleteAndPruneEmptyParents(expectedFile);
         verify(fileRepository, never()).delete(secondSubDir);
+    }
+
+    @Test
+    void testPersistsItemAsJson() throws Exception {
+        enableAspect();
+
+        Item item = new Item();
+        item.setId("item12345678");
+
+        Method method = TestAnnotatedMethods.class.getMethod("saveItem", Item.class);
+        when(joinPoint.getSignature()).thenReturn(methodSignature);
+        when(methodSignature.getMethod()).thenReturn(method);
+        when(joinPoint.getArgs()).thenReturn(new Object[]{item});
+        when(useProjectDirsUseCase.getProjectRoot()).thenReturn(Path.of("testRoot"));
+        when(jsonMapper.writeValueAsBytes(item)).thenReturn("{\"id\":\"item12345678\"}".getBytes());
+        when(fileRepository.getSubdirFilePath(eq(Path.of("testRoot/items")), eq("item12345678"), eq("item.json")))
+                .thenReturn(Path.of("testRoot", "items", "ite", "m12", "item12345678", "item.json"));
+
+        aspect.persistEntityAsJson(joinPoint);
+
+        Path expectedDir = Path.of("testRoot", "items", "ite", "m12", "item12345678");
+        verify(fileRepository).createDirIfRequired(expectedDir);
+        verify(fileRepository).write(expectedDir.resolve("item.json"), "{\"id\":\"item12345678\"}".getBytes());
+    }
+
+    @Test
+    void testPersistsPageContentFromSecondParameter() throws Exception {
+        enableAspect();
+
+        PageContent pageContent = new PageContent();
+        pageContent.setId("page12345678");
+
+        Method method = TestAnnotatedMethods.class.getMethod("savePageContent", String.class, PageContent.class);
+        when(joinPoint.getSignature()).thenReturn(methodSignature);
+        when(methodSignature.getMethod()).thenReturn(method);
+        when(joinPoint.getArgs()).thenReturn(new Object[]{"some-alias", pageContent});
+        when(useProjectDirsUseCase.getProjectRoot()).thenReturn(Path.of("testRoot"));
+        when(jsonMapper.writeValueAsBytes(pageContent)).thenReturn("{}".getBytes());
+        when(fileRepository.getSubdirFilePath(eq(Path.of("testRoot/pages")), eq("page12345678"), eq("properties.json")))
+                .thenReturn(Path.of("testRoot", "pages", "pag", "e12", "page12345678", "properties.json"));
+
+        aspect.persistEntityAsJson(joinPoint);
+
+        Path expectedDir = Path.of("testRoot", "pages", "pag", "e12", "page12345678");
+        verify(fileRepository).createDirIfRequired(expectedDir);
+        verify(fileRepository).write(expectedDir.resolve("properties.json"), "{}".getBytes());
+    }
+
+    @Test
+    void testDeleteWithValidId() throws Exception {
+        enableAspect();
+
+        String itemId = "item12345678";
+
+        Method method = TestAnnotatedMethods.class.getMethod("deleteItem", String.class);
+        when(joinPoint.getSignature()).thenReturn(methodSignature);
+        when(methodSignature.getMethod()).thenReturn(method);
+        when(joinPoint.getArgs()).thenReturn(new Object[]{itemId});
+        when(useProjectDirsUseCase.getProjectRoot()).thenReturn(Path.of("testRoot"));
+
+        Path expectedFile = Path.of("testRoot", "items", "ite", "m12", "item12345678", "item.json");
+        when(fileRepository.getSubdirFilePath(eq(Path.of("testRoot/items")), eq("item12345678"), eq("item.json")))
+                .thenReturn(expectedFile);
+
+        aspect.persistEntityAsJson(joinPoint);
+
+        verify(fileRepository).deleteAndPruneEmptyParents(expectedFile);
+        verify(fileRepository, never()).write(any(), any(byte[].class));
+    }
+
+    @Test
+    void testDeleteSkipsNullId() throws Exception {
+        enableAspect();
+
+        Method method = TestAnnotatedMethods.class.getMethod("deleteItem", String.class);
+        when(joinPoint.getSignature()).thenReturn(methodSignature);
+        when(methodSignature.getMethod()).thenReturn(method);
+        when(joinPoint.getArgs()).thenReturn(new Object[]{null});
+
+        aspect.persistEntityAsJson(joinPoint);
+
+        verify(fileRepository, never()).delete(any());
+        verify(fileRepository, never()).deleteAndPruneEmptyParents(any());
+    }
+
+    @Test
+    void testSkipsNullEntityParameter() throws Exception {
+        enableAspect();
+
+        Method method = TestAnnotatedMethods.class.getMethod("saveItem", Item.class);
+        when(joinPoint.getSignature()).thenReturn(methodSignature);
+        when(methodSignature.getMethod()).thenReturn(method);
+        when(joinPoint.getArgs()).thenReturn(new Object[]{null});
+
+        aspect.persistEntityAsJson(joinPoint);
+
+        verify(fileRepository, never()).write(any(), any(byte[].class));
+        verify(fileRepository, never()).createDirIfRequired(any());
     }
 
     // Helper class with annotated methods for testing
     @SuppressWarnings("unused")
     static class TestAnnotatedMethods {
-        @PersistEntityAsJson(entityDir = "items", entityType = Item.class)
+        @PersistEntityAsJson(entityDir = "items", entityType = Item.class, filename = "item.json")
         public void saveItem(Item item) {
         }
 
-        @PersistEntityAsJson(entityDir = "items", entityType = Item.class, delete = true)
+        @PersistEntityAsJson(entityDir = "items", entityType = Item.class, delete = true, filename = "item.json")
         public void deleteItem(String itemId) {
         }
 
-        @PersistEntityAsJson(entityDir = "menus", entityType = Menu.class)
+        @PersistEntityAsJson(entityDir = "menus", entityType = Menu.class, filename = "menu.json")
         public void saveMenu(Menu menu) {
         }
 
-        @PersistEntityAsJson(entityDir = "menus", entityType = Menu.class)
+        @PersistEntityAsJson(entityDir = "menus", entityType = Menu.class, filename = "menu.json")
         public void saveMenus(List<Menu> menus) {
         }
 
-        @PersistEntityAsJson(entityDir = "pages", entityType = PageContent.class)
+        @PersistEntityAsJson(entityDir = "pages", entityType = PageContent.class, filename = "properties.json")
         public void savePageContent(String pageIdOrAlias, PageContent pageContent) {
         }
     }

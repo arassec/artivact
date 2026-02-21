@@ -558,7 +558,7 @@ export default {
       title: "Title",
       description: "Short Description",
       content: "Content",
-      optimizeSize: "Optimize export size",
+      xrExport: "Export for Artivact XR",
       applyRestrictions: "Exclude restricted elements",
       exportFileMissing:
         "No export file exists for this configuration! You can create one by clicking on the respective button above.",
@@ -664,7 +664,7 @@ export default {
       relocate: "Relocate Menu",
       relocateEntry: "Relocate Menu Entry",
       exportConfiguration: {
-        optimizeSize: "Optimize export size",
+        xrExport: "Export for Artivact XR",
         applyRestrictions: "Exclude restricted elements",
         excludeItems: "Exclude items from export",
       },

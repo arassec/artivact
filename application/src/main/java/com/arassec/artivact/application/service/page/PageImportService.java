@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.PAGE_EXCHANGE_FILE_SUFFIX;
-import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.SEARCH_RESULT_FILE_SUFFIX;
+import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.PAGE_EXCHANGE_FILENAME_JSON;
+import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.SEARCH_RESULT_FILENAME_JSON;
 
 /**
  * Service for page import.
@@ -34,7 +34,7 @@ import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.SEARCH_
 public class PageImportService implements ImportPageUseCase {
 
     /**
-     * The json mapper.
+     * The JSON mapper.
      */
     private final JsonMapper jsonMapper;
 
@@ -68,7 +68,8 @@ public class PageImportService implements ImportPageUseCase {
      */
     @Override
     public void importPage(ImportContext importContext, String pageId, String pageAlias) {
-        Path pageContentJson = importContext.getImportDir().resolve(pageId + PAGE_EXCHANGE_FILE_SUFFIX);
+        Path pageContentJson = fileRepository.getDirFromId(importContext.getImportDir().resolve(DirectoryDefinitions.PAGES_DIR), pageId)
+                .resolve(PAGE_EXCHANGE_FILENAME_JSON);
 
         PageContent pageContent = jsonMapper.readValue(fileRepository.read(pageContentJson), PageContent.class);
 
@@ -77,22 +78,28 @@ public class PageImportService implements ImportPageUseCase {
                 .toList());
 
         pageContent.getWidgets().forEach(widget -> {
-            // Import the widget:
-            Path widgetSource = importContext.getImportDir().resolve(widget.getId());
-
-            Path widgetTarget = fileRepository.getDirFromId(useProjectDirsUseCase.getProjectRoot()
-                    .resolve(DirectoryDefinitions.WIDGETS_DIR), widget.getId());
-
-            fileRepository.copy(widgetSource, widgetTarget);
 
             // Import Items:
             if (widget instanceof ItemSearchWidget itemSearchWidget) {
-                Path searchResultJson = importContext.getImportDir().resolve(itemSearchWidget.getId() + SEARCH_RESULT_FILE_SUFFIX);
+                // Import the search result of the widget:
+                Path searchResultJson = fileRepository.getDirFromId(importContext.getImportDir()
+                                .resolve(DirectoryDefinitions.WIDGETS_DIR), itemSearchWidget.getId())
+                        .resolve(SEARCH_RESULT_FILENAME_JSON);
                 if (fileRepository.exists(searchResultJson)) {
                     List<String> itemIds = jsonMapper.readValue(fileRepository.read(searchResultJson), new TypeReference<>() {
                     });
                     itemIds.forEach(itemId -> importItemUseCase.importItem(importContext, itemId));
                 }
+            } else {
+                // Import the widget's associated files:
+                Path widgetSource = fileRepository.getDirFromId(importContext.getImportDir()
+                        .resolve(DirectoryDefinitions.WIDGETS_DIR), widget.getId());
+
+                Path widgetTarget = fileRepository.getDirFromId(useProjectDirsUseCase.getProjectRoot()
+                        .resolve(DirectoryDefinitions.WIDGETS_DIR), widget.getId());
+
+                fileRepository.copy(widgetSource, widgetTarget);
+
             }
         });
 

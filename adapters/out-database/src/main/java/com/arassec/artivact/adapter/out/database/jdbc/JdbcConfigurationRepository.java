@@ -2,8 +2,12 @@ package com.arassec.artivact.adapter.out.database.jdbc;
 
 import com.arassec.artivact.adapter.out.database.jdbc.springdata.entity.ConfigurationEntity;
 import com.arassec.artivact.adapter.out.database.jdbc.springdata.repository.ConfigurationEntityRepository;
+import com.arassec.artivact.application.infrastructure.aspect.PersistEntityAsJson;
 import com.arassec.artivact.application.port.out.repository.ConfigurationRepository;
 import com.arassec.artivact.domain.model.configuration.ConfigurationType;
+import com.arassec.artivact.domain.model.configuration.ConfigurationTypeProvider;
+import com.arassec.artivact.domain.model.misc.DirectoryDefinitions;
+import com.arassec.artivact.domain.model.misc.ExchangeDefinitions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,6 +53,7 @@ public class JdbcConfigurationRepository extends BaseJdbcRepository implements C
     /**
      * {@inheritDoc}
      */
+    @PersistEntityAsJson(entityDir = DirectoryDefinitions.CONFIGS_DIR, entityType = ConfigurationTypeProvider.class, filename = ExchangeDefinitions.CONFIGURATION_EXCHANGE_FILENAME_JSON)
     @Override
     public void saveConfiguration(ConfigurationType configurationType, Object configurationObject) {
         saveEntity(configurationType, toJson(configurationObject));

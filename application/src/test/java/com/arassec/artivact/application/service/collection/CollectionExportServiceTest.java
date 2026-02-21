@@ -1,12 +1,8 @@
 package com.arassec.artivact.application.service.collection;
 
-import com.arassec.artivact.application.port.in.configuration.ExportPropertiesConfigurationUseCase;
-import com.arassec.artivact.application.port.in.configuration.ExportTagsConfigurationUseCase;
 import com.arassec.artivact.application.port.in.menu.ExportMenuUseCase;
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
-import com.arassec.artivact.domain.model.configuration.PropertiesConfiguration;
-import com.arassec.artivact.domain.model.configuration.TagsConfiguration;
 import com.arassec.artivact.domain.model.exchange.CollectionExport;
 import com.arassec.artivact.domain.model.exchange.ExchangeMainData;
 import com.arassec.artivact.domain.model.menu.Menu;
@@ -40,12 +36,6 @@ class CollectionExportServiceTest {
     private UseProjectDirsUseCase useProjectDirsUseCase;
 
     @Mock
-    private ExportPropertiesConfigurationUseCase exportPropertiesConfigurationUseCase;
-
-    @Mock
-    private ExportTagsConfigurationUseCase exportTagsConfigurationUseCase;
-
-    @Mock
     private ExportMenuUseCase exportMenuUseCase;
 
     @InjectMocks
@@ -68,15 +58,12 @@ class CollectionExportServiceTest {
         Menu menu = new Menu();
         menu.setId("menu1");
 
-        PropertiesConfiguration propsConfig = new PropertiesConfiguration();
-        TagsConfiguration tagsConfig = new TagsConfiguration();
+        when(useProjectDirsUseCase.getProjectRoot()).thenReturn(Path.of("exports"));
 
-        Path result = service.exportCollection(collectionExport, menu, propsConfig, tagsConfig);
+        Path result = service.exportCollection(collectionExport, menu);
 
         assertThat(result.toString()).endsWith("col1.artivact.collection.zip");
 
-        verify(exportPropertiesConfigurationUseCase).exportPropertiesConfiguration(any(), eq(propsConfig));
-        verify(exportTagsConfigurationUseCase).exportTagsConfiguration(any(), eq(tagsConfig));
         verify(exportMenuUseCase).exportMenu(any(), eq(menu));
 
         verify(fileRepository).pack(any(), eq(result));
@@ -98,13 +85,12 @@ class CollectionExportServiceTest {
         Menu menu = new Menu();
         menu.setId("menu2");
 
-        PropertiesConfiguration propsConfig = new PropertiesConfiguration();
-        TagsConfiguration tagsConfig = new TagsConfiguration();
+        when(useProjectDirsUseCase.getProjectRoot()).thenReturn(Path.of("exports"));
 
         Path coverFile = exportsDir.resolve("col2.jpg");
         lenient().doReturn(true).when(fileRepository).exists(coverFile);
 
-        Path result = service.exportCollection(collectionExport, menu, propsConfig, tagsConfig);
+        Path result = service.exportCollection(collectionExport, menu);
 
         assertThat(result.toString()).endsWith("col2.artivact.collection.zip");
 
@@ -128,13 +114,12 @@ class CollectionExportServiceTest {
         Menu menu = new Menu();
         menu.setId("menu3");
 
-        PropertiesConfiguration propsConfig = new PropertiesConfiguration();
-        TagsConfiguration tagsConfig = new TagsConfiguration();
+        when(useProjectDirsUseCase.getProjectRoot()).thenReturn(Path.of("exports"));
 
         Path coverFile = exportsDir.resolve("col3.png");
         lenient().doReturn(false).when(fileRepository).exists(coverFile);
 
-        Path result = service.exportCollection(collectionExport, menu, propsConfig, tagsConfig);
+        Path result = service.exportCollection(collectionExport, menu);
 
         assertThat(result.toString()).endsWith("col3.artivact.collection.zip");
 

@@ -537,7 +537,7 @@ export default {
       title: 'Titel',
       description: 'Kurzbeschreibung',
       content: 'Inhalt',
-      optimizeSize: 'Exportgröße optimieren',
+      xrExport: 'Artivact XR Export',
       applyRestrictions: 'Eingeschränkte Elemente ausschließen',
       exportFileMissing:
         'Zu dieser Konfiguration existiert noch keine Exportdatei. Sie können diese über den entsprechenden Knopf in der oberen Leiste erstellen.',
@@ -642,7 +642,7 @@ export default {
       relocate: 'Menü umhängen',
       relocateEntry: 'Menüeintrag umhängen',
       exportConfiguration: {
-        optimizeSize: 'Exportgröße optimieren',
+        xrExport: 'Artivact XR Export',
         applyRestrictions: 'Eingeschränkte Elemente ausschließen',
         excludeItems: 'Objekte vom Export ausschließen',
       },

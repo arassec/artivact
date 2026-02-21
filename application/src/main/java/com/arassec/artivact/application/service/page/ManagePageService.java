@@ -1,7 +1,6 @@
 package com.arassec.artivact.application.service.page;
 
 import com.arassec.artivact.application.infrastructure.aspect.GenerateIds;
-import com.arassec.artivact.application.infrastructure.aspect.PersistEntityAsJson;
 import com.arassec.artivact.application.infrastructure.aspect.RestrictResult;
 import com.arassec.artivact.application.infrastructure.aspect.TranslateResult;
 import com.arassec.artivact.application.port.in.page.*;
@@ -126,12 +125,11 @@ public class ManagePageService
      *
      * @param pageIdOrAlias The page's ID or alias.
      */
-    @PersistEntityAsJson(entityDir = "pages", entityType = PageContent.class, delete = true)
     @Override
     public void deletePage(String pageIdOrAlias) {
         Optional<Page> pageOptional = pageRepository.deleteById(pageIdOrAlias);
         pageOptional.ifPresent(page -> page.getPageContent().getWidgets().forEach(widget
-                -> fileRepository.deleteDirAndEmptyParents(
+                -> fileRepository.deleteAndPruneEmptyParents(
                 fileRepository.getDirFromId(useProjectDirsUseCase.getWidgetsDir(), widget.getId()))
         ));
     }
@@ -267,7 +265,6 @@ public class ManagePageService
      * @return The updated page content.
      */
     @GenerateIds
-    @PersistEntityAsJson(entityDir = "pages", entityType = PageContent.class)
     @TranslateResult
     @RestrictResult
     @Override
@@ -340,7 +337,7 @@ public class ManagePageService
                 .toList());
 
         widgetIdsToDelete.forEach(widgetId
-                -> fileRepository.deleteDirAndEmptyParents(fileRepository.getDirFromId(useProjectDirsUseCase.getWidgetsDir(), widgetId)));
+                -> fileRepository.deleteAndPruneEmptyParents(fileRepository.getDirFromId(useProjectDirsUseCase.getWidgetsDir(), widgetId)));
 
         widgetIdsToCleanWip.forEach(widgetId -> {
             Path widgetWipDir = fileRepository.getSubdirFilePath(useProjectDirsUseCase.getWidgetsDir(), widgetId, WIDGET_WIP_DIR);
@@ -461,7 +458,7 @@ public class ManagePageService
                 .toList();
 
         widgetIdsToDelete.forEach(widgetId
-                -> fileRepository.deleteDirAndEmptyParents(fileRepository.getDirFromId(useProjectDirsUseCase.getWidgetsDir(), widgetId)));
+                -> fileRepository.deleteAndPruneEmptyParents(fileRepository.getDirFromId(useProjectDirsUseCase.getWidgetsDir(), widgetId)));
 
         widgetsToRetain.forEach(widgetId -> {
             Path widgetWipDir = fileRepository.getSubdirFilePath(useProjectDirsUseCase.getWidgetsDir(), widgetId, WIDGET_WIP_DIR);
@@ -507,7 +504,7 @@ public class ManagePageService
                 .toList();
 
         widgetIdsToDelete.forEach(widgetId
-                -> fileRepository.deleteDirAndEmptyParents(fileRepository.getDirFromId(useProjectDirsUseCase.getWidgetsDir(), widgetId)));
+                -> fileRepository.deleteAndPruneEmptyParents(fileRepository.getDirFromId(useProjectDirsUseCase.getWidgetsDir(), widgetId)));
 
         widgetsToRetain.forEach(widgetId -> {
             Path widgetDir = fileRepository.getSubdirFilePath(useProjectDirsUseCase.getWidgetsDir(), widgetId, null);

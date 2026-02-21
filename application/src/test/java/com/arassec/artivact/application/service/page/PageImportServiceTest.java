@@ -6,10 +6,11 @@ import com.arassec.artivact.application.port.in.page.UpdatePageAliasUseCase;
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.model.exchange.ImportContext;
+import com.arassec.artivact.domain.model.misc.DirectoryDefinitions;
 import com.arassec.artivact.domain.model.page.PageContent;
 import com.arassec.artivact.domain.model.page.Widget;
 import com.arassec.artivact.domain.model.page.widget.ItemSearchWidget;
-import org.junit.jupiter.api.BeforeEach;
+import com.arassec.artivact.domain.model.page.widget.TextWidget;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,14 +24,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.PAGE_EXCHANGE_FILE_SUFFIX;
-import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.SEARCH_RESULT_FILE_SUFFIX;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.PAGE_EXCHANGE_FILENAME_JSON;
+import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.SEARCH_RESULT_FILENAME_JSON;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+@SuppressWarnings("unchecked")
 @ExtendWith(MockitoExtension.class)
 class PageImportServiceTest {
+
+    @InjectMocks
+    private PageImportService service;
 
     @Mock
     private JsonMapper jsonMapper;
@@ -50,95 +55,226 @@ class PageImportServiceTest {
     @Mock
     private UpdatePageAliasUseCase updatePageAliasUseCase;
 
-    @InjectMocks
-    private PageImportService service;
+    @Test
+    void testImportPageWithItemSearchWidgetImportsItems() {
+        // Given
+        ImportContext importContext = ImportContext.builder()
+                .importDir(Path.of("import"))
+                .build();
 
-    private ImportContext importContext;
+        ItemSearchWidget itemSearchWidget = new ItemSearchWidget();
+        itemSearchWidget.setId("widget-1");
 
-    @BeforeEach
-    void setUp() {
-        importContext = new ImportContext();
-        importContext.setImportDir(Path.of("/import"));
+        PageContent pageContent = new PageContent();
+        pageContent.setWidgets(new ArrayList<>(List.of(itemSearchWidget)));
+
+        Path pageDir = Path.of("page-dir");
+        Path pageContentJson = pageDir.resolve(PAGE_EXCHANGE_FILENAME_JSON);
+        when(fileRepository.getDirFromId(Path.of("import", DirectoryDefinitions.PAGES_DIR), "page-1"))
+                .thenReturn(pageDir);
+        when(fileRepository.read(pageContentJson)).thenReturn("{}");
+        when(jsonMapper.readValue(eq("{}"), eq(PageContent.class))).thenReturn(pageContent);
+
+        Path searchResultJson = Path.of("widget-dir").resolve(SEARCH_RESULT_FILENAME_JSON);
+        when(fileRepository.getDirFromId(Path.of("import", DirectoryDefinitions.WIDGETS_DIR), "widget-1"))
+                .thenReturn(Path.of("widget-dir"));
+        when(fileRepository.exists(searchResultJson)).thenReturn(true);
+        when(fileRepository.read(searchResultJson)).thenReturn("[\"item-1\",\"item-2\"]");
+        when(jsonMapper.readValue(eq("[\"item-1\",\"item-2\"]"), any(TypeReference.class)))
+                .thenReturn(List.of("item-1", "item-2"));
+
+        // When
+        service.importPage(importContext, "page-1", null);
+
+        // Then
+        verify(importItemUseCase).importItem(importContext, "item-1");
+        verify(importItemUseCase).importItem(importContext, "item-2");
+        verify(savePageContentUseCase).savePageContent(eq("page-1"), eq(Set.of()), eq(pageContent));
+        verify(updatePageAliasUseCase, never()).updatePageAlias(any(), any());
     }
 
     @Test
-    void testImportPageBasic() {
-        String pageId = "page-1";
-        String pageAlias = "alias-1";
+    void testImportPageWithItemSearchWidgetSkipsWhenNoSearchResult() {
+        // Given
+        ImportContext importContext = ImportContext.builder()
+                .importDir(Path.of("import"))
+                .build();
+
+        ItemSearchWidget itemSearchWidget = new ItemSearchWidget();
+        itemSearchWidget.setId("widget-2");
 
         PageContent pageContent = new PageContent();
-        when(fileRepository.read(importContext.getImportDir().resolve(pageId + PAGE_EXCHANGE_FILE_SUFFIX)))
-                .thenReturn("page-content-json");
-        when(jsonMapper.readValue("page-content-json", PageContent.class)).thenReturn(pageContent);
+        pageContent.setWidgets(new ArrayList<>(List.of(itemSearchWidget)));
 
-        service.importPage(importContext, pageId, pageAlias);
+        Path pageDir = Path.of("page-dir");
+        when(fileRepository.getDirFromId(Path.of("import", DirectoryDefinitions.PAGES_DIR), "page-2"))
+                .thenReturn(pageDir);
+        when(fileRepository.read(pageDir.resolve(PAGE_EXCHANGE_FILENAME_JSON))).thenReturn("{}");
+        when(jsonMapper.readValue(eq("{}"), eq(PageContent.class))).thenReturn(pageContent);
 
-        verify(savePageContentUseCase).savePageContent(pageId, Set.of(), pageContent);
-        verify(updatePageAliasUseCase).updatePageAlias(pageId, pageAlias);
+        Path searchResultJson = Path.of("widget-dir").resolve(SEARCH_RESULT_FILENAME_JSON);
+        when(fileRepository.getDirFromId(Path.of("import", DirectoryDefinitions.WIDGETS_DIR), "widget-2"))
+                .thenReturn(Path.of("widget-dir"));
+        when(fileRepository.exists(searchResultJson)).thenReturn(false);
+
+        // When
+        service.importPage(importContext, "page-2", "");
+
+        // Then
+        verify(importItemUseCase, never()).importItem(any(Path.class), any());
+        verify(importItemUseCase, never()).importItem(any(ImportContext.class), any());
+        verify(savePageContentUseCase).savePageContent(eq("page-2"), eq(Set.of()), eq(pageContent));
+        verify(updatePageAliasUseCase, never()).updatePageAlias(any(), any());
     }
 
     @Test
-    void testImportPageWithItemSearchWidget() {
-        String pageId = "page-1";
+    void testImportPageWithNonItemSearchWidgetCopiesFiles() {
+        // Given
+        ImportContext importContext = ImportContext.builder()
+                .importDir(Path.of("import"))
+                .build();
 
-        ItemSearchWidget widget = new ItemSearchWidget();
-        widget.setId("widget1");
+        TextWidget textWidget = new TextWidget();
+        textWidget.setId("text-widget-1");
 
         PageContent pageContent = new PageContent();
-        pageContent.setWidgets(List.of(widget));
+        pageContent.setWidgets(new ArrayList<>(List.of(textWidget)));
 
-        when(fileRepository.read(importContext.getImportDir().resolve(pageId + PAGE_EXCHANGE_FILE_SUFFIX)))
-                .thenReturn("page-content-json");
-        when(jsonMapper.readValue("page-content-json", PageContent.class)).thenReturn(pageContent);
+        Path pageDir = Path.of("page-dir");
+        when(fileRepository.getDirFromId(Path.of("import", DirectoryDefinitions.PAGES_DIR), "page-3"))
+                .thenReturn(pageDir);
+        when(fileRepository.read(pageDir.resolve(PAGE_EXCHANGE_FILENAME_JSON))).thenReturn("{}");
+        when(jsonMapper.readValue(eq("{}"), eq(PageContent.class))).thenReturn(pageContent);
 
-        Path widgetSource = importContext.getImportDir().resolve(widget.getId());
-        Path widgetTarget = Path.of("/widgets/widget1");
-        when(useProjectDirsUseCase.getProjectRoot()).thenReturn(Path.of("/project"));
-        when(fileRepository.getDirFromId(any(), eq(widget.getId()))).thenReturn(widgetTarget);
-        when(fileRepository.exists(importContext.getImportDir().resolve(widget.getId() + SEARCH_RESULT_FILE_SUFFIX))).thenReturn(true);
-        when(fileRepository.read(importContext.getImportDir().resolve(widget.getId() + SEARCH_RESULT_FILE_SUFFIX)))
-                .thenReturn("search-result");
-        //noinspection unchecked
-        when(jsonMapper.readValue(eq("search-result"), any(TypeReference.class))).thenReturn(List.of("item1", "item2"));
+        Path widgetSource = Path.of("widget-source");
+        when(fileRepository.getDirFromId(Path.of("import", DirectoryDefinitions.WIDGETS_DIR), "text-widget-1"))
+                .thenReturn(widgetSource);
 
-        service.importPage(importContext, pageId, null);
+        Path widgetTarget = Path.of("widget-target");
+        when(useProjectDirsUseCase.getProjectRoot()).thenReturn(Path.of("project"));
+        when(fileRepository.getDirFromId(Path.of("project", DirectoryDefinitions.WIDGETS_DIR), "text-widget-1"))
+                .thenReturn(widgetTarget);
 
+        // When
+        service.importPage(importContext, "page-3", null);
+
+        // Then
         verify(fileRepository).copy(widgetSource, widgetTarget);
-        verify(importItemUseCase).importItem(importContext, "item1");
-        verify(importItemUseCase).importItem(importContext, "item2");
-        verify(savePageContentUseCase).savePageContent(pageId, Set.of(), pageContent);
-        verify(updatePageAliasUseCase, never()).updatePageAlias(anyString(), anyString());
+        verify(importItemUseCase, never()).importItem(any(Path.class), any());
+        verify(importItemUseCase, never()).importItem(any(ImportContext.class), any());
+        verify(savePageContentUseCase).savePageContent(eq("page-3"), eq(Set.of()), eq(pageContent));
     }
 
     @Test
-    void testImportPageThrowsArtivactExceptionOnJsonProcessing() {
-        String pageId = "page-1";
-
-        when(fileRepository.read(importContext.getImportDir().resolve(pageId + PAGE_EXCHANGE_FILE_SUFFIX)))
-                .thenReturn("page-content-json");
-        when(jsonMapper.readValue("page-content-json", PageContent.class))
-                .thenThrow(new RuntimeException("error") {
-                });
-
-        assertThrows(RuntimeException.class, () -> service.importPage(importContext, pageId, null));
-    }
-
-    @Test
-    void testImportPageSkipsNullWidgets() {
-        String pageId = "page-1";
-        PageContent pageContent = new PageContent();
+    void testImportPageFiltersNullWidgets() {
+        // Given
+        ImportContext importContext = ImportContext.builder()
+                .importDir(Path.of("import"))
+                .build();
 
         List<Widget> widgets = new ArrayList<>();
         widgets.add(null);
+        TextWidget textWidget = new TextWidget();
+        textWidget.setId("valid-widget");
+        widgets.add(textWidget);
+        widgets.add(null);
+
+        PageContent pageContent = new PageContent();
         pageContent.setWidgets(widgets);
 
-        when(fileRepository.read(importContext.getImportDir().resolve(pageId + PAGE_EXCHANGE_FILE_SUFFIX)))
-                .thenReturn("page-content-json");
-        when(jsonMapper.readValue("page-content-json", PageContent.class)).thenReturn(pageContent);
+        Path pageDir = Path.of("page-dir");
+        when(fileRepository.getDirFromId(Path.of("import", DirectoryDefinitions.PAGES_DIR), "page-4"))
+                .thenReturn(pageDir);
+        when(fileRepository.read(pageDir.resolve(PAGE_EXCHANGE_FILENAME_JSON))).thenReturn("{}");
+        when(jsonMapper.readValue(eq("{}"), eq(PageContent.class))).thenReturn(pageContent);
 
-        service.importPage(importContext, pageId, null);
+        when(fileRepository.getDirFromId(Path.of("import", DirectoryDefinitions.WIDGETS_DIR), "valid-widget"))
+                .thenReturn(Path.of("widget-source"));
+        when(useProjectDirsUseCase.getProjectRoot()).thenReturn(Path.of("project"));
+        when(fileRepository.getDirFromId(Path.of("project", DirectoryDefinitions.WIDGETS_DIR), "valid-widget"))
+                .thenReturn(Path.of("widget-target"));
 
-        assertThat(pageContent.getWidgets()).isEmpty();
+        // When
+        service.importPage(importContext, "page-4", null);
+
+        // Then - only one widget should be processed (null ones filtered)
+        verify(fileRepository, times(1)).copy(any(Path.class), any(Path.class));
+        verify(savePageContentUseCase).savePageContent(eq("page-4"), eq(Set.of()), eq(pageContent));
     }
 
+    @Test
+    void testImportPageWithAliasUpdatesAlias() {
+        // Given
+        ImportContext importContext = ImportContext.builder()
+                .importDir(Path.of("import"))
+                .build();
+
+        PageContent pageContent = new PageContent();
+        pageContent.setWidgets(new ArrayList<>());
+
+        Path pageDir = Path.of("page-dir");
+        when(fileRepository.getDirFromId(Path.of("import", DirectoryDefinitions.PAGES_DIR), "page-5"))
+                .thenReturn(pageDir);
+        when(fileRepository.read(pageDir.resolve(PAGE_EXCHANGE_FILENAME_JSON))).thenReturn("{}");
+        when(jsonMapper.readValue(eq("{}"), eq(PageContent.class))).thenReturn(pageContent);
+
+        // When
+        service.importPage(importContext, "page-5", "my-alias");
+
+        // Then
+        verify(updatePageAliasUseCase).updatePageAlias("page-5", "my-alias");
+        verify(savePageContentUseCase).savePageContent(eq("page-5"), eq(Set.of()), eq(pageContent));
+    }
+
+    @Test
+    void testImportPageWithMixedWidgets() {
+        // Given
+        ImportContext importContext = ImportContext.builder()
+                .importDir(Path.of("import"))
+                .build();
+
+        ItemSearchWidget itemSearchWidget = new ItemSearchWidget();
+        itemSearchWidget.setId("search-widget");
+
+        TextWidget textWidget = new TextWidget();
+        textWidget.setId("text-widget");
+
+        PageContent pageContent = new PageContent();
+        pageContent.setWidgets(new ArrayList<>(List.of(itemSearchWidget, textWidget)));
+
+        Path pageDir = Path.of("page-dir");
+        when(fileRepository.getDirFromId(Path.of("import", DirectoryDefinitions.PAGES_DIR), "page-6"))
+                .thenReturn(pageDir);
+        when(fileRepository.read(pageDir.resolve(PAGE_EXCHANGE_FILENAME_JSON))).thenReturn("{}");
+        when(jsonMapper.readValue(eq("{}"), eq(PageContent.class))).thenReturn(pageContent);
+
+        // ItemSearchWidget setup
+        Path searchWidgetDir = Path.of("search-widget-dir");
+        Path searchResultJson = searchWidgetDir.resolve(SEARCH_RESULT_FILENAME_JSON);
+        Path widgetsDir = Path.of("import", DirectoryDefinitions.WIDGETS_DIR);
+        when(fileRepository.getDirFromId(widgetsDir, "search-widget"))
+                .thenReturn(searchWidgetDir);
+        when(fileRepository.exists(searchResultJson)).thenReturn(true);
+        when(fileRepository.read(searchResultJson)).thenReturn("[\"item-x\"]");
+        when(jsonMapper.readValue(eq("[\"item-x\"]"), any(TypeReference.class)))
+                .thenReturn(List.of("item-x"));
+
+        // TextWidget setup
+        Path textWidgetSource = Path.of("text-widget-source");
+        Path textWidgetTarget = Path.of("text-widget-target");
+        when(fileRepository.getDirFromId(widgetsDir, "text-widget"))
+                .thenReturn(textWidgetSource);
+        when(useProjectDirsUseCase.getProjectRoot()).thenReturn(Path.of("project"));
+        when(fileRepository.getDirFromId(Path.of("project", DirectoryDefinitions.WIDGETS_DIR), "text-widget"))
+                .thenReturn(textWidgetTarget);
+
+        // When
+        service.importPage(importContext, "page-6", "alias-6");
+
+        // Then
+        verify(importItemUseCase).importItem(importContext, "item-x");
+        verify(fileRepository).copy(textWidgetSource, textWidgetTarget);
+        verify(savePageContentUseCase).savePageContent(eq("page-6"), eq(Set.of()), eq(pageContent));
+        verify(updatePageAliasUseCase).updatePageAlias("page-6", "alias-6");
+    }
 }

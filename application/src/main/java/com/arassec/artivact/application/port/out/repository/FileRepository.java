@@ -259,12 +259,12 @@ public interface FileRepository {
     int getNextAssetNumber(Path assetDir);
 
     /**
-     * Deletes the given directory and both direct parent directories if they are empty after deleting the original
-     * directory.
+     * Deletes the given file or directory and both direct parent directories if they are empty after deleting the
+     * original file/directory.
      *
      * @param directory Path to the directory to delete.
      */
-    void deleteDirAndEmptyParents(Path directory);
+    void deleteAndPruneEmptyParents(Path directory);
 
     /**
      * Saves a file to the item and provides it with a new asset number (if required).

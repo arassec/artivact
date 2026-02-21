@@ -16,7 +16,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @Builder
-public class PropertiesConfiguration {
+public class PropertiesConfiguration implements ConfigurationTypeProvider {
 
     /**
      * Properties in their respective category.
@@ -31,6 +31,14 @@ public class PropertiesConfiguration {
         if (categories != null) {
             this.categories = categories;
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ConfigurationType getConfigurationType() {
+        return ConfigurationType.PROPERTIES;
     }
 
 }

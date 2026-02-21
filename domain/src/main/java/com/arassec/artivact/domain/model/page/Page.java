@@ -1,12 +1,13 @@
 package com.arassec.artivact.domain.model.page;
 
+import com.arassec.artivact.domain.model.IdentifiedObject;
 import lombok.Data;
 
 /**
  * A page of the application.
  */
 @Data
-public class Page {
+public class Page implements IdentifiedObject {
 
     /**
      * The page's ID.

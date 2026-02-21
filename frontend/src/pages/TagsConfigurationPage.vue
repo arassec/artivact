@@ -86,7 +86,7 @@
           :url="'/api/configuration/import/tags'"
           :label="$t('TagsConfigurationPage.import.button')"
           class="q-mt-md q-mb-md"
-          accept=".artivact.tags-configuration.json"
+          accept=".tags.artivact.configuration.json"
           field-name="file"
           auto-upload
           :no-thumbnails="true"

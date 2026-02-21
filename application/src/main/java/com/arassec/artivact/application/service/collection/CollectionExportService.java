@@ -1,14 +1,10 @@
 package com.arassec.artivact.application.service.collection;
 
 import com.arassec.artivact.application.port.in.collection.ExportCollectionUseCase;
-import com.arassec.artivact.application.port.in.configuration.ExportPropertiesConfigurationUseCase;
-import com.arassec.artivact.application.port.in.configuration.ExportTagsConfigurationUseCase;
 import com.arassec.artivact.application.port.in.menu.ExportMenuUseCase;
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.application.service.BaseExportService;
-import com.arassec.artivact.domain.model.configuration.PropertiesConfiguration;
-import com.arassec.artivact.domain.model.configuration.TagsConfiguration;
 import com.arassec.artivact.domain.model.exchange.CollectionExport;
 import com.arassec.artivact.domain.model.exchange.ContentSource;
 import com.arassec.artivact.domain.model.exchange.ExportContext;
@@ -38,7 +34,7 @@ public class CollectionExportService extends BaseExportService implements Export
     private final FileRepository fileRepository;
 
     /**
-     * The json mapper.
+     * The JSON mapper.
      */
     @Getter
     private final JsonMapper jsonMapper;
@@ -50,16 +46,6 @@ public class CollectionExportService extends BaseExportService implements Export
     private final UseProjectDirsUseCase useProjectDirsUseCase;
 
     /**
-     * Use case for export properties configuration.
-     */
-    private final ExportPropertiesConfigurationUseCase exportPropertiesConfigurationUseCase;
-
-    /**
-     * Use case for export tags configuration.
-     */
-    private final ExportTagsConfigurationUseCase exportTagsConfigurationUseCase;
-
-    /**
      * Use case for export menu.
      */
     private final ExportMenuUseCase exportMenuUseCase;
@@ -68,17 +54,16 @@ public class CollectionExportService extends BaseExportService implements Export
      * {@inheritDoc}
      */
     @Override
-    public Path exportCollection(CollectionExport collectionExport, Menu menu, PropertiesConfiguration propertiesConfiguration, TagsConfiguration tagsConfiguration) {
+    public Path exportCollection(CollectionExport collectionExport, Menu menu) {
         ExportContext exportContext = createExportContext(collectionExport.getId(), collectionExport.getExportConfiguration());
         exportContext.setId(collectionExport.getId());
         exportContext.setCoverPictureExtension(collectionExport.getCoverPictureExtension());
 
         prepareExport(exportContext);
 
-        exportMainData(exportContext, ContentSource.MENU, menu.getId(), collectionExport.getTitle(), collectionExport.getDescription(), collectionExport.getContent());
+        exportMainData(exportContext, ContentSource.COLLECTION, menu.getId(), collectionExport.getTitle(), collectionExport.getDescription(), collectionExport.getContent());
 
-        exportPropertiesConfigurationUseCase.exportPropertiesConfiguration(exportContext, propertiesConfiguration);
-        exportTagsConfigurationUseCase.exportTagsConfiguration(exportContext, tagsConfiguration);
+        exportConfigs(exportContext);
 
         exportMenuUseCase.exportMenu(exportContext, menu);
 
@@ -91,8 +76,7 @@ public class CollectionExportService extends BaseExportService implements Export
             }
         }
 
-        fileRepository.pack(exportContext.getExportDir(), exportContext.getExportFile());
-        fileRepository.delete(exportContext.getExportDir());
+        cleanupExport(exportContext);
 
         return exportContext.getExportFile();
     }

@@ -222,9 +222,9 @@
           <div>
             <q-checkbox
               :disable="collectionExportRef.distributionOnly"
-              v-model="collectionExportRef.exportConfiguration.optimizeSize"
-              name="optimizeSize"
-              :label="$t('ArtivactCollectionExportEditor.label.optimizeSize')"
+              v-model="collectionExportRef.exportConfiguration.xrExport"
+              name="xrExport"
+              :label="$t('ArtivactCollectionExportEditor.label.xrExport')"
             />
           </div>
           <div>
@@ -257,12 +257,12 @@
 <script setup lang="ts">
 import draggable from 'vuedraggable';
 import {PropType, Ref, ref, toRef} from 'vue';
-import {CollectionExport, ContentSource, SelectboxModel, TranslatableString} from 'components/artivact-models';
-import ArtivactDialog from 'components/ArtivactDialog.vue';
-import ArtivactRestrictionsEditor from 'components/ArtivactRestrictionsEditor.vue';
-import ArtivactRestrictedTranslatableItemEditor from 'components/ArtivactRestrictedTranslatableItemEditor.vue';
-import {useMenuStore} from 'stores/menu';
-import {translate} from 'components/artivact-utils';
+import {CollectionExport, ContentSource, SelectboxModel, TranslatableString} from './artivact-models';
+import ArtivactDialog from '../components/ArtivactDialog.vue';
+import ArtivactRestrictionsEditor from '../components/ArtivactRestrictionsEditor.vue';
+import ArtivactRestrictedTranslatableItemEditor from '../components/ArtivactRestrictedTranslatableItemEditor.vue';
+import {useMenuStore} from '../stores/menu';
+import {translate} from './artivact-utils';
 import {QUploader} from 'quasar';
 
 const props = defineProps({
@@ -310,7 +310,7 @@ function configureNewExportConfiguration() {
     exportConfiguration: {
       applyRestrictions: false,
       excludeItems: false,
-      optimizeSize: false
+      xrExport: false
     },
     fileLastModified: 0,
     filePresent: false,

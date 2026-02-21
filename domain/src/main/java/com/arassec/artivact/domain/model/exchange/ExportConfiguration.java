@@ -21,10 +21,10 @@ public class ExportConfiguration {
     private boolean applyRestrictions = false;
 
     /**
-     * Set to {@code true} to export the minimal set of media files to reduce export size.
+     * Set to {@code true} if this export is used as input for Artivact XR.
      */
     @Builder.Default
-    private boolean optimizeSize = false;
+    private boolean xrExport = false;
 
     /**
      * Set to {@code true} to exclude items from the export.
