@@ -14,7 +14,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * Tests the {@link ArtivactServerApplication}.
  */
 @ExtendWith(SpringExtension.class)
-@SpringBootTest
+@SpringBootTest(properties = {
+        "artivact.project.root=./target/avdata-test"
+})
 class ArtivactServerApplicationTest {
 
     /**

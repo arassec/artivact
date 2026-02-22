@@ -15,7 +15,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * Tests the {@link ArtivactAutoConfiguration}.
  */
 @ExtendWith(SpringExtension.class)
-@DataJpaTest(properties = {"artivact.initial.password=artivact-test"})
+@DataJpaTest(properties = {
+        "artivact.initial.password=artivact-test",
+        "artivact.project.root=./target/avdata-test"
+})
 @ContextConfiguration(classes = ArtivactAutoConfiguration.class)
 class ArtivactAutoConfigurationTest {
 
