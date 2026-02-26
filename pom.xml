@@ -63,7 +63,7 @@
         <sonar.coverage.exclusions>domain/**,**/*Configuration.java</sonar.coverage.exclusions>
 
         <!-- Versions -->
-        <lucene.version>10.3.2</lucene.version>
+        <lucene.version>10.4.0</lucene.version>
     </properties>
 
     <modules>
