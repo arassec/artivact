@@ -34,7 +34,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * Service for page handling.
@@ -311,27 +310,27 @@ public class ManagePageService
         }
 
         // Keep all widgets that are in productive use:
-        List<String> widgetIdsToRetain = existingPageContent.getWidgets().stream()
+        List<String> widgetIdsToRetain = new ArrayList<>(existingPageContent.getWidgets().stream()
                 .filter(Objects::nonNull)
                 .map(BaseRestrictedObject::getId)
-                .collect(Collectors.toList());
+                .toList());
         // Also keep all widgets currently in 'work-in-progress':
         widgetIdsToRetain.addAll(pageContent.getWidgets().stream()
                 .map(BaseRestrictedObject::getId)
                 .toList());
 
         // Those widgets are completely removed:
-        List<String> widgetIdsToDelete = existingWipPageContent.getWidgets().stream()
+        List<String> widgetIdsToDelete = new ArrayList<>(existingWipPageContent.getWidgets().stream()
                 .filter(Objects::nonNull)
                 .map(BaseRestrictedObject::getId)
-                .collect(Collectors.toList());
+                .toList());
         widgetIdsToDelete.removeAll(widgetIdsToRetain);
 
         // Those widgets are only removed from 'work-in-progress', but retain on the published page:
-        List<String> widgetIdsToCleanWip = existingWipPageContent.getWidgets().stream()
+        List<String> widgetIdsToCleanWip = new ArrayList<>(existingWipPageContent.getWidgets().stream()
                 .filter(Objects::nonNull)
                 .map(BaseRestrictedObject::getId)
-                .collect(Collectors.toList());
+                .toList());
         widgetIdsToCleanWip.removeAll(pageContent.getWidgets().stream()
                 .map(BaseRestrictedObject::getId)
                 .toList());

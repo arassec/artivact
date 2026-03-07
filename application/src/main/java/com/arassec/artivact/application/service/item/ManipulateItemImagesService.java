@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Service for manipulating item images.
@@ -90,7 +89,7 @@ public class ManipulateItemImagesService implements ManipulateItemImagesUseCase 
                             fileRepository.move(imageWithoutBackground, imageWithoutBackground.getParent().resolve(assetName));
                             return assetName;
                         })
-                        .collect(Collectors.toList());
+                        .toList();
 
                 item.getMediaCreationContent().getImageSets().add(CreationImageSet.builder()
                         .backgroundRemoved(true)

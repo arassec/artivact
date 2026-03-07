@@ -16,11 +16,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import tools.jackson.databind.json.JsonMapper;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Service for search-engine management and search handling.
@@ -92,7 +92,7 @@ public class SearchService
                             o -> Optional.ofNullable(o.getTitle()).map(TranslatableString::getValue).orElse(null),
                             Comparator.nullsLast(Comparator.naturalOrder())
                     ))
-                    .collect(Collectors.toList()); // Needs to be modifiable!
+                    .toList();
         }
 
         return itemRepository.findAllById(searchGateway.search(query, maxResults)).stream()
@@ -100,7 +100,7 @@ public class SearchService
                         o -> Optional.ofNullable(o.getTitle()).map(TranslatableString::getValue).orElse(null),
                         Comparator.nullsLast(Comparator.naturalOrder())
                 ))
-                .collect(Collectors.toList()); // Needs to be modifiable!
+                .toList();
     }
 
     /**
@@ -114,7 +114,7 @@ public class SearchService
     @RestrictResult
     @Override
     public List<Item> searchTranslatedRestricted(String query, int maxResults) {
-        return search(query, maxResults);
+        return new ArrayList<>(search(query, maxResults));
     }
 
 }
