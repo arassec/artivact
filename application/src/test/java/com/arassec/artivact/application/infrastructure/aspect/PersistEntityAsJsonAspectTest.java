@@ -19,6 +19,7 @@ import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -67,7 +68,7 @@ class PersistEntityAsJsonAspectTest {
         when(joinPoint.getArgs()).thenReturn(new Object[]{menu});
         when(useProjectDirsUseCase.getProjectRoot()).thenReturn(Path.of("testRoot"));
         when(jsonMapper.writeValueAsBytes(menu)).thenReturn("{}".getBytes());
-        when(fileRepository.getSubdirFilePath(eq(Path.of("testRoot/menus")), eq("menu12345678"), eq("menu.json")))
+        when(fileRepository.getSubdirFilePath(Path.of("testRoot/menus"), "menu12345678", "menu.json"))
                 .thenReturn(Path.of("testRoot", "menus", "men", "u12", "menu12345678", "menu.json"));
         aspect.persistEntityAsJson(joinPoint);
 
@@ -117,7 +118,7 @@ class PersistEntityAsJsonAspectTest {
         when(joinPoint.getSignature()).thenThrow(new RuntimeException("test error"));
 
         // Should not throw
-        aspect.persistEntityAsJson(joinPoint);
+        assertDoesNotThrow(() -> aspect.persistEntityAsJson(joinPoint));
     }
 
     @Test
@@ -151,7 +152,7 @@ class PersistEntityAsJsonAspectTest {
         Path expectedFile = Path.of("testRoot", "items", "abc", "123", "abc123def456", "item.json");
         Path secondSubDir = Path.of("testRoot", "items", "abc", "123");
 
-        when(fileRepository.getSubdirFilePath(eq(Path.of("testRoot/items")), eq("abc123def456"), eq("item.json")))
+        when(fileRepository.getSubdirFilePath(Path.of("testRoot/items"), "abc123def456", "item.json"))
                 .thenReturn(expectedFile);
 
         aspect.persistEntityAsJson(joinPoint);
@@ -173,7 +174,7 @@ class PersistEntityAsJsonAspectTest {
         when(joinPoint.getArgs()).thenReturn(new Object[]{item});
         when(useProjectDirsUseCase.getProjectRoot()).thenReturn(Path.of("testRoot"));
         when(jsonMapper.writeValueAsBytes(item)).thenReturn("{\"id\":\"item12345678\"}".getBytes());
-        when(fileRepository.getSubdirFilePath(eq(Path.of("testRoot/items")), eq("item12345678"), eq("item.json")))
+        when(fileRepository.getSubdirFilePath(Path.of("testRoot/items"), "item12345678", "item.json"))
                 .thenReturn(Path.of("testRoot", "items", "ite", "m12", "item12345678", "item.json"));
 
         aspect.persistEntityAsJson(joinPoint);
@@ -196,7 +197,7 @@ class PersistEntityAsJsonAspectTest {
         when(joinPoint.getArgs()).thenReturn(new Object[]{"some-alias", pageContent});
         when(useProjectDirsUseCase.getProjectRoot()).thenReturn(Path.of("testRoot"));
         when(jsonMapper.writeValueAsBytes(pageContent)).thenReturn("{}".getBytes());
-        when(fileRepository.getSubdirFilePath(eq(Path.of("testRoot/pages")), eq("page12345678"), eq("properties.json")))
+        when(fileRepository.getSubdirFilePath(Path.of("testRoot/pages"), "page12345678", "properties.json"))
                 .thenReturn(Path.of("testRoot", "pages", "pag", "e12", "page12345678", "properties.json"));
 
         aspect.persistEntityAsJson(joinPoint);
@@ -219,7 +220,7 @@ class PersistEntityAsJsonAspectTest {
         when(useProjectDirsUseCase.getProjectRoot()).thenReturn(Path.of("testRoot"));
 
         Path expectedFile = Path.of("testRoot", "items", "ite", "m12", "item12345678", "item.json");
-        when(fileRepository.getSubdirFilePath(eq(Path.of("testRoot/items")), eq("item12345678"), eq("item.json")))
+        when(fileRepository.getSubdirFilePath(Path.of("testRoot/items"), "item12345678", "item.json"))
                 .thenReturn(expectedFile);
 
         aspect.persistEntityAsJson(joinPoint);
@@ -263,22 +264,27 @@ class PersistEntityAsJsonAspectTest {
     static class TestAnnotatedMethods {
         @PersistEntityAsJson(entityDir = "items", entityType = Item.class, filename = "item.json")
         public void saveItem(Item item) {
+            // Just for testing - no implementation needed
         }
 
         @PersistEntityAsJson(entityDir = "items", entityType = Item.class, delete = true, filename = "item.json")
         public void deleteItem(String itemId) {
+            // Just for testing - no implementation needed
         }
 
         @PersistEntityAsJson(entityDir = "menus", entityType = Menu.class, filename = "menu.json")
         public void saveMenu(Menu menu) {
+            // Just for testing - no implementation needed
         }
 
         @PersistEntityAsJson(entityDir = "menus", entityType = Menu.class, filename = "menu.json")
         public void saveMenus(List<Menu> menus) {
+            // Just for testing - no implementation needed
         }
 
         @PersistEntityAsJson(entityDir = "pages", entityType = PageContent.class, filename = "properties.json")
         public void savePageContent(String pageIdOrAlias, PageContent pageContent) {
+            // Just for testing - no implementation needed
         }
     }
 
