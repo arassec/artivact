@@ -135,6 +135,21 @@ export default {
     heading: 'Darstellungs-Konfiguration',
   },
 
+  MaintenancePage: {
+    heading: 'Wartung',
+    searchIndex: {
+      heading: 'Suchindex',
+      description: 'Hier können Sie den Suchindex neu aufbauen. Dies kann nützlich sein, wenn die Suchergebnisse nicht aktuell sind oder der Index beschädigt wurde.',
+      recreateButton: 'Suchindex neu aufbauen',
+    },
+    messages: {
+      recreateIndex: {
+        success: 'Suchindex erfolgreich neu aufgebaut.',
+        failed: 'Neuaufbau des Suchindex fehlgeschlagen!',
+      },
+    },
+  },
+
   BatchProcessingPage: {
     heading: 'Stapelverarbeitung',
     startButton: 'Stapelverarbeitung starten',
@@ -892,6 +907,7 @@ export default {
     appearance: 'Darstellung',
     peripherals: 'Peripherie',
     exchange: 'Austausch',
+    maintenance: 'Wartung',
     locale: 'Sprache',
     exhib: 'Ausstellung',
     system: 'System',

@@ -166,6 +166,10 @@ const routes: RouteRecordRaw[] = [
         component: () => import('../pages/ExchangeConfigurationPage.vue'),
       },
       {
+        path: '/administration/configuration/maintenance',
+        component: () => import('../pages/MaintenancePage.vue'),
+      },
+      {
         path: '/wizzard/:action',
         component: () => import('../pages/WizzardPage.vue'),
       },
