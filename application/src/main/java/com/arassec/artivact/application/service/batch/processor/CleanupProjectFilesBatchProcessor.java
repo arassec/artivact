@@ -104,8 +104,8 @@ public class CleanupProjectFilesBatchProcessor implements BatchProcessor {
     private void processMenu(Menu menu) {
         saveMenuUseCase.saveMenu(menu);
         if (StringUtils.hasText(menu.getTargetPageId())) {
-            PageContent pageContent = loadPageContentUseCase.loadPageContent(menu.getTargetPageId(), Set.of(Roles.ROLE_ADMIN));
-            savePageContentUseCase.savePageContent(pageContent.getId(), Set.of(Roles.ADMIN), pageContent);
+            PageContent pageContent = loadPageContentUseCase.loadPageContent(menu.getTargetPageId(), Set.of(Roles.ROLE_USER, Roles.ROLE_ADMIN));
+            savePageContentUseCase.savePageContent(pageContent.getId(), Set.of(Roles.ROLE_USER, Roles.ROLE_ADMIN), pageContent);
         }
         menu.getMenuEntries().forEach(this::processMenu);
     }
