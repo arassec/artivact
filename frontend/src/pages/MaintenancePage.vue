@@ -125,4 +125,12 @@ function cleanupProjectFiles() {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.list-entry {
+  border-bottom: 1px solid white;
+}
+
+.list-entry-label {
+  font-size: large;
+}
+</style>

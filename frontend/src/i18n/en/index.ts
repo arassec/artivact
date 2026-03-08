@@ -1240,7 +1240,8 @@ export default {
       failed: "Error during model editing!",
     },
     maintenance: {
-      searchIndex: "(Re-)Creating search index...",
+      search: "(Re-)Creating search index...",
+      cleanupProjectFiles: 'Cleanup project files...',
       failed: "(Re-)Creation of search index failed!",
     },
     itemUpload: {
@@ -1314,5 +1315,4 @@ export default {
   REMOVE_TAG_FROM_ITEM: "Remove tag",
   UPLOAD_MODIFIED_ITEM: "Upload modified item",
   UPDATE_SEARCH_INDEX: "Update search index",
-  CLEANUP_PROJECT_FILES: 'Cleanup project files'
 };

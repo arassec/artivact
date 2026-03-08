@@ -1221,6 +1221,7 @@ export default {
     },
     search: {
       createIndex: 'Erstelle Suchindex...',
+      cleanupProjectFiles: 'Bereinige Projektdateien...',
       failed: 'Fehler bei Erstellung/Aktualisierung des Suchindexes!',
     },
     itemUpload: {
@@ -1300,5 +1301,4 @@ export default {
   REMOVE_TAG_FROM_ITEM: 'Tag entfernen',
   UPLOAD_MODIFIED_ITEM: 'Geänderte Objekte hochladen',
   UPDATE_SEARCH_INDEX: 'Suchindex aktualisieren',
-  CLEANUP_PROJECT_FILES: 'Projektdateien bereinigen'
 };
