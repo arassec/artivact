@@ -21,8 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Service for manipulating item images.
@@ -82,7 +82,7 @@ public class ManipulateItemImagesService implements ManipulateItemImagesUseCase 
             List<Path> imagesWithoutBackground = removeBackgrounds(itemId, imageManipulatorConfigId, item.getMediaCreationContent().getImageSets().get(imageSetIndex), progressMonitor);
 
             if (!imagesWithoutBackground.isEmpty()) {
-                List<String> assets = imagesWithoutBackground.stream()
+                List<String> assets = new ArrayList<>(imagesWithoutBackground.stream()
                         .map(imageWithoutBackground -> {
                             String assetName = fileRepository.getAssetName(
                                     fileRepository.getNextAssetNumber(imageWithoutBackground.getParent()), fileRepository.getExtension(imageWithoutBackground.getFileName().toString()).orElseThrow()
@@ -90,7 +90,8 @@ public class ManipulateItemImagesService implements ManipulateItemImagesUseCase 
                             fileRepository.move(imageWithoutBackground, imageWithoutBackground.getParent().resolve(assetName));
                             return assetName;
                         })
-                        .collect(Collectors.toList());
+                        .toList()
+                );
 
                 item.getMediaCreationContent().getImageSets().add(CreationImageSet.builder()
                         .backgroundRemoved(true)

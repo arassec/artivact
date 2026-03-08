@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -20,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.ZIP_FILE_SUFFIX;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -190,7 +192,6 @@ class MenuControllerTest {
         Files.deleteIfExists(tempFile);
 
         MultipartFile multipartFile = mock(MultipartFile.class);
-        when(multipartFile.getOriginalFilename()).thenReturn("menu-export.zip");
 
         when(useProjectDirsUseCase.getTempDir()).thenReturn(Path.of("target"));
 
@@ -198,8 +199,11 @@ class MenuControllerTest {
         assertThat(responseEntity.getBody()).isNotNull();
         assertThat(responseEntity.getBody()).isEqualTo("Menu imported.");
 
-        verify(importMenuUseCase).importMenu(tempFile);
-        verify(fileRepository).delete(tempFile);
+        ArgumentCaptor<Path> captor = ArgumentCaptor.forClass(Path.class);
+        verify(importMenuUseCase).importMenu(captor.capture());
+        assertThat(captor.getValue().toString()).contains("upload_");
+        assertThat(captor.getValue().toString()).endsWith(ZIP_FILE_SUFFIX);
+        verify(fileRepository).delete(captor.getValue());
     }
 
 }

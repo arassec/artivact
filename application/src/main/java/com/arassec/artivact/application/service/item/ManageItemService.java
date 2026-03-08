@@ -23,6 +23,7 @@ import com.arassec.artivact.domain.model.item.MediaContent;
 import com.arassec.artivact.domain.model.item.MediaCreationContent;
 import com.arassec.artivact.domain.model.misc.DirectoryDefinitions;
 import com.arassec.artivact.domain.model.tag.Tag;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -39,7 +40,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class ManageItemService implements CreateItemUseCase,
+public class ManageItemService extends BaseItemService implements CreateItemUseCase,
         LoadItemUseCase,
         SaveItemUseCase,
         DeleteItemUseCase {
@@ -57,11 +58,13 @@ public class ManageItemService implements CreateItemUseCase,
     /**
      * The application's {@link FileRepository}.
      */
+    @Getter
     private final FileRepository fileRepository;
 
     /**
      * Use case for use project dirs.
      */
+    @Getter
     private final UseProjectDirsUseCase useProjectDirsUseCase;
 
     /**
@@ -232,27 +235,6 @@ public class ManageItemService implements CreateItemUseCase,
         return itemRepository.findItemIdsForRemoteExport(maxItems).stream()
                 .map(itemId -> load(itemId).orElseThrow())
                 .toList();
-    }
-
-    /**
-     * Returns a list of the item's images that are not referenced by the item itself, but only exist in the
-     * filesystem.
-     *
-     * @param item The item.
-     * @return List of unreferenced images.
-     */
-    private List<String> getDanglingImages(Item item) {
-        List<String> imagesInItem = new LinkedList<>(item.getMediaContent().getImages());
-        item.getMediaCreationContent().getImageSets().forEach(creationImageSet -> imagesInItem.addAll(creationImageSet.getFiles()));
-
-        List<String> allImagesInFolder = fileRepository.listNamesWithoutScaledImages(
-                fileRepository.getDirFromId(useProjectDirsUseCase.getItemsDir(), item.getId())
-                        .resolve(DirectoryDefinitions.IMAGES_DIR)
-        );
-
-        allImagesInFolder.removeAll(imagesInItem);
-
-        return allImagesInFolder;
     }
 
 }

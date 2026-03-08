@@ -13,6 +13,7 @@ import com.arassec.artivact.domain.model.item.MediaCreationContent;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -28,6 +29,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 
+import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.ZIP_FILE_SUFFIX;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
@@ -229,8 +231,13 @@ class ItemControllerTest {
         ResponseEntity<String> response = itemController.importItem(file);
 
         assertThat(response.getBody()).isEqualTo("Item imported.");
-        verify(importItemUseCase).importItem(tmpDir.resolve("upload_import.zip"));
-        verify(fileRepository).delete(tmpDir.resolve("upload_import.zip"));
+
+        ArgumentCaptor<Path> argCap = ArgumentCaptor.forClass(Path.class);
+        verify(importItemUseCase).importItem(argCap.capture());
+        assertThat(argCap.getValue().toString()).contains("upload_");
+        assertThat(argCap.getValue().toString()).endsWith(ZIP_FILE_SUFFIX);
+
+        verify(fileRepository).delete(argCap.getValue());
     }
 
     @Test
@@ -243,8 +250,13 @@ class ItemControllerTest {
         ResponseEntity<String> response = itemController.importItemWithApiToken(file, "token-123");
 
         assertThat(response.getBody()).isEqualTo("Item synchronized.");
-        verify(importItemUseCase).importItem(tmpDir.resolve("upload_token_import.zip"), "token-123");
-        verify(fileRepository).delete(tmpDir.resolve("upload_token_import.zip"));
+
+        ArgumentCaptor<Path> argCap = ArgumentCaptor.forClass(Path.class);
+        verify(importItemUseCase).importItem(argCap.capture(), eq("token-123"));
+        assertThat(argCap.getValue().toString()).contains("upload_");
+        assertThat(argCap.getValue().toString()).endsWith(ZIP_FILE_SUFFIX);
+
+        verify(fileRepository).delete(argCap.getValue());
     }
 
 }

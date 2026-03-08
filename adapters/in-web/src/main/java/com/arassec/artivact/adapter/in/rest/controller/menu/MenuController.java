@@ -140,7 +140,7 @@ public class MenuController extends BaseImportController {
     public ResponseEntity<StreamingResponseBody> exportMenu(@PathVariable String menuId, HttpServletResponse response) {
         Path menuExport = exportMenuUseCase.exportMenu(menuId);
 
-        StreamingResponseBody streamResponseBody = out -> {
+        StreamingResponseBody streamResponseBody = _ -> {
             long bytesWritten = fileRepository.copy(menuExport, response.getOutputStream());
             response.setContentLength(Math.toIntExact(bytesWritten));
             fileRepository.delete(menuExport);
@@ -163,7 +163,7 @@ public class MenuController extends BaseImportController {
      */
     @PostMapping(value = "/import")
     public ResponseEntity<String> importMenu(@RequestPart(value = "file") final MultipartFile file) {
-        Path tempFile = saveTempFile(file);
+        Path tempFile = saveTempZipFile(file);
         importMenuUseCase.importMenu(tempFile);
         fileRepository.delete(tempFile);
         return ResponseEntity.ok("Menu imported.");

@@ -12,6 +12,7 @@ import com.arassec.artivact.domain.model.item.CreationImageSet;
 import com.arassec.artivact.domain.model.item.ImageSize;
 import com.arassec.artivact.domain.model.item.Item;
 import com.arassec.artivact.domain.model.misc.DirectoryDefinitions;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.FileSystemResource;
@@ -33,7 +34,7 @@ import java.util.Set;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ManageItemImagesService implements ManageItemImagesUseCase {
+public class ManageItemImagesService extends BaseItemService implements ManageItemImagesUseCase {
 
     /**
      * Use case for run background operation.
@@ -43,6 +44,7 @@ public class ManageItemImagesService implements ManageItemImagesUseCase {
     /**
      * Use case for use project dirs.
      */
+    @Getter
     private final UseProjectDirsUseCase useProjectDirsUseCase;
 
     /**
@@ -58,6 +60,7 @@ public class ManageItemImagesService implements ManageItemImagesUseCase {
     /**
      * Repository for file.
      */
+    @Getter
     private final FileRepository fileRepository;
 
     /**
@@ -110,7 +113,7 @@ public class ManageItemImagesService implements ManageItemImagesUseCase {
      */
     @Override
     public synchronized void createImageSetFromDanglingImages(String itemId) {
-        runBackgroundOperationUseCase.execute("createImageSet", "start", progressMonitor -> {
+        runBackgroundOperationUseCase.execute("createImageSet", "start", _ -> {
             Item item = loadItemUseCase.loadTranslated(itemId);
 
             List<String> newImages = getDanglingImages(item);
@@ -179,26 +182,6 @@ public class ManageItemImagesService implements ManageItemImagesUseCase {
     }
 
     /**
-     * Returns a list of the item's images that are not referenced by the item itself, but only exist in the
-     * filesystem.
-     *
-     * @param item The item.
-     * @return List of unreferenced images.
-     */
-    private List<String> getDanglingImages(Item item) {
-        List<String> imagesInItem = new LinkedList<>(item.getMediaContent().getImages());
-        item.getMediaCreationContent().getImageSets().forEach(creationImageSet -> imagesInItem.addAll(creationImageSet.getFiles()));
-
-        List<String> allImagesInFolder = fileRepository.listNamesWithoutScaledImages(
-                fileRepository.getDirFromId(useProjectDirsUseCase.getItemsDir(), item.getId()).resolve(DirectoryDefinitions.IMAGES_DIR)
-        );
-
-        allImagesInFolder.removeAll(imagesInItem);
-
-        return allImagesInFolder;
-    }
-
-    /**
      * Returns the target path to transfer an image from media-creation to media.
      *
      * @param itemId The item's ID.
@@ -227,7 +210,7 @@ public class ManageItemImagesService implements ManageItemImagesUseCase {
         }
 
         if (n <= 3) {
-            return new LinkedList<>(files); // trivial case}
+            return new LinkedList<>(files); // trivial case
         }
 
         int limit = (n * 3) / 4; // floor
@@ -268,7 +251,7 @@ public class ManageItemImagesService implements ManageItemImagesUseCase {
         if (1 > max) {
             return 1;
         }
-        return Math.max(1, Math.min(max, v));
+        return Math.clamp(v, 1, max);
     }
 
 }

@@ -87,11 +87,12 @@ class ManagePageServiceTest {
 
         when(pageRepository.deleteById("page-1")).thenReturn(Optional.of(page));
         when(useProjectDirsUseCase.getWidgetsDir()).thenReturn(Path.of("widgets"));
-        when(fileRepository.getDirFromId(any(), eq("widget-1"))).thenReturn(Path.of("widgets/widget-1"));
+        Path widgetsDir = Path.of("widgets/widget-1");
+        when(fileRepository.getDirFromId(any(), eq("widget-1"))).thenReturn(widgetsDir);
 
         service.deletePage("page-1");
 
-        verify(fileRepository).deleteAndPruneEmptyParents(Path.of("widgets/widget-1"));
+        verify(fileRepository).deleteAndPruneEmptyParents(widgetsDir);
         verify(pageRepository).deleteById("page-1");
     }
 
@@ -220,7 +221,8 @@ class ManagePageServiceTest {
         when(menuRepository.load()).thenReturn(List.of());
 
         PageContent content = new PageContent();
-        assertThrows(ArtivactException.class, () -> service.savePageContent("page-1", Set.of(), content));
+        Set<String> roles = Set.of();
+        assertThrows(ArtivactException.class, () -> service.savePageContent("page-1", roles, content));
     }
 
     @Test

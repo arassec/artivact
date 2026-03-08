@@ -18,10 +18,10 @@ import java.io.InputStream;
 import java.nio.file.CopyOption;
 import java.nio.file.Path;
 
+import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.ZIP_FILE_SUFFIX;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 /**
@@ -55,7 +55,7 @@ class BaseImportControllerTest {
         }
 
         public Path testSaveTempFile(MultipartFile multipartFile) {
-            return saveTempFile(multipartFile);
+            return saveTempZipFile(multipartFile);
         }
     }
 
@@ -63,37 +63,32 @@ class BaseImportControllerTest {
      * Tests saving a temp file with different filename scenarios.
      */
     @ParameterizedTest
-    @CsvSource(value = {
-            "test.zip, upload_test.zip",
-            "testfile, upload_testfile.tmp",
-            "null, upload_.tmp"
-    }, nullValues = "null")
-    void testSaveTempFile(String originalFilename, String expectedFilenamePart) throws IOException {
+    @CsvSource(value = {"upload_"}, nullValues = "null")
+    void testSaveTempZipFile(String expectedFilenamePart) throws IOException {
         TestableBaseImportController controller = new TestableBaseImportController();
 
         when(useProjectDirsUseCase.getTempDir()).thenReturn(tempDir);
 
         MultipartFile multipartFile = mock(MultipartFile.class);
-        when(multipartFile.getOriginalFilename()).thenReturn(originalFilename);
         when(multipartFile.getInputStream()).thenReturn(new ByteArrayInputStream("test".getBytes()));
 
         Path result = controller.testSaveTempFile(multipartFile);
 
         assertThat(result.toString()).contains(expectedFilenamePart);
-        verify(fileRepository).copy(any(InputStream.class), eq(result), any(CopyOption.class));
+        assertThat(result.toString()).endsWith(ZIP_FILE_SUFFIX);
+        verify(fileRepository).copy(any(InputStream.class), any(Path.class), any(CopyOption.class));
     }
 
     /**
      * Tests that IOException is wrapped in ArtivactException.
      */
     @Test
-    void testSaveTempFileThrowsArtivactExceptionOnIOException() throws IOException {
+    void testSaveTempZipFileThrowsArtivactExceptionOnIOException() throws IOException {
         TestableBaseImportController controller = new TestableBaseImportController();
 
         when(useProjectDirsUseCase.getTempDir()).thenReturn(tempDir);
 
         MultipartFile multipartFile = mock(MultipartFile.class);
-        when(multipartFile.getOriginalFilename()).thenReturn("test.zip");
         when(multipartFile.getInputStream()).thenThrow(new IOException("Test IO Exception"));
 
         assertThatThrownBy(() -> controller.testSaveTempFile(multipartFile))

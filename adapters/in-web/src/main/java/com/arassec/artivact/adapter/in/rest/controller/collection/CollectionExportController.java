@@ -26,6 +26,7 @@ import java.net.URLConnection;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -169,7 +170,7 @@ public class CollectionExportController extends BaseImportController {
         List<String> availableRoles;
         if (authentication != null) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            availableRoles = userDetails.getAuthorities().stream()
+            availableRoles = Objects.requireNonNull(userDetails).getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
                     .toList();
         } else {
@@ -282,7 +283,7 @@ public class CollectionExportController extends BaseImportController {
      */
     @PostMapping("/import")
     public void importCollection(@RequestPart(value = "file") final MultipartFile file) {
-        Path tempFile = saveTempFile(file);
+        Path tempFile = saveTempZipFile(file);
         importCollectionUseCase.importCollection(tempFile);
     }
 
@@ -293,7 +294,7 @@ public class CollectionExportController extends BaseImportController {
      */
     @PostMapping("/import/for-distribution")
     public void importCollectionForDistribution(@RequestPart(value = "file") final MultipartFile file) {
-        Path tempFile = saveTempFile(file);
+        Path tempFile = saveTempZipFile(file);
         importCollectionUseCase.importCollectionForDistribution(tempFile);
     }
 

@@ -305,7 +305,7 @@ public class ItemController extends BaseImportController {
      */
     @PostMapping(value = "/import")
     public ResponseEntity<String> importItem(@RequestPart(value = "file") final MultipartFile file) {
-        Path tempFile = saveTempFile(file);
+        Path tempFile = saveTempZipFile(file);
         importItemUseCase.importItem(tempFile);
         fileRepository.delete(tempFile);
         return ResponseEntity.ok("Item imported.");
@@ -321,7 +321,7 @@ public class ItemController extends BaseImportController {
     @PostMapping(value = "/import/{apiToken}")
     public ResponseEntity<String> importItemWithApiToken(@RequestPart(value = "file") final MultipartFile file,
                                                          @PathVariable final String apiToken) {
-        Path tempFile = saveTempFile(file);
+        Path tempFile = saveTempZipFile(file);
         importItemUseCase.importItem(tempFile, apiToken);
         fileRepository.delete(tempFile);
         return ResponseEntity.ok("Item synchronized.");

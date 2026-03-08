@@ -8,7 +8,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.Optional;
+import java.util.UUID;
+
+import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.ZIP_FILE_SUFFIX;
 
 /**
  * REST controller for base import.
@@ -32,14 +34,8 @@ public abstract class BaseImportController extends BaseController {
      * @param multipartFile The input file to save.
      * @return The created temporary file.
      */
-    protected Path saveTempFile(MultipartFile multipartFile) {
-        String originalFilename = multipartFile.getOriginalFilename();
-        String suffix = originalFilename != null && originalFilename.contains(".")
-                ? originalFilename.substring(originalFilename.lastIndexOf("."))
-                : ".tmp";
-
-        Path tempFile = getUseProjectDirsUseCase().getTempDir().resolve("upload_"
-                + Optional.ofNullable(originalFilename).orElse("").replace(suffix, "") + suffix);
+    protected Path saveTempZipFile(MultipartFile multipartFile) {
+        Path tempFile = getUseProjectDirsUseCase().getTempDir().resolve("upload_" + UUID.randomUUID() + ZIP_FILE_SUFFIX);
         try {
             getFileRepository().copy(multipartFile.getInputStream(), tempFile, StandardCopyOption.REPLACE_EXISTING);
             return tempFile;
