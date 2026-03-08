@@ -34,6 +34,8 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class MenuImportServiceTest {
 
+    public static final Path IMPORT_DIR = Path.of("import");
+
     @InjectMocks
     private MenuImportService service;
 
@@ -73,8 +75,8 @@ class MenuImportServiceTest {
         exchangeMainData.setSourceIds(List.of("menu-1"));
 
         when(jsonMapper.readValue(
-                eq(importDir.resolve(CONTENT_EXCHANGE_MAIN_DATA_FILENAME_JSON).toFile()),
-                eq(ExchangeMainData.class)
+                importDir.resolve(CONTENT_EXCHANGE_MAIN_DATA_FILENAME_JSON).toFile(),
+                ExchangeMainData.class
         )).thenReturn(exchangeMainData);
 
         Menu menu = createMenu("menu-1", null, List.of());
@@ -104,8 +106,8 @@ class MenuImportServiceTest {
         exchangeMainData.setSourceIds(List.of("menu-a", "menu-b"));
 
         when(jsonMapper.readValue(
-                eq(importDir.resolve(CONTENT_EXCHANGE_MAIN_DATA_FILENAME_JSON).toFile()),
-                eq(ExchangeMainData.class)
+                importDir.resolve(CONTENT_EXCHANGE_MAIN_DATA_FILENAME_JSON).toFile(),
+                ExchangeMainData.class
         )).thenReturn(exchangeMainData);
 
         Menu menuA = createMenu("menu-a", null, List.of());
@@ -135,8 +137,8 @@ class MenuImportServiceTest {
         exchangeMainData.setSourceIds(List.of());
 
         when(jsonMapper.readValue(
-                eq(importDir.resolve(CONTENT_EXCHANGE_MAIN_DATA_FILENAME_JSON).toFile()),
-                eq(ExchangeMainData.class)
+                importDir.resolve(CONTENT_EXCHANGE_MAIN_DATA_FILENAME_JSON).toFile(),
+                ExchangeMainData.class
         )).thenReturn(exchangeMainData);
 
         // When / Then
@@ -158,8 +160,8 @@ class MenuImportServiceTest {
         exchangeMainData.setSourceIds(List.of());
 
         when(jsonMapper.readValue(
-                eq(importDir.resolve(CONTENT_EXCHANGE_MAIN_DATA_FILENAME_JSON).toFile()),
-                eq(ExchangeMainData.class)
+                importDir.resolve(CONTENT_EXCHANGE_MAIN_DATA_FILENAME_JSON).toFile(),
+                ExchangeMainData.class
         )).thenReturn(exchangeMainData);
 
         // When / Then
@@ -189,11 +191,11 @@ class MenuImportServiceTest {
     void testImportMenuWithSaveMenuTrue() {
         // Given
         ImportContext importContext = ImportContext.builder()
-                .importDir(Path.of("import"))
+                .importDir(IMPORT_DIR)
                 .build();
 
         Menu menu = createMenu("menu-save", "old-parent", List.of());
-        mockMenuRead(Path.of("import"), "menu-save", menu);
+        mockMenuRead(IMPORT_DIR, "menu-save", menu);
 
         // When
         service.importMenu(importContext, "menu-save", true);
@@ -207,11 +209,11 @@ class MenuImportServiceTest {
     void testImportMenuWithSaveMenuFalse() {
         // Given
         ImportContext importContext = ImportContext.builder()
-                .importDir(Path.of("import"))
+                .importDir(IMPORT_DIR)
                 .build();
 
         Menu menu = createMenu("menu-no-save", "parent-id", List.of());
-        mockMenuRead(Path.of("import"), "menu-no-save", menu);
+        mockMenuRead(IMPORT_DIR, "menu-no-save", menu);
 
         // When
         service.importMenu(importContext, "menu-no-save", false);
@@ -224,16 +226,16 @@ class MenuImportServiceTest {
     void testImportMenuWithSubMenusImportsRecursively() {
         // Given
         ImportContext importContext = ImportContext.builder()
-                .importDir(Path.of("import"))
+                .importDir(IMPORT_DIR)
                 .build();
 
         Menu subMenu1 = createMenu("sub-1", null, List.of());
         Menu subMenu2 = createMenu("sub-2", null, List.of());
 
         Menu rootMenu = createMenu("root", null, List.of(subMenu1, subMenu2));
-        mockMenuRead(Path.of("import"), "root", rootMenu);
-        mockMenuRead(Path.of("import"), "sub-1", createMenu("sub-1", null, List.of()));
-        mockMenuRead(Path.of("import"), "sub-2", createMenu("sub-2", null, List.of()));
+        mockMenuRead(IMPORT_DIR, "root", rootMenu);
+        mockMenuRead(IMPORT_DIR, "sub-1", createMenu("sub-1", null, List.of()));
+        mockMenuRead(IMPORT_DIR, "sub-2", createMenu("sub-2", null, List.of()));
 
         // When
         service.importMenu(importContext, "root", true);
@@ -249,11 +251,11 @@ class MenuImportServiceTest {
     void testImportMenuWithEmptySubMenusDoesNotRecurse() {
         // Given
         ImportContext importContext = ImportContext.builder()
-                .importDir(Path.of("import"))
+                .importDir(IMPORT_DIR)
                 .build();
 
         Menu menu = createMenu("leaf-menu", null, List.of());
-        mockMenuRead(Path.of("import"), "leaf-menu", menu);
+        mockMenuRead(IMPORT_DIR, "leaf-menu", menu);
 
         // When
         service.importMenu(importContext, "leaf-menu", false);
@@ -267,13 +269,13 @@ class MenuImportServiceTest {
     void testImportMenuWithTargetPageIdImportsPage() {
         // Given
         ImportContext importContext = ImportContext.builder()
-                .importDir(Path.of("import"))
+                .importDir(IMPORT_DIR)
                 .build();
 
         Menu menu = createMenu("menu-with-page", null, List.of());
         menu.setTargetPageId("page-99");
         menu.setTargetPageAlias("my-alias");
-        mockMenuRead(Path.of("import"), "menu-with-page", menu);
+        mockMenuRead(IMPORT_DIR, "menu-with-page", menu);
 
         // When
         service.importMenu(importContext, "menu-with-page", false);
@@ -286,12 +288,12 @@ class MenuImportServiceTest {
     void testImportMenuWithoutTargetPageIdDoesNotImportPage() {
         // Given
         ImportContext importContext = ImportContext.builder()
-                .importDir(Path.of("import"))
+                .importDir(IMPORT_DIR)
                 .build();
 
         Menu menu = createMenu("menu-no-page", null, List.of());
         menu.setTargetPageId(null);
-        mockMenuRead(Path.of("import"), "menu-no-page", menu);
+        mockMenuRead(IMPORT_DIR, "menu-no-page", menu);
 
         // When
         service.importMenu(importContext, "menu-no-page", false);
@@ -304,12 +306,12 @@ class MenuImportServiceTest {
     void testImportMenuWithEmptyTargetPageIdDoesNotImportPage() {
         // Given
         ImportContext importContext = ImportContext.builder()
-                .importDir(Path.of("import"))
+                .importDir(IMPORT_DIR)
                 .build();
 
         Menu menu = createMenu("menu-empty-page", null, List.of());
         menu.setTargetPageId("");
-        mockMenuRead(Path.of("import"), "menu-empty-page", menu);
+        mockMenuRead(IMPORT_DIR, "menu-empty-page", menu);
 
         // When
         service.importMenu(importContext, "menu-empty-page", false);
@@ -322,20 +324,20 @@ class MenuImportServiceTest {
     void testImportMenuWithNestedSubMenusSetsCorrectParentIds() {
         // Given
         ImportContext importContext = ImportContext.builder()
-                .importDir(Path.of("import"))
+                .importDir(IMPORT_DIR)
                 .build();
 
         Menu leaf = createMenu("leaf", null, List.of());
         Menu mid = createMenu("mid", null, List.of(leaf));
         Menu root = createMenu("root", "old-parent", List.of(mid));
 
-        mockMenuRead(Path.of("import"), "root", root);
+        mockMenuRead(IMPORT_DIR, "root", root);
 
         Menu midRead = createMenu("mid", null, List.of(leaf));
-        mockMenuRead(Path.of("import"), "mid", midRead);
+        mockMenuRead(IMPORT_DIR, "mid", midRead);
 
         Menu leafRead = createMenu("leaf", null, List.of());
-        mockMenuRead(Path.of("import"), "leaf", leafRead);
+        mockMenuRead(IMPORT_DIR, "leaf", leafRead);
 
         // When
         service.importMenu(importContext, "root", true);

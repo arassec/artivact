@@ -3,9 +3,11 @@ package com.arassec.artivact.adapter.out.database.jdbc;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.SerializationFeature;
 import tools.jackson.databind.json.JsonMapper;
@@ -56,15 +58,7 @@ class BaseJdbcRepositoryTest {
     /**
      * Test class without no-args constructor to test exception handling.
      */
-    public static class NoDefaultConstructorObject {
-
-        @Getter
-        private final String name;
-
-        public NoDefaultConstructorObject(String name) {
-            this.name = name;
-        }
-
+    public record NoDefaultConstructorObject(String name) {
     }
 
     private final TestableBaseJdbcRepository repository = new TestableBaseJdbcRepository();
@@ -77,8 +71,7 @@ class BaseJdbcRepositoryTest {
         TestObject testObject = new TestObject("test", 42);
         String json = repository.testToJson(testObject);
 
-        assertThat(json).contains("\"name\" : \"test\"");
-        assertThat(json).contains("\"value\" : 42");
+        assertThat(json).contains("\"name\" : \"test\"").contains("\"value\" : 42");
     }
 
     /**
@@ -103,33 +96,13 @@ class BaseJdbcRepositoryTest {
     }
 
     /**
-     * Tests deserializing null JSON returns default instance.
+     * Tests deserializing null, empty or whitespace JSON returns default instance.
      */
-    @Test
-    void testFromJsonWithNull() {
-        TestObject result = repository.testFromJson(null, TestObject.class);
-        assertThat(result).isNotNull();
-        assertThat(result.getName()).isNull();
-        assertThat(result.getValue()).isZero();
-    }
-
-    /**
-     * Tests deserializing empty JSON returns default instance.
-     */
-    @Test
-    void testFromJsonWithEmptyString() {
-        TestObject result = repository.testFromJson("", TestObject.class);
-        assertThat(result).isNotNull();
-        assertThat(result.getName()).isNull();
-        assertThat(result.getValue()).isZero();
-    }
-
-    /**
-     * Tests deserializing whitespace JSON returns default instance.
-     */
-    @Test
-    void testFromJsonWithWhitespace() {
-        TestObject result = repository.testFromJson("   ", TestObject.class);
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = "   ")
+    void testFromJsonWithUnparsableContent(String json) {
+        TestObject result = repository.testFromJson(json, TestObject.class);
         assertThat(result).isNotNull();
         assertThat(result.getName()).isNull();
         assertThat(result.getValue()).isZero();

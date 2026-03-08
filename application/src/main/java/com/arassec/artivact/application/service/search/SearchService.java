@@ -16,11 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import tools.jackson.databind.json.JsonMapper;
 
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.*;
 
 /**
  * Service for search-engine management and search handling.
@@ -87,20 +83,22 @@ public class SearchService
         }
 
         if ("*".equals(query)) {
-            return itemRepository.findAll(maxResults).stream()
+            return new ArrayList<>(itemRepository.findAll(maxResults).stream()
                     .sorted(Comparator.comparing(
                             o -> Optional.ofNullable(o.getTitle()).map(TranslatableString::getValue).orElse(null),
                             Comparator.nullsLast(Comparator.naturalOrder())
                     ))
-                    .collect(Collectors.toList()); // Needs to be modifiable!
+                    .toList()
+            );
         }
 
-        return itemRepository.findAllById(searchGateway.search(query, maxResults)).stream()
+        return new ArrayList<>(itemRepository.findAllById(searchGateway.search(query, maxResults)).stream()
                 .sorted(Comparator.comparing(
                         o -> Optional.ofNullable(o.getTitle()).map(TranslatableString::getValue).orElse(null),
                         Comparator.nullsLast(Comparator.naturalOrder())
                 ))
-                .collect(Collectors.toList()); // Needs to be modifiable!
+                .toList()
+        );
     }
 
     /**

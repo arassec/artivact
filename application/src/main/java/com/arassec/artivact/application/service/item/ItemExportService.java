@@ -153,18 +153,8 @@ public class ItemExportService extends BaseExportService implements ExportItemUs
                     .forEach(image -> fileRepository.copy(imagesSourceDir.resolve(image), imagesTargetDir.resolve(image)));
             item.getMediaContent().getModels()
                     .forEach(model -> fileRepository.copy(modelsSourceDir.resolve(model), modelsTargetDir.resolve(model)));
-            // TODO: Add option to include media creation files when exporting an item.
+            // Media creation content is not needed in exports at the moment, so we can clear it to save some space.
             item.setMediaCreationContent(null);
-            /*
-            item.getMediaCreationContent().getImageSets()
-                    .forEach(imageSet -> imageSet.getFiles()
-                            .forEach(image -> fileRepository.copy(imagesSourceDir.resolve(image), imagesTargetDir.resolve(image))));
-            item.getMediaCreationContent().getModelSets()
-                    .forEach(modelSet -> fileRepository.copy(
-                            useProjectDirsUseCase.getProjectRoot().resolve(modelSet.getDirectory()),
-                            exportContext.getExportDir().resolve(modelSet.getDirectory())
-                    ));
-             */
         }
     }
 

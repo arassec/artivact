@@ -295,10 +295,7 @@ class MenuExportServiceTest {
 
         // Then
         verify(fileRepository).createDirIfRequired(menuExportDir);
-        verify(jsonMapper).writeValue(
-                eq(menuExportDir.resolve(MENU_EXCHANGE_FILENAME_JSON).toFile()),
-                eq(menu)
-        );
+        verify(jsonMapper).writeValue(menuExportDir.resolve(MENU_EXCHANGE_FILENAME_JSON).toFile(), menu);
     }
 
     @Test

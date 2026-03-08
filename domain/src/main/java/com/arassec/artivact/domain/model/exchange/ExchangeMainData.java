@@ -68,7 +68,7 @@ public class ExchangeMainData {
     /**
      * Creates a new instance.
      */
-    @SuppressWarnings("unused") // Used by JSON mapper.
+    @SuppressWarnings({"unused", "java:S107"}) // Used by JSON mapper, # parameters is not a problem here.
     public ExchangeMainData(String id, TranslatableString title, TranslatableString description,
                             TranslatableString content, ContentSource contentSource, List<String> sourceIds,
                             String coverPictureExtension, ExportConfiguration exportConfiguration) {

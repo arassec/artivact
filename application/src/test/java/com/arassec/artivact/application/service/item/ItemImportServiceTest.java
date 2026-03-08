@@ -124,7 +124,7 @@ class ItemImportServiceTest {
         exchangeMainData.setSourceIds(List.of());
 
         Path importDir = Path.of("temp", "export.artivact.collection");
-        when(jsonMapper.readValue(eq(importDir.resolve(CONTENT_EXCHANGE_MAIN_DATA_FILENAME_JSON).toFile()), eq(ExchangeMainData.class)))
+        when(jsonMapper.readValue(importDir.resolve(CONTENT_EXCHANGE_MAIN_DATA_FILENAME_JSON).toFile(), ExchangeMainData.class))
                 .thenReturn(exchangeMainData);
 
         // When
@@ -149,11 +149,11 @@ class ItemImportServiceTest {
         exchangeMainData.setContentSource(ContentSource.ITEM);
         exchangeMainData.setSourceIds(List.of("item-123"));
 
-        when(jsonMapper.readValue(eq(importDir.resolve(CONTENT_EXCHANGE_MAIN_DATA_FILENAME_JSON).toFile()), eq(ExchangeMainData.class)))
+        when(jsonMapper.readValue(importDir.resolve(CONTENT_EXCHANGE_MAIN_DATA_FILENAME_JSON).toFile(), ExchangeMainData.class))
                 .thenReturn(exchangeMainData);
 
         Path itemSourceDir = Path.of("item-source-dir");
-        when(fileRepository.getDirFromId(eq(importDir.resolve(DirectoryDefinitions.ITEMS_DIR)), eq("item-123")))
+        when(fileRepository.getDirFromId(importDir.resolve(DirectoryDefinitions.ITEMS_DIR), "item-123"))
                 .thenReturn(itemSourceDir);
         when(fileRepository.exists(itemSourceDir.resolve(ITEM_EXCHANGE_FILENAME_JSON))).thenReturn(true);
 
@@ -192,7 +192,7 @@ class ItemImportServiceTest {
         exchangeMainData.setContentSource(ContentSource.COLLECTION);
         exchangeMainData.setSourceIds(List.of());
 
-        when(jsonMapper.readValue(eq(importDir.resolve(CONTENT_EXCHANGE_MAIN_DATA_FILENAME_JSON).toFile()), eq(ExchangeMainData.class)))
+        when(jsonMapper.readValue(importDir.resolve(CONTENT_EXCHANGE_MAIN_DATA_FILENAME_JSON).toFile(), ExchangeMainData.class))
                 .thenReturn(exchangeMainData);
 
         // When / Then
@@ -224,7 +224,7 @@ class ItemImportServiceTest {
                 .build();
 
         Path itemSourceDir = Path.of("item-source-dir");
-        when(fileRepository.getDirFromId(eq(importContext.getImportDir().resolve(DirectoryDefinitions.ITEMS_DIR)), eq("missing-item")))
+        when(fileRepository.getDirFromId(importContext.getImportDir().resolve(DirectoryDefinitions.ITEMS_DIR), "missing-item"))
                 .thenReturn(itemSourceDir);
         when(fileRepository.exists(itemSourceDir.resolve(ITEM_EXCHANGE_FILENAME_JSON))).thenReturn(false);
 
@@ -245,7 +245,7 @@ class ItemImportServiceTest {
                 .build();
 
         Path itemSourceDir = Path.of("item-source-dir");
-        when(fileRepository.getDirFromId(eq(importContext.getImportDir().resolve(DirectoryDefinitions.ITEMS_DIR)), eq("item-456")))
+        when(fileRepository.getDirFromId(importContext.getImportDir().resolve(DirectoryDefinitions.ITEMS_DIR), "item-456"))
                 .thenReturn(itemSourceDir);
         when(fileRepository.exists(itemSourceDir.resolve(ITEM_EXCHANGE_FILENAME_JSON))).thenReturn(true);
 

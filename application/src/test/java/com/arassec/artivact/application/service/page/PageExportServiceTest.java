@@ -35,6 +35,8 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class PageExportServiceTest {
 
+    public static final Path PROJECT_ROOT_PATH = Path.of("project");
+
     @InjectMocks
     private PageExportService service;
 
@@ -109,10 +111,12 @@ class PageExportServiceTest {
         service.exportPage(ctx, "page-2", content);
 
         // Then
-        verify(fileRepository).createDirIfRequired(Path.of("page-export-dir"));
+        Path pageExportDir = Path.of("page-export-dir");
+
+        verify(fileRepository).createDirIfRequired(pageExportDir);
         verify(jsonMapper).writeValue(
-                eq(Path.of("page-export-dir").resolve(PAGE_EXCHANGE_FILENAME_JSON).toFile()),
-                eq(content)
+                pageExportDir.resolve(PAGE_EXCHANGE_FILENAME_JSON).toFile(),
+                content
         );
     }
 
@@ -229,8 +233,8 @@ class PageExportServiceTest {
         Path sourceDir = Path.of("source-widget-dir");
         Path targetDir = Path.of("target-widget-dir");
 
-        when(useProjectDirsUseCase.getProjectRoot()).thenReturn(Path.of("project"));
-        when(fileRepository.getDirFromId(Path.of("project").resolve(DirectoryDefinitions.WIDGETS_DIR), "avatar-1"))
+        when(useProjectDirsUseCase.getProjectRoot()).thenReturn(PROJECT_ROOT_PATH);
+        when(fileRepository.getDirFromId(PROJECT_ROOT_PATH.resolve(DirectoryDefinitions.WIDGETS_DIR), "avatar-1"))
                 .thenReturn(sourceDir);
         when(fileRepository.getDirFromId(exportDir.resolve(DirectoryDefinitions.WIDGETS_DIR), "avatar-1"))
                 .thenReturn(targetDir);
@@ -321,8 +325,8 @@ class PageExportServiceTest {
         Path sourceDir = Path.of("source-title");
         Path targetDir = Path.of("target-title");
 
-        when(useProjectDirsUseCase.getProjectRoot()).thenReturn(Path.of("project"));
-        when(fileRepository.getDirFromId(Path.of("project").resolve(DirectoryDefinitions.WIDGETS_DIR), "title-1"))
+        when(useProjectDirsUseCase.getProjectRoot()).thenReturn(PROJECT_ROOT_PATH);
+        when(fileRepository.getDirFromId(PROJECT_ROOT_PATH.resolve(DirectoryDefinitions.WIDGETS_DIR), "title-1"))
                 .thenReturn(sourceDir);
         when(fileRepository.getDirFromId(exportDir.resolve(DirectoryDefinitions.WIDGETS_DIR), "title-1"))
                 .thenReturn(targetDir);
@@ -394,8 +398,8 @@ class PageExportServiceTest {
         Path sourceDir = Path.of("source-gallery");
         Path targetDir = Path.of("target-gallery");
 
-        when(useProjectDirsUseCase.getProjectRoot()).thenReturn(Path.of("project"));
-        when(fileRepository.getDirFromId(Path.of("project").resolve(DirectoryDefinitions.WIDGETS_DIR), "gallery-1"))
+        when(useProjectDirsUseCase.getProjectRoot()).thenReturn(PROJECT_ROOT_PATH);
+        when(fileRepository.getDirFromId(PROJECT_ROOT_PATH.resolve(DirectoryDefinitions.WIDGETS_DIR), "gallery-1"))
                 .thenReturn(sourceDir);
         when(fileRepository.getDirFromId(exportDir.resolve(DirectoryDefinitions.WIDGETS_DIR), "gallery-1"))
                 .thenReturn(targetDir);
@@ -623,8 +627,8 @@ class PageExportServiceTest {
 
         Path sourceDir = Path.of("src-avatar");
         Path targetDir = Path.of("tgt-avatar");
-        when(useProjectDirsUseCase.getProjectRoot()).thenReturn(Path.of("project"));
-        when(fileRepository.getDirFromId(Path.of("project").resolve(DirectoryDefinitions.WIDGETS_DIR), "w-avatar"))
+        when(useProjectDirsUseCase.getProjectRoot()).thenReturn(PROJECT_ROOT_PATH);
+        when(fileRepository.getDirFromId(PROJECT_ROOT_PATH.resolve(DirectoryDefinitions.WIDGETS_DIR), "w-avatar"))
                 .thenReturn(sourceDir);
         when(fileRepository.getDirFromId(exportDir.resolve(DirectoryDefinitions.WIDGETS_DIR), "w-avatar"))
                 .thenReturn(targetDir);
@@ -658,8 +662,8 @@ class PageExportServiceTest {
         // Then
         verify(fileRepository).createDirIfRequired(pageDir);
         verify(jsonMapper).writeValue(
-                eq(pageDir.resolve(PAGE_EXCHANGE_FILENAME_JSON).toFile()),
-                eq(content)
+                pageDir.resolve(PAGE_EXCHANGE_FILENAME_JSON).toFile(),
+                content
         );
     }
 
