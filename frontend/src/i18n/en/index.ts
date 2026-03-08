@@ -134,6 +134,21 @@ export default {
     heading: "Appearance Configuration",
   },
 
+  MaintenancePage: {
+    heading: "Maintenance",
+    searchIndex: {
+      heading: "Search Index",
+      description: "Here you can rebuild the search index. This can be useful if the search results are not up to date or if the index has become corrupted.",
+      recreateButton: "Rebuild Search Index",
+    },
+    messages: {
+      recreateIndex: {
+        success: "Search index rebuilt successfully.",
+        failed: "Rebuilding the search index failed!",
+      },
+    },
+  },
+
   BatchProcessingPage: {
     heading: "Batch Processing",
     startButton: "Start batch processing",
@@ -914,6 +929,7 @@ export default {
     appearance: "Appearance",
     peripherals: "Peripherals",
     exchange: "Exchange",
+    maintenance: "Maintenance",
     locale: "Locale",
     exhib: "Exhib.",
     system: "System",
@@ -1214,8 +1230,8 @@ export default {
       start: "Editing model in external editor.",
       failed: "Error during model editing!",
     },
-    search: {
-      createIndex: "(Re-)Creating search index...",
+    maintenance: {
+      searchIndex: "(Re-)Creating search index...",
       failed: "(Re-)Creation of search index failed!",
     },
     itemUpload: {

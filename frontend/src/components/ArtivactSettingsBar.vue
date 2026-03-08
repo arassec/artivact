@@ -337,6 +337,26 @@
             >
             </q-item-section>
           </q-item>
+          <q-item
+            data-test="artivact-system-settings-maintenance"
+            clickable
+            v-close-popup
+            @click="gotoMaintenancePage"
+            v-if="userdataStore.isAdmin"
+            class="menu-entry"
+          >
+            <q-item-section
+            ><label class="menu-label">
+              <q-icon
+                name="build"
+                size="xs"
+                color="primary"
+                class="q-mr-sm"
+              ></q-icon>
+              {{ $t('ArtivactSettingsBar.maintenance') }}</label
+            >
+            </q-item-section>
+          </q-item>
         </q-list>
       </q-menu>
     </q-btn>
@@ -643,6 +663,25 @@
                 >
                 </q-item-section>
               </q-item>
+              <q-item
+                clickable
+                v-close-popup
+                @click="gotoMaintenancePage"
+                v-if="userdataStore.isAdmin"
+                class="menu-entry"
+              >
+                <q-item-section
+                ><label class="menu-label">
+                  <q-icon
+                    name="build"
+                    size="xs"
+                    color="primary"
+                    class="q-mr-sm"
+                  ></q-icon>
+                  {{ $t('ArtivactSettingsBar.maintenance') }}</label
+                >
+                </q-item-section>
+              </q-item>
             </q-list>
           </q-menu>
         </q-item>
@@ -775,6 +814,10 @@ function gotoPeripheralsConfigurationPage() {
 
 function gotoExchangeConfigurationPage() {
   router.push('/administration/configuration/exchange');
+}
+
+function gotoMaintenancePage() {
+  router.push('/administration/configuration/maintenance');
 }
 
 function gotoAccountPage() {
