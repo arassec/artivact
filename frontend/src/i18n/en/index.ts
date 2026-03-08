@@ -141,10 +141,19 @@ export default {
       description: "Here you can rebuild the search index. This can be useful if the search results are not up to date or if the index has become corrupted.",
       recreateButton: "Rebuild Search Index",
     },
+    cleanupProjectFiles: {
+      heading: "Cleanup Project Files",
+      description: "This function checks project files for consistency and cleans them up if necessary.",
+      cleanupButton: "Cleanup Project Files",
+    },
     messages: {
       recreateIndex: {
         success: "Search index rebuilt successfully.",
         failed: "Rebuilding the search index failed!",
+      },
+      cleanupProjectFiles: {
+        success: "Project files cleaned up successfully.",
+        failed: "Cleaning up project files failed!",
       },
     },
   },

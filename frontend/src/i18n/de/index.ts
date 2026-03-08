@@ -142,10 +142,19 @@ export default {
       description: 'Hier können Sie den Suchindex neu aufbauen. Dies kann nützlich sein, wenn die Suchergebnisse nicht aktuell sind oder der Index beschädigt wurde.',
       recreateButton: 'Suchindex neu aufbauen',
     },
+    cleanupProjectFiles: {
+      heading: 'Projektdateien bereinigen',
+      description: 'Diese Funktion überprüft Projektdateien auf Konsistenz und bereinigt sie gegebenenfalls.',
+      cleanupButton: 'Projektdateien bereinigen',
+    },
     messages: {
       recreateIndex: {
         success: 'Suchindex erfolgreich neu aufgebaut.',
         failed: 'Neuaufbau des Suchindex fehlgeschlagen!',
+      },
+      cleanupProjectFiles: {
+        success: 'Projektdateien erfolgreich bereinigt.',
+        failed: 'Bereinigung der Projektdateien fehlgeschlagen!',
       },
     },
   },
