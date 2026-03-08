@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.arassec.artivact</groupId>
+        <artifactId>artivact</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>e2e</artifactId>
+    <packaging>jar</packaging>
+
+    <name>e2e</name>
+    <description>End-to-End tests for the Artivact web frontend using Playwright.</description>
+
+    <properties>
+        <sonar.skip>true</sonar.skip>
+        <maven.install.skip>true</maven.install.skip>
+        <maven.deploy.skip>true</maven.deploy.skip>
+        <jacoco.skip>true</jacoco.skip>
+    </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>com.arassec.artivact</groupId>
+            <artifactId>artivact-spring-boot-starter</artifactId>
+            <version>${revision}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.microsoft.playwright</groupId>
+            <artifactId>playwright</artifactId>
+            <version>1.52.0</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <id>install-playwright-browsers</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${java.home}/bin/java</executable>
+                            <classpathScope>test</classpathScope>
+                            <arguments>
+                                <argument>-classpath</argument>
+                                <classpath/>
+                                <argument>com.microsoft.playwright.CLI</argument>
+                                <argument>install</argument>
+                                <argument>chromium</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <workingDirectory>${project.basedir}/..</workingDirectory>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
