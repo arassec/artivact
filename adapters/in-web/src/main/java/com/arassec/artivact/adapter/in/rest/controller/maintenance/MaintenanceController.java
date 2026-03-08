@@ -33,7 +33,7 @@ public class MaintenanceController extends BaseController {
      */
     @PostMapping("/search-index/recreate")
     public void recreateSearchIndex() {
-        runBackgroundOperationUseCase.execute("maintenance", "searchIndex",
+        runBackgroundOperationUseCase.execute("maintenance", "search",
                 progressMonitor -> manageSearchIndexUseCase.recreateIndex());
     }
 

@@ -3,7 +3,7 @@
     <div class="full-width">
       <h1 class="av-text-h1">{{ $t('MaintenancePage.heading') }}</h1>
 
-      <q-list bordered class="rounded-borders q-mb-lg">
+      <q-list class="rounded-borders q-mb-lg">
         <q-expansion-item
           data-test="maintenance-search-index"
           group="maintenance"

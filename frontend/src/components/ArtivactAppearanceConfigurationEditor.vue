@@ -4,7 +4,7 @@
       {{ $t('ArtivactAppearanceConfigurationEditor.description') }}
     </div>
 
-    <q-list bordered class="rounded-borders q-mb-lg">
+    <q-list class="rounded-borders q-mb-lg">
       <q-expansion-item
         data-test="appearance-config-application-title"
         group="appearanceConfig"

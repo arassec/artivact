@@ -1230,8 +1230,8 @@ export default {
       start: "Editing model in external editor.",
       failed: "Error during model editing!",
     },
-    search: {
-      createIndex: "(Re-)Creating search index...",
+    maintenance: {
+      searchIndex: "(Re-)Creating search index...",
       failed: "(Re-)Creation of search index failed!",
     },
     itemUpload: {
