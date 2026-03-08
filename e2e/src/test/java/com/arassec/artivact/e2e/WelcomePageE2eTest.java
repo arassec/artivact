@@ -4,6 +4,7 @@ import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
+import com.microsoft.playwright.options.AriaRole;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -45,7 +46,8 @@ class WelcomePageE2eTest {
         try {
             page.navigate("http://localhost:" + port);
 
-            assertThat(page.locator("text=Welcome")).isVisible();
+            assertThat(page.getByRole(AriaRole.HEADING,
+                    new Page.GetByRoleOptions().setName("Welcome to Artivact"))).isVisible();
         } finally {
             page.close();
         }
