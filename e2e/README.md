@@ -56,9 +56,9 @@ If you want to iterate on tests without a full Maven build:
    ```
 
 5. **Run against an already running server**:
-   Start the server manually:
+   Start the server manually (replace the version as needed):
    ```bash
-   java -jar -Dspring.profiles.active=e2e ../artivact-server/target/artivact-server-1.0.0-SNAPSHOT.jar
+   java -jar -Dspring.profiles.active=e2e ../artivact-server/target/artivact-server-*.jar
    ```
    Then run tests (Playwright will reuse the existing server when not in CI):
    ```bash
@@ -84,11 +84,11 @@ Key files:
 
 ### Environment Variables
 
-| Variable             | Description                          | Default                                                        |
-|----------------------|--------------------------------------|----------------------------------------------------------------|
-| `SERVER_JAR`         | Path to the Artivact server JAR      | `../artivact-server/target/artivact-server-1.0.0-SNAPSHOT.jar` |
-| `ARTIVACT_DATA_DIR`  | Directory for application data       | `./target/avdata`                                              |
-| `CI`                 | Set automatically in CI environments | —                                                              |
+| Variable             | Description                          | Default                                                            |
+|----------------------|--------------------------------------|--------------------------------------------------------------------|
+| `SERVER_JAR`         | Path to the Artivact server JAR      | Auto-detected from `../artivact-server/target/artivact-server-*.jar` |
+| `ARTIVACT_DATA_DIR`  | Directory for application data       | `./e2e/target/avdata`                                              |
+| `CI`                 | Set automatically in CI environments | —                                                                  |
 
 ## Writing Tests
 

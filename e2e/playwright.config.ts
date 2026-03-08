@@ -1,7 +1,18 @@
 import { defineConfig, devices } from '@playwright/test';
+import { readdirSync } from 'fs';
+import { join } from 'path';
 
-const serverJar = process.env.SERVER_JAR
-  || 'artivact-server/target/artivact-server-1.0.0-SNAPSHOT.jar';
+function findServerJar(): string {
+  const targetDir = join(__dirname, '..', 'artivact-server', 'target');
+  try {
+    const files = readdirSync(targetDir);
+    const jar = files.find(f => f.startsWith('artivact-server-') && f.endsWith('.jar'));
+    if (jar) return join(targetDir, jar);
+  } catch { /* target dir may not exist yet */ }
+  return join(targetDir, 'artivact-server.jar');
+}
+
+const serverJar = process.env.SERVER_JAR || findServerJar();
 
 const dataDir = process.env.ARTIVACT_DATA_DIR || './e2e/target/avdata';
 
