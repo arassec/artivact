@@ -96,7 +96,7 @@ class CleanupProjectFilesBatchProcessorTest {
 
         PageContent pageContent = new PageContent();
         pageContent.setId("page-1");
-        when(loadPageContentUseCase.loadPageContent("page-1", Set.of(Roles.ROLE_ADMIN))).thenReturn(pageContent);
+        when(loadPageContentUseCase.loadPageContent("page-1", Set.of(Roles.ROLE_USER, Roles.ROLE_ADMIN))).thenReturn(pageContent);
 
         stubConfigurations();
 
@@ -105,8 +105,8 @@ class CleanupProjectFilesBatchProcessorTest {
 
         // Then
         verify(saveMenuUseCase).saveMenu(menu);
-        verify(loadPageContentUseCase).loadPageContent("page-1", Set.of(Roles.ROLE_ADMIN));
-        verify(savePageContentUseCase).savePageContent("page-1", Set.of(Roles.ADMIN), pageContent);
+        verify(loadPageContentUseCase).loadPageContent("page-1", Set.of(Roles.ROLE_USER, Roles.ROLE_ADMIN));
+        verify(savePageContentUseCase).savePageContent("page-1", Set.of(Roles.ROLE_USER, Roles.ROLE_ADMIN), pageContent);
     }
 
     @Test
@@ -154,11 +154,11 @@ class CleanupProjectFilesBatchProcessorTest {
 
         PageContent rootPage = new PageContent();
         rootPage.setId("page-root");
-        when(loadPageContentUseCase.loadPageContent("page-root", Set.of(Roles.ROLE_ADMIN))).thenReturn(rootPage);
+        when(loadPageContentUseCase.loadPageContent("page-root", Set.of(Roles.ROLE_USER, Roles.ROLE_ADMIN))).thenReturn(rootPage);
 
         PageContent leafPage = new PageContent();
         leafPage.setId("page-leaf");
-        when(loadPageContentUseCase.loadPageContent("page-leaf", Set.of(Roles.ROLE_ADMIN))).thenReturn(leafPage);
+        when(loadPageContentUseCase.loadPageContent("page-leaf", Set.of(Roles.ROLE_USER, Roles.ROLE_ADMIN))).thenReturn(leafPage);
 
         stubConfigurations();
 
@@ -170,8 +170,8 @@ class CleanupProjectFilesBatchProcessorTest {
         verify(saveMenuUseCase).saveMenu(mid);
         verify(saveMenuUseCase).saveMenu(leaf);
 
-        verify(savePageContentUseCase).savePageContent("page-root", Set.of(Roles.ADMIN), rootPage);
-        verify(savePageContentUseCase).savePageContent("page-leaf", Set.of(Roles.ADMIN), leafPage);
+        verify(savePageContentUseCase).savePageContent("page-root", Set.of(Roles.ROLE_USER, Roles.ROLE_ADMIN), rootPage);
+        verify(savePageContentUseCase).savePageContent("page-leaf", Set.of(Roles.ROLE_USER, Roles.ROLE_ADMIN), leafPage);
         verify(savePageContentUseCase, times(2)).savePageContent(any(), any(), any());
     }
 
@@ -185,11 +185,11 @@ class CleanupProjectFilesBatchProcessorTest {
 
         PageContent pageA = new PageContent();
         pageA.setId("page-a");
-        when(loadPageContentUseCase.loadPageContent("page-a", Set.of(Roles.ROLE_ADMIN))).thenReturn(pageA);
+        when(loadPageContentUseCase.loadPageContent("page-a", Set.of(Roles.ROLE_USER, Roles.ROLE_ADMIN))).thenReturn(pageA);
 
         PageContent pageB = new PageContent();
         pageB.setId("page-b");
-        when(loadPageContentUseCase.loadPageContent("page-b", Set.of(Roles.ROLE_ADMIN))).thenReturn(pageB);
+        when(loadPageContentUseCase.loadPageContent("page-b", Set.of(Roles.ROLE_USER, Roles.ROLE_ADMIN))).thenReturn(pageB);
 
         stubConfigurations();
 
@@ -199,8 +199,8 @@ class CleanupProjectFilesBatchProcessorTest {
         // Then
         verify(saveMenuUseCase).saveMenu(menu1);
         verify(saveMenuUseCase).saveMenu(menu2);
-        verify(savePageContentUseCase).savePageContent("page-a", Set.of(Roles.ADMIN), pageA);
-        verify(savePageContentUseCase).savePageContent("page-b", Set.of(Roles.ADMIN), pageB);
+        verify(savePageContentUseCase).savePageContent("page-a", Set.of(Roles.ROLE_USER, Roles.ROLE_ADMIN), pageA);
+        verify(savePageContentUseCase).savePageContent("page-b", Set.of(Roles.ROLE_USER, Roles.ROLE_ADMIN), pageB);
     }
 
     // --- process() ---

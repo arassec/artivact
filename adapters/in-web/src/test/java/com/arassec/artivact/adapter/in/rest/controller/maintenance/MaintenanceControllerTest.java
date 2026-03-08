@@ -45,7 +45,7 @@ class MaintenanceControllerTest {
         maintenanceController.recreateSearchIndex();
 
         ArgumentCaptor<BackgroundOperation> operationCaptor = ArgumentCaptor.forClass(BackgroundOperation.class);
-        verify(runBackgroundOperationUseCase).execute(eq("maintenance"), eq("searchIndex"), operationCaptor.capture());
+        verify(runBackgroundOperationUseCase).execute(eq("maintenance"), eq("search"), operationCaptor.capture());
 
         operationCaptor.getValue().execute(null);
         verify(manageSearchIndexUseCase).recreateIndex();
