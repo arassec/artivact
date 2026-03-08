@@ -5,6 +5,8 @@ import com.arassec.artivact.application.port.in.account.LoadAccountUseCase;
 import com.arassec.artivact.application.port.in.configuration.CheckRuntimeConfigurationUseCase;
 import com.arassec.artivact.application.port.in.menu.ImportMenuUseCase;
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
+import com.arassec.artivact.application.port.in.search.ManageSearchIndexUseCase;
+import com.arassec.artivact.application.port.in.search.SearchItemsUseCase;
 import com.arassec.artivact.application.port.out.repository.ConfigurationRepository;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.application.port.out.repository.PageRepository;
@@ -101,6 +103,16 @@ public class ProjectInitializationService {
     private final ConfigurationRepository configurationRepository;
 
     /**
+     * Use case to search items.
+     */
+    private final SearchItemsUseCase searchItemsUseCase;
+
+    /**
+     * Use case to manage the search index.
+     */
+    private final ManageSearchIndexUseCase manageSearchIndexUseCase;
+
+    /**
      * Initial administrator password. Can be set per JVM parameter for integration testing.
      */
     private final String initialPassword;
@@ -126,6 +138,8 @@ public class ProjectInitializationService {
                                         ImportMenuUseCase importMenuUseCase,
                                         CheckRuntimeConfigurationUseCase checkRuntimeConfigurationUseCase,
                                         ConfigurationRepository configurationRepository,
+                                        SearchItemsUseCase searchItemsUseCase,
+                                        ManageSearchIndexUseCase manageSearchIndexUseCase,
                                         @Value("${artivact.initial.password:}") String initialPassword) {
         this.useProjectDirsUseCase = useProjectDirsUseCase;
         this.loadAccountUseCase = loadAccountUseCase;
@@ -135,6 +149,8 @@ public class ProjectInitializationService {
         this.importMenuUseCase = importMenuUseCase;
         this.checkRuntimeConfigurationUseCase = checkRuntimeConfigurationUseCase;
         this.configurationRepository = configurationRepository;
+        this.searchItemsUseCase = searchItemsUseCase;
+        this.manageSearchIndexUseCase = manageSearchIndexUseCase;
         this.initialPassword = initialPassword;
     }
 
@@ -148,6 +164,7 @@ public class ProjectInitializationService {
         initializeAdminAccount();
         initializeAppearanceConfiguration();
         initializeWelcomePage();
+        initializeSearchIndex();
     }
 
     /**
@@ -258,6 +275,19 @@ public class ProjectInitializationService {
             } else {
                 log.info("Welcome page import not found!");
             }
+        }
+    }
+
+    /**
+     * Initializes the search index if needed.
+     */
+    private void initializeSearchIndex() {
+        try {
+            searchItemsUseCase.search("*", 1);
+        } catch (Exception exception) {
+            log.info("Caught exception during search ({}). Re-creating search index...", exception.getMessage());
+            manageSearchIndexUseCase.recreateIndex();
+            log.info("Search index initialized!");
         }
     }
 
