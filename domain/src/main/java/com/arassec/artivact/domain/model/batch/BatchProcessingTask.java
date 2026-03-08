@@ -30,9 +30,4 @@ public enum BatchProcessingTask {
      */
     UPDATE_SEARCH_INDEX,
 
-    /**
-     * Cleans up project files.
-     */
-    CLEANUP_PROJECT_FILES
-
 }

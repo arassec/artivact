@@ -1,31 +1,30 @@
-package com.arassec.artivact.application.service.batch.processor;
+package com.arassec.artivact.application.service.maintenance;
 
 import com.arassec.artivact.application.port.in.configuration.*;
+import com.arassec.artivact.application.port.in.item.SaveItemUseCase;
+import com.arassec.artivact.application.port.in.maintenance.CleanupProjectFilesUseCase;
 import com.arassec.artivact.application.port.in.menu.LoadMenuUseCase;
 import com.arassec.artivact.application.port.in.menu.SaveMenuUseCase;
 import com.arassec.artivact.application.port.in.page.LoadPageContentUseCase;
 import com.arassec.artivact.application.port.in.page.SavePageContentUseCase;
+import com.arassec.artivact.application.port.in.search.SearchItemsUseCase;
 import com.arassec.artivact.domain.model.Roles;
-import com.arassec.artivact.domain.model.batch.BatchProcessingParameters;
-import com.arassec.artivact.domain.model.batch.BatchProcessingTask;
-import com.arassec.artivact.domain.model.batch.BatchProcessor;
-import com.arassec.artivact.domain.model.item.Item;
 import com.arassec.artivact.domain.model.menu.Menu;
 import com.arassec.artivact.domain.model.page.PageContent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.Set;
 
 /**
- * Batch processor that cleans up project files.
+ * Service for cleanup project files operations.
  */
 @Slf4j
-@Component
+@Service
 @RequiredArgsConstructor
-public class CleanupProjectFilesBatchProcessor implements BatchProcessor {
+public class CleanupProjectFilesService implements CleanupProjectFilesUseCase {
 
     /**
      * Loads menus.
@@ -78,24 +77,27 @@ public class CleanupProjectFilesBatchProcessor implements BatchProcessor {
     private final SaveAppearanceConfigurationUseCase saveAppearanceConfigurationUseCase;
 
     /**
-     * Processes menus and pages and their widgets.
+     * Use case for item searching.
+     */
+    private final SearchItemsUseCase searchItemsUseCase;
+
+    /**
+     * Use case for saving items.
+     */
+    private final SaveItemUseCase saveItemUseCase;
+
+    /**
+     * {@inheritDoc}
      */
     @Override
-    public void initialize() {
+    public void cleanup() {
+        log.info("Cleaning up project files.");
         loadMenuUseCase.loadTranslatedRestrictedMenus().forEach(this::processMenu);
         savePropertiesConfigurationUseCase.savePropertiesConfiguration(loadPropertiesConfigurationUseCase.loadPropertiesConfiguration());
         saveTagsConfigurationUseCase.saveTagsConfiguration(loadTagsConfigurationUseCase.loadTagsConfiguration());
         saveAppearanceConfigurationUseCase.saveAppearanceConfiguration(loadAppearanceConfigurationUseCase.loadTranslatedAppearanceConfiguration());
-    }
-
-    /**
-     * Processes items by marking them as "to be saved".
-     * When saved, obsolete files are deleted, references to missing files are removed from the item.
-     */
-    @Override
-    public boolean process(BatchProcessingParameters params, Item item) {
-        // If this task is executed, just save the item.
-        return BatchProcessingTask.CLEANUP_PROJECT_FILES.equals(params.getTask());
+        searchItemsUseCase.search("*", Integer.MAX_VALUE).forEach(saveItemUseCase::save);
+        log.info("Done cleaning up project files.");
     }
 
     /**

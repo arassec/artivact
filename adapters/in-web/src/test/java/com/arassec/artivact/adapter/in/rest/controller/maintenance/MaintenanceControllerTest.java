@@ -1,5 +1,6 @@
 package com.arassec.artivact.adapter.in.rest.controller.maintenance;
 
+import com.arassec.artivact.application.port.in.maintenance.CleanupProjectFilesUseCase;
 import com.arassec.artivact.application.port.in.operation.RunBackgroundOperationUseCase;
 import com.arassec.artivact.application.port.in.search.ManageSearchIndexUseCase;
 import com.arassec.artivact.domain.model.operation.BackgroundOperation;
@@ -38,6 +39,12 @@ class MaintenanceControllerTest {
     private ManageSearchIndexUseCase manageSearchIndexUseCase;
 
     /**
+     * Mock for cleaning up project files.
+     */
+    @Mock
+    private CleanupProjectFilesUseCase cleanupProjectFilesUseCase;
+
+    /**
      * Tests re-creating the search index as a background operation.
      */
     @Test
@@ -49,6 +56,20 @@ class MaintenanceControllerTest {
 
         operationCaptor.getValue().execute(null);
         verify(manageSearchIndexUseCase).recreateIndex();
+    }
+
+    /**
+     * Tests cleaning up project files as a background operation.
+     */
+    @Test
+    void testCleanupProjectFiles() {
+        maintenanceController.cleanupProjectFiles();
+
+        ArgumentCaptor<BackgroundOperation> operationCaptor = ArgumentCaptor.forClass(BackgroundOperation.class);
+        verify(runBackgroundOperationUseCase).execute(eq("maintenance"), eq("cleanupProjectFiles"), operationCaptor.capture());
+
+        operationCaptor.getValue().execute(null);
+        verify(cleanupProjectFilesUseCase).cleanup();
     }
 
 }

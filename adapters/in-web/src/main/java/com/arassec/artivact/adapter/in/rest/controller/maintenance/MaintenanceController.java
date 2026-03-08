@@ -1,6 +1,7 @@
 package com.arassec.artivact.adapter.in.rest.controller.maintenance;
 
 import com.arassec.artivact.adapter.in.rest.controller.BaseController;
+import com.arassec.artivact.application.port.in.maintenance.CleanupProjectFilesUseCase;
 import com.arassec.artivact.application.port.in.operation.RunBackgroundOperationUseCase;
 import com.arassec.artivact.application.port.in.search.ManageSearchIndexUseCase;
 import lombok.RequiredArgsConstructor;
@@ -29,12 +30,26 @@ public class MaintenanceController extends BaseController {
     private final ManageSearchIndexUseCase manageSearchIndexUseCase;
 
     /**
+     * Use case for cleaning up project files.
+     */
+    private final CleanupProjectFilesUseCase cleanupProjectFilesUseCase;
+
+    /**
      * Re-creates the search index completely as a background operation.
      */
     @PostMapping("/search-index/recreate")
     public void recreateSearchIndex() {
         runBackgroundOperationUseCase.execute("maintenance", "search",
                 progressMonitor -> manageSearchIndexUseCase.recreateIndex());
+    }
+
+    /**
+     * Cleans up project files as a background operation.
+     */
+    @PostMapping("/project-files/cleanup")
+    public void cleanupProjectFiles() {
+        runBackgroundOperationUseCase.execute("maintenance", "cleanupProjectFiles",
+                progressMonitor -> cleanupProjectFilesUseCase.cleanup());
     }
 
 }

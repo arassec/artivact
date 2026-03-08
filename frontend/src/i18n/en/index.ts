@@ -141,10 +141,19 @@ export default {
       description: "Here you can rebuild the search index. This can be useful if the search results are not up to date or if the index has become corrupted.",
       recreateButton: "Rebuild Search Index",
     },
+    cleanupProjectFiles: {
+      heading: "Cleanup Project Files",
+      description: "This function checks project files for consistency and cleans them up if necessary.",
+      cleanupButton: "Cleanup Project Files",
+    },
     messages: {
       recreateIndex: {
         success: "Search index rebuilt successfully.",
         failed: "Rebuilding the search index failed!",
+      },
+      cleanupProjectFiles: {
+        success: "Project files cleaned up successfully.",
+        failed: "Cleaning up project files failed!",
       },
     },
   },
@@ -1231,7 +1240,8 @@ export default {
       failed: "Error during model editing!",
     },
     maintenance: {
-      searchIndex: "(Re-)Creating search index...",
+      search: "(Re-)Creating search index...",
+      cleanupProjectFiles: 'Cleanup project files...',
       failed: "(Re-)Creation of search index failed!",
     },
     itemUpload: {
@@ -1305,5 +1315,4 @@ export default {
   REMOVE_TAG_FROM_ITEM: "Remove tag",
   UPLOAD_MODIFIED_ITEM: "Upload modified item",
   UPDATE_SEARCH_INDEX: "Update search index",
-  CLEANUP_PROJECT_FILES: 'Cleanup project files'
 };

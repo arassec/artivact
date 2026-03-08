@@ -27,9 +27,7 @@
           batchProcessingParamersRef.task !==
             BatchProcessingTask.UPLOAD_MODIFIED_ITEM &&
           batchProcessingParamersRef.task !==
-            BatchProcessingTask.UPDATE_SEARCH_INDEX &&
-          batchProcessingParamersRef.task !==
-            BatchProcessingTask.CLEANUP_PROJECT_FILES
+            BatchProcessingTask.UPDATE_SEARCH_INDEX
         "
       >
         <div class="q-mt-lg">

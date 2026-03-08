@@ -31,6 +31,34 @@
             </q-card-section>
           </q-card>
         </q-expansion-item>
+
+        <q-expansion-item
+          data-test="maintenance-cleanup-project-files"
+          group="maintenance"
+          header-class="bg-primary text-white"
+          class="list-entry"
+          expand-separator
+          expand-icon-class="text-white"
+        >
+          <template v-slot:header>
+            <q-item-section class="list-entry-label">
+              {{ $t('MaintenancePage.cleanupProjectFiles.heading') }}
+            </q-item-section>
+          </template>
+          <q-card class="q-mb-lg">
+            <q-card-section>
+              <div class="q-mb-md">
+                {{ $t('MaintenancePage.cleanupProjectFiles.description') }}
+              </div>
+              <q-btn
+                data-test="maintenance-cleanup-project-files-button"
+                :label="$t('MaintenancePage.cleanupProjectFiles.cleanupButton')"
+                color="primary"
+                @click="cleanupProjectFiles()"
+              />
+            </q-card-section>
+          </q-card>
+        </q-expansion-item>
       </q-list>
     </div>
 
@@ -39,8 +67,8 @@
       v-if="showOperationInProgressModalRef"
       :dialog-model="showOperationInProgressModalRef"
       @close-dialog="showOperationInProgressModalRef = false"
-      :success-message="'MaintenancePage.messages.recreateIndex.success'"
-      :error-message="'MaintenancePage.messages.recreateIndex.failed'"
+      :success-message="operationSuccessMessageRef"
+      :error-message="operationErrorMessageRef"
     />
   </ArtivactContent>
 </template>
@@ -57,11 +85,15 @@ const quasar = useQuasar();
 const i18n = useI18n();
 
 const showOperationInProgressModalRef = ref(false);
+const operationSuccessMessageRef = ref('');
+const operationErrorMessageRef = ref('');
 
 function recreateSearchIndex() {
   api
     .post('/api/maintenance/search-index/recreate')
     .then(() => {
+      operationSuccessMessageRef.value = 'MaintenancePage.messages.recreateIndex.success';
+      operationErrorMessageRef.value = 'MaintenancePage.messages.recreateIndex.failed';
       showOperationInProgressModalRef.value = true;
     })
     .catch(() => {
@@ -73,6 +105,32 @@ function recreateSearchIndex() {
       });
     });
 }
+
+function cleanupProjectFiles() {
+  api
+    .post('/api/maintenance/project-files/cleanup')
+    .then(() => {
+      operationSuccessMessageRef.value = 'MaintenancePage.messages.cleanupProjectFiles.success';
+      operationErrorMessageRef.value = 'MaintenancePage.messages.cleanupProjectFiles.failed';
+      showOperationInProgressModalRef.value = true;
+    })
+    .catch(() => {
+      quasar.notify({
+        color: 'negative',
+        position: 'bottom',
+        message: i18n.t('MaintenancePage.messages.cleanupProjectFiles.failed'),
+        icon: 'report_problem',
+      });
+    });
+}
 </script>
 
-<style scoped></style>
+<style scoped>
+.list-entry {
+  border-bottom: 1px solid white;
+}
+
+.list-entry-label {
+  font-size: large;
+}
+</style>
