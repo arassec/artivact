@@ -5,6 +5,8 @@ import com.arassec.artivact.application.port.in.account.LoadAccountUseCase;
 import com.arassec.artivact.application.port.in.configuration.CheckRuntimeConfigurationUseCase;
 import com.arassec.artivact.application.port.in.menu.ImportMenuUseCase;
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
+import com.arassec.artivact.application.port.in.search.ManageSearchIndexUseCase;
+import com.arassec.artivact.application.port.in.search.SearchItemsUseCase;
 import com.arassec.artivact.application.port.out.repository.ConfigurationRepository;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.application.port.out.repository.PageRepository;
@@ -56,6 +58,12 @@ class ProjectInitializationServiceTest {
 
     @Mock
     private ConfigurationRepository configurationRepository;
+
+    @Mock
+    private SearchItemsUseCase searchItemsUseCase;
+
+    @Mock
+    private ManageSearchIndexUseCase manageSearchIndexUseCase;
 
     @InjectMocks
     private ProjectInitializationService service;
@@ -138,6 +146,17 @@ class ProjectInitializationServiceTest {
         service.initialize();
 
         verify(importMenuUseCase, never()).importMenu(any());
+    }
+
+    @Test
+    void testInitializeSearchIndexIsCreated() {
+        service.initialize();
+        verify(manageSearchIndexUseCase, times(0)).recreateIndex();
+
+        when(searchItemsUseCase.search("*", 1)).thenThrow(new RuntimeException("Test-Exception"));
+
+        service.initialize();
+        verify(manageSearchIndexUseCase, times(1)).recreateIndex();
     }
 
 }
