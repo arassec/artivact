@@ -92,7 +92,7 @@ public class CleanupProjectFilesService implements CleanupProjectFilesUseCase {
     @Override
     public void cleanup() {
         log.info("Cleaning up project files.");
-        loadMenuUseCase.loadTranslatedRestrictedMenus().forEach(this::processMenu);
+        loadMenuUseCase.loadTranslatedRestrictedMenus().forEach(menu -> processMenu(menu, true));
         savePropertiesConfigurationUseCase.savePropertiesConfiguration(loadPropertiesConfigurationUseCase.loadPropertiesConfiguration());
         saveTagsConfigurationUseCase.saveTagsConfiguration(loadTagsConfigurationUseCase.loadTagsConfiguration());
         saveAppearanceConfigurationUseCase.saveAppearanceConfiguration(loadAppearanceConfigurationUseCase.loadTranslatedAppearanceConfiguration());
@@ -103,13 +103,15 @@ public class CleanupProjectFilesService implements CleanupProjectFilesUseCase {
     /**
      * Loads and saves menu, page and widgets.
      */
-    private void processMenu(Menu menu) {
-        saveMenuUseCase.saveMenu(menu);
+    private void processMenu(Menu menu, boolean saveMenu) {
+        if (saveMenu) {
+            saveMenuUseCase.saveMenu(menu);
+        }
         if (StringUtils.hasText(menu.getTargetPageId())) {
             PageContent pageContent = loadPageContentUseCase.loadPageContent(menu.getTargetPageId(), Set.of(Roles.ROLE_USER, Roles.ROLE_ADMIN));
             savePageContentUseCase.savePageContent(pageContent.getId(), Set.of(Roles.ROLE_USER, Roles.ROLE_ADMIN), pageContent);
         }
-        menu.getMenuEntries().forEach(this::processMenu);
+        menu.getMenuEntries().forEach(subMenu -> processMenu(subMenu, false));
     }
 
 }
