@@ -180,8 +180,10 @@ class CleanupProjectFilesServiceTest {
 
         // Then
         verify(saveMenuUseCase).saveMenu(parentMenu);
-        verify(saveMenuUseCase).saveMenu(childMenu);
+        // Menu MUST NOT be saved again, as it is part of the parent menu
+        verify(saveMenuUseCase, times(0)).saveMenu(childMenu);
         verify(loadPageContentUseCase).loadPageContent("child-page", roles);
         verify(savePageContentUseCase).savePageContent("child-page", roles, childPageContent);
     }
+
 }
