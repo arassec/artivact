@@ -155,7 +155,7 @@ test.describe('System Settings Menu', () => {
       }
 
       await menuItem.click();
-      await page.waitForURL(new RegExp(entry.route.replace(/\//g, '\\/')));
+      await page.waitForURL(`**${entry.route}`);
     });
   }
 });
