@@ -2,6 +2,7 @@
   <div v-if="tagsConfiguration && locales">
     <q-list bordered class="rounded-borders q-mb-lg">
       <q-expansion-item
+        data-test="tag-expansion-item"
         group="tags"
         v-for="(tagEntry, index) of tagsConfiguration.tags"
         :key="index"
@@ -17,6 +18,7 @@
 
           <q-item-section side>
             <q-btn
+              data-test="delete-tag-button"
               round
               dense
               flat
@@ -44,12 +46,14 @@
               :show-separator="false"
             />
             <q-input
+              data-test="tag-url-input"
               outlined
               v-model="tagEntry.url"
               :label="$t('ArtivactTagsConfigurationEditor.url')"
               class="q-mb-sm"
             />
             <q-checkbox
+              data-test="tag-default-checkbox"
               :label="$t('ArtivactTagsConfigurationEditor.defaultTagLabel')"
               v-model="tagEntry.defaultTag"
             ></q-checkbox>
@@ -61,6 +65,7 @@
     <div class="row">
       <q-space></q-space>
       <q-btn
+        data-test="add-tag-button"
         :label="$t('ArtivactTagsConfigurationEditor.addTag')"
         @click="addTag"
         color="primary"
