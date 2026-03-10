@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 import { writeFileSync } from 'fs';
 import { join } from 'path';
 import { tmpdir } from 'os';
@@ -6,12 +6,12 @@ import { tmpdir } from 'os';
 const PAGE_LOAD_TIMEOUT = 30_000;
 const TAGS_PAGE_URL = '/administration/configuration/tags';
 
-async function navigateToTagsPage(page: import('@playwright/test').Page) {
+async function navigateToTagsPage(page: Page) {
   await page.goto(TAGS_PAGE_URL);
   await expect(page.getByTestId('artivact-main-layout')).toBeVisible({ timeout: PAGE_LOAD_TIMEOUT });
 }
 
-async function resetTagsConfiguration(page: import('@playwright/test').Page) {
+async function resetTagsConfiguration(page: Page) {
   await page.evaluate(async () => {
     await fetch('/api/configuration/tags', {
       method: 'POST',
@@ -30,7 +30,8 @@ test.describe('Tags Configuration Page - Navigation & Rendering', () => {
   });
 
   test('page loads and shows heading', async ({ page }) => {
-    await expect(page.locator('h1')).toContainText('Tags');
+    await expect(page.getByTestId('tags-configuration-heading')).toBeVisible();
+    await expect(page.getByTestId('tags-configuration-heading')).toContainText('Tags');
   });
 
   test('default tab is configuration', async ({ page }) => {
@@ -225,7 +226,8 @@ test.describe('Tags Configuration Page - CRUD', () => {
     await page.getByTestId('save-tags-button').click();
     await saveResponse;
 
-    await expect(page.locator('.q-notification')).toBeVisible();
+    // Verify success notification appears
+    await expect(page.getByText('Tags configuration saved')).toBeVisible({ timeout: 5_000 });
   });
 });
 
@@ -292,7 +294,7 @@ test.describe('Tags Configuration Page - Import', () => {
     await uploadResponse;
 
     // Verify success notification
-    await expect(page.locator('.q-notification')).toBeVisible();
+    await expect(page.getByText('Tags configuration uploaded')).toBeVisible({ timeout: 5_000 });
 
     // Switch back to configuration tab and verify the imported tag
     await page.getByTestId('tags-configuration-tab').click();

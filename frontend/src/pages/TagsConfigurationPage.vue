@@ -1,7 +1,7 @@
 <template>
   <ArtivactContent>
     <div class="full-width">
-      <h1 class="av-text-h1">{{ $t('TagsConfigurationPage.heading') }}</h1>
+      <h1 class="av-text-h1" data-test="tags-configuration-heading">{{ $t('TagsConfigurationPage.heading') }}</h1>
 
       <q-tabs v-model="tab">
         <q-tab
