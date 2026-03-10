@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.arassec.artivact</groupId>
+        <artifactId>artivact</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>e2e</artifactId>
+    <packaging>pom</packaging>
+
+    <name>artivact-e2e</name>
+    <description>End-to-end tests for the Artivact application using Playwright.</description>
+
+    <properties>
+        <sonar.skip>true</sonar.skip>
+    </properties>
+
+    <build>
+        <plugins>
+
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>2.0.0</version>
+                <executions>
+                    <!-- Install our node and npm version to run npm/node scripts-->
+                    <execution>
+                        <id>install node and npm</id>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                        <configuration>
+                            <nodeVersion>${nodejs.version}</nodeVersion>
+                        </configuration>
+                    </execution>
+                    <!-- Install all project dependencies -->
+                    <execution>
+                        <id>npm install</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>install</arguments>
+                        </configuration>
+                    </execution>
+                    <!-- Install Playwright browsers and OS-level dependencies -->
+                    <execution>
+                        <id>install playwright browsers</id>
+                        <goals>
+                            <goal>npx</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>playwright install --with-deps chromium</arguments>
+                        </configuration>
+                    </execution>
+                    <!-- Run Playwright E2E tests -->
+                    <execution>
+                        <id>run e2e tests</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>test</arguments>
+                            <environmentVariables>
+                                <SERVER_JAR>${project.basedir}/../artivact-server/target/artivact-server-${revision}.jar</SERVER_JAR>
+                                <ARTIVACT_DATA_DIR>${project.basedir}/target/avdata</ARTIVACT_DATA_DIR>
+                            </environmentVariables>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>

@@ -1,0 +1,12 @@
+{
+  "name": "artivact-e2e",
+  "version": "1.0.0",
+  "private": true,
+  "description": "End-to-end tests for Artivact using Playwright",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.52.0"
+  }
+}
