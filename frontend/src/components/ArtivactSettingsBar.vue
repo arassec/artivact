@@ -381,6 +381,7 @@
       >
         <q-list>
           <q-item
+            data-test="account-settings-entry"
             clickable
             v-close-popup
             @click="gotoAccountPage"
