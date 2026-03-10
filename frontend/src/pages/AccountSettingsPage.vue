@@ -1,5 +1,5 @@
 <template>
-  <ArtivactContent>
+  <ArtivactContent data-test="account-settings-page">
     <div class="col">
       <div>
         <h1 class="av-text-h1">{{ $t('AccountSettingsPage.heading') }}</h1>
