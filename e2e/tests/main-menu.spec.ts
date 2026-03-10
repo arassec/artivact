@@ -1,10 +1,12 @@
 import { test, expect } from '@playwright/test';
 
+const PAGE_LOAD_TIMEOUT = 30_000;
+
 test.describe('Main Page & Settings Bar', () => {
 
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
-    await expect(page.getByTestId('artivact-main-layout')).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByTestId('artivact-main-layout')).toBeVisible({ timeout: PAGE_LOAD_TIMEOUT });
   });
 
   // 1. Smoke Test
@@ -22,7 +24,7 @@ test.describe('Main Page & Settings Bar', () => {
     page.on('pageerror', (err) => errors.push(err.message));
 
     await page.goto('/');
-    await expect(page.getByTestId('artivact-main-layout')).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByTestId('artivact-main-layout')).toBeVisible({ timeout: PAGE_LOAD_TIMEOUT });
 
     expect(errors).toEqual([]);
   });
@@ -32,15 +34,17 @@ test.describe('Locale Selection Menu', () => {
 
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
-    await expect(page.getByTestId('artivact-main-layout')).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByTestId('artivact-main-layout')).toBeVisible({ timeout: PAGE_LOAD_TIMEOUT });
   });
 
   // 2. Locale selection
   test('locale selection button is visible', async ({ page }) => {
     const localeButton = page.getByTestId('locale-selection-button');
-    if (await localeButton.isVisible()) {
-      await expect(localeButton).toBeVisible();
+    if (!(await localeButton.isVisible())) {
+      test.skip();
+      return;
     }
+    await expect(localeButton).toBeVisible();
   });
 
   test('locale menu opens with default and language options', async ({ page }) => {
@@ -65,7 +69,7 @@ test.describe('Item Settings Menu', () => {
 
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
-    await expect(page.getByTestId('artivact-main-layout')).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByTestId('artivact-main-layout')).toBeVisible({ timeout: PAGE_LOAD_TIMEOUT });
   });
 
   // 3. Item Settings
@@ -81,7 +85,6 @@ test.describe('Item Settings Menu', () => {
 
     await page.getByTestId('create-item-button').click();
     await page.waitForURL(/\/administration\/configuration\/item\/.+/);
-    expect(page.url()).toMatch(/\/administration\/configuration\/item\/.+/);
   });
 
   test('import-item-button opens import modal', async ({ page }) => {
@@ -116,7 +119,6 @@ test.describe('Item Settings Menu', () => {
 
     await batchButton.click();
     await page.waitForURL(/\/administration\/batch/);
-    expect(page.url()).toContain('/administration/batch');
   });
 });
 
@@ -135,7 +137,7 @@ test.describe('System Settings Menu', () => {
     // 4. System Settings navigation
     test(`${entry.testId} navigates to ${entry.route}`, async ({ page }) => {
       await page.goto('/');
-      await expect(page.getByTestId('artivact-main-layout')).toBeVisible({ timeout: 30_000 });
+      await expect(page.getByTestId('artivact-main-layout')).toBeVisible({ timeout: PAGE_LOAD_TIMEOUT });
 
       const systemButton = page.getByTestId('system-settings-button');
       if (!(await systemButton.isVisible())) {
@@ -154,7 +156,6 @@ test.describe('System Settings Menu', () => {
 
       await menuItem.click();
       await page.waitForURL(new RegExp(entry.route.replace(/\//g, '\\/')));
-      expect(page.url()).toContain(entry.route);
     });
   }
 });
@@ -163,7 +164,7 @@ test.describe('Account Settings Menu', () => {
 
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
-    await expect(page.getByTestId('artivact-main-layout')).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByTestId('artivact-main-layout')).toBeVisible({ timeout: PAGE_LOAD_TIMEOUT });
   });
 
   // 5. Account Settings
@@ -181,7 +182,6 @@ test.describe('Account Settings Menu', () => {
 
     await accountEntry.click();
     await page.waitForURL(/\/account/);
-    expect(page.url()).toContain('/account');
   });
 });
 
@@ -189,7 +189,7 @@ test.describe('Documentation Link', () => {
 
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
-    await expect(page.getByTestId('artivact-main-layout')).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByTestId('artivact-main-layout')).toBeVisible({ timeout: PAGE_LOAD_TIMEOUT });
   });
 
   // 6. Documentation link
