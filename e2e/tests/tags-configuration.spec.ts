@@ -200,7 +200,7 @@ test.describe('Tags Configuration Page - CRUD', () => {
     await page.getByTestId('tag-expansion-item').first().click();
 
     // Fill in the URL
-    const urlInput = page.getByTestId('tag-url-input').locator('input');
+    const urlInput = page.getByTestId('tag-url-input');
     await urlInput.fill('https://example.com/tag');
 
     // Toggle the default checkbox
@@ -216,7 +216,7 @@ test.describe('Tags Configuration Page - CRUD', () => {
     // Reload and verify
     await navigateToTagsPage(page);
     await page.getByTestId('tag-expansion-item').first().click();
-    await expect(page.getByTestId('tag-url-input').locator('input')).toHaveValue('https://example.com/tag');
+    await expect(page.getByTestId('tag-url-input')).toHaveValue('https://example.com/tag');
   });
 
   test('adding multiple tags creates multiple expansion items', async ({ page }) => {
