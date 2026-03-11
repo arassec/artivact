@@ -1,22 +1,25 @@
 <template>
   <ArtivactContent>
     <div class="full-width">
-      <h1 class="av-text-h1">{{ $t('TagsConfigurationPage.heading') }}</h1>
+      <h1 class="av-text-h1" data-test="tags-configuration-heading">{{ $t('TagsConfigurationPage.heading') }}</h1>
 
       <q-tabs v-model="tab">
         <q-tab
+          data-test="tags-configuration-tab"
           name="configuration"
           icon="build"
           :label="$t('PropertiesConfigurationPage.tabs.configuration')"
         >
         </q-tab>
         <q-tab
+          data-test="tags-export-tab"
           name="export"
           icon="download"
           :label="$t('PropertiesConfigurationPage.tabs.export')"
         >
         </q-tab>
         <q-tab
+          data-test="tags-import-tab"
           name="import"
           icon="upload"
           :label="$t('PropertiesConfigurationPage.tabs.import')"
@@ -34,6 +37,7 @@
         </div>
 
         <div
+          data-test="tags-no-tags-hint"
           v-if="!tagsConfigurationRef || tagsConfigurationRef.tags.length == 0"
           class="q-mb-md"
         >
@@ -48,6 +52,7 @@
         <q-separator class="q-mt-md q-mb-md"/>
 
         <q-btn
+          data-test="save-tags-button"
           :label="$t('Common.save')"
           color="primary"
           class="float-right q-mb-lg"
@@ -65,6 +70,7 @@
         {{ $t('TagsConfigurationPage.export.description') }}
         <q-form :action="'/api/configuration/tags/export'" method="get">
           <q-btn
+            data-test="export-tags-button"
             icon="download"
             :label="$t('TagsConfigurationPage.export.button')"
             color="primary"
@@ -83,6 +89,7 @@
       <div>
         {{ $t('TagsConfigurationPage.import.description') }}
         <q-uploader
+          data-test="import-tags-uploader"
           :url="'/api/configuration/import/tags'"
           :label="$t('TagsConfigurationPage.import.button')"
           class="q-mt-md q-mb-md"
