@@ -4,14 +4,19 @@ import { join } from 'path';
 import { tmpdir } from 'os';
 
 const PAGE_LOAD_TIMEOUT = 30_000;
-const TAGS_PAGE_URL = '/administration/configuration/tags';
 
 async function navigateToTagsPage(page: Page) {
-  await page.goto(TAGS_PAGE_URL);
+  await page.goto('/');
   await expect(page.getByTestId('artivact-main-layout')).toBeVisible({ timeout: PAGE_LOAD_TIMEOUT });
+  await page.getByTestId('system-settings-button').click();
+  await expect(page.getByTestId('system-settings-menu')).toBeVisible();
+  await page.getByTestId('artivact-system-settings-tags').click();
+  await page.waitForURL('**/administration/configuration/tags');
 }
 
 async function resetTagsConfiguration(page: Page) {
+  await page.goto('/');
+  await expect(page.getByTestId('artivact-main-layout')).toBeVisible({ timeout: PAGE_LOAD_TIMEOUT });
   await page.evaluate(async () => {
     await fetch('/api/configuration/tags', {
       method: 'POST',
@@ -91,7 +96,10 @@ test.describe('Tags Configuration Page - CRUD', () => {
 
   test.beforeEach(async ({ page }) => {
     await resetTagsConfiguration(page);
-    await navigateToTagsPage(page);
+    await page.getByTestId('system-settings-button').click();
+    await expect(page.getByTestId('system-settings-menu')).toBeVisible();
+    await page.getByTestId('artivact-system-settings-tags').click();
+    await page.waitForURL('**/administration/configuration/tags');
   });
 
   test('shows no-tags-defined hint when no tags exist', async ({ page }) => {
@@ -256,7 +264,10 @@ test.describe('Tags Configuration Page - Import', () => {
 
   test.beforeEach(async ({ page }) => {
     await resetTagsConfiguration(page);
-    await navigateToTagsPage(page);
+    await page.getByTestId('system-settings-button').click();
+    await expect(page.getByTestId('system-settings-menu')).toBeVisible();
+    await page.getByTestId('artivact-system-settings-tags').click();
+    await page.waitForURL('**/administration/configuration/tags');
   });
 
   test('upload a valid tags configuration file updates the tag list', async ({ page }) => {
