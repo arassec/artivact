@@ -32,7 +32,7 @@ jobs:
           if [ "$RUNNER_OS" = "Windows" ]; then
             ./mvnw.cmd clean install --no-transfer-progress
           else
-            ./mvnw clean install --no-transfer-progress
+            ./mvnw clean install -Pe2e -Dplaywright.deps.phase=generate-test-sources --no-transfer-progress
           fi
         shell: bash
       - name: Analyze with SonarCloud

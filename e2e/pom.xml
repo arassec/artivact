@@ -17,6 +17,13 @@
 
     <properties>
         <sonar.skip>true</sonar.skip>
+        <!--
+          Controls whether OS-level Playwright browser dependencies are installed.
+          Set to a Maven lifecycle phase (e.g. generate-test-sources) to enable installation.
+          Defaults to "none" to skip OS-dep installation on non-Ubuntu systems (e.g. Fedora, Windows).
+          Override via: -Dplaywright.deps.phase=generate-test-sources
+        -->
+        <playwright.deps.phase>none</playwright.deps.phase>
     </properties>
 
     <build>
@@ -47,14 +54,27 @@
                             <arguments>install</arguments>
                         </configuration>
                     </execution>
-                    <!-- Install Playwright browsers and OS-level dependencies -->
+                    <!-- Install Playwright Chromium browser -->
                     <execution>
                         <id>install playwright browsers</id>
                         <goals>
                             <goal>npx</goal>
                         </goals>
                         <configuration>
-                            <arguments>playwright install --with-deps chromium</arguments>
+                            <arguments>playwright install chromium</arguments>
+                        </configuration>
+                    </execution>
+                    <!-- Install OS-level browser dependencies (Ubuntu/CI only).
+                         Activated by setting playwright.deps.phase to a valid Maven lifecycle phase,
+                         e.g. -Dplaywright.deps.phase=generate-test-sources -->
+                    <execution>
+                        <id>install playwright browser deps</id>
+                        <phase>${playwright.deps.phase}</phase>
+                        <goals>
+                            <goal>npx</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>playwright install-deps chromium</arguments>
                         </configuration>
                     </execution>
                     <!-- Run Playwright E2E tests -->
