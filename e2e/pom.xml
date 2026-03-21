@@ -12,7 +12,7 @@
     <artifactId>e2e</artifactId>
     <packaging>pom</packaging>
 
-    <name>artivact-e2e</name>
+    <name>e2e</name>
     <description>End-to-end tests for the Artivact application using Playwright.</description>
 
     <properties>
