@@ -15,19 +15,35 @@ the Vue.js frontend). The backend is started automatically with the `e2e` Spring
 
 ### As Part of the Maven Build
 
-E2E tests run automatically during `mvn clean install` from the project root:
+E2E tests are run as part of an optional Maven profile. By default, the `e2e` module is **not** included
+in the standard build, which allows `mvn clean install` to run on any operating system without requiring
+Ubuntu-specific browser dependency tooling.
+
+#### On Ubuntu / Debian (CI and local)
+
+To run E2E tests including automatic OS-level dependency installation:
 
 ```bash
-./mvnw clean install
+./mvnw clean install -Pe2e -Dplaywright.deps.phase=generate-test-sources
+```
+
+#### On Fedora, Windows, or other non-Ubuntu systems
+
+To run E2E tests without attempting to install OS-level browser dependencies
+(system Chromium libraries must already be present):
+
+```bash
+./mvnw clean install -Pe2e
 ```
 
 The Maven build will:
 1. Install Node.js and npm (via `frontend-maven-plugin`).
 2. Install npm dependencies.
-3. Install Playwright Chromium browser (with OS-level dependencies).
-4. Start the Artivact server with the `e2e` profile.
-5. Run Playwright tests against the running server.
-6. Stop the server after tests complete.
+3. Install Playwright Chromium browser binary.
+4. (Ubuntu only, when `playwright.deps.phase` is set) Install OS-level Chromium dependencies.
+5. Start the Artivact server with the `e2e` profile.
+6. Run Playwright tests against the running server.
+7. Stop the server after tests complete.
 
 ### Running Tests Locally (Without Maven)
 
@@ -41,7 +57,9 @@ If you want to iterate on tests without a full Maven build:
 2. **Install dependencies** (from the `e2e` directory):
    ```bash
    npm install
-   npx playwright install --with-deps chromium
+   npx playwright install chromium
+   # On Ubuntu/Debian, additionally install OS-level browser dependencies:
+   npx playwright install-deps chromium
    ```
 
 3. **Run tests**:
@@ -67,8 +85,9 @@ If you want to iterate on tests without a full Maven build:
 
 ## CI Integration
 
-In GitHub Actions, the E2E tests are part of the standard `mvn clean install` build step. The CI
-workflow installs JDK 25 and the Maven build handles all Node.js/Playwright setup automatically.
+In GitHub Actions, the E2E tests are part of the Maven build on Linux runners. The `e2e` Maven profile
+is activated and the `playwright.deps.phase` property is set to ensure OS-level Chromium dependencies
+are installed on Ubuntu. Windows CI builds skip the E2E tests.
 
 The Playwright configuration uses:
 - `forbidOnly: true` in CI to prevent accidental `.only` tests.

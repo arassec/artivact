@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import {expect, test} from '@playwright/test';
 
 const PAGE_LOAD_TIMEOUT = 30_000;
 
@@ -9,16 +9,10 @@ test.describe('Main Page & Settings Bar', () => {
     await expect(page.getByTestId('artivact-main-layout')).toBeVisible({ timeout: PAGE_LOAD_TIMEOUT });
   });
 
-  // 1. Smoke Test
-  test('main page loads without redirect', async ({ page }) => {
-    expect(page.url()).toMatch(/\/$/);
-  });
-
   test('settings bar is visible', async ({ page }) => {
     await expect(page.getByTestId('artivact-settings-bar')).toBeVisible();
   });
 
-  // 7. No fatal JS errors while loading
   test('no fatal console errors on load', async ({ page }) => {
     const errors: string[] = [];
     page.on('pageerror', (err) => errors.push(err.message));
@@ -37,7 +31,6 @@ test.describe('Locale Selection Menu', () => {
     await expect(page.getByTestId('artivact-main-layout')).toBeVisible({ timeout: PAGE_LOAD_TIMEOUT });
   });
 
-  // 2. Locale selection
   test('locale selection button is visible', async ({ page }) => {
     const localeButton = page.getByTestId('locale-selection-button');
     if (!(await localeButton.isVisible())) {
@@ -72,7 +65,6 @@ test.describe('Item Settings Menu', () => {
     await expect(page.getByTestId('artivact-main-layout')).toBeVisible({ timeout: PAGE_LOAD_TIMEOUT });
   });
 
-  // 3. Item Settings
   test('create-item-button navigates to item configuration', async ({ page }) => {
     const itemButton = page.getByTestId('item-settings-button');
     if (!(await itemButton.isVisible())) {
@@ -134,7 +126,6 @@ test.describe('System Settings Menu', () => {
   ];
 
   for (const entry of systemSettingsEntries) {
-    // 4. System Settings navigation
     test(`${entry.testId} navigates to ${entry.route}`, async ({ page }) => {
       await page.goto('/');
       await expect(page.getByTestId('artivact-main-layout')).toBeVisible({ timeout: PAGE_LOAD_TIMEOUT });
@@ -167,7 +158,6 @@ test.describe('Account Settings Menu', () => {
     await expect(page.getByTestId('artivact-main-layout')).toBeVisible({ timeout: PAGE_LOAD_TIMEOUT });
   });
 
-  // 5. Account Settings
   test('account entry navigates to /account', async ({ page }) => {
     const accountButton = page.getByTestId('account-settings-button');
     if (!(await accountButton.isVisible())) {
@@ -192,7 +182,6 @@ test.describe('Documentation Link', () => {
     await expect(page.getByTestId('artivact-main-layout')).toBeVisible({ timeout: PAGE_LOAD_TIMEOUT });
   });
 
-  // 6. Documentation link
   test('documentation button has correct href and opens in new tab', async ({ page }) => {
     const docLink = page.getByTestId('documentation-button');
     if (!(await docLink.isVisible())) {

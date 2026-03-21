@@ -201,8 +201,9 @@ class ItemExportServiceTest {
                 .exportConfiguration(new ExportConfiguration())
                 .build();
 
-        when(fileRepository.getDirFromId(any(Path.class), anyString())).thenReturn(Path.of("existing-dir"));
-        when(fileRepository.exists(Path.of("existing-dir"))).thenReturn(true);
+        Path existingDir = Path.of("existing-dir");
+        when(fileRepository.getDirFromId(any(Path.class), anyString())).thenReturn(existingDir);
+        when(fileRepository.exists(existingDir)).thenReturn(true);
 
         // When
         service.exportItem(ctx, item);
@@ -226,19 +227,29 @@ class ItemExportServiceTest {
                 .build();
 
         Path itemExportDir = Path.of("item-export-dir");
+        Path itemSourceDir = Path.of("items", "item-xr-models");
+
         when(useProjectDirsUseCase.getItemsDir()).thenReturn(Path.of("items"));
-        when(fileRepository.getDirFromId(any(Path.class), anyString())).thenReturn(itemExportDir);
+        when(fileRepository.getDirFromId(any(Path.class), eq("item-xr-models")))
+                .thenAnswer(invocation -> {
+                    Path baseDir = invocation.getArgument(0);
+                    if (exportsDir.resolve("items").equals(baseDir)) {
+                        return itemExportDir;
+                    }
+                    return itemSourceDir;
+                });
         when(fileRepository.exists(itemExportDir)).thenReturn(false);
 
         // When
         service.exportItem(ctx, item);
 
-        // Then - only first model is copied with REPLACE_EXISTING
+        // Then
         verify(fileRepository).copy(
-                any(Path.class),
-                eq(itemExportDir.resolve("model1.glb")),
+                eq(itemSourceDir.resolve("models").resolve("model1.glb")),
+                eq(itemExportDir.resolve("models").resolve("model1.glb")),
                 eq(StandardCopyOption.REPLACE_EXISTING)
         );
+        verify(fileRepository, times(1)).copy(any(Path.class), any(Path.class), eq(StandardCopyOption.REPLACE_EXISTING));
         assertThat(item.getMediaContent().getModels()).containsExactly("model1.glb");
         assertThat(item.getMediaContent().getImages()).isEmpty();
         assertThat(item.getMediaCreationContent()).isNull();
@@ -267,7 +278,7 @@ class ItemExportServiceTest {
         // Then - only first image is copied with REPLACE_EXISTING
         verify(fileRepository).copy(
                 any(Path.class),
-                eq(itemExportDir.resolve("img1.png")),
+                eq(itemExportDir.resolve("images").resolve("img1.png")),
                 eq(StandardCopyOption.REPLACE_EXISTING)
         );
         assertThat(item.getMediaContent().getImages()).containsExactly("img1.png");

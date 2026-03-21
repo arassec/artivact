@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.0.3</version>
+        <version>4.0.4</version>
         <relativePath/>
     </parent>
 
@@ -75,8 +75,16 @@
         <module>artivact-spring-boot-starter</module>
         <module>artivact-server</module>
         <module>artivact-desktop</module>
-        <module>e2e</module>
     </modules>
+
+    <profiles>
+        <profile>
+            <id>e2e</id>
+            <modules>
+                <module>e2e</module>
+            </modules>
+        </profile>
+    </profiles>
 
     <repositories>
         <repository>

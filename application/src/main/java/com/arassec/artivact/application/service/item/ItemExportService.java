@@ -139,12 +139,12 @@ public class ItemExportService extends BaseExportService implements ExportItemUs
             item.setMediaCreationContent(null); // Not needed in XR exports!
             if (!models.isEmpty()) {
                 String firstModel = models.getFirst();
-                fileRepository.copy(modelsSourceDir.resolve(firstModel), itemExportDir.resolve(firstModel), StandardCopyOption.REPLACE_EXISTING);
+                fileRepository.copy(modelsSourceDir.resolve(firstModel), modelsTargetDir.resolve(firstModel), StandardCopyOption.REPLACE_EXISTING);
                 item.getMediaContent().getImages().clear();
                 item.getMediaContent().getModels().retainAll(List.of(firstModel));
             } else if (!images.isEmpty()) {
                 String firstImage = images.getFirst();
-                fileRepository.copy(imagesSourceDir.resolve(firstImage), itemExportDir.resolve(firstImage), StandardCopyOption.REPLACE_EXISTING);
+                fileRepository.copy(imagesSourceDir.resolve(firstImage), imagesTargetDir.resolve(firstImage), StandardCopyOption.REPLACE_EXISTING);
                 item.getMediaContent().getModels().clear();
                 item.getMediaContent().getImages().retainAll(List.of(firstImage));
             }
