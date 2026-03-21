@@ -25,7 +25,7 @@ jobs:
       - name: Copy Artivact-Server jar (add 'v' to version)
         run: cp artivact-server/target/artivact-server-${{ env.RELEASE_VERSION }}.jar artivact-server/target/artivact-server-v${{ env.RELEASE_VERSION }}.jar
       - name: Upload binaries to release
-        uses: svenstaro/upload-release-action@b98a3b12e86552593f3e4e577ca8a62aa2f3f22b
+        uses: svenstaro/upload-release-action@29e53e917877a24fad85510ded594ab3c9ca12de
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file_glob: true
@@ -61,7 +61,7 @@ jobs:
       - name: Build
         run: .\mvnw.cmd clean install -Drevision="${{ steps.release_info.outputs.version_short }}" --no-transfer-progress -P 'release,release-desktop-windows'
       - name: Upload binaries to release
-        uses: svenstaro/upload-release-action@b98a3b12e86552593f3e4e577ca8a62aa2f3f22b
+        uses: svenstaro/upload-release-action@29e53e917877a24fad85510ded594ab3c9ca12de
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file_glob: true
@@ -86,7 +86,7 @@ jobs:
       - name: Build
         run: ./mvnw clean install -Drevision=$RELEASE_VERSION --no-transfer-progress -P release,release-desktop-linux
       - name: Upload binaries to release
-        uses: svenstaro/upload-release-action@b98a3b12e86552593f3e4e577ca8a62aa2f3f22b
+        uses: svenstaro/upload-release-action@29e53e917877a24fad85510ded594ab3c9ca12de
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file_glob: true
