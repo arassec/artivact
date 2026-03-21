@@ -16,14 +16,14 @@
     "build:all": "quasar build -m spa && quasar build -m electron --icon=./src-electron/icons/icon.png"
   },
   "dependencies": {
-    "@google/model-viewer": "4.1.0",
+    "@google/model-viewer": "4.2.0",
     "@quasar/extras": "1.17.0",
     "axios": "1.13.5",
     "driver.js": "1.4.0",
     "markdown-it": "14.1.1",
     "pinia": "3.0.3",
     "quasar": "2.18.2",
-    "three": "0.172.0",
+    "three": "0.182.0",
     "vue": "3.5.18",
     "vue-i18n": "11.1.11",
     "vue-router": "4.5.1",
@@ -32,7 +32,7 @@
   "devDependencies": {
     "@electron/packager": "18.4.2",
     "@intlify/vue-i18n-loader": "5.0.0",
-    "@quasar/app-vite": "2.3.0",
+    "@quasar/app-vite": "^2.5.2",
     "@types/markdown-it": "14.1.2",
     "@types/node": "24.3.0",
     "@typescript-eslint/eslint-plugin": "8.39.1",
