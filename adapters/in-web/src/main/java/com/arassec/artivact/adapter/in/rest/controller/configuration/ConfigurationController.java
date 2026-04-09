@@ -122,6 +122,14 @@ public class ConfigurationController extends BaseController {
      * Use case for scan peripheral configuration.
      */
     private final ScanPeripheralsConfigurationUseCase scanPeripheralConfigurationUseCase;
+    /**
+     * Use case for load AI configuration.
+     */
+    private final LoadAiConfigurationUseCase loadAiConfigurationUseCase;
+    /**
+     * Use case for save AI configuration.
+     */
+    private final SaveAiConfigurationUseCase saveAiConfigurationUseCase;
 
     /**
      * Returns the current appearance configuration.
@@ -411,6 +419,26 @@ public class ConfigurationController extends BaseController {
     @PostMapping(value = "/exchange")
     public void saveExchangeConfiguration(@RequestBody ExchangeConfiguration exchangeConfiguration) {
         saveExchangeConfigurationUseCase.saveExchangeConfiguration(exchangeConfiguration);
+    }
+
+    /**
+     * Returns the AI configuration.
+     *
+     * @return The current AI configuration.
+     */
+    @GetMapping(value = "/ai")
+    public AiConfiguration getAiConfiguration() {
+        return loadAiConfigurationUseCase.loadAiConfiguration();
+    }
+
+    /**
+     * Saves the given AI configuration.
+     *
+     * @param aiConfiguration The configuration to save.
+     */
+    @PostMapping(value = "/ai")
+    public void saveAiConfiguration(@RequestBody AiConfiguration aiConfiguration) {
+        saveAiConfigurationUseCase.saveAiConfiguration(aiConfiguration);
     }
 
     /**

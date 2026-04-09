@@ -35,6 +35,8 @@ public class ManageConfigurationService
         LoadPeripheralsConfigurationUseCase,
         SavePeripheralConfigurationUseCase,
         SaveExchangeConfigurationUseCase,
+        LoadAiConfigurationUseCase,
+        SaveAiConfigurationUseCase,
         CheckRuntimeConfigurationUseCase {
 
     /**
@@ -205,6 +207,24 @@ public class ManageConfigurationService
     @Override
     public void saveExchangeConfiguration(ExchangeConfiguration exchangeConfiguration) {
         configurationRepository.saveConfiguration(ConfigurationType.EXCHANGE, exchangeConfiguration);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public AiConfiguration loadAiConfiguration() {
+        Optional<AiConfiguration> configurationOptional =
+                configurationRepository.findByType(ConfigurationType.ARTIFICIAL_INTELLIGENCE, AiConfiguration.class);
+        return configurationOptional.orElseGet(AiConfiguration::new);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void saveAiConfiguration(AiConfiguration aiConfiguration) {
+        configurationRepository.saveConfiguration(ConfigurationType.ARTIFICIAL_INTELLIGENCE, aiConfiguration);
     }
 
 }

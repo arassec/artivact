@@ -86,6 +86,12 @@ class ConfigurationControllerTest {
     @Mock
     private ImportTagsConfigurationUseCase importTagsConfigurationUseCase;
 
+    @Mock
+    private LoadAiConfigurationUseCase loadAiConfigurationUseCase;
+
+    @Mock
+    private SaveAiConfigurationUseCase saveAiConfigurationUseCase;
+
     @InjectMocks
     private ConfigurationController controller;
 
@@ -311,6 +317,20 @@ class ConfigurationControllerTest {
         MultipartFile file = mock(MultipartFile.class);
         when(file.getBytes()).thenThrow(new IOException());
         assertThatThrownBy(() -> controller.importTagsConfiguration(file)).isInstanceOf(ArtivactException.class);
+    }
+
+    @Test
+    void testGetAiConfiguration() {
+        AiConfiguration ac = new AiConfiguration();
+        when(loadAiConfigurationUseCase.loadAiConfiguration()).thenReturn(ac);
+        assertThat(controller.getAiConfiguration()).isEqualTo(ac);
+    }
+
+    @Test
+    void testSaveAiConfiguration() {
+        AiConfiguration ac = new AiConfiguration();
+        controller.saveAiConfiguration(ac);
+        verify(saveAiConfigurationUseCase).saveAiConfiguration(ac);
     }
 
 }

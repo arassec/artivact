@@ -119,6 +119,15 @@ export interface ExchangeConfiguration {
   apiToken: string;
 }
 
+export interface AiConfiguration {
+  enabled: boolean;
+  apiKey: string;
+  generalContext: string;
+  translationPrompt: string;
+  ttsPrompt: string;
+  ttsVoice: string;
+}
+
 export interface ColorTheme {
   primary: string,
   secondary: string,
