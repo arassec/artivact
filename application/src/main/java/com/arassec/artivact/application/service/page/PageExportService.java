@@ -164,6 +164,7 @@ public class PageExportService extends BaseExportService implements ExportPageUs
 
     /**
      * Copies all content audio files referenced in a {@link ContentAudioProvider}'s contentAudio property.
+     * If the contentAudio is null, no files are copied.
      *
      * @param exportContext        Export context.
      * @param widget               The widget to copy files from.

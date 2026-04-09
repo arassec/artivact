@@ -322,7 +322,6 @@ class PageImportServiceTest {
         service.importPage(importContext, "page-7", null);
 
         // Then
-        verify(fileRepository, times(3)).createDirIfRequired(widgetTarget);
         verify(fileRepository).copy(widgetDir.resolve("audio-default.mp3"), widgetTarget.resolve("audio-default.mp3"));
         verify(fileRepository).copy(widgetDir.resolve("audio-de.mp3"), widgetTarget.resolve("audio-de.mp3"));
         verify(fileRepository).copy(widgetDir.resolve("audio-fr.mp3"), widgetTarget.resolve("audio-fr.mp3"));

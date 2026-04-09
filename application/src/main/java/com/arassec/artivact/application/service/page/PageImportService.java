@@ -116,7 +116,8 @@ public class PageImportService implements ImportPageUseCase {
 
     /**
      * Imports content audio files for a {@link ContentAudioProvider} widget by copying each referenced audio file
-     * from the import directory to the project widget directory.
+     * from the import directory to the project widget directory. If the widget's contentAudio is null, no files
+     * are copied.
      *
      * @param importContext        The import context.
      * @param widgetId             The widget ID.
