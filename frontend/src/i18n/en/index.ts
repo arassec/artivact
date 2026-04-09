@@ -1227,6 +1227,16 @@ export default {
     },
   },
 
+  ContentAudioEditor: {
+    tooltip: {
+      generateAudio: "Generate audio with AI",
+    },
+    messages: {
+      generateSuccess: "Audio generated successfully.",
+      generateFailed: "Audio generation failed!",
+    },
+  },
+
   WidgetTemplate: {
     tooltip: {
       edit: "Right click to edit widget",

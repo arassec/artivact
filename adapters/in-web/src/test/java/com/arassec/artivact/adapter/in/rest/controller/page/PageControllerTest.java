@@ -1,5 +1,6 @@
 package com.arassec.artivact.adapter.in.rest.controller.page;
 
+import com.arassec.artivact.application.port.in.ai.ConvertToAudioUseCase;
 import com.arassec.artivact.application.port.in.page.*;
 import com.arassec.artivact.domain.model.item.ImageSize;
 import com.arassec.artivact.domain.model.page.PageContent;
@@ -41,6 +42,9 @@ class PageControllerTest {
 
     @Mock
     private PublishWipPageContentUseCase publishWipPageContentUseCase;
+
+    @Mock
+    private ConvertToAudioUseCase convertToAudioUseCase;
 
     @Mock
     private Authentication authentication;
@@ -191,6 +195,24 @@ class PageControllerTest {
         PageContent result = controller.publishWipPageContent("page4");
 
         assertThat(result).isSameAs(published);
+    }
+
+    @Test
+    void testGenerateContentAudioDelegatesToUseCase() {
+        when(convertToAudioUseCase.convertToAudio("page1", "widget1", "de")).thenReturn("content-audio-de.mp3");
+
+        ResponseEntity<String> result = controller.generateContentAudio("page1", "widget1", "de");
+
+        assertThat(result.getBody()).isEqualTo("content-audio-de.mp3");
+    }
+
+    @Test
+    void testGenerateContentAudioDefaultLocale() {
+        when(convertToAudioUseCase.convertToAudio("page1", "widget1", "")).thenReturn("content-audio.mp3");
+
+        ResponseEntity<String> result = controller.generateContentAudio("page1", "widget1", "");
+
+        assertThat(result.getBody()).isEqualTo("content-audio.mp3");
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})

@@ -1,5 +1,6 @@
 package com.arassec.artivact.adapter.in.rest.controller.page;
 
+import com.arassec.artivact.application.port.in.ai.ConvertToAudioUseCase;
 import com.arassec.artivact.application.port.in.page.*;
 import com.arassec.artivact.domain.model.item.ImageSize;
 import com.arassec.artivact.domain.model.page.PageContent;
@@ -52,6 +53,11 @@ public class PageController {
      * Use case for publish wip page content.
      */
     private final PublishWipPageContentUseCase publishWipPageContentUseCase;
+
+    /**
+     * Use case for AI audio generation.
+     */
+    private final ConvertToAudioUseCase convertToAudioUseCase;
 
     /**
      * Returns the alias or ID of the index page.
@@ -229,6 +235,23 @@ public class PageController {
         byte[] model = managePageMediaUseCase.loadFile(widgetId, filename, imageSize, true);
 
         return new HttpEntity<>(model, headers);
+    }
+
+    /**
+     * Generates an audio file for a widget's content using AI text-to-speech.
+     *
+     * @param pageIdOrAlias The page's ID or alias.
+     * @param widgetId      The widget's ID.
+     * @param locale        The locale for the audio generation.
+     * @return The filename of the generated audio file.
+     */
+    @PostMapping(value = "/{pageIdOrAlias}/widget/{widgetId}/generate-audio")
+    public ResponseEntity<String> generateContentAudio(@PathVariable String pageIdOrAlias,
+                                                       @PathVariable String widgetId,
+                                                       @RequestParam(required = false, defaultValue = "") String locale) {
+        synchronized (this) {
+            return ResponseEntity.ok(convertToAudioUseCase.convertToAudio(pageIdOrAlias, widgetId, locale));
+        }
     }
 
     /**
