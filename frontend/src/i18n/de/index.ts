@@ -250,6 +250,15 @@ export default {
       ttsPrompt: 'TTS-Prompt',
       ttsVoice: 'TTS-Stimme',
     },
+    test: {
+      description:
+        'Sie können die KI-Konfiguration unten testen. Geben Sie einen Text ein und wählen Sie, ob Sie die Übersetzung oder Text-to-Speech testen möchten. Die konfigurierten Prompts und Stimme werden für den Test verwendet.',
+      textInput: 'Testtext',
+      translationMode: 'Übersetzung',
+      ttsMode: 'Text-to-Speech',
+      translationResult: 'Übersetzungsergebnis',
+      testFailed: 'KI-Test fehlgeschlagen.',
+    },
   },
 
   ExchangeConfigurationPage: {

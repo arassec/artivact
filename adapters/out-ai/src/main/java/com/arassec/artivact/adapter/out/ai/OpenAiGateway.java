@@ -59,4 +59,13 @@ public class OpenAiGateway implements AiGateway {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String chat(String prompt) {
+        log.debug("Sending chat prompt to OpenAI.");
+        return openAiChatModel.call(prompt);
+    }
+
 }

@@ -77,4 +77,17 @@ class OpenAiGatewayTest {
                 .hasMessageContaining("Could not save audio file");
     }
 
+    /**
+     * Tests that the gateway delegates chat to the OpenAI chat model.
+     */
+    @Test
+    void testChat() {
+        when(openAiChatModel.call("test prompt")).thenReturn("AI response");
+
+        String result = openAiGateway.chat("test prompt");
+
+        assertThat(result).isEqualTo("AI response");
+        verify(openAiChatModel).call("test prompt");
+    }
+
 }
