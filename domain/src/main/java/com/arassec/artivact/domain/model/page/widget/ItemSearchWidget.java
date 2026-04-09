@@ -24,6 +24,11 @@ public class ItemSearchWidget extends Widget {
     private TranslatableString content;
 
     /**
+     * The filename of the audio version of the content, per locale.
+     */
+    private TranslatableString contentAudio;
+
+    /**
      * The search term to perform.
      */
     private String searchTerm;

@@ -147,6 +147,8 @@
             :class="inEditModeRef ? 'widget' : ''"
             :widget-data="element as TextWidgetData"
             :in-edit-mode="inEditModeRef"
+            :page-id="pageId"
+            @save-widget-before-upload="saveWidgetBeforeUpload"
             @add-widget-below="
               addWidgetBelowRef = element.id;
               showAddWidgetDialogRef = true;
@@ -162,6 +164,8 @@
             :class="inEditModeRef ? 'widget' : ''"
             :widget-data="element as ItemSearchWidget"
             :in-edit-mode="inEditModeRef"
+            :page-id="pageId"
+            @save-widget-before-upload="saveWidgetBeforeUpload"
             @add-widget-below="
               addWidgetBelowRef = element.id;
               showAddWidgetDialogRef = true;
@@ -614,6 +618,10 @@ function addWidget() {
       content: {
         value: i18n.t('ArtivactPage.label.textContent'),
       } as TranslatableString,
+      contentAudio: {
+        value: '',
+        translations: {},
+      } as TranslatableString,
     } as TextWidgetData);
   } else if (selectedWidgetTypeRef.value === 'ITEM_SEARCH') {
     pageContentRef.value?.widgets.splice(index, 0, {
@@ -628,6 +636,10 @@ function addWidget() {
       } as TranslatableString,
       content: {
         value: i18n.t('ArtivactPage.label.text'),
+      } as TranslatableString,
+      contentAudio: {
+        value: '',
+        translations: {},
       } as TranslatableString,
       searchTerm: '',
       pageSize: 9,
@@ -675,6 +687,10 @@ function addWidget() {
       } as TranslatableString,
       content: {
         value: i18n.t('ArtivactPage.label.text'),
+      } as TranslatableString,
+      contentAudio: {
+        value: '',
+        translations: {},
       } as TranslatableString,
       images: [],
       fullscreenAllowed: true,

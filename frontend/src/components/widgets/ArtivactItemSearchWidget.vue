@@ -112,6 +112,14 @@
         :textarea="true"
         class="full-width"
       />
+      <artivact-content-audio-editor
+        :page-id="pageId"
+        :widget-id="widgetDataRef.id"
+        :content-audio="widgetDataRef.contentAudio"
+        :label="$t('ItemSearchWidget.label.contentAudio')"
+        :delete-label="$t('ItemSearchWidget.label.deleteContentAudio')"
+        @save-widget-before-upload="saveWidgetBeforeUpload"
+      />
       <q-input
         type="number"
         outlined
@@ -184,11 +192,17 @@ import ArtivactWidgetTemplate from '../../components/widgets/ArtivactWidgetTempl
 import ArtivactRestrictedTranslatableItemEditor from '../../components/ArtivactRestrictedTranslatableItemEditor.vue';
 import {useLocaleStore} from '../../stores/locale';
 import {formatMarkdown, translate} from '../artivact-utils';
+import ArtivactContentAudioEditor from '../../components/widgets/ArtivactContentAudioEditor.vue';
 
 const props = defineProps({
   inEditMode: {
     required: true,
     type: Boolean,
+  },
+  pageId: {
+    required: false,
+    type: String,
+    default: '',
   },
   widgetData: {
     required: true,
@@ -200,6 +214,10 @@ const props = defineProps({
     default: false,
   },
 });
+
+const emit = defineEmits<{
+  (e: 'save-widget-before-upload', payload: { resolve: (value?: unknown) => void; reject: (reason?: unknown) => void }): void;
+}>();
 
 const editingRef = ref(false);
 
@@ -278,6 +296,10 @@ function search(page: number) {
         icon: 'report_problem',
       });
     });
+}
+
+async function saveWidgetBeforeUpload({resolve, reject}: { resolve: (value?: unknown) => void; reject: (reason?: unknown) => void }) {
+  emit('save-widget-before-upload', {resolve, reject});
 }
 
 onMounted(() => {

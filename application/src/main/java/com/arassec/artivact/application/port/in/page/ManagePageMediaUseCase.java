@@ -40,4 +40,26 @@ public interface ManagePageMediaUseCase {
      */
     PageContent deleteFile(String pageId, String widgetId, String filename);
 
+    /**
+     * Saves a content audio file for a given widget in the filesystem.
+     * <p>
+     * Unlike {@link #saveFile}, this method does not update the widget's
+     * file processing state (e.g. image lists).
+     *
+     * @param pageId   The page's ID.
+     * @param widgetId The widget's ID.
+     * @param file     The file to save.
+     * @return The name of the saved file.
+     */
+    String saveContentAudioFile(String pageId, String widgetId, MultipartFile file);
+
+    /**
+     * Deletes a content audio file for a given widget from the filesystem.
+     *
+     * @param pageId   The page's ID.
+     * @param widgetId The widget's ID.
+     * @param filename The file to delete.
+     */
+    void deleteContentAudioFile(String pageId, String widgetId, String filename);
+
 }

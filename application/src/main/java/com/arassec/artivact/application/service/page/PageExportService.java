@@ -110,15 +110,18 @@ public class PageExportService extends BaseExportService implements ExportPageUs
             case ItemSearchWidget itemSearchWidget -> {
                 cleanupTranslations(itemSearchWidget.getHeading());
                 cleanupTranslations(itemSearchWidget.getContent());
+                cleanupTranslations(itemSearchWidget.getContentAudio());
                 exportItemSearchWidgetsItems(exportContext, itemSearchWidget);
             }
             case TextWidget textWidget -> {
                 cleanupTranslations(textWidget.getHeading());
                 cleanupTranslations(textWidget.getContent());
+                cleanupTranslations(textWidget.getContentAudio());
             }
             case ImageGalleryWidget imageGalleryWidget -> {
                 cleanupTranslations(imageGalleryWidget.getHeading());
                 cleanupTranslations(imageGalleryWidget.getContent());
+                cleanupTranslations(imageGalleryWidget.getContentAudio());
                 imageGalleryWidget.getImages().forEach(image -> copyWidgetFile(exportContext, imageGalleryWidget, image));
             }
             default -> log.warn("Unknown widget type for export: {}", widget.getType());
