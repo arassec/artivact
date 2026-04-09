@@ -1169,6 +1169,7 @@ export default {
     label: {
       heading: "Heading",
       content: "Content",
+      contentAudio: "Content Audio (MP3)",
       images: "Images",
       fullscreenAllowed:
         "Configures whether the images can be opened in fullscreen detail view.",
@@ -1206,6 +1207,7 @@ export default {
       noSearchResults: "No search results available!",
       heading: "Heading",
       content: "Content",
+      contentAudio: "Content Audio (MP3)",
       pageSize: "Page size",
     },
     messages: {
@@ -1218,6 +1220,7 @@ export default {
     label: {
       heading: "Heading",
       content: "Content",
+      contentAudio: "Content Audio (MP3)",
     },
   },
 

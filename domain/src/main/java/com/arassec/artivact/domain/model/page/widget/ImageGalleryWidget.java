@@ -60,6 +60,11 @@ public class ImageGalleryWidget extends Widget implements FileProcessingWidget {
     private boolean stretchImages;
 
     /**
+     * The filename of the audio version of the content.
+     */
+    private String contentAudio;
+
+    /**
      * Creates a new instance.
      */
     public ImageGalleryWidget() {
@@ -72,7 +77,7 @@ public class ImageGalleryWidget extends Widget implements FileProcessingWidget {
     @SuppressWarnings("java:S107") // This constructor is required as fallback for Jackson JSON deserialization.
     public ImageGalleryWidget(WidgetType type, TranslatableString heading, TranslatableString content,
                               List<String> images, boolean fullscreenAllowed, String textPosition,
-                              boolean iconMode, boolean hideBorder, boolean stretchImages) {
+                              boolean iconMode, boolean hideBorder, boolean stretchImages, String contentAudio) {
         super(type);
         this.heading = heading;
         this.content = content;
@@ -84,6 +89,7 @@ public class ImageGalleryWidget extends Widget implements FileProcessingWidget {
         this.iconMode = iconMode;
         this.hideBorder = hideBorder;
         this.stretchImages = stretchImages;
+        this.contentAudio = contentAudio;
     }
 
     /**
@@ -91,10 +97,18 @@ public class ImageGalleryWidget extends Widget implements FileProcessingWidget {
      */
     @Override
     public void processFile(String filename, FileProcessingOperation operation) {
-        if (FileProcessingOperation.ADD.equals(operation) && !images.contains(filename)) {
-            images.add(filename);
-        } else if (FileProcessingOperation.REMOVE.equals(operation)) {
-            images.remove(filename);
+        if (filename != null && filename.toLowerCase().endsWith(".mp3")) {
+            if (FileProcessingOperation.ADD.equals(operation)) {
+                this.contentAudio = filename;
+            } else if (FileProcessingOperation.REMOVE.equals(operation)) {
+                this.contentAudio = null;
+            }
+        } else {
+            if (FileProcessingOperation.ADD.equals(operation) && !images.contains(filename)) {
+                images.add(filename);
+            } else if (FileProcessingOperation.REMOVE.equals(operation)) {
+                images.remove(filename);
+            }
         }
     }
 
@@ -103,7 +117,11 @@ public class ImageGalleryWidget extends Widget implements FileProcessingWidget {
      */
     @Override
     public List<String> usedFiles() {
-        return images;
+        List<String> files = new LinkedList<>(images);
+        if (contentAudio != null) {
+            files.add(contentAudio);
+        }
+        return files;
     }
 
 }

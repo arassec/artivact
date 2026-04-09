@@ -147,11 +147,15 @@
             :class="inEditModeRef ? 'widget' : ''"
             :widget-data="element as TextWidgetData"
             :in-edit-mode="inEditModeRef"
+            :page-id="pageId"
+            @save-widget-before-upload="saveWidgetBeforeUpload"
             @add-widget-below="
               addWidgetBelowRef = element.id;
               showAddWidgetDialogRef = true;
             "
             @delete-widget="() => deleteWidget(index)"
+            v-on:file-added="fileAdded($event, element.id)"
+            @file-deleted="fileDeleted($event, element.id)"
             @stop-editing="$emit('update-page-content')"
           />
 
@@ -162,11 +166,15 @@
             :class="inEditModeRef ? 'widget' : ''"
             :widget-data="element as ItemSearchWidget"
             :in-edit-mode="inEditModeRef"
+            :page-id="pageId"
+            @save-widget-before-upload="saveWidgetBeforeUpload"
             @add-widget-below="
               addWidgetBelowRef = element.id;
               showAddWidgetDialogRef = true;
             "
             @delete-widget="() => deleteWidget(index)"
+            v-on:file-added="fileAdded($event, element.id)"
+            @file-deleted="fileDeleted($event, element.id)"
             @stop-editing="$emit('update-page-content')"
           />
 
@@ -614,6 +622,7 @@ function addWidget() {
       content: {
         value: i18n.t('ArtivactPage.label.textContent'),
       } as TranslatableString,
+      contentAudio: null,
     } as TextWidgetData);
   } else if (selectedWidgetTypeRef.value === 'ITEM_SEARCH') {
     pageContentRef.value?.widgets.splice(index, 0, {
@@ -629,6 +638,7 @@ function addWidget() {
       content: {
         value: i18n.t('ArtivactPage.label.text'),
       } as TranslatableString,
+      contentAudio: null,
       searchTerm: '',
       pageSize: 9,
       maxResults: 100,
@@ -676,6 +686,7 @@ function addWidget() {
       content: {
         value: i18n.t('ArtivactPage.label.text'),
       } as TranslatableString,
+      contentAudio: null,
       images: [],
       fullscreenAllowed: true,
       textPosition: ImageGalleryWidgetTextPosition.TOP,

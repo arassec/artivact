@@ -1149,6 +1149,7 @@ export default {
     label: {
       heading: 'Überschrift',
       content: 'Inhalt',
+      contentAudio: 'Inhalt Audio (MP3)',
       images: 'Bilder',
       fullscreenAllowed:
         'Gibt an, ob die Bilder als Vollbild-Detailansicht geöffnet werden können.',
@@ -1186,6 +1187,7 @@ export default {
       noSearchResults: 'Keine Suchergebnisse verfügbar!',
       heading: 'Überschrift',
       content: 'Inhalt',
+      contentAudio: 'Inhalt Audio (MP3)',
       pageSize: 'Seitengröße',
     },
     messages: {
@@ -1198,6 +1200,7 @@ export default {
     label: {
       heading: 'Überschrift',
       content: 'Inhalt',
+      contentAudio: 'Inhalt Audio (MP3)',
     },
   },
 

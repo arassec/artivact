@@ -113,6 +113,31 @@
           :textarea="true"
           :show-separator="false"
         />
+        <div class="row items-center q-mt-md">
+          <q-uploader
+            :label="$t('ImageGalleryWidget.label.contentAudio')"
+            :auto-upload="true"
+            :multiple="false"
+            field-name="file"
+            accept=".mp3"
+            :no-thumbnails="true"
+            class="q-mb-md col"
+            :url="'/api/page/' + pageIdRef + '/widget/' + widgetDataRef.id"
+            @uploaded="$emit('image-added', 'contentAudio')"
+            @start="saveWidgetBeforeUpload"
+            ref="audioUploader"
+          />
+          <q-btn
+            v-if="widgetDataRef.contentAudio"
+            round
+            dense
+            flat
+            color="negative"
+            icon="delete"
+            class="q-ml-sm q-mb-md"
+            @click="deleteAudio()"
+          />
+        </div>
         <div class="q-gutter-sm q-mb-md">
           <q-radio
             v-model="widgetDataRef.textPosition"
@@ -254,11 +279,18 @@ const slide = ref(0);
 const editingRef = ref(false);
 
 const imageUploader = ref(null);
+const audioUploader = ref(null);
 
 function deleteImage(filename: string) {
   emit('image-deleted', ['images', filename]);
   if (widgetDataRef.value.images.length > 0) {
     slide.value = 0;
+  }
+}
+
+function deleteAudio() {
+  if (widgetDataRef.value.contentAudio) {
+    emit('image-deleted', ['contentAudio', widgetDataRef.value.contentAudio]);
   }
 }
 
