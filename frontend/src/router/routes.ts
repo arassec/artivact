@@ -166,6 +166,10 @@ const routes: RouteRecordRaw[] = [
         component: () => import('../pages/ExchangeConfigurationPage.vue'),
       },
       {
+        path: '/administration/configuration/ai',
+        component: () => import('../pages/AiConfigurationPage.vue'),
+      },
+      {
         path: '/administration/configuration/maintenance',
         component: () => import('../pages/MaintenancePage.vue'),
       },

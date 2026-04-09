@@ -298,6 +298,26 @@
             </q-item-section>
           </q-item>
           <q-item
+            data-test="artivact-system-settings-ai"
+            clickable
+            v-close-popup
+            @click="gotoAiConfigurationPage"
+            v-if="userdataStore.isAdmin"
+            class="menu-entry"
+          >
+            <q-item-section
+            ><label class="menu-label">
+              <q-icon
+                name="smart_toy"
+                size="xs"
+                color="primary"
+                class="q-mr-sm"
+              ></q-icon>
+              {{ $t('ArtivactSettingsBar.ai') }}</label
+            >
+            </q-item-section>
+          </q-item>
+          <q-item
             data-test="artivact-system-settings-appearance"
             clickable
             v-close-popup
@@ -648,6 +668,25 @@
               <q-item
                 clickable
                 v-close-popup
+                @click="gotoAiConfigurationPage"
+                v-if="userdataStore.isAdmin"
+                class="menu-entry"
+              >
+                <q-item-section
+                ><label class="menu-label">
+                  <q-icon
+                    name="smart_toy"
+                    size="xs"
+                    color="primary"
+                    class="q-mr-sm"
+                  ></q-icon>
+                  {{ $t('ArtivactSettingsBar.ai') }}</label
+                >
+                </q-item-section>
+              </q-item>
+              <q-item
+                clickable
+                v-close-popup
                 @click="gotoAppearanceConfigurationPage"
                 v-if="userdataStore.isAdmin"
                 class="menu-entry"
@@ -815,6 +854,10 @@ function gotoPeripheralsConfigurationPage() {
 
 function gotoExchangeConfigurationPage() {
   router.push('/administration/configuration/exchange');
+}
+
+function gotoAiConfigurationPage() {
+  router.push('/administration/configuration/ai');
 }
 
 function gotoMaintenancePage() {

@@ -28,6 +28,11 @@ public enum ConfigurationType {
     /**
      * Exchange configuration for item syncing.
      */
-    EXCHANGE
+    EXCHANGE,
+
+    /**
+     * Artificial intelligence configuration.
+     */
+    ARTIFICIAL_INTELLIGENCE
 
 }

@@ -212,4 +212,34 @@ class ManageConfigurationServiceTest {
         verify(configurationRepository).saveConfiguration(ConfigurationType.EXCHANGE, config);
     }
 
+    @Test
+    void testLoadAiConfigurationFound() {
+        AiConfiguration config = new AiConfiguration();
+        when(configurationRepository.findByType(ConfigurationType.ARTIFICIAL_INTELLIGENCE, AiConfiguration.class))
+                .thenReturn(Optional.of(config));
+
+        var result = service.loadAiConfiguration();
+
+        assertThat(result).isEqualTo(config);
+    }
+
+    @Test
+    void testLoadAiConfigurationNotFound() {
+        when(configurationRepository.findByType(ConfigurationType.ARTIFICIAL_INTELLIGENCE, AiConfiguration.class))
+                .thenReturn(Optional.empty());
+
+        var result = service.loadAiConfiguration();
+
+        assertThat(result).isNotNull();
+    }
+
+    @Test
+    void testSaveAiConfiguration() {
+        AiConfiguration config = new AiConfiguration();
+
+        service.saveAiConfiguration(config);
+
+        verify(configurationRepository).saveConfiguration(ConfigurationType.ARTIFICIAL_INTELLIGENCE, config);
+    }
+
 }

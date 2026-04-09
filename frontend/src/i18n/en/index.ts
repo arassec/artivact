@@ -61,6 +61,7 @@ export default {
       collectionExport: "Collection Export",
       collectionExports: "Collection Exports",
       configuration: {
+        ai: "AI configuration",
         appearance: "Appearance configuration",
         exchange: "Exchange configuration",
         license: "License configuration",
@@ -240,6 +241,23 @@ export default {
   ErrorNotFoundPage: {
     heading: "404",
     description: "Page not found...",
+  },
+
+  AiConfigurationPage: {
+    heading: "Artificial Intelligence",
+    configuration: {
+      heading: "AI Configuration",
+      description:
+        "Here you can configure the artificial intelligence integration for features like automatic translation and text-to-speech.",
+    },
+    fields: {
+      enabled: "Enable Artificial Intelligence",
+      apiKey: "API Key",
+      generalContext: "General Context",
+      translationPrompt: "Translation Prompt",
+      ttsPrompt: "TTS Prompt",
+      ttsVoice: "TTS Voice",
+    },
   },
 
   ExchangeConfigurationPage: {
@@ -938,6 +956,7 @@ export default {
     appearance: "Appearance",
     peripherals: "Peripherals",
     exchange: "Exchange",
+    ai: "Artificial Intelligence",
     maintenance: "Maintenance",
     locale: "Locale",
     exhib: "Exhib.",

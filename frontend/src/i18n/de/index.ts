@@ -61,6 +61,7 @@ export default {
       collectionExport: 'Sammlungsexport',
       collectionExports: 'Sammlungsexporte',
       configuration: {
+        ai: 'KI-Konfiguration',
         appearance: 'Darstellungskonfiguration',
         exchange: 'Austausch-Konfiguration',
         license: 'Lizenzkonfiguration',
@@ -232,6 +233,23 @@ export default {
   ErrorNotFoundPage: {
     heading: '404',
     description: 'Seite nicht gefunden...',
+  },
+
+  AiConfigurationPage: {
+    heading: 'Künstliche Intelligenz',
+    configuration: {
+      heading: 'KI-Konfiguration',
+      description:
+        'Hier können Sie die Integration der künstlichen Intelligenz für Funktionen wie automatische Übersetzung und Text-to-Speech konfigurieren.',
+    },
+    fields: {
+      enabled: 'Künstliche Intelligenz aktivieren',
+      apiKey: 'API-Schlüssel',
+      generalContext: 'Allgemeiner Kontext',
+      translationPrompt: 'Übersetzungs-Prompt',
+      ttsPrompt: 'TTS-Prompt',
+      ttsVoice: 'TTS-Stimme',
+    },
   },
 
   ExchangeConfigurationPage: {
@@ -916,6 +934,7 @@ export default {
     appearance: 'Darstellung',
     peripherals: 'Peripherie',
     exchange: 'Austausch',
+    ai: 'Künstliche Intelligenz',
     maintenance: 'Wartung',
     locale: 'Sprache',
     exhib: 'Ausstellung',
