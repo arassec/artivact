@@ -9,6 +9,7 @@ import com.arassec.artivact.application.service.BaseExportService;
 import com.arassec.artivact.domain.model.exchange.ExportContext;
 import com.arassec.artivact.domain.model.item.Item;
 import com.arassec.artivact.domain.model.misc.DirectoryDefinitions;
+import com.arassec.artivact.domain.model.page.ContentAudioProvider;
 import com.arassec.artivact.domain.model.page.PageContent;
 import com.arassec.artivact.domain.model.page.Widget;
 import com.arassec.artivact.domain.model.page.widget.*;
@@ -110,17 +111,20 @@ public class PageExportService extends BaseExportService implements ExportPageUs
             case ItemSearchWidget itemSearchWidget -> {
                 cleanupTranslations(itemSearchWidget.getHeading());
                 cleanupTranslations(itemSearchWidget.getContent());
+                copyContentAudioFiles(exportContext, widget, itemSearchWidget);
                 cleanupTranslations(itemSearchWidget.getContentAudio());
                 exportItemSearchWidgetsItems(exportContext, itemSearchWidget);
             }
             case TextWidget textWidget -> {
                 cleanupTranslations(textWidget.getHeading());
                 cleanupTranslations(textWidget.getContent());
+                copyContentAudioFiles(exportContext, widget, textWidget);
                 cleanupTranslations(textWidget.getContentAudio());
             }
             case ImageGalleryWidget imageGalleryWidget -> {
                 cleanupTranslations(imageGalleryWidget.getHeading());
                 cleanupTranslations(imageGalleryWidget.getContent());
+                copyContentAudioFiles(exportContext, widget, imageGalleryWidget);
                 cleanupTranslations(imageGalleryWidget.getContentAudio());
                 imageGalleryWidget.getImages().forEach(image -> copyWidgetFile(exportContext, imageGalleryWidget, image));
             }
@@ -154,6 +158,24 @@ public class PageExportService extends BaseExportService implements ExportPageUs
 
                 writeJsonFile(widgetExportDir.resolve(SEARCH_RESULT_FILENAME_JSON),
                         searchResult.stream().map(Item::getId).filter(itemId -> !excludedItemIds.contains(itemId)).toArray());
+            }
+        }
+    }
+
+    /**
+     * Copies all content audio files referenced in a {@link ContentAudioProvider}'s contentAudio property.
+     * If the contentAudio is null, no files are copied.
+     *
+     * @param exportContext        Export context.
+     * @param widget               The widget to copy files from.
+     * @param contentAudioProvider The content audio provider containing audio file references.
+     */
+    private void copyContentAudioFiles(ExportContext exportContext, Widget widget, ContentAudioProvider contentAudioProvider) {
+        if (contentAudioProvider.getContentAudio() != null) {
+            copyWidgetFile(exportContext, widget, contentAudioProvider.getContentAudio().getValue());
+            if (contentAudioProvider.getContentAudio().getTranslations() != null) {
+                contentAudioProvider.getContentAudio().getTranslations().values()
+                        .forEach(audioFile -> copyWidgetFile(exportContext, widget, audioFile));
             }
         }
     }

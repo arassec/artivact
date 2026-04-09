@@ -5,6 +5,7 @@ import com.arassec.artivact.application.port.in.page.SavePageContentUseCase;
 import com.arassec.artivact.application.port.in.page.UpdatePageAliasUseCase;
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
+import com.arassec.artivact.domain.model.TranslatableString;
 import com.arassec.artivact.domain.model.exchange.ImportContext;
 import com.arassec.artivact.domain.model.misc.DirectoryDefinitions;
 import com.arassec.artivact.domain.model.page.PageContent;
@@ -278,5 +279,83 @@ class PageImportServiceTest {
         verify(fileRepository).copy(textWidgetSource, textWidgetTarget);
         verify(savePageContentUseCase).savePageContent("page-6", Set.of(), pageContent);
         verify(updatePageAliasUseCase).updatePageAlias("page-6", "alias-6");
+    }
+
+    @Test
+    void testImportPageWithItemSearchWidgetImportsContentAudioFiles() {
+        // Given
+        ImportContext importContext = ImportContext.builder()
+                .importDir(Path.of("import"))
+                .build();
+
+        ItemSearchWidget itemSearchWidget = new ItemSearchWidget();
+        itemSearchWidget.setId("search-audio-widget");
+
+        TranslatableString contentAudio = new TranslatableString();
+        contentAudio.setValue("audio-default.mp3");
+        contentAudio.setTranslations(new java.util.HashMap<>(java.util.Map.of("de", "audio-de.mp3", "fr", "audio-fr.mp3")));
+        itemSearchWidget.setContentAudio(contentAudio);
+
+        PageContent pageContent = new PageContent();
+        pageContent.setWidgets(new ArrayList<>(List.of(itemSearchWidget)));
+
+        Path pageDir = Path.of("page-dir");
+        when(fileRepository.getDirFromId(Path.of("import", DirectoryDefinitions.PAGES_DIR), "page-7"))
+                .thenReturn(pageDir);
+        when(fileRepository.read(pageDir.resolve(PAGE_EXCHANGE_FILENAME_JSON))).thenReturn("{}");
+        when(jsonMapper.readValue("{}", PageContent.class)).thenReturn(pageContent);
+
+        // Search result setup
+        Path widgetDir = Path.of("search-audio-widget-dir");
+        Path searchResultJson = widgetDir.resolve(SEARCH_RESULT_FILENAME_JSON);
+        when(fileRepository.getDirFromId(Path.of("import", DirectoryDefinitions.WIDGETS_DIR), "search-audio-widget"))
+                .thenReturn(widgetDir);
+        when(fileRepository.exists(searchResultJson)).thenReturn(false);
+
+        // Content audio setup
+        Path widgetTarget = Path.of("search-audio-widget-target");
+        when(useProjectDirsUseCase.getProjectRoot()).thenReturn(Path.of("project"));
+        when(fileRepository.getDirFromId(Path.of("project", DirectoryDefinitions.WIDGETS_DIR), "search-audio-widget"))
+                .thenReturn(widgetTarget);
+
+        // When
+        service.importPage(importContext, "page-7", null);
+
+        // Then
+        verify(fileRepository).copy(widgetDir.resolve("audio-default.mp3"), widgetTarget.resolve("audio-default.mp3"));
+        verify(fileRepository).copy(widgetDir.resolve("audio-de.mp3"), widgetTarget.resolve("audio-de.mp3"));
+        verify(fileRepository).copy(widgetDir.resolve("audio-fr.mp3"), widgetTarget.resolve("audio-fr.mp3"));
+    }
+
+    @Test
+    void testImportPageWithItemSearchWidgetNullContentAudioSkipsCopy() {
+        // Given
+        ImportContext importContext = ImportContext.builder()
+                .importDir(Path.of("import"))
+                .build();
+
+        ItemSearchWidget itemSearchWidget = new ItemSearchWidget();
+        itemSearchWidget.setId("search-no-audio");
+        itemSearchWidget.setContentAudio(null);
+
+        PageContent pageContent = new PageContent();
+        pageContent.setWidgets(new ArrayList<>(List.of(itemSearchWidget)));
+
+        Path pageDir = Path.of("page-dir");
+        when(fileRepository.getDirFromId(Path.of("import", DirectoryDefinitions.PAGES_DIR), "page-8"))
+                .thenReturn(pageDir);
+        when(fileRepository.read(pageDir.resolve(PAGE_EXCHANGE_FILENAME_JSON))).thenReturn("{}");
+        when(jsonMapper.readValue("{}", PageContent.class)).thenReturn(pageContent);
+
+        Path widgetDir = Path.of("search-no-audio-dir");
+        when(fileRepository.getDirFromId(Path.of("import", DirectoryDefinitions.WIDGETS_DIR), "search-no-audio"))
+                .thenReturn(widgetDir);
+        when(fileRepository.exists(widgetDir.resolve(SEARCH_RESULT_FILENAME_JSON))).thenReturn(false);
+
+        // When
+        service.importPage(importContext, "page-8", null);
+
+        // Then
+        verify(fileRepository, never()).copy(any(Path.class), any(Path.class));
     }
 }

@@ -8,6 +8,7 @@ import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.model.exchange.ImportContext;
 import com.arassec.artivact.domain.model.misc.DirectoryDefinitions;
+import com.arassec.artivact.domain.model.page.ContentAudioProvider;
 import com.arassec.artivact.domain.model.page.PageContent;
 import com.arassec.artivact.domain.model.page.widget.ItemSearchWidget;
 import lombok.RequiredArgsConstructor;
@@ -90,6 +91,9 @@ public class PageImportService implements ImportPageUseCase {
                     });
                     itemIds.forEach(itemId -> importItemUseCase.importItem(importContext, itemId));
                 }
+
+                // Import content audio files for the widget:
+                importContentAudioFiles(importContext, itemSearchWidget.getId(), itemSearchWidget);
             } else {
                 // Import the widget's associated files:
                 Path widgetSource = fileRepository.getDirFromId(importContext.getImportDir()
@@ -107,6 +111,47 @@ public class PageImportService implements ImportPageUseCase {
 
         if (StringUtils.hasText(pageAlias)) {
             updatePageAliasUseCase.updatePageAlias(pageId, pageAlias);
+        }
+    }
+
+    /**
+     * Imports content audio files for a {@link ContentAudioProvider} widget by copying each referenced audio file
+     * from the import directory to the project widget directory. If the widget's contentAudio is null, no files
+     * are copied.
+     *
+     * @param importContext        The import context.
+     * @param widgetId             The widget ID.
+     * @param contentAudioProvider The content audio provider containing audio file references.
+     */
+    private void importContentAudioFiles(ImportContext importContext, String widgetId, ContentAudioProvider contentAudioProvider) {
+        if (contentAudioProvider.getContentAudio() == null) {
+            return;
+        }
+
+        Path widgetSource = fileRepository.getDirFromId(importContext.getImportDir()
+                .resolve(DirectoryDefinitions.WIDGETS_DIR), widgetId);
+        Path widgetTarget = fileRepository.getDirFromId(useProjectDirsUseCase.getProjectRoot()
+                .resolve(DirectoryDefinitions.WIDGETS_DIR), widgetId);
+
+        copyAudioFile(widgetSource, widgetTarget, contentAudioProvider.getContentAudio().getValue());
+
+        if (contentAudioProvider.getContentAudio().getTranslations() != null) {
+            contentAudioProvider.getContentAudio().getTranslations().values()
+                    .forEach(audioFile -> copyAudioFile(widgetSource, widgetTarget, audioFile));
+        }
+    }
+
+    /**
+     * Copies a single audio file from source to target directory.
+     *
+     * @param sourceDir The source directory.
+     * @param targetDir The target directory.
+     * @param filename  The filename to copy.
+     */
+    private void copyAudioFile(Path sourceDir, Path targetDir, String filename) {
+        if (StringUtils.hasText(filename)) {
+            fileRepository.createDirIfRequired(targetDir);
+            fileRepository.copy(sourceDir.resolve(filename), targetDir.resolve(filename));
         }
     }
 
