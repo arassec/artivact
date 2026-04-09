@@ -933,6 +933,7 @@ export default {
     tooltip: {
       more: "Show details",
       less: "Hide details",
+      translate: "Translate text with AI automatically.",
     },
   },
 

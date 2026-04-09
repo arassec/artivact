@@ -164,7 +164,8 @@ export interface ApplicationSettings {
   license: License,
   profiles: Profiles,
   availableRoles: string[],
-  syncAvailable: boolean
+  syncAvailable: boolean,
+  aiEnabled: boolean
 }
 
 export enum PeripheralImplementation {
