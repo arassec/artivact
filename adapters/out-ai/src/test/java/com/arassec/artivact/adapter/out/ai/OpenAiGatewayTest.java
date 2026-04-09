@@ -4,6 +4,7 @@ import com.arassec.artivact.domain.exception.ArtivactException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -88,6 +89,65 @@ class OpenAiGatewayTest {
 
         assertThat(result).isEqualTo("AI response");
         verify(openAiChatModel).call("test prompt");
+    }
+
+    /**
+     * Tests that the translate prompt sent to the chat model includes the target locale.
+     */
+    @Test
+    void translatePromptIncludesTargetLocale() {
+        when(openAiChatModel.call(anyString())).thenReturn("Bonjour");
+
+        ArgumentCaptor<String> promptCaptor = ArgumentCaptor.forClass(String.class);
+
+        openAiGateway.translate("Hello", "fr");
+
+        verify(openAiChatModel).call(promptCaptor.capture());
+        assertThat(promptCaptor.getValue()).contains("fr");
+    }
+
+    /**
+     * Tests that the translate prompt sent to the chat model includes the source text.
+     */
+    @Test
+    void translatePromptIncludesSourceText() {
+        when(openAiChatModel.call(anyString())).thenReturn("Hola");
+
+        ArgumentCaptor<String> promptCaptor = ArgumentCaptor.forClass(String.class);
+
+        openAiGateway.translate("Good morning", "es");
+
+        verify(openAiChatModel).call(promptCaptor.capture());
+        assertThat(promptCaptor.getValue()).contains("Good morning");
+    }
+
+    /**
+     * Tests that the gateway passes the content (not the prompt parameter) to the speech model.
+     */
+    @Test
+    void convertToAudioUsesContentForSpeechGeneration(@TempDir Path tempDir) {
+        byte[] audioBytes = new byte[]{10, 20, 30};
+        when(openAiAudioSpeechModel.call("actual content")).thenReturn(audioBytes);
+
+        Path targetFile = tempDir.resolve("output.mp3");
+        openAiGateway.convertToAudio("system prompt", "actual content", targetFile);
+
+        verify(openAiAudioSpeechModel).call("actual content");
+        assertThat(targetFile).hasBinaryContent(audioBytes);
+    }
+
+    /**
+     * Tests that an empty file is created when the speech model returns no audio bytes.
+     */
+    @Test
+    void convertToAudioCreatesEmptyFileWhenNoBytesReturned(@TempDir Path tempDir) {
+        when(openAiAudioSpeechModel.call(anyString())).thenReturn(new byte[0]);
+
+        Path targetFile = tempDir.resolve("empty-audio.mp3");
+        openAiGateway.convertToAudio("prompt", "silent", targetFile);
+
+        assertThat(targetFile).exists();
+        assertThat(targetFile).hasSize(0);
     }
 
 }
