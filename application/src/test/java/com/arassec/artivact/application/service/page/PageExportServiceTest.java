@@ -380,6 +380,62 @@ class PageExportServiceTest {
         assertThat(widget.getContent().getTranslatedValue()).isNull();
     }
 
+    @Test
+    void testExportPageWithTextWidgetCopiesContentAudioFiles() {
+        // Given
+        TextWidget widget = new TextWidget();
+        widget.setId("text-audio");
+        widget.setRestrictions(Set.of());
+        widget.setHeading(createTranslatableString("h", null));
+        widget.setContent(createTranslatableString("c", null));
+
+        TranslatableString contentAudio = new TranslatableString();
+        contentAudio.setValue("audio-default.mp3");
+        contentAudio.setTranslations(new java.util.HashMap<>(java.util.Map.of("de", "audio-de.mp3", "fr", "audio-fr.mp3")));
+        widget.setContentAudio(contentAudio);
+
+        PageContent content = createPageContent("page-text-audio", Set.of(), widget);
+        ExportContext ctx = createContext(false);
+
+        Path sourceDir = Path.of("source-text-audio");
+        Path targetDir = Path.of("target-text-audio");
+
+        when(useProjectDirsUseCase.getProjectRoot()).thenReturn(PROJECT_ROOT_PATH);
+        when(fileRepository.getDirFromId(PROJECT_ROOT_PATH.resolve(DirectoryDefinitions.WIDGETS_DIR), "text-audio"))
+                .thenReturn(sourceDir);
+        when(fileRepository.getDirFromId(exportDir.resolve(DirectoryDefinitions.WIDGETS_DIR), "text-audio"))
+                .thenReturn(targetDir);
+
+        // When
+        service.exportPage(ctx, "page-text-audio", content);
+
+        // Then
+        verify(fileRepository).copy(sourceDir.resolve("audio-default.mp3"), targetDir.resolve("audio-default.mp3"));
+        verify(fileRepository).copy(sourceDir.resolve("audio-de.mp3"), targetDir.resolve("audio-de.mp3"));
+        verify(fileRepository).copy(sourceDir.resolve("audio-fr.mp3"), targetDir.resolve("audio-fr.mp3"));
+        assertThat(widget.getContentAudio().getTranslatedValue()).isNull();
+    }
+
+    @Test
+    void testExportPageWithTextWidgetNullContentAudioDoesNotCopy() {
+        // Given
+        TextWidget widget = new TextWidget();
+        widget.setId("text-no-audio");
+        widget.setRestrictions(Set.of());
+        widget.setHeading(createTranslatableString("h", null));
+        widget.setContent(createTranslatableString("c", null));
+        widget.setContentAudio(null);
+
+        PageContent content = createPageContent("page-text-no-audio", Set.of(), widget);
+        ExportContext ctx = createContext(false);
+
+        // When
+        service.exportPage(ctx, "page-text-no-audio", content);
+
+        // Then
+        verify(fileRepository, never()).copy(any(Path.class), any(Path.class));
+    }
+
     // --- ImageGalleryWidget ---
 
     @Test
@@ -434,6 +490,42 @@ class PageExportServiceTest {
 
         // Then
         verify(fileRepository, never()).copy(any(Path.class), any(Path.class));
+    }
+
+    @Test
+    void testExportPageWithImageGalleryWidgetCopiesContentAudioFiles() {
+        // Given
+        ImageGalleryWidget widget = new ImageGalleryWidget();
+        widget.setId("gallery-audio");
+        widget.setRestrictions(Set.of());
+        widget.setImages(Collections.emptyList());
+        widget.setHeading(createTranslatableString("h", null));
+        widget.setContent(createTranslatableString("c", null));
+
+        TranslatableString contentAudio = new TranslatableString();
+        contentAudio.setValue("gallery-audio-default.mp3");
+        contentAudio.setTranslations(new java.util.HashMap<>(java.util.Map.of("en", "gallery-audio-en.mp3")));
+        widget.setContentAudio(contentAudio);
+
+        PageContent content = createPageContent("page-gallery-audio", Set.of(), widget);
+        ExportContext ctx = createContext(false);
+
+        Path sourceDir = Path.of("source-gallery-audio");
+        Path targetDir = Path.of("target-gallery-audio");
+
+        when(useProjectDirsUseCase.getProjectRoot()).thenReturn(PROJECT_ROOT_PATH);
+        when(fileRepository.getDirFromId(PROJECT_ROOT_PATH.resolve(DirectoryDefinitions.WIDGETS_DIR), "gallery-audio"))
+                .thenReturn(sourceDir);
+        when(fileRepository.getDirFromId(exportDir.resolve(DirectoryDefinitions.WIDGETS_DIR), "gallery-audio"))
+                .thenReturn(targetDir);
+
+        // When
+        service.exportPage(ctx, "page-gallery-audio", content);
+
+        // Then
+        verify(fileRepository).copy(sourceDir.resolve("gallery-audio-default.mp3"), targetDir.resolve("gallery-audio-default.mp3"));
+        verify(fileRepository).copy(sourceDir.resolve("gallery-audio-en.mp3"), targetDir.resolve("gallery-audio-en.mp3"));
+        assertThat(widget.getContentAudio().getTranslatedValue()).isNull();
     }
 
     // --- ItemSearchWidget ---
@@ -597,6 +689,43 @@ class PageExportServiceTest {
 
         // Then
         verify(exportItemUseCase, never()).exportItem(any(), any(Item.class));
+    }
+
+    @Test
+    void testExportPageWithItemSearchWidgetCopiesContentAudioFiles() {
+        // Given
+        ItemSearchWidget widget = new ItemSearchWidget();
+        widget.setId("search-audio");
+        widget.setRestrictions(Set.of());
+        widget.setSearchTerm("query");
+        widget.setMaxResults(5);
+        widget.setHeading(createTranslatableString("h", null));
+        widget.setContent(createTranslatableString("c", null));
+
+        TranslatableString contentAudio = new TranslatableString();
+        contentAudio.setValue("search-audio-default.mp3");
+        contentAudio.setTranslations(new java.util.HashMap<>(java.util.Map.of("es", "search-audio-es.mp3")));
+        widget.setContentAudio(contentAudio);
+
+        PageContent content = createPageContent("page-search-audio", Set.of(), widget);
+        ExportContext ctx = createContext(false, true);
+
+        Path sourceDir = Path.of("source-search-audio");
+        Path targetDir = Path.of("target-search-audio");
+
+        when(useProjectDirsUseCase.getProjectRoot()).thenReturn(PROJECT_ROOT_PATH);
+        when(fileRepository.getDirFromId(PROJECT_ROOT_PATH.resolve(DirectoryDefinitions.WIDGETS_DIR), "search-audio"))
+                .thenReturn(sourceDir);
+        when(fileRepository.getDirFromId(exportDir.resolve(DirectoryDefinitions.WIDGETS_DIR), "search-audio"))
+                .thenReturn(targetDir);
+
+        // When
+        service.exportPage(ctx, "page-search-audio", content);
+
+        // Then
+        verify(fileRepository).copy(sourceDir.resolve("search-audio-default.mp3"), targetDir.resolve("search-audio-default.mp3"));
+        verify(fileRepository).copy(sourceDir.resolve("search-audio-es.mp3"), targetDir.resolve("search-audio-es.mp3"));
+        assertThat(widget.getContentAudio().getTranslatedValue()).isNull();
     }
 
     // --- Mixed widgets ---
