@@ -28,6 +28,7 @@
         <dependency>
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-starter-model-openai</artifactId>
+            <!-- Auto-configuration is disabled; the OpenAiChatModel bean is manually created in AiAdapterConfiguration. -->
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework.ai</groupId>
