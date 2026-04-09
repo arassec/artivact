@@ -4,6 +4,7 @@ import com.arassec.artivact.adapter.in.rest.controller.BaseController;
 import com.arassec.artivact.adapter.in.rest.model.ApplicationSettings;
 import com.arassec.artivact.adapter.in.rest.model.Profiles;
 import com.arassec.artivact.adapter.in.rest.model.UserData;
+import com.arassec.artivact.application.port.in.ai.TestAiConfigurationUseCase;
 import com.arassec.artivact.application.port.in.ai.TranslateTextUseCase;
 import com.arassec.artivact.application.port.in.configuration.*;
 import com.arassec.artivact.application.port.in.project.CleanupExportFilesUseCase;
@@ -136,6 +137,11 @@ public class ConfigurationController extends BaseController {
      * Use case for translating text using AI.
      */
     private final TranslateTextUseCase translateTextUseCase;
+
+    /**
+     * Use case for testing AI configuration.
+     */
+    private final TestAiConfigurationUseCase testAiConfigurationUseCase;
 
     /**
      * Returns the current appearance configuration.
@@ -460,6 +466,40 @@ public class ConfigurationController extends BaseController {
     @PostMapping(value = "/ai/translate/{targetLocale}", produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> translateText(@PathVariable String targetLocale, @RequestBody String text) {
         return ResponseEntity.ok(translateTextUseCase.translateText(text, targetLocale));
+    }
+
+    /**
+     * Tests the AI translation by translating the given text into the specified locale.
+     *
+     * @param targetLocale The target locale for the translation.
+     * @param text         The text to translate.
+     * @return The translated text.
+     */
+    @PostMapping(value = "/ai/test/translate/{targetLocale}", produces = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity<String> testAiTranslation(@PathVariable String targetLocale, @RequestBody String text) {
+        return ResponseEntity.ok(testAiConfigurationUseCase.testTranslation(text, targetLocale));
+    }
+
+    /**
+     * Tests the AI text-to-speech by generating an audio file from the given text.
+     *
+     * @param targetLocale The target locale for the audio generation.
+     * @param text         The text to convert to audio.
+     */
+    @PostMapping(value = "/ai/test/tts/{targetLocale}")
+    public void testAiTts(@PathVariable String targetLocale, @RequestBody String text) {
+        testAiConfigurationUseCase.testTts(text, targetLocale);
+    }
+
+    /**
+     * Returns the generated test audio file.
+     *
+     * @return The audio file content.
+     */
+    @GetMapping(value = "/ai/test/tts/audio", produces = "audio/mpeg")
+    public ResponseEntity<byte[]> getTestTtsAudio() {
+        byte[] audioBytes = testAiConfigurationUseCase.loadTestTtsAudio();
+        return ResponseEntity.ok(audioBytes);
     }
 
     /**

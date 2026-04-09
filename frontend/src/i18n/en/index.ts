@@ -258,6 +258,15 @@ export default {
       ttsPrompt: "TTS Prompt",
       ttsVoice: "TTS Voice",
     },
+    test: {
+      description:
+        "You can test the AI configuration below. Enter a text and select whether to test translation or text-to-speech. The configured prompts and voice will be used for the test.",
+      textInput: "Test Text",
+      translationMode: "Translation",
+      ttsMode: "Text-to-Speech",
+      translationResult: "Translation Result",
+      testFailed: "AI test failed.",
+    },
   },
 
   ExchangeConfigurationPage: {

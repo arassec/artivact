@@ -1,6 +1,7 @@
 package com.arassec.artivact.application.service.ai;
 
 import com.arassec.artivact.application.port.in.ai.ConvertToAudioUseCase;
+import com.arassec.artivact.application.port.in.ai.TestAiConfigurationUseCase;
 import com.arassec.artivact.application.port.in.ai.TranslateTextUseCase;
 import com.arassec.artivact.application.port.in.configuration.LoadAiConfigurationUseCase;
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
@@ -26,7 +27,12 @@ import java.nio.file.Path;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class AiService implements TranslateTextUseCase, ConvertToAudioUseCase {
+public class AiService implements TranslateTextUseCase, ConvertToAudioUseCase, TestAiConfigurationUseCase {
+
+    /**
+     * The name of the test audio file.
+     */
+    private static final String TEST_AUDIO_FILENAME = "audio-content.mp3";
 
     /**
      * The AI gateway for interacting with the AI provider.
@@ -117,6 +123,44 @@ public class AiService implements TranslateTextUseCase, ConvertToAudioUseCase {
         pageRepository.save(page);
 
         return audioFilename;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String testTranslation(String text, String targetLocale) {
+        AiConfiguration aiConfiguration = loadAiConfigurationUseCase.loadAiConfiguration();
+        String translationPrompt = aiConfiguration.getTranslationPrompt().replace("{locale}", targetLocale);
+        String fullPrompt = aiConfiguration.getGeneralContext() + "\n\n" + translationPrompt + "\n\n" + text;
+        return aiGateway.chat(fullPrompt);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void testTts(String text, String targetLocale) {
+        AiConfiguration aiConfiguration = loadAiConfigurationUseCase.loadAiConfiguration();
+        String prompt = aiConfiguration.getTtsPrompt().replace("{locale}", targetLocale);
+
+        Path tempDir = useProjectDirsUseCase.getTempDir();
+        fileRepository.createDirIfRequired(tempDir);
+        Path targetFile = tempDir.resolve(TEST_AUDIO_FILENAME);
+
+        aiGateway.convertToAudio(prompt, text, targetFile);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public byte[] loadTestTtsAudio() {
+        Path audioFile = useProjectDirsUseCase.getTempDir().resolve(TEST_AUDIO_FILENAME);
+        if (!fileRepository.exists(audioFile)) {
+            throw new ArtivactException("Test audio file not found.");
+        }
+        return fileRepository.readBytes(audioFile);
     }
 
     /**

@@ -225,4 +225,64 @@ class AiServiceTest {
         assertThat(textWidget.getContentAudio().getValue()).isEqualTo("content-audio.mp3");
     }
 
+    /**
+     * Tests the translation test using the configured prompts.
+     */
+    @Test
+    void testTestTranslation() {
+        AiConfiguration aiConfig = new AiConfiguration();
+        aiConfig.setGeneralContext("You are a curator.");
+        aiConfig.setTranslationPrompt("Translate into '{locale}'.");
+        when(loadAiConfigurationUseCase.loadAiConfiguration()).thenReturn(aiConfig);
+        when(aiGateway.chat("You are a curator.\n\nTranslate into 'de'.\n\nHello")).thenReturn("Hallo");
+
+        String result = aiService.testTranslation("Hello", "de");
+
+        assertThat(result).isEqualTo("Hallo");
+        verify(aiGateway).chat("You are a curator.\n\nTranslate into 'de'.\n\nHello");
+    }
+
+    /**
+     * Tests the TTS test generates an audio file in the temp directory.
+     */
+    @Test
+    void testTestTts() {
+        AiConfiguration aiConfig = new AiConfiguration();
+        aiConfig.setTtsPrompt("Generate audio for '{locale}'.");
+        when(loadAiConfigurationUseCase.loadAiConfiguration()).thenReturn(aiConfig);
+        when(useProjectDirsUseCase.getTempDir()).thenReturn(Path.of("/temp"));
+
+        aiService.testTts("Hello World", "en");
+
+        verify(fileRepository).createDirIfRequired(Path.of("/temp"));
+        verify(aiGateway).convertToAudio(eq("Generate audio for 'en'."), eq("Hello World"), eq(Path.of("/temp/audio-content.mp3")));
+    }
+
+    /**
+     * Tests loading the test TTS audio file.
+     */
+    @Test
+    void testLoadTestTtsAudio() {
+        when(useProjectDirsUseCase.getTempDir()).thenReturn(Path.of("/temp"));
+        when(fileRepository.exists(Path.of("/temp/audio-content.mp3"))).thenReturn(true);
+        when(fileRepository.readBytes(Path.of("/temp/audio-content.mp3"))).thenReturn(new byte[]{1, 2, 3});
+
+        byte[] result = aiService.loadTestTtsAudio();
+
+        assertThat(result).containsExactly(1, 2, 3);
+    }
+
+    /**
+     * Tests that loading test TTS audio throws an exception when file does not exist.
+     */
+    @Test
+    void testLoadTestTtsAudioFileNotFound() {
+        when(useProjectDirsUseCase.getTempDir()).thenReturn(Path.of("/temp"));
+        when(fileRepository.exists(Path.of("/temp/audio-content.mp3"))).thenReturn(false);
+
+        assertThatThrownBy(() -> aiService.loadTestTtsAudio())
+                .isInstanceOf(ArtivactException.class)
+                .hasMessageContaining("Test audio file not found");
+    }
+
 }

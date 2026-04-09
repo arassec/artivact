@@ -2,6 +2,7 @@ package com.arassec.artivact.adapter.in.rest.controller.configuration;
 
 import com.arassec.artivact.adapter.in.rest.model.ApplicationSettings;
 import com.arassec.artivact.adapter.in.rest.model.UserData;
+import com.arassec.artivact.application.port.in.ai.TestAiConfigurationUseCase;
 import com.arassec.artivact.application.port.in.ai.TranslateTextUseCase;
 import com.arassec.artivact.application.port.in.configuration.*;
 import com.arassec.artivact.application.port.in.project.CleanupExportFilesUseCase;
@@ -95,6 +96,9 @@ class ConfigurationControllerTest {
 
     @Mock
     private TranslateTextUseCase translateTextUseCase;
+
+    @Mock
+    private TestAiConfigurationUseCase testAiConfigurationUseCase;
 
     @InjectMocks
     private ConfigurationController controller;
@@ -349,6 +353,33 @@ class ConfigurationControllerTest {
 
         assertThat(result.getBody()).isEqualTo("Hallo");
         verify(translateTextUseCase).translateText("Hello", "de");
+    }
+
+    @Test
+    void testTestAiTranslation() {
+        when(testAiConfigurationUseCase.testTranslation("Hello", "de")).thenReturn("Hallo");
+
+        ResponseEntity<String> result = controller.testAiTranslation("de", "Hello");
+
+        assertThat(result.getBody()).isEqualTo("Hallo");
+        verify(testAiConfigurationUseCase).testTranslation("Hello", "de");
+    }
+
+    @Test
+    void testTestAiTts() {
+        controller.testAiTts("en", "Hello World");
+
+        verify(testAiConfigurationUseCase).testTts("Hello World", "en");
+    }
+
+    @Test
+    void testGetTestTtsAudio() {
+        byte[] audioBytes = new byte[]{1, 2, 3};
+        when(testAiConfigurationUseCase.loadTestTtsAudio()).thenReturn(audioBytes);
+
+        ResponseEntity<byte[]> result = controller.getTestTtsAudio();
+
+        assertThat(result.getBody()).containsExactly(1, 2, 3);
     }
 
 }

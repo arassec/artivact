@@ -25,4 +25,12 @@ public interface AiGateway {
      */
     void convertToAudio(String prompt, String content, Path targetFile);
 
+    /**
+     * Sends a raw prompt to the AI chat model and returns the response.
+     *
+     * @param prompt The prompt to send.
+     * @return The AI model's response.
+     */
+    String chat(String prompt);
+
 }

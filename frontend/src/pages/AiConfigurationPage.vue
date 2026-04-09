@@ -64,6 +64,55 @@
             @click="saveAiConfiguration()"
           />
         </div>
+
+        <div class="q-mb-lg">
+          {{ $t('AiConfigurationPage.test.description') }}
+        </div>
+
+        <div class="row items-center q-mb-lg">
+          <div class="col">
+            <q-input
+              outlined
+              :label="$t('AiConfigurationPage.test.textInput')"
+              v-model="testTextRef"
+            />
+          </div>
+          <div class="col-auto q-ml-md">
+            <q-toggle
+              v-model="testTtsModeRef"
+              :false-value="false"
+              :true-value="true"
+              :label="testTtsModeRef ? $t('AiConfigurationPage.test.ttsMode') : $t('AiConfigurationPage.test.translationMode')"
+            />
+          </div>
+          <div class="col-auto q-ml-md">
+            <q-btn
+              round
+              icon="smart_toy"
+              color="primary"
+              @click="runTest()"
+            />
+          </div>
+        </div>
+
+        <div v-if="translationResultRef" class="q-mb-lg">
+          <q-field
+            outlined
+            :label="$t('AiConfigurationPage.test.translationResult')"
+            stack-label
+          >
+            <template v-slot:control>
+              <div class="self-center full-width">
+                {{ translationResultRef }}
+              </div>
+            </template>
+          </q-field>
+        </div>
+
+        <div v-if="audioUrlRef" class="q-mb-lg">
+          <audio controls :src="audioUrlRef" class="full-width"></audio>
+        </div>
+
       </div>
     </div>
   </artivact-content>
@@ -76,11 +125,17 @@ import {onMounted, ref, Ref} from 'vue';
 import {AiConfiguration} from '../components/artivact-models';
 import {api} from '../boot/axios';
 import {useI18n} from 'vue-i18n';
+import {useLocaleStore} from '../stores/locale';
 
 const quasar = useQuasar();
 const i18n = useI18n();
+const localeStore = useLocaleStore();
 
 const aiConfigurationRef: Ref<AiConfiguration | null> = ref(null);
+const testTextRef: Ref<string> = ref('');
+const testTtsModeRef: Ref<boolean> = ref(false);
+const translationResultRef: Ref<string> = ref('');
+const audioUrlRef: Ref<string> = ref('');
 
 function loadAiConfiguration() {
   api
@@ -120,6 +175,70 @@ function saveAiConfiguration() {
         message: i18n.t('Common.messages.saving.failed', {
           item: i18n.t('Common.items.configuration.ai'),
         }),
+        icon: 'report_problem',
+      });
+    });
+}
+
+function runTest() {
+  const locale = localeStore.selectedLocale || 'en';
+
+  // Save the configuration first so the test uses the current values.
+  api
+    .post('/api/configuration/ai', aiConfigurationRef.value)
+    .then(() => {
+      if (testTtsModeRef.value) {
+        runTtsTest(locale);
+      } else {
+        runTranslationTest(locale);
+      }
+    })
+    .catch(() => {
+      quasar.notify({
+        color: 'negative',
+        position: 'bottom',
+        message: i18n.t('AiConfigurationPage.test.testFailed'),
+        icon: 'report_problem',
+      });
+    });
+}
+
+function runTranslationTest(locale: string) {
+  translationResultRef.value = '';
+  audioUrlRef.value = '';
+  api
+    .post('/api/configuration/ai/test/translate/' + locale, testTextRef.value, {
+      headers: {'Content-Type': 'text/plain'},
+    })
+    .then((response) => {
+      translationResultRef.value = response.data;
+    })
+    .catch(() => {
+      quasar.notify({
+        color: 'negative',
+        position: 'bottom',
+        message: i18n.t('AiConfigurationPage.test.testFailed'),
+        icon: 'report_problem',
+      });
+    });
+}
+
+function runTtsTest(locale: string) {
+  translationResultRef.value = '';
+  audioUrlRef.value = '';
+  api
+    .post('/api/configuration/ai/test/tts/' + locale, testTextRef.value, {
+      headers: {'Content-Type': 'text/plain'},
+    })
+    .then(() => {
+      audioUrlRef.value =
+        '/api/configuration/ai/test/tts/audio?t=' + Date.now();
+    })
+    .catch(() => {
+      quasar.notify({
+        color: 'negative',
+        position: 'bottom',
+        message: i18n.t('AiConfigurationPage.test.testFailed'),
         icon: 'report_problem',
       });
     });
