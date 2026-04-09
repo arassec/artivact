@@ -935,6 +935,9 @@ export default {
       less: "Hide details",
       translate: "Translate text with AI automatically.",
     },
+    messages: {
+      translationFailed: "AI translation failed.",
+    },
   },
 
   ArtivactRestrictionsEditor: {

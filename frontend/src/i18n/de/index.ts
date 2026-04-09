@@ -913,6 +913,9 @@ export default {
       less: 'Details ausblenden',
       translate: 'Text automatisch mit KI übersetzen.',
     },
+    messages: {
+      translationFailed: 'KI-Übersetzung fehlgeschlagen.',
+    },
   },
 
   ArtivactRestrictionsEditor: {

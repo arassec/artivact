@@ -453,11 +453,11 @@ public class ConfigurationController extends BaseController {
     /**
      * Translates the given text into the specified target locale using AI.
      *
-     * @param text         The text to translate.
      * @param targetLocale The target locale for the translation.
+     * @param text         The text to translate.
      * @return The translated text.
      */
-    @PostMapping(value = "/ai/translate/{targetLocale}")
+    @PostMapping(value = "/ai/translate/{targetLocale}", produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> translateText(@PathVariable String targetLocale, @RequestBody String text) {
         return ResponseEntity.ok(translateTextUseCase.translateText(text, targetLocale));
     }

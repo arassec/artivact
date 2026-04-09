@@ -126,6 +126,8 @@ import {BaseRestrictedObject, TranslatableString} from './artivact-models';
 import {useLocaleStore} from '../stores/locale';
 import {useApplicationSettingsStore} from '../stores/application-settings';
 import {api} from '../boot/axios';
+import {useQuasar} from 'quasar';
+import {useI18n} from 'vue-i18n';
 
 const props = defineProps({
   label: {
@@ -169,6 +171,8 @@ const props = defineProps({
 
 const localeStore = useLocaleStore();
 const applicationSettingsStore = useApplicationSettingsStore();
+const quasar = useQuasar();
+const i18n = useI18n();
 
 const translatableStringRef = toRef(props, 'translatableString');
 const restrictedItemRef = toRef(props, 'restrictedItem');
@@ -204,6 +208,14 @@ function translateText() {
       if (translatableStringRef.value && localeStore.selectedLocale) {
         translatableStringRef.value.translations[localeStore.selectedLocale] = response.data;
       }
+    })
+    .catch(() => {
+      quasar.notify({
+        color: 'negative',
+        position: 'bottom',
+        message: i18n.t('ArtivactRestrictedTranslatableItemEditor.messages.translationFailed'),
+        icon: 'report_problem',
+      });
     });
 }
 </script>
