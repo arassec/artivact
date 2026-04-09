@@ -19,6 +19,11 @@ import java.util.List;
 public class ImageGalleryWidget extends Widget implements FileProcessingWidget {
 
     /**
+     * The file extension for MP3 audio files.
+     */
+    private static final String MP3_EXTENSION = ".mp3";
+
+    /**
      * The heading of the widget.
      */
     private TranslatableString heading;
@@ -97,7 +102,7 @@ public class ImageGalleryWidget extends Widget implements FileProcessingWidget {
      */
     @Override
     public void processFile(String filename, FileProcessingOperation operation) {
-        if (filename != null && filename.toLowerCase().endsWith(".mp3")) {
+        if (filename != null && filename.toLowerCase().endsWith(MP3_EXTENSION)) {
             if (FileProcessingOperation.ADD.equals(operation)) {
                 this.contentAudio = filename;
             } else if (FileProcessingOperation.REMOVE.equals(operation)) {
