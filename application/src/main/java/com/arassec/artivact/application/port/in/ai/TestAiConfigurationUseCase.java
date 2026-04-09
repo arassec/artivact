@@ -6,15 +6,6 @@ package com.arassec.artivact.application.port.in.ai;
 public interface TestAiConfigurationUseCase {
 
     /**
-     * Tests the translation configuration by translating the given text into the specified locale.
-     *
-     * @param text         The text to translate.
-     * @param targetLocale The target locale for the translation.
-     * @return The translated text.
-     */
-    String testTranslation(String text, String targetLocale);
-
-    /**
      * Tests the text-to-speech configuration by generating an audio file from the given text.
      * The audio file is saved as 'audio-content.mp3' in the project's temp directory.
      *

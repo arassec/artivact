@@ -356,16 +356,6 @@ class ConfigurationControllerTest {
     }
 
     @Test
-    void testTestAiTranslation() {
-        when(testAiConfigurationUseCase.testTranslation("Hello", "de")).thenReturn("Hallo");
-
-        ResponseEntity<String> result = controller.testAiTranslation("de", "Hello");
-
-        assertThat(result.getBody()).isEqualTo("Hallo");
-        verify(testAiConfigurationUseCase).testTranslation("Hello", "de");
-    }
-
-    @Test
     void testTestAiTts() {
         controller.testAiTts("en", "Hello World");
 

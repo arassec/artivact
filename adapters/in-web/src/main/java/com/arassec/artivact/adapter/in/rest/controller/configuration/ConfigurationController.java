@@ -469,18 +469,6 @@ public class ConfigurationController extends BaseController {
     }
 
     /**
-     * Tests the AI translation by translating the given text into the specified locale.
-     *
-     * @param targetLocale The target locale for the translation.
-     * @param text         The text to translate.
-     * @return The translated text.
-     */
-    @PostMapping(value = "/ai/test/translate/{targetLocale}", produces = MediaType.TEXT_PLAIN_VALUE)
-    public ResponseEntity<String> testAiTranslation(@PathVariable String targetLocale, @RequestBody String text) {
-        return ResponseEntity.ok(testAiConfigurationUseCase.testTranslation(text, targetLocale));
-    }
-
-    /**
      * Tests the AI text-to-speech by generating an audio file from the given text.
      *
      * @param targetLocale The target locale for the audio generation.

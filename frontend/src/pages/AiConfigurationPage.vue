@@ -29,24 +29,8 @@
           outlined
           class="q-mb-lg"
           type="textarea"
-          :label="$t('AiConfigurationPage.fields.generalContext')"
-          v-model="aiConfigurationRef.generalContext"
-        />
-
-        <q-input
-          outlined
-          class="q-mb-lg"
-          type="textarea"
           :label="$t('AiConfigurationPage.fields.translationPrompt')"
           v-model="aiConfigurationRef.translationPrompt"
-        />
-
-        <q-input
-          outlined
-          class="q-mb-lg"
-          type="textarea"
-          :label="$t('AiConfigurationPage.fields.ttsPrompt')"
-          v-model="aiConfigurationRef.ttsPrompt"
         />
 
         <q-input
@@ -207,7 +191,7 @@ function runTranslationTest(locale: string) {
   translationResultRef.value = '';
   audioUrlRef.value = '';
   api
-    .post('/api/configuration/ai/test/translate/' + locale, testTextRef.value, {
+    .post('/api/configuration/ai/translate/' + locale, testTextRef.value, {
       headers: {'Content-Type': 'text/plain'},
     })
     .then((response) => {

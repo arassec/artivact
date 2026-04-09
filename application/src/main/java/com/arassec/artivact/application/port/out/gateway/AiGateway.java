@@ -1,5 +1,7 @@
 package com.arassec.artivact.application.port.out.gateway;
 
+import com.arassec.artivact.domain.model.configuration.AiConfiguration;
+
 import java.nio.file.Path;
 
 /**
@@ -8,29 +10,21 @@ import java.nio.file.Path;
 public interface AiGateway {
 
     /**
-     * Translates the given text into the specified target locale.
+     * Executes the given prompt.
      *
-     * @param text         The text to translate.
-     * @param targetLocale The target locale for the translation.
-     * @return The translated text.
+     * @param aiConfiguration The current AI configuration.
+     * @param prompt          The prompt to execute.
+     * @return The AI's result.
      */
-    String translate(String text, String targetLocale);
+    String execute(AiConfiguration aiConfiguration, String prompt);
 
     /**
      * Converts the given content to an audio file using text-to-speech.
      *
-     * @param prompt     The prompt to guide the TTS generation.
-     * @param content    The text content to convert to audio.
-     * @param targetFile The path where the audio file should be saved.
+     * @param aiConfiguration The current AI configuration.
+     * @param prompt          The prompt to guide the TTS generation.
+     * @param targetFile      The path where the audio file should be saved.
      */
-    void convertToAudio(String prompt, String content, Path targetFile);
-
-    /**
-     * Sends a raw prompt to the AI chat model and returns the response.
-     *
-     * @param prompt The prompt to send.
-     * @return The AI model's response.
-     */
-    String chat(String prompt);
+    void convertToAudio(AiConfiguration aiConfiguration, String prompt, Path targetFile);
 
 }

@@ -245,10 +245,8 @@ export default {
     fields: {
       enabled: 'Künstliche Intelligenz aktivieren',
       apiKey: 'API-Schlüssel',
-      generalContext: 'Allgemeiner Kontext',
       translationPrompt: 'Übersetzungs-Prompt',
-      ttsPrompt: 'TTS-Prompt',
-      ttsVoice: 'TTS-Stimme',
+      ttsVoice: 'Text-To-Speech-Stimme',
     },
     test: {
       description:

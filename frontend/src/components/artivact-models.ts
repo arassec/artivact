@@ -122,9 +122,7 @@ export interface ExchangeConfiguration {
 export interface AiConfiguration {
   enabled: boolean;
   apiKey: string;
-  generalContext: string;
   translationPrompt: string;
-  ttsPrompt: string;
   ttsVoice: string;
 }
 

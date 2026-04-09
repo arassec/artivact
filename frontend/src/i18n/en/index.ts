@@ -253,10 +253,8 @@ export default {
     fields: {
       enabled: "Enable Artificial Intelligence",
       apiKey: "API Key",
-      generalContext: "General Context",
       translationPrompt: "Translation Prompt",
-      ttsPrompt: "TTS Prompt",
-      ttsVoice: "TTS Voice",
+      ttsVoice: "Text-To-Speech Voice",
     },
     test: {
       description:

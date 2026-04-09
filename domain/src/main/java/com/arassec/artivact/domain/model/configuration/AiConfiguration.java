@@ -23,19 +23,9 @@ public class AiConfiguration {
     private String apiKey;
 
     /**
-     * General context prompt for the AI.
-     */
-    private String generalContext = "You are a museum curator responsible for the texts of the exhibits. Write factual, scientific, and simple for your audience.";
-
-    /**
      * Prompt template for translations.
      */
-    private String translationPrompt = "Translate the following text into the locale '{locale}'.";
-
-    /**
-     * Prompt template for text-to-speech generation.
-     */
-    private String ttsPrompt = "Create audio for the following text in locale '{locale}'.";
+    private String translationPrompt = "Translate the following text into the locale '{locale}':";
 
     /**
      * Voice identifier for text-to-speech.

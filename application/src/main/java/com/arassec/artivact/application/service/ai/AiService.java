@@ -63,8 +63,22 @@ public class AiService implements TranslateTextUseCase, ConvertToAudioUseCase, T
      * {@inheritDoc}
      */
     @Override
-    public String translateText(String text, String targetLocale) {
-        return aiGateway.translate(text, targetLocale);
+    public String translateText(String text, String locale) {
+        if (StringUtils.hasText(locale) && !locale.matches("[a-zA-Z_-]+")) {
+            throw new ArtivactException("Invalid locale: " + locale);
+        }
+
+        AiConfiguration aiConfiguration = loadAiConfigurationUseCase.loadAiConfiguration();
+        String prompt = aiConfiguration.getTranslationPrompt();
+        if (!StringUtils.hasText(prompt)) {
+            prompt = "";
+        }
+
+        prompt = prompt.replace("{locale}", locale);
+
+        String fullPrompt = prompt + "\n\n" + text;
+
+        return aiGateway.execute(aiConfiguration, fullPrompt);
     }
 
     /**
@@ -72,8 +86,7 @@ public class AiService implements TranslateTextUseCase, ConvertToAudioUseCase, T
      */
     @Override
     public String convertToAudio(String pageId, String widgetId, String locale) {
-        // Sanitize locale to prevent path traversal
-        if (StringUtils.hasText(locale) && !locale.matches("[a-zA-Z0-9_-]+")) {
+        if (StringUtils.hasText(locale) && !locale.matches("[a-zA-Z_-]+")) {
             throw new ArtivactException("Invalid locale: " + locale);
         }
 
@@ -97,7 +110,6 @@ public class AiService implements TranslateTextUseCase, ConvertToAudioUseCase, T
         }
 
         AiConfiguration aiConfiguration = loadAiConfigurationUseCase.loadAiConfiguration();
-        String prompt = aiConfiguration.getTtsPrompt();
 
         String audioFilename = StringUtils.hasText(locale)
                 ? "content-audio-" + locale + ".mp3"
@@ -107,7 +119,7 @@ public class AiService implements TranslateTextUseCase, ConvertToAudioUseCase, T
         fileRepository.createDirIfRequired(widgetWipDir);
         Path targetFile = widgetWipDir.resolve(audioFilename);
 
-        aiGateway.convertToAudio(prompt, textContent, targetFile);
+        aiGateway.convertToAudio(aiConfiguration, textContent, targetFile);
 
         TranslatableString contentAudio = contentAudioProvider.getContentAudio();
         if (contentAudio == null) {
@@ -129,26 +141,14 @@ public class AiService implements TranslateTextUseCase, ConvertToAudioUseCase, T
      * {@inheritDoc}
      */
     @Override
-    public String testTranslation(String text, String targetLocale) {
+    public void testTts(String text, String locale) {
         AiConfiguration aiConfiguration = loadAiConfigurationUseCase.loadAiConfiguration();
-        String translationPrompt = aiConfiguration.getTranslationPrompt().replace("{locale}", targetLocale);
-        String fullPrompt = aiConfiguration.getGeneralContext() + "\n\n" + translationPrompt + "\n\n" + text;
-        return aiGateway.chat(fullPrompt);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void testTts(String text, String targetLocale) {
-        AiConfiguration aiConfiguration = loadAiConfigurationUseCase.loadAiConfiguration();
-        String prompt = aiConfiguration.getTtsPrompt().replace("{locale}", targetLocale);
 
         Path tempDir = useProjectDirsUseCase.getTempDir();
         fileRepository.createDirIfRequired(tempDir);
         Path targetFile = tempDir.resolve(TEST_AUDIO_FILENAME);
 
-        aiGateway.convertToAudio(prompt, text, targetFile);
+        aiGateway.convertToAudio(aiConfiguration, text, targetFile);
     }
 
     /**
@@ -174,11 +174,8 @@ public class AiService implements TranslateTextUseCase, ConvertToAudioUseCase, T
         if (content == null) {
             return null;
         }
-        if (StringUtils.hasText(locale) && content.getTranslations() != null
-                && content.getTranslations().containsKey(locale)) {
-            return content.getTranslations().get(locale);
-        }
-        return content.getValue();
+        content.translate(locale);
+        return content.getTranslatedValue();
     }
 
 }
