@@ -14,6 +14,19 @@
       </template>
     </q-file>
     <q-btn
+      v-if="applicationSettingsStore.aiEnabled"
+      round
+      dense
+      flat
+      color="primary"
+      icon="smart_toy"
+      class="q-ml-sm"
+      :loading="generatingRef"
+      @click="generateContentAudio"
+    >
+      <q-tooltip>{{ $t('ContentAudioEditor.tooltip.generateAudio') }}</q-tooltip>
+    </q-btn>
+    <q-btn
       v-if="hasContentAudio"
       round
       dense
@@ -39,7 +52,10 @@
 import {computed, PropType, ref, toRef} from 'vue';
 import {TranslatableString} from '../artivact-models';
 import {useLocaleStore} from '../../stores/locale';
+import {useApplicationSettingsStore} from '../../stores/application-settings';
 import {api} from '../../boot/axios';
+import {useQuasar} from 'quasar';
+import {useI18n} from 'vue-i18n';
 
 const props = defineProps({
   pageId: {
@@ -69,8 +85,12 @@ const emit = defineEmits<{
 }>();
 
 const localeStore = useLocaleStore();
+const applicationSettingsStore = useApplicationSettingsStore();
+const quasar = useQuasar();
+const i18n = useI18n();
 const contentAudioRef = toRef(props, 'contentAudio');
 const fileRef = ref(null as File | null);
+const generatingRef = ref(false);
 
 const hasContentAudio = computed(() => {
   if (!contentAudioRef.value) {
@@ -142,6 +162,42 @@ async function uploadContentAudio(file: File | null) {
 
   setContentAudioFilename(targetFilename);
   fileRef.value = null;
+}
+
+async function generateContentAudio() {
+  generatingRef.value = true;
+
+  // Save the widget before generating audio
+  await new Promise((resolve, reject) => {
+    emit('save-widget-before-upload', {resolve, reject});
+  });
+
+  const locale = localeStore.selectedLocale || '';
+
+  api
+    .post(
+      `/api/page/${props.pageId}/widget/${props.widgetId}/generate-audio?locale=${locale}`
+    )
+    .then((response) => {
+      setContentAudioFilename(response.data);
+      quasar.notify({
+        color: 'positive',
+        position: 'bottom',
+        message: i18n.t('ContentAudioEditor.messages.generateSuccess'),
+        icon: 'check_circle',
+      });
+    })
+    .catch(() => {
+      quasar.notify({
+        color: 'negative',
+        position: 'bottom',
+        message: i18n.t('ContentAudioEditor.messages.generateFailed'),
+        icon: 'report_problem',
+      });
+    })
+    .finally(() => {
+      generatingRef.value = false;
+    });
 }
 
 async function deleteContentAudio() {

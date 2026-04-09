@@ -1,6 +1,7 @@
 package com.arassec.artivact.domain.model.page.widget;
 
 import com.arassec.artivact.domain.model.TranslatableString;
+import com.arassec.artivact.domain.model.page.ContentAudioProvider;
 import com.arassec.artivact.domain.model.page.Widget;
 import com.arassec.artivact.domain.model.page.WidgetType;
 import lombok.Getter;
@@ -11,7 +12,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class TextWidget extends Widget {
+public class TextWidget extends Widget implements ContentAudioProvider {
 
     /**
      * The heading.
