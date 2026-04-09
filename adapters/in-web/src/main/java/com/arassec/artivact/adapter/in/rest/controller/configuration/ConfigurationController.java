@@ -4,6 +4,7 @@ import com.arassec.artivact.adapter.in.rest.controller.BaseController;
 import com.arassec.artivact.adapter.in.rest.model.ApplicationSettings;
 import com.arassec.artivact.adapter.in.rest.model.Profiles;
 import com.arassec.artivact.adapter.in.rest.model.UserData;
+import com.arassec.artivact.application.port.in.ai.TranslateTextUseCase;
 import com.arassec.artivact.application.port.in.configuration.*;
 import com.arassec.artivact.application.port.in.project.CleanupExportFilesUseCase;
 import com.arassec.artivact.domain.exception.ArtivactException;
@@ -132,6 +133,11 @@ public class ConfigurationController extends BaseController {
     private final SaveAiConfigurationUseCase saveAiConfigurationUseCase;
 
     /**
+     * Use case for translating text using AI.
+     */
+    private final TranslateTextUseCase translateTextUseCase;
+
+    /**
      * Returns the current appearance configuration.
      *
      * @return The {@link AppearanceConfiguration} of the app.
@@ -160,6 +166,9 @@ public class ConfigurationController extends BaseController {
         ExchangeConfiguration exchangeConfiguration = loadExchangeConfigurationUseCase.loadExchangeConfiguration();
         applicationSettings.setSyncAvailable(StringUtils.hasText(exchangeConfiguration.getRemoteServer())
                 && StringUtils.hasText(exchangeConfiguration.getApiToken()));
+
+        AiConfiguration aiConfiguration = loadAiConfigurationUseCase.loadAiConfiguration();
+        applicationSettings.setAiEnabled(aiConfiguration.isEnabled());
 
         return applicationSettings;
     }
@@ -439,6 +448,18 @@ public class ConfigurationController extends BaseController {
     @PostMapping(value = "/ai")
     public void saveAiConfiguration(@RequestBody AiConfiguration aiConfiguration) {
         saveAiConfigurationUseCase.saveAiConfiguration(aiConfiguration);
+    }
+
+    /**
+     * Translates the given text into the specified target locale using AI.
+     *
+     * @param targetLocale The target locale for the translation.
+     * @param text         The text to translate.
+     * @return The translated text.
+     */
+    @PostMapping(value = "/ai/translate/{targetLocale}", produces = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity<String> translateText(@PathVariable String targetLocale, @RequestBody String text) {
+        return ResponseEntity.ok(translateTextUseCase.translateText(text, targetLocale));
     }
 
     /**

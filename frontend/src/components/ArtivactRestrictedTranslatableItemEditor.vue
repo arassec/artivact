@@ -26,6 +26,21 @@
         class="no-scroll column col-grow"
         :disable="disable"
       />
+      <div class="q-ml-sm" v-if="applicationSettingsStore.aiEnabled">
+        <q-btn
+          flat
+          dense
+          rounded
+          icon="smart_toy"
+          :disable="disable"
+          @click="translateText"
+        >
+          <q-tooltip>{{
+              $t('ArtivactRestrictedTranslatableItemEditor.tooltip.translate')
+            }}
+          </q-tooltip>
+        </q-btn>
+      </div>
       <q-input
         v-if="showStandardTextRef"
         outlined
@@ -34,7 +49,6 @@
         :type="textarea ? 'textarea' : 'text'"
         :autogrow="textarea"
         class="no-scroll column col-grow q-ml-md"
-        :readonly="true"
         transition-show="slide-left"
         transition-hide="slide-right"
       />
@@ -110,6 +124,10 @@ import {PropType, ref, toRef} from 'vue';
 import ArtivactRestrictionsEditor from '../components/ArtivactRestrictionsEditor.vue';
 import {BaseRestrictedObject, TranslatableString} from './artivact-models';
 import {useLocaleStore} from '../stores/locale';
+import {useApplicationSettingsStore} from '../stores/application-settings';
+import {api} from '../boot/axios';
+import {useQuasar} from 'quasar';
+import {useI18n} from 'vue-i18n';
 
 const props = defineProps({
   label: {
@@ -152,6 +170,9 @@ const props = defineProps({
 });
 
 const localeStore = useLocaleStore();
+const applicationSettingsStore = useApplicationSettingsStore();
+const quasar = useQuasar();
+const i18n = useI18n();
 
 const translatableStringRef = toRef(props, 'translatableString');
 const restrictedItemRef = toRef(props, 'restrictedItem');
@@ -173,6 +194,29 @@ function deleteRestriction(value: string) {
       }
     });
   }
+}
+
+function translateText() {
+  if (!translatableStringRef.value || !localeStore.selectedLocale || !translatableStringRef.value.value) {
+    return;
+  }
+  api
+    .post('/api/configuration/ai/translate/' + localeStore.selectedLocale, translatableStringRef.value.value, {
+      headers: {'Content-Type': 'text/plain'}
+    })
+    .then((response) => {
+      if (translatableStringRef.value && localeStore.selectedLocale) {
+        translatableStringRef.value.translations[localeStore.selectedLocale] = response.data;
+      }
+    })
+    .catch(() => {
+      quasar.notify({
+        color: 'negative',
+        position: 'bottom',
+        message: i18n.t('ArtivactRestrictedTranslatableItemEditor.messages.translationFailed'),
+        icon: 'report_problem',
+      });
+    });
 }
 </script>
 

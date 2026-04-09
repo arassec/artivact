@@ -2,6 +2,7 @@ package com.arassec.artivact.adapter.in.rest.controller.configuration;
 
 import com.arassec.artivact.adapter.in.rest.model.ApplicationSettings;
 import com.arassec.artivact.adapter.in.rest.model.UserData;
+import com.arassec.artivact.application.port.in.ai.TranslateTextUseCase;
 import com.arassec.artivact.application.port.in.configuration.*;
 import com.arassec.artivact.application.port.in.project.CleanupExportFilesUseCase;
 import com.arassec.artivact.domain.exception.ArtivactException;
@@ -92,6 +93,9 @@ class ConfigurationControllerTest {
     @Mock
     private SaveAiConfigurationUseCase saveAiConfigurationUseCase;
 
+    @Mock
+    private TranslateTextUseCase translateTextUseCase;
+
     @InjectMocks
     private ConfigurationController controller;
 
@@ -110,6 +114,9 @@ class ConfigurationControllerTest {
         when(loadExchangeConfigurationUseCase.loadExchangeConfiguration()).thenReturn(ec);
         when(checkRuntimeConfigurationUseCase.isDesktopProfileEnabled()).thenReturn(true);
         when(checkRuntimeConfigurationUseCase.isE2eProfileEnabled()).thenReturn(false);
+        AiConfiguration aiConfig = new AiConfiguration();
+        aiConfig.setEnabled(true);
+        when(loadAiConfigurationUseCase.loadAiConfiguration()).thenReturn(aiConfig);
 
         ApplicationSettings result = controller.getApplicationSettings();
 
@@ -117,6 +124,7 @@ class ConfigurationControllerTest {
         assertThat(result.getAvailableLocales()).contains("en", "de");
         assertThat(result.getProfiles().isDesktop()).isTrue();
         assertThat(result.getAvailableRoles()).contains(Roles.ROLE_ADMIN, Roles.ROLE_USER);
+        assertThat(result.isAiEnabled()).isTrue();
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -331,6 +339,16 @@ class ConfigurationControllerTest {
         AiConfiguration ac = new AiConfiguration();
         controller.saveAiConfiguration(ac);
         verify(saveAiConfigurationUseCase).saveAiConfiguration(ac);
+    }
+
+    @Test
+    void testTranslateText() {
+        when(translateTextUseCase.translateText("Hello", "de")).thenReturn("Hallo");
+
+        ResponseEntity<String> result = controller.translateText("de", "Hello");
+
+        assertThat(result.getBody()).isEqualTo("Hallo");
+        verify(translateTextUseCase).translateText("Hello", "de");
     }
 
 }

@@ -35,6 +35,9 @@ export const useApplicationSettingsStore = defineStore('applicationSettings', {
     },
     syncAvailable(state): boolean {
       return state.data.settings.syncAvailable;
+    },
+    aiEnabled(state): boolean {
+      return state.data.settings.aiEnabled;
     }
   },
 
