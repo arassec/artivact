@@ -66,6 +66,11 @@ public class AiService implements TranslateTextUseCase, ConvertToAudioUseCase {
      */
     @Override
     public String convertToAudio(String pageId, String widgetId, String locale) {
+        // Sanitize locale to prevent path traversal
+        if (StringUtils.hasText(locale) && !locale.matches("[a-zA-Z0-9_-]+")) {
+            throw new ArtivactException("Invalid locale: " + locale);
+        }
+
         Page page = pageRepository.findByIdOrAlias(pageId)
                 .orElseThrow(() -> new ArtivactException("Page not found: " + pageId));
 
@@ -101,7 +106,7 @@ public class AiService implements TranslateTextUseCase, ConvertToAudioUseCase {
         TranslatableString contentAudio = contentAudioProvider.getContentAudio();
         if (contentAudio == null) {
             contentAudio = new TranslatableString();
-            setContentAudio(widget, contentAudio);
+            contentAudioProvider.setContentAudio(contentAudio);
         }
         if (StringUtils.hasText(locale)) {
             contentAudio.getTranslations().put(locale, audioFilename);
@@ -130,25 +135,6 @@ public class AiService implements TranslateTextUseCase, ConvertToAudioUseCase {
             return content.getTranslations().get(locale);
         }
         return content.getValue();
-    }
-
-    /**
-     * Sets the content audio on the widget via its ContentAudioProvider interface.
-     * Since the widgets use Lombok @Setter, we can cast back to the concrete type.
-     *
-     * @param widget       The widget.
-     * @param contentAudio The content audio to set.
-     */
-    private void setContentAudio(Widget widget, TranslatableString contentAudio) {
-        if (widget instanceof ContentAudioProvider) {
-            // All ContentAudioProvider implementations use Lombok @Setter
-            try {
-                widget.getClass().getMethod("setContentAudio", TranslatableString.class)
-                        .invoke(widget, contentAudio);
-            } catch (Exception e) {
-                throw new ArtivactException("Could not set content audio on widget: " + widget.getId(), e);
-            }
-        }
     }
 
 }

@@ -21,4 +21,11 @@ public interface ContentAudioProvider {
      */
     TranslatableString getContentAudio();
 
+    /**
+     * Sets the content audio of the widget.
+     *
+     * @param contentAudio The content audio to set.
+     */
+    void setContentAudio(TranslatableString contentAudio);
+
 }

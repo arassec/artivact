@@ -145,6 +145,16 @@ class AiServiceTest {
     }
 
     /**
+     * Tests that an exception is thrown for an invalid locale containing path traversal.
+     */
+    @Test
+    void testConvertToAudioInvalidLocale() {
+        assertThatThrownBy(() -> aiService.convertToAudio("page-1", "widget-1", "../etc"))
+                .isInstanceOf(ArtivactException.class)
+                .hasMessageContaining("Invalid locale");
+    }
+
+    /**
      * Tests that an exception is thrown when the widget is not found.
      */
     @Test
