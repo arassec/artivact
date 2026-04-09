@@ -20,6 +20,7 @@
 
     <modules>
         <module>in-web</module>
+        <module>out-ai</module>
         <module>out-artivact</module>
         <module>out-camera</module>
         <module>out-database</module>
