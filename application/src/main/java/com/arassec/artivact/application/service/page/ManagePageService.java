@@ -442,6 +442,23 @@ public class ManagePageService
      * {@inheritDoc}
      */
     @Override
+    public String saveContentAudioFile(String pageId, String widgetId, MultipartFile file) {
+        return saveFile(useProjectDirsUseCase.getWidgetsDir(), widgetId, file);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deleteContentAudioFile(String pageId, String widgetId, String filename) {
+        Path filePath = fileRepository.getSubdirFilePath(useProjectDirsUseCase.getWidgetsDir(), widgetId, WIDGET_WIP_DIR).resolve(filename);
+        fileRepository.delete(filePath);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public PageContent resetWipPageContent(String pageIdOrAlias) {
         Page page = pageRepository.findByIdOrAlias(pageIdOrAlias).orElseThrow();
 

@@ -33,6 +33,14 @@
           :textarea="true"
           :show-separator="false"
         />
+        <artivact-content-audio-editor
+          :page-id="pageId"
+          :widget-id="widgetDataRef.id"
+          :content-audio="widgetDataRef.contentAudio"
+          :label="$t('TextWidget.label.contentAudio')"
+          :delete-label="$t('TextWidget.label.deleteContentAudio')"
+          @save-widget-before-upload="saveWidgetBeforeUpload"
+        />
       </div>
     </template>
   </artivact-widget-template>
@@ -45,11 +53,16 @@ import ArtivactRestrictedTranslatableItemEditor from '../../components/ArtivactR
 import {useLocaleStore} from '../../stores/locale';
 import {formatMarkdown, translate} from '../artivact-utils';
 import ArtivactWidgetTemplate from '../../components/widgets/ArtivactWidgetTemplate.vue';
+import ArtivactContentAudioEditor from '../../components/widgets/ArtivactContentAudioEditor.vue';
 
 const props = defineProps({
   inEditMode: {
     required: true,
     type: Boolean,
+  },
+  pageId: {
+    required: true,
+    type: String,
   },
   widgetData: {
     required: true,
@@ -57,12 +70,19 @@ const props = defineProps({
   },
 });
 
+const emit = defineEmits<{
+  (e: 'save-widget-before-upload', payload: { resolve: (value?: unknown) => void; reject: (reason?: unknown) => void }): void;
+}>();
+
 const editingRef = ref(false);
 
 const localeStore = useLocaleStore();
 
 const widgetDataRef = toRef(props, 'widgetData');
 
+async function saveWidgetBeforeUpload({resolve, reject}: { resolve: (value?: unknown) => void; reject: (reason?: unknown) => void }) {
+  emit('save-widget-before-upload', {resolve, reject});
+}
 </script>
 
 <style scoped>

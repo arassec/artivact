@@ -29,6 +29,11 @@ public class ImageGalleryWidget extends Widget implements FileProcessingWidget {
     private TranslatableString content;
 
     /**
+     * The filename of the audio version of the content, per locale.
+     */
+    private TranslatableString contentAudio;
+
+    /**
      * The list of image files of this gallery.
      */
     private List<String> images = new LinkedList<>();

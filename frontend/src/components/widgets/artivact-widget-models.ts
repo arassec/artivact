@@ -13,6 +13,7 @@ export interface PageTitleWidgetData extends Widget {
 export interface TextWidgetData extends Widget {
   heading: TranslatableString;
   content: TranslatableString;
+  contentAudio: TranslatableString;
 }
 
 export interface InfoBoxWidgetData extends Widget {
@@ -24,6 +25,7 @@ export interface InfoBoxWidgetData extends Widget {
 export interface ItemSearchWidget extends Widget {
   heading: TranslatableString;
   content: TranslatableString;
+  contentAudio: TranslatableString;
   searchTerm: string | null | undefined;
   maxResults: number;
   pageSize: number;
@@ -43,6 +45,7 @@ export enum ImageGalleryWidgetTextPosition {
 export interface ImageGalleryWidgetData extends Widget {
   heading: TranslatableString;
   content: TranslatableString;
+  contentAudio: TranslatableString;
   images: string[];
   fullscreenAllowed: boolean;
   textPosition: ImageGalleryWidgetTextPosition;

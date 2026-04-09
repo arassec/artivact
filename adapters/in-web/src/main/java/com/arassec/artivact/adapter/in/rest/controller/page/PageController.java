@@ -123,6 +123,23 @@ public class PageController {
     }
 
     /**
+     * Saves a content audio file to a widget.
+     *
+     * @param pageIdOrAlias The page's ID or alias the widget is on.
+     * @param widgetId      The widget's ID.
+     * @param file          The content audio file to save.
+     * @return The filename of the saved file.
+     */
+    @PostMapping(value = "/{pageIdOrAlias}/widget/{widgetId}/content-audio")
+    public ResponseEntity<String> saveContentAudioFile(@PathVariable String pageIdOrAlias,
+                                                       @PathVariable String widgetId,
+                                                       @RequestPart(value = "file") final MultipartFile file) {
+        synchronized (this) {
+            return ResponseEntity.ok(managePageMediaUseCase.saveContentAudioFile(pageIdOrAlias, widgetId, file));
+        }
+    }
+
+    /**
      * Deletes a file from a widget.
      *
      * @param pageIdOrAlias The page's ID or alias the widget is on.
@@ -135,6 +152,22 @@ public class PageController {
                                   @PathVariable String filename) {
         synchronized (this) {
             return managePageMediaUseCase.deleteFile(pageIdOrAlias, widgetId, filename);
+        }
+    }
+
+    /**
+     * Deletes a content audio file from a widget.
+     *
+     * @param pageIdOrAlias The page's ID or alias the widget is on.
+     * @param widgetId      The widget's ID.
+     * @param filename      The name of the content audio file to delete.
+     */
+    @DeleteMapping(value = "/{pageIdOrAlias}/widget/{widgetId}/content-audio/{filename}")
+    public void deleteContentAudioFile(@PathVariable String pageIdOrAlias,
+                                       @PathVariable String widgetId,
+                                       @PathVariable String filename) {
+        synchronized (this) {
+            managePageMediaUseCase.deleteContentAudioFile(pageIdOrAlias, widgetId, filename);
         }
     }
 

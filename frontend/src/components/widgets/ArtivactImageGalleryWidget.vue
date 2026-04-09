@@ -113,6 +113,14 @@
           :textarea="true"
           :show-separator="false"
         />
+        <artivact-content-audio-editor
+          :page-id="pageIdRef"
+          :widget-id="widgetDataRef.id"
+          :content-audio="widgetDataRef.contentAudio"
+          :label="$t('ImageGalleryWidget.label.contentAudio')"
+          :delete-label="$t('ImageGalleryWidget.label.deleteContentAudio')"
+          @save-widget-before-upload="saveWidgetBeforeUpload"
+        />
         <div class="q-gutter-sm q-mb-md">
           <q-radio
             v-model="widgetDataRef.textPosition"
@@ -220,6 +228,7 @@ import {useLocaleStore} from '../../stores/locale';
 import ArtivactRestrictedTranslatableItemEditor from '../ArtivactRestrictedTranslatableItemEditor.vue';
 import {QUploader, useQuasar} from 'quasar';
 import Draggable from 'vuedraggable';
+import ArtivactContentAudioEditor from '../../components/widgets/ArtivactContentAudioEditor.vue';
 
 const props = defineProps({
   inEditMode: {

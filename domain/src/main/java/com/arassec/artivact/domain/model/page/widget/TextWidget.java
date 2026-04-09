@@ -24,6 +24,11 @@ public class TextWidget extends Widget {
     private TranslatableString content;
 
     /**
+     * The filename of the audio version of the content, per locale.
+     */
+    private TranslatableString contentAudio;
+
+    /**
      * Creates a new widget.
      */
     public TextWidget() {
