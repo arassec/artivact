@@ -151,6 +151,7 @@ public abstract class BaseExportService {
         exchangeMainData.setExportConfiguration(exportContext.getExportConfiguration());
         exchangeMainData.setCoverPictureExtension(exportContext.getCoverPictureExtension());
         exchangeMainData.setContentAudio(Optional.ofNullable(contentAudio).orElse(new TranslatableString()));
+        // Reset translatedValue as it is a transient UI-only field and should not be persisted in the export.
         exchangeMainData.getContentAudio().setTranslatedValue(null);
         writeJsonFile(exportContext.getExportDir().resolve(CONTENT_EXCHANGE_MAIN_DATA_FILENAME_JSON), exchangeMainData);
     }

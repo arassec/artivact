@@ -293,6 +293,13 @@ class ManageCollectionExportServiceTest {
     }
 
     @Test
+    void testLoadContentAudioInvalidFilename() {
+        assertThatThrownBy(() -> service.loadContentAudio("test-id", "../etc/passwd"))
+                .isInstanceOf(ArtivactException.class)
+                .hasMessageContaining("Invalid content audio filename");
+    }
+
+    @Test
     void testLoadContentAudioSuccess() {
         when(useProjectDirsUseCase.getExportsDir()).thenReturn(Path.of("/tmp"));
         when(fileRepository.exists(any())).thenReturn(true);

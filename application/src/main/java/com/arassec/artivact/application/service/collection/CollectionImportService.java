@@ -17,6 +17,7 @@ import com.arassec.artivact.domain.model.TranslatableString;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.nio.file.Path;
@@ -186,12 +187,12 @@ public class CollectionImportService implements ImportCollectionUseCase {
         if (contentAudio == null) {
             return;
         }
-        if (contentAudio.getValue() != null && !contentAudio.getValue().trim().isEmpty()) {
+        if (StringUtils.hasText(contentAudio.getValue())) {
             copyAudioFileFromImport(importContext, contentAudio.getValue());
         }
         if (contentAudio.getTranslations() != null) {
             contentAudio.getTranslations().values().forEach(filename -> {
-                if (filename != null && !filename.trim().isEmpty()) {
+                if (StringUtils.hasText(filename)) {
                     copyAudioFileFromImport(importContext, filename);
                 }
             });

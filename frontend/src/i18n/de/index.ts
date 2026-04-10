@@ -610,7 +610,7 @@ export default {
       edit: 'Exportkonfiguration bearbeiten',
       build: 'Exportdatei für diesen Sammlungsexport erneuern',
       buildNew: 'Exportdatei für diesen Sammlungsexport erzeugen',
-      download: 'Download the export file',
+      download: 'Exportdatei herunterladen',
       deleteCoverPicture: 'Titelbild von Sammlungsexport entfernen',
       deleteContentAudio: 'Audio-Inhalt vom Sammlungsexport entfernen',
       restricted: 'Der Zugriff auf diesen Sammlungsexport ist eingeschränkt',

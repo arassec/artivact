@@ -353,6 +353,7 @@ public class ManageCollectionExportService
      */
     @Override
     public void saveContentAudio(String id, String locale, String originalFilename, InputStream inputStream) {
+        validateLocale(locale);
         CollectionExport collectionExport = collectionExportRepository.findById(id).orElseThrow();
 
         Path targetDir = useProjectDirsUseCase.getExportsDir();
@@ -390,6 +391,9 @@ public class ManageCollectionExportService
      */
     @Override
     public byte[] loadContentAudio(String id, String filename) {
+        if (filename == null || !filename.matches("^[a-zA-Z0-9_-]+\\.mp3$")) {
+            throw new ArtivactException("Invalid content audio filename: " + filename);
+        }
         Path audioFile = useProjectDirsUseCase.getExportsDir().resolve(filename);
         if (!fileRepository.exists(audioFile)) {
             throw new ArtivactException("Content audio file not found: " + filename);
@@ -405,6 +409,7 @@ public class ManageCollectionExportService
      */
     @Override
     public void deleteContentAudio(String id, String locale) {
+        validateLocale(locale);
         CollectionExport collectionExport = collectionExportRepository.findById(id).orElseThrow();
         TranslatableString contentAudio = collectionExport.getContentAudio();
         if (contentAudio == null) {
@@ -438,9 +443,7 @@ public class ManageCollectionExportService
      */
     @Override
     public String generateContentAudio(String id, String locale) {
-        if (StringUtils.hasText(locale) && !locale.matches("[a-zA-Z_-]+")) {
-            throw new ArtivactException("Invalid locale: " + locale);
-        }
+        validateLocale(locale);
 
         CollectionExport collectionExport = collectionExportRepository.findById(id).orElseThrow();
 
@@ -558,6 +561,17 @@ public class ManageCollectionExportService
         contentAudio.setValue("");
         contentAudio.getTranslations().clear();
         collectionExportRepository.save(collectionExport);
+    }
+
+    /**
+     * Validates the locale parameter to prevent path traversal attacks.
+     *
+     * @param locale The locale to validate.
+     */
+    private void validateLocale(String locale) {
+        if (StringUtils.hasText(locale) && !locale.matches("^[a-zA-Z_-]+$")) {
+            throw new ArtivactException("Invalid locale: " + locale);
+        }
     }
 
 }
