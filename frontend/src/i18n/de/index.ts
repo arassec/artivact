@@ -586,6 +586,7 @@ export default {
       title: 'Titel',
       description: 'Kurzbeschreibung',
       content: 'Inhalt',
+      contentAudio: 'Inhalt Audio (MP3)',
       xrExport: 'Artivact XR Export',
       applyRestrictions: 'Eingeschränkte Elemente ausschließen',
       exportFileMissing:
@@ -599,6 +600,7 @@ export default {
       description:
         'Eine ein bis zwei Sätze umfassende, kurze Beschreibung des Sammlungsexports.',
       content: 'Eine längere Beschreibung des Inhalts des Sammlungsexports.',
+      contentAudio: 'Laden Sie eine MP3-Audiodatei für den Inhalt des Exports hoch oder generieren Sie diese. Wählen Sie eine Sprache, um Audio pro Sprache zu verwalten.',
     },
     button: {
       create: 'Exportkonfiguration erstellen',
@@ -610,6 +612,7 @@ export default {
       buildNew: 'Exportdatei für diesen Sammlungsexport erzeugen',
       download: 'Download the export file',
       deleteCoverPicture: 'Titelbild von Sammlungsexport entfernen',
+      deleteContentAudio: 'Audio-Inhalt vom Sammlungsexport entfernen',
       restricted: 'Der Zugriff auf diesen Sammlungsexport ist eingeschränkt',
       distributionOnly:
         'Dieser Sammlungsexport steht nur für die weitere Verbreitung zur Verfügung',

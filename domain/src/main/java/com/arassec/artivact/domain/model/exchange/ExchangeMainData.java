@@ -61,6 +61,11 @@ public class ExchangeMainData {
     private String coverPictureExtension;
 
     /**
+     * Per-locale audio content filenames.
+     */
+    private TranslatableString contentAudio;
+
+    /**
      * The configuration used to create this export.
      */
     private ExportConfiguration exportConfiguration;
@@ -71,7 +76,8 @@ public class ExchangeMainData {
     @SuppressWarnings({"unused", "java:S107"}) // Used by JSON mapper, # parameters is not a problem here.
     public ExchangeMainData(String id, TranslatableString title, TranslatableString description,
                             TranslatableString content, ContentSource contentSource, List<String> sourceIds,
-                            String coverPictureExtension, ExportConfiguration exportConfiguration) {
+                            String coverPictureExtension, TranslatableString contentAudio,
+                            ExportConfiguration exportConfiguration) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -81,6 +87,7 @@ public class ExchangeMainData {
             this.sourceIds = sourceIds;
         }
         this.coverPictureExtension = coverPictureExtension;
+        this.contentAudio = contentAudio;
         this.exportConfiguration = exportConfiguration;
     }
 
