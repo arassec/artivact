@@ -36,6 +36,11 @@ public class ApplicationSettings {
     private String applicationLocale;
 
     /**
+     * The default locale used as fallback for translatable strings.
+     */
+    private String defaultLocale;
+
+    /**
      * The application's color theme.
      */
     private ColorTheme colorTheme;

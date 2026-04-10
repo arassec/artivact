@@ -148,6 +148,7 @@ export interface AppearanceConfiguration {
   applicationTitle: string;
   availableLocales: string;
   applicationLocale: string;
+  defaultLocale: string;
   colorTheme: ColorTheme;
   encodedFavicon: string;
   license: License;
@@ -158,6 +159,7 @@ export interface ApplicationSettings {
   applicationTitle: string,
   availableLocales: string[],
   applicationLocale: string,
+  defaultLocale: string,
   colorTheme: ColorTheme,
   license: License,
   profiles: Profiles,

@@ -149,7 +149,7 @@ class ManagePageServiceTest {
         when(menuRepository.load()).thenReturn(List.of(menu));
         when(pageRepository.findByIdOrAlias("page-1")).thenReturn(Optional.of(page));
         when(configurationRepository.findByType(ConfigurationType.APPEARANCE, AppearanceConfiguration.class))
-                .thenReturn(Optional.of(new AppearanceConfiguration("appTitle", null, null, null, null, null, null)));
+                .thenReturn(Optional.of(new AppearanceConfiguration("appTitle", null, null, null, null, null, null, null)));
 
         PageContent content = service.loadPageContent("page-1", Set.of(Roles.ROLE_USER));
         assertThat(content.getRestrictions()).contains(Roles.ROLE_USER);
@@ -162,7 +162,7 @@ class ManagePageServiceTest {
         when(menuRepository.load()).thenReturn(List.of(menu));
         when(pageRepository.findByIdOrAlias("page-1")).thenReturn(Optional.of(page));
         when(configurationRepository.findByType(ConfigurationType.APPEARANCE, AppearanceConfiguration.class))
-                .thenReturn(Optional.of(new AppearanceConfiguration("appTitle", null, null, null, null, null, null)));
+                .thenReturn(Optional.of(new AppearanceConfiguration("appTitle", null, null, null, null, null, null, null)));
 
         PageContent content = service.loadTranslatedRestrictedPageContent("page-1", Set.of());
         assertThat(content).isNotNull();
@@ -297,7 +297,7 @@ class ManagePageServiceTest {
         Path widgetsPath = Path.of("widgets");
         when(useProjectDirsUseCase.getWidgetsDir()).thenReturn(widgetsPath);
         when(configurationRepository.findByType(ConfigurationType.APPEARANCE, AppearanceConfiguration.class))
-                .thenReturn(Optional.of(new AppearanceConfiguration("appTitle", null, null, null, null, null, null)));
+                .thenReturn(Optional.of(new AppearanceConfiguration("appTitle", null, null, null, null, null, null, null)));
 
         Widget widget = mock(Widget.class);
         when(widget.getId()).thenReturn("widget1");

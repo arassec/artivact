@@ -163,6 +163,7 @@ public class ConfigurationController extends BaseController {
         }
 
         applicationSettings.setApplicationLocale(appearanceConfiguration.getApplicationLocale());
+        applicationSettings.setDefaultLocale(appearanceConfiguration.getDefaultLocale());
         applicationSettings.setColorTheme(appearanceConfiguration.getColorTheme());
         applicationSettings.setLicense(appearanceConfiguration.getLicense());
         applicationSettings.setProfiles(

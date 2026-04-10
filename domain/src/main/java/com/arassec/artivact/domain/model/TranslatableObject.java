@@ -15,6 +15,16 @@ public interface TranslatableObject {
     void translate(String locale);
 
     /**
+     * Translates the object using the given locale with a fallback to the default locale.
+     *
+     * @param locale        The locale as String.
+     * @param defaultLocale The default locale to use as fallback.
+     */
+    default void translate(String locale, String defaultLocale) {
+        translate(locale);
+    }
+
+    /**
      * Translates the object using the given locale.
      *
      * @param locale The locale.

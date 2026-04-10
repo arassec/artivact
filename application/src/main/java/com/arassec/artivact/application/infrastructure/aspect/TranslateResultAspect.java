@@ -1,7 +1,11 @@
 package com.arassec.artivact.application.infrastructure.aspect;
 
+import com.arassec.artivact.application.port.out.repository.ConfigurationRepository;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.TranslatableObject;
+import com.arassec.artivact.domain.model.configuration.AppearanceConfiguration;
+import com.arassec.artivact.domain.model.configuration.ConfigurationType;
+import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -18,12 +22,18 @@ import java.util.Map;
  */
 @Aspect
 @Component
+@RequiredArgsConstructor
 public class TranslateResultAspect {
 
     /**
      * Only classes from this package (and sub-packages) are processed.
      */
     private static final String ARTIVACT_PACKAGE_PREFIX = "com.arassec.artivact";
+
+    /**
+     * Repository for loading the application's configuration.
+     */
+    private final ConfigurationRepository configurationRepository;
 
     /**
      * Processes a method's result value and translates it if required.
@@ -35,39 +45,47 @@ public class TranslateResultAspect {
     @Around("@annotation(com.arassec.artivact.application.infrastructure.aspect.TranslateResult)")
     public Object translate(ProceedingJoinPoint joinPoint) throws Throwable {
         Object result = joinPoint.proceed();
-        translateIfPossible(result, LocaleContextHolder.getLocale());
+
+        String defaultLocale = configurationRepository
+                .findByType(ConfigurationType.APPEARANCE, AppearanceConfiguration.class)
+                .map(AppearanceConfiguration::getDefaultLocale)
+                .orElse("en");
+
+        translateIfPossible(result, LocaleContextHolder.getLocale(), defaultLocale);
         return result;
     }
 
     /**
      * Translates the given object if required with the given locale.
      *
-     * @param object The object to translate.
-     * @param locale The locale to use for translation.
+     * @param object        The object to translate.
+     * @param locale        The locale to use for translation.
+     * @param defaultLocale The default locale to use as fallback.
      */
-    private void translateIfPossible(Object object, Locale locale) {
+    private void translateIfPossible(Object object, Locale locale, String defaultLocale) {
         if (object == null) {
             return;
         }
         switch (object) {
             case TranslatableObject translatableObject -> {
-                translatableObject.translate(locale);
-                translatePropertiesIfPossible(translatableObject, locale);
+                translatableObject.translate(locale.toString(), defaultLocale);
+                translatePropertiesIfPossible(translatableObject, locale, defaultLocale);
             }
             case Collection<?> collectionToTranslate ->
-                    collectionToTranslate.forEach(entry -> translateIfPossible(entry, locale));
-            default -> translatePropertiesIfPossible(object, locale);
+                    collectionToTranslate.forEach(entry -> translateIfPossible(entry, locale, defaultLocale));
+            default -> translatePropertiesIfPossible(object, locale, defaultLocale);
         }
     }
 
     /**
      * Translates an object's properties if required.
      *
-     * @param object The object to process.
-     * @param locale The locale to use for translation.
+     * @param object        The object to process.
+     * @param locale        The locale to use for translation.
+     * @param defaultLocale The default locale to use as fallback.
      */
     @SuppressWarnings("java:S3011") // declaredField.setAccessible(true) is intentional here!
-    private void translatePropertiesIfPossible(Object object, Locale locale) {
+    private void translatePropertiesIfPossible(Object object, Locale locale, String defaultLocale) {
         if (object == null) {
             return;
         }
@@ -76,17 +94,17 @@ public class TranslateResultAspect {
                 if (field.getType().getName().startsWith(ARTIVACT_PACKAGE_PREFIX) && !field.getType().isEnum()) {
                     field.setAccessible(true);
                     Object declaredFieldValue = field.get(object);
-                    translateIfPossible(declaredFieldValue, locale);
+                    translateIfPossible(declaredFieldValue, locale, defaultLocale);
                 } else if (Collection.class.isAssignableFrom(field.getType())) {
                     field.setAccessible(true);
                     Collection<?> collection = (Collection<?>) field.get(object);
-                    collection.forEach(collectionEntry -> translateIfPossible(collectionEntry, locale));
+                    collection.forEach(collectionEntry -> translateIfPossible(collectionEntry, locale, defaultLocale));
                 } else if (Map.class.isAssignableFrom(field.getType())) {
                     field.setAccessible(true);
                     Map<?, ?> map = (Map<?, ?>) field.get(object);
                     map.forEach((key, value) -> {
-                        translateIfPossible(key, locale);
-                        translateIfPossible(value, locale);
+                        translateIfPossible(key, locale, defaultLocale);
+                        translateIfPossible(value, locale, defaultLocale);
                     });
                 }
             } catch (IllegalAccessException e) {

@@ -509,6 +509,12 @@ export default {
           "Kommaseparierte Liste mit Sprachcodes die von der Anwendung unterstützt werden. Beispiel: 'de,nl,ja'. Die Sprachen können zusätzlich zur Standardsprache verwaltet werden, indem sie über die Sprachwahl in der Menuleiste ausgewählt, und anschließend die entsprechenden Texte editiert werden.",
         label: 'Sprachen',
       },
+      defaultLocale: {
+        heading: 'Standardsprache',
+        description:
+          "Die Standardsprache, die als Fallback verwendet wird, wenn ein übersetzbarer Text nicht in der bevorzugten Sprache des Benutzers verfügbar ist. Z.B. 'en' oder 'de'. Wenn leer gelassen, wird 'en' als Standard verwendet.",
+        label: 'Standardsprache',
+      },
       applicationLocale: {
         heading: 'Anwendungssprache',
         description:

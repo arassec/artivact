@@ -13,6 +13,9 @@ The following aspects of the application's appearance can be configured on this 
     - The locale will be selected based on the user's system settings (<Badge type="warning" text="desktop"/>) or
       browser preferences (<Badge type="warning" text="server"/>)
     - The ``default`` locale is used, if none of the configured locales match the user's preferences.
+- Default Locale
+    - The default locale used as fallback when a translatable string is not available in the user's preferred locale.
+    - E.g. ``en`` or ``de``. Defaults to ``en`` if not configured.
 - Application Locale  <Badge type="warning" text="desktop"/>
     - Locale of Artivact itself, i.e. the UI elements and messages etc.
     - Currently supported are english and german.

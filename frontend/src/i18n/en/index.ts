@@ -531,6 +531,12 @@ export default {
           "Comma-separated list of locales supported by this installation. E.g. 'de,nl,ja'. Those locales can be maintained in addition to the default locale by choosing it from the settings menu and editing translatable strings e.g. on pages.",
         label: "Locales",
       },
+      defaultLocale: {
+        heading: "Default Locale",
+        description:
+          "The default locale used as fallback when a translatable string is not available in the user's preferred locale. E.g. 'en' or 'de'. If left empty, 'en' is used as the default.",
+        label: "Default Locale",
+      },
       applicationLocale: {
         heading: "Application Locale",
         description:
