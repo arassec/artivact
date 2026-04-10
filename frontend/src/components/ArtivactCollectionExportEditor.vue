@@ -162,10 +162,15 @@
       </draggable>
     </q-list>
 
+    <div class="row q-mb-md" v-if="localeStore.selectedLocale != null">
+      <q-space></q-space>
+      <div>{{ $t('ArtivactCollectionExportEditor.label.exportCreationDisabled') }}</div>
+    </div>
+
     <div class="row">
       <q-space></q-space>
       <q-btn :label="$t('ArtivactCollectionExportEditor.button.create')" @click="configureNewExportConfiguration()"
-             color="primary"/>
+             color="primary" :disable="localeStore.selectedLocale != null"/>
     </div>
 
     <!-- CREATE / EDIT EXPORT CONFIGURATION DIALOG -->
@@ -272,6 +277,7 @@ import ArtivactCollectionExportContentAudioEditor from '../components/ArtivactCo
 import {useMenuStore} from '../stores/menu';
 import {translate} from './artivact-utils';
 import {QUploader} from 'quasar';
+import {useLocaleStore} from "../stores/locale";
 
 const props = defineProps({
   collectionExports: {
@@ -291,6 +297,7 @@ const emit = defineEmits<{
 }>();
 
 const menuStore = useMenuStore();
+const localeStore = useLocaleStore();
 
 const collectionExportsRef = toRef(props.collectionExports);
 

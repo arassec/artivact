@@ -621,6 +621,7 @@ export default {
       lastModified: "Last modification of export file: ",
       coverPicture: "Cover Picture",
       noCoverPicture: "No cover picture available.",
+      exportCreationDisabled: 'Collection exports must initially be created for the default language. Please switch the language using the language selection menu in the top menu bar.',
     },
     help: {
       title: "The collection export's title.",

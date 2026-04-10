@@ -600,6 +600,7 @@ export default {
       lastModified: 'Letzte Änderung an der Exportdatei: ',
       coverPicture: 'Titelbild',
       noCoverPicture: 'Kein Titelbild verfügbar.',
+      exportCreationDisabled: 'Sammlungsexporte müssen initial für die Standardsprache angelegt werden. Bitte wechseln sie die Sprache über das Sprachwahl-Menü in der oberen Menüleiste.',
     },
     help: {
       title: 'Der Titel des Sammlungsexports.',
