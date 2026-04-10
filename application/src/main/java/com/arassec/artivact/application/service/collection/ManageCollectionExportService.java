@@ -391,7 +391,7 @@ public class ManageCollectionExportService
      */
     @Override
     public byte[] loadContentAudio(String id, String filename) {
-        if (filename == null || !filename.matches("^[a-zA-Z0-9_-]+\\.mp3$")) {
+        if (filename == null || !filename.matches("^[a-zA-Z0-9_-]{1,100}\\.mp3$")) {
             throw new ArtivactException("Invalid content audio filename: " + filename);
         }
         Path audioFile = useProjectDirsUseCase.getExportsDir().resolve(filename);
@@ -569,7 +569,7 @@ public class ManageCollectionExportService
      * @param locale The locale to validate.
      */
     private void validateLocale(String locale) {
-        if (StringUtils.hasText(locale) && !locale.matches("^[a-zA-Z_-]+$")) {
+        if (StringUtils.hasText(locale) && !locale.matches("^[a-zA-Z_-]{1,15}$")) {
             throw new ArtivactException("Invalid locale: " + locale);
         }
     }
