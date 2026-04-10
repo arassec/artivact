@@ -101,6 +101,26 @@ public class CollectionExportController extends BaseImportController {
     private final CreateCollectionExportInfosUseCase createCollectionExportInfosUseCase;
 
     /**
+     * Use case to save content audio of a collection export.
+     */
+    private final SaveCollectionExportContentAudioUseCase saveCollectionExportContentAudioUseCase;
+
+    /**
+     * Use case to load content audio of a collection export.
+     */
+    private final LoadCollectionExportContentAudioUseCase loadCollectionExportContentAudioUseCase;
+
+    /**
+     * Use case to delete content audio of a collection export.
+     */
+    private final DeleteCollectionExportContentAudioUseCase deleteCollectionExportContentAudioUseCase;
+
+    /**
+     * Use case to generate content audio via AI for a collection export.
+     */
+    private final GenerateCollectionExportContentAudioUseCase generateCollectionExportContentAudioUseCase;
+
+    /**
      * Returns the available collection exports.
      *
      * @return List of {@link CollectionExport}s.
@@ -258,6 +278,74 @@ public class CollectionExportController extends BaseImportController {
     public List<CollectionExport> deleteCoverPicture(@PathVariable String id) {
         deleteCollectionExportCoverPictureUseCase.deleteCoverPicture(id);
         return loadCollectionExports();
+    }
+
+    /**
+     * Saves a content audio file for a collection export.
+     *
+     * @param id     The collection export's ID.
+     * @param locale The locale of the audio (optional).
+     * @param file   The uploaded MP3 file.
+     */
+    @PostMapping("/{id}/content-audio")
+    public void saveContentAudio(@PathVariable String id,
+                                 @RequestParam(value = "locale", defaultValue = "") String locale,
+                                 @RequestPart(value = "file") final MultipartFile file) {
+        synchronized (this) {
+            try {
+                saveCollectionExportContentAudioUseCase.saveContentAudio(id, locale, file.getOriginalFilename(), file.getInputStream());
+            } catch (IOException e) {
+                throw new ArtivactException("Could not save uploaded content audio!", e);
+            }
+        }
+    }
+
+    /**
+     * Returns a content audio file for a collection export.
+     *
+     * @param id       The collection export's ID.
+     * @param filename The audio filename.
+     * @return The audio file.
+     */
+    @SuppressWarnings("unused")
+    @GetMapping("/{id}/content-audio/{filename}")
+    public HttpEntity<byte[]> loadContentAudio(@PathVariable String id, @PathVariable String filename) {
+        var headers = new HttpHeaders();
+        headers.setContentType(MediaType.valueOf("audio/mpeg"));
+        headers.set(HttpHeaders.PRAGMA, NO_CACHE);
+        headers.set(HttpHeaders.EXPIRES, EXPIRES_IMMEDIATELY);
+        headers.setContentDisposition(ContentDisposition.builder("attachment").filename(filename).build());
+
+        byte[] audio = loadCollectionExportContentAudioUseCase.loadContentAudio(id, filename);
+
+        return new HttpEntity<>(audio, headers);
+    }
+
+    /**
+     * Deletes a content audio file from a collection export.
+     *
+     * @param id     The collection export's ID.
+     * @param locale The locale of the audio to delete (optional).
+     * @return Updated list of collection exports.
+     */
+    @DeleteMapping("/{id}/content-audio")
+    public List<CollectionExport> deleteContentAudio(@PathVariable String id,
+                                                     @RequestParam(value = "locale", defaultValue = "") String locale) {
+        deleteCollectionExportContentAudioUseCase.deleteContentAudio(id, locale);
+        return loadCollectionExports();
+    }
+
+    /**
+     * Generates content audio via AI for a collection export.
+     *
+     * @param id     The collection export's ID.
+     * @param locale The locale for the audio generation (optional).
+     * @return The generated audio filename.
+     */
+    @PostMapping(value = "/{id}/generate-audio", produces = MediaType.TEXT_PLAIN_VALUE)
+    public String generateContentAudio(@PathVariable String id,
+                                       @RequestParam(value = "locale", defaultValue = "") String locale) {
+        return generateCollectionExportContentAudioUseCase.generateContentAudio(id, locale);
     }
 
     /**

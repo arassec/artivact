@@ -219,6 +219,18 @@
           />
 
           <q-separator class="q-mb-md q-mt-lg"/>
+          <p>{{ $t('ArtivactCollectionExportEditor.help.contentAudio') }}</p>
+          <artivact-collection-export-content-audio-editor
+            v-if="collectionExportRef.id && collectionExportRef.contentAudio"
+            :collection-export-id="collectionExportRef.id"
+            :content-audio="collectionExportRef.contentAudio"
+            :label="$t('ArtivactCollectionExportEditor.label.contentAudio')"
+            :delete-label="$t('ArtivactCollectionExportEditor.tooltip.deleteContentAudio')"
+            @save-before-upload="saveBeforeUpload"
+            @audio-changed="onAudioChanged"
+          />
+
+          <q-separator class="q-mb-md q-mt-lg"/>
           <div>
             <q-checkbox
               :disable="collectionExportRef.distributionOnly"
@@ -261,6 +273,7 @@ import {CollectionExport, ContentSource, SelectboxModel, TranslatableString} fro
 import ArtivactDialog from '../components/ArtivactDialog.vue';
 import ArtivactRestrictionsEditor from '../components/ArtivactRestrictionsEditor.vue';
 import ArtivactRestrictedTranslatableItemEditor from '../components/ArtivactRestrictedTranslatableItemEditor.vue';
+import ArtivactCollectionExportContentAudioEditor from '../components/ArtivactCollectionExportContentAudioEditor.vue';
 import {useMenuStore} from '../stores/menu';
 import {translate} from './artivact-utils';
 import {QUploader} from 'quasar';
@@ -304,6 +317,10 @@ function configureNewExportConfiguration() {
     } as TranslatableString,
     content: {
       value: ''
+    } as TranslatableString,
+    contentAudio: {
+      value: '',
+      translations: {}
     } as TranslatableString,
     contentSource: ContentSource.MENU,
     sourceId: '',
@@ -370,6 +387,15 @@ function removeRestriction(role: string) {
 
 function addRestriction(role: string) {
   collectionExportRef.value?.restrictions.push(role);
+}
+
+function saveBeforeUpload(payload: { resolve: (value?: unknown) => void; reject: (reason?: unknown) => void }) {
+  emit('save-collection-export', collectionExportRef.value as CollectionExport);
+  payload.resolve();
+}
+
+function onAudioChanged() {
+  emit('save-collection-export', collectionExportRef.value as CollectionExport);
 }
 
 </script>

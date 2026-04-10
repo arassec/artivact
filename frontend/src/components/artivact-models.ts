@@ -260,6 +260,7 @@ export interface CollectionExport extends BaseRestrictedObject {
   title: TranslatableString;
   description: TranslatableString;
   content: TranslatableString;
+  contentAudio: TranslatableString;
   exportConfiguration: ExportConfiguration;
   contentSource: ContentSource;
   sourceId: string;

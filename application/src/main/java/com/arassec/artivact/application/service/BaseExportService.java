@@ -117,6 +117,27 @@ public abstract class BaseExportService {
                                   TranslatableString title,
                                   TranslatableString description,
                                   TranslatableString content) {
+        exportMainData(exportContext, contentSource, exportSourceId, title, description, content, null);
+    }
+
+    /**
+     * Exports the main data of the export like title, description, and content audio.
+     *
+     * @param exportContext  The export context.
+     * @param contentSource  The {@link ContentSource} of the export.
+     * @param exportSourceId The ID of the export's source object.
+     * @param title          The export's title.
+     * @param description    The export's description.
+     * @param content        The export's content.
+     * @param contentAudio   The export's content audio.
+     */
+    protected void exportMainData(ExportContext exportContext,
+                                  ContentSource contentSource,
+                                  String exportSourceId,
+                                  TranslatableString title,
+                                  TranslatableString description,
+                                  TranslatableString content,
+                                  TranslatableString contentAudio) {
         ExchangeMainData exchangeMainData = new ExchangeMainData();
         exchangeMainData.setContentSource(contentSource);
         exchangeMainData.getSourceIds().add(exportSourceId);
@@ -129,6 +150,9 @@ public abstract class BaseExportService {
         exchangeMainData.setId(exportContext.getId());
         exchangeMainData.setExportConfiguration(exportContext.getExportConfiguration());
         exchangeMainData.setCoverPictureExtension(exportContext.getCoverPictureExtension());
+        exchangeMainData.setContentAudio(Optional.ofNullable(contentAudio).orElse(new TranslatableString()));
+        // Reset translatedValue as it is a transient UI-only field and should not be persisted in the export.
+        exchangeMainData.getContentAudio().setTranslatedValue(null);
         writeJsonFile(exportContext.getExportDir().resolve(CONTENT_EXCHANGE_MAIN_DATA_FILENAME_JSON), exchangeMainData);
     }
 

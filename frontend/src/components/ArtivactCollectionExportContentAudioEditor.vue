@@ -1,0 +1,199 @@
+<template>
+  <div v-if="contentAudioRef" class="row items-center full-width q-mb-md">
+    <q-file
+      v-model="fileRef"
+      outlined
+      dense
+      accept=".mp3"
+      :label="label"
+      class="col"
+      @update:model-value="uploadContentAudio"
+    >
+      <template v-slot:prepend>
+        <q-icon name="audiotrack"/>
+      </template>
+    </q-file>
+    <q-btn
+      v-if="applicationSettingsStore.aiEnabled"
+      round
+      dense
+      flat
+      color="primary"
+      icon="smart_toy"
+      class="q-ml-sm"
+      :loading="generatingRef"
+      @click="generateContentAudio"
+    >
+      <q-tooltip>{{ $t('ContentAudioEditor.tooltip.generateAudio') }}</q-tooltip>
+    </q-btn>
+    <q-btn
+      v-if="hasContentAudio"
+      round
+      dense
+      flat
+      color="negative"
+      icon="delete"
+      class="q-ml-sm"
+      @click="deleteContentAudio"
+    >
+      <q-tooltip>{{ deleteLabel }}</q-tooltip>
+    </q-btn>
+    <q-icon
+      v-if="hasContentAudio"
+      name="check_circle"
+      color="positive"
+      size="sm"
+      class="q-ml-sm"
+    />
+  </div>
+</template>
+
+<script setup lang="ts">
+import {computed, PropType, ref, toRef} from 'vue';
+import {TranslatableString} from './artivact-models';
+import {useLocaleStore} from '../stores/locale';
+import {useApplicationSettingsStore} from '../stores/application-settings';
+import {api} from '../boot/axios';
+import {useQuasar} from 'quasar';
+import {useI18n} from 'vue-i18n';
+
+const props = defineProps({
+  collectionExportId: {
+    required: true,
+    type: String,
+  },
+  contentAudio: {
+    required: true,
+    type: Object as PropType<TranslatableString>,
+  },
+  label: {
+    required: true,
+    type: String,
+  },
+  deleteLabel: {
+    required: true,
+    type: String,
+  },
+});
+
+const emit = defineEmits<{
+  (e: 'save-before-upload', payload: { resolve: (value?: unknown) => void; reject: (reason?: unknown) => void }): void;
+  (e: 'audio-changed'): void;
+}>();
+
+const localeStore = useLocaleStore();
+const applicationSettingsStore = useApplicationSettingsStore();
+const quasar = useQuasar();
+const i18n = useI18n();
+const contentAudioRef = toRef(props, 'contentAudio');
+const fileRef = ref(null as File | null);
+const generatingRef = ref(false);
+
+const hasContentAudio = computed(() => {
+  if (!contentAudioRef.value) {
+    return false;
+  }
+  const locale = localeStore.selectedLocale;
+  if (locale) {
+    return !!contentAudioRef.value.translations[locale];
+  }
+  return !!contentAudioRef.value.value;
+});
+
+async function uploadContentAudio(file: File | null) {
+  if (!file) {
+    return;
+  }
+
+  await new Promise((resolve, reject) => {
+    emit('save-before-upload', {resolve, reject});
+  });
+
+  const locale = localeStore.selectedLocale || '';
+
+  const formData = new FormData();
+  formData.append('file', file, file.name);
+
+  await api.post(
+    `/api/collection/export/${props.collectionExportId}/content-audio?locale=${locale}`,
+    formData
+  );
+
+  const audioFilename = getExpectedFilename(locale);
+  setContentAudioFilename(locale, audioFilename);
+  fileRef.value = null;
+  emit('audio-changed');
+}
+
+async function generateContentAudio() {
+  generatingRef.value = true;
+
+  await new Promise((resolve, reject) => {
+    emit('save-before-upload', {resolve, reject});
+  });
+
+  const locale = localeStore.selectedLocale || '';
+
+  api
+    .post(
+      `/api/collection/export/${props.collectionExportId}/generate-audio?locale=${locale}`
+    )
+    .then((response) => {
+      setContentAudioFilename(locale, response.data);
+      quasar.notify({
+        color: 'positive',
+        position: 'bottom',
+        message: i18n.t('ContentAudioEditor.messages.generateSuccess'),
+        icon: 'check_circle',
+      });
+      emit('audio-changed');
+    })
+    .catch(() => {
+      quasar.notify({
+        color: 'negative',
+        position: 'bottom',
+        message: i18n.t('ContentAudioEditor.messages.generateFailed'),
+        icon: 'report_problem',
+      });
+    })
+    .finally(() => {
+      generatingRef.value = false;
+    });
+}
+
+async function deleteContentAudio() {
+  const locale = localeStore.selectedLocale || '';
+
+  await api.delete(
+    `/api/collection/export/${props.collectionExportId}/content-audio?locale=${locale}`
+  );
+
+  clearContentAudioFilename(locale);
+  emit('audio-changed');
+}
+
+function getExpectedFilename(locale: string): string {
+  if (locale) {
+    return `${props.collectionExportId}-${locale}.mp3`;
+  }
+  return `${props.collectionExportId}.mp3`;
+}
+
+function setContentAudioFilename(locale: string, filename: string) {
+  if (locale) {
+    contentAudioRef.value.translations[locale] = filename;
+  } else {
+    contentAudioRef.value.value = filename;
+  }
+}
+
+function clearContentAudioFilename(locale: string) {
+  if (locale) {
+    delete contentAudioRef.value.translations[locale];
+  } else {
+    contentAudioRef.value.value = '';
+  }
+}
+</script>
+
+<style scoped></style>

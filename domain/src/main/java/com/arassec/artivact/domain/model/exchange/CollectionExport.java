@@ -70,6 +70,11 @@ public class CollectionExport extends BaseRestrictedObject {
     private String coverPictureExtension;
 
     /**
+     * Per-locale audio content filenames.
+     */
+    private TranslatableString contentAudio;
+
+    /**
      * Marks this collection export as not re-creatable i.e., only the export file is available for distribution.
      */
     private boolean distributionOnly;

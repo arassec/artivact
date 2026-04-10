@@ -4,13 +4,16 @@ import com.arassec.artivact.application.infrastructure.aspect.GenerateIds;
 import com.arassec.artivact.application.infrastructure.aspect.RestrictResult;
 import com.arassec.artivact.application.infrastructure.aspect.TranslateResult;
 import com.arassec.artivact.application.port.in.collection.*;
+import com.arassec.artivact.application.port.in.configuration.LoadAiConfigurationUseCase;
 import com.arassec.artivact.application.port.in.menu.LoadMenuUseCase;
 import com.arassec.artivact.application.port.in.operation.RunBackgroundOperationUseCase;
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
+import com.arassec.artivact.application.port.out.gateway.AiGateway;
 import com.arassec.artivact.application.port.out.repository.CollectionExportRepository;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.TranslatableString;
+import com.arassec.artivact.domain.model.configuration.AiConfiguration;
 import com.arassec.artivact.domain.model.exchange.CollectionExport;
 import com.arassec.artivact.domain.model.exchange.CollectionExportInfo;
 import com.arassec.artivact.domain.model.item.ImageSize;
@@ -26,6 +29,7 @@ import tools.jackson.databind.json.JsonMapper;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -49,7 +53,11 @@ public class ManageCollectionExportService
         LoadCollectionExportCoverPictureUseCase,
         DeleteCollectionExportCoverPictureUseCase,
         SaveCollectionExportCoverPictureUseCase,
-        CreateCollectionExportInfosUseCase {
+        CreateCollectionExportInfosUseCase,
+        SaveCollectionExportContentAudioUseCase,
+        LoadCollectionExportContentAudioUseCase,
+        DeleteCollectionExportContentAudioUseCase,
+        GenerateCollectionExportContentAudioUseCase {
 
     /**
      * The application's file repository.
@@ -86,6 +94,16 @@ public class ManageCollectionExportService
      * Use case for run background operation.
      */
     private final RunBackgroundOperationUseCase runBackgroundOperationUseCase;
+
+    /**
+     * Gateway for AI-based operations.
+     */
+    private final AiGateway aiGateway;
+
+    /**
+     * Use case for loading AI configuration.
+     */
+    private final LoadAiConfigurationUseCase loadAiConfigurationUseCase;
 
     /**
      * Returns all collection exports available to the current user.
@@ -165,6 +183,7 @@ public class ManageCollectionExportService
             fileRepository.delete(exportFile);
         }
         deleteCoverPicture(id);
+        deleteAllContentAudioFiles(id);
         collectionExportRepository.delete(id);
     }
 
@@ -325,6 +344,147 @@ public class ManageCollectionExportService
     }
 
     /**
+     * Saves a content audio file for a collection export.
+     *
+     * @param id               The collection export's ID.
+     * @param locale           The locale of the audio file (empty string for default).
+     * @param originalFilename The audio file's original name.
+     * @param inputStream      The input stream providing the audio data.
+     */
+    @Override
+    public void saveContentAudio(String id, String locale, String originalFilename, InputStream inputStream) {
+        validateLocale(locale);
+        CollectionExport collectionExport = collectionExportRepository.findById(id).orElseThrow();
+
+        Path targetDir = useProjectDirsUseCase.getExportsDir();
+        fileRepository.createDirIfRequired(targetDir);
+
+        String audioFilename = getContentAudioFilename(id, locale);
+        Path targetPath = targetDir.resolve(audioFilename);
+
+        try {
+            Files.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new ArtivactException("Could not save content audio file!", e);
+        }
+
+        TranslatableString contentAudio = collectionExport.getContentAudio();
+        if (contentAudio == null) {
+            contentAudio = new TranslatableString();
+            collectionExport.setContentAudio(contentAudio);
+        }
+        if (StringUtils.hasText(locale)) {
+            contentAudio.getTranslations().put(locale, audioFilename);
+        } else {
+            contentAudio.setValue(audioFilename);
+        }
+
+        collectionExportRepository.save(collectionExport);
+    }
+
+    /**
+     * Loads a collection export's content audio file.
+     *
+     * @param id       The ID of the collection export.
+     * @param filename The audio filename.
+     * @return The audio as byte array.
+     */
+    @Override
+    public byte[] loadContentAudio(String id, String filename) {
+        if (filename == null || !filename.matches("^[a-zA-Z0-9_-]{1,100}\\.mp3$")) {
+            throw new ArtivactException("Invalid content audio filename: " + filename);
+        }
+        Path audioFile = useProjectDirsUseCase.getExportsDir().resolve(filename);
+        if (!fileRepository.exists(audioFile)) {
+            throw new ArtivactException("Content audio file not found: " + filename);
+        }
+        return fileRepository.readBytes(audioFile);
+    }
+
+    /**
+     * Deletes a content audio file from a collection export.
+     *
+     * @param id     The collection export's ID.
+     * @param locale The locale of the audio to delete (empty string for default).
+     */
+    @Override
+    public void deleteContentAudio(String id, String locale) {
+        validateLocale(locale);
+        CollectionExport collectionExport = collectionExportRepository.findById(id).orElseThrow();
+        TranslatableString contentAudio = collectionExport.getContentAudio();
+        if (contentAudio == null) {
+            return;
+        }
+
+        String audioFilename;
+        if (StringUtils.hasText(locale)) {
+            audioFilename = contentAudio.getTranslations().remove(locale);
+        } else {
+            audioFilename = contentAudio.getValue();
+            contentAudio.setValue("");
+        }
+
+        if (StringUtils.hasText(audioFilename)) {
+            Path audioFile = useProjectDirsUseCase.getExportsDir().resolve(audioFilename);
+            if (fileRepository.exists(audioFile)) {
+                fileRepository.delete(audioFile);
+            }
+        }
+
+        collectionExportRepository.save(collectionExport);
+    }
+
+    /**
+     * Generates an audio file from the collection export's content using AI.
+     *
+     * @param id     The collection export's ID.
+     * @param locale The locale for the audio generation (empty string for default).
+     * @return The generated audio filename.
+     */
+    @Override
+    public String generateContentAudio(String id, String locale) {
+        validateLocale(locale);
+
+        CollectionExport collectionExport = collectionExportRepository.findById(id).orElseThrow();
+
+        TranslatableString content = collectionExport.getContent();
+        if (content == null) {
+            throw new ArtivactException("No content available for audio generation in collection export: " + id);
+        }
+        content.translate(locale);
+        String textContent = content.getTranslatedValue();
+
+        if (!StringUtils.hasText(textContent)) {
+            throw new ArtivactException("No content available for audio generation in collection export: " + id);
+        }
+
+        AiConfiguration aiConfiguration = loadAiConfigurationUseCase.loadAiConfiguration();
+
+        String audioFilename = getContentAudioFilename(id, locale);
+
+        Path targetDir = useProjectDirsUseCase.getExportsDir();
+        fileRepository.createDirIfRequired(targetDir);
+        Path targetFile = targetDir.resolve(audioFilename);
+
+        aiGateway.convertToAudio(aiConfiguration, textContent, targetFile);
+
+        TranslatableString contentAudio = collectionExport.getContentAudio();
+        if (contentAudio == null) {
+            contentAudio = new TranslatableString();
+            collectionExport.setContentAudio(contentAudio);
+        }
+        if (StringUtils.hasText(locale)) {
+            contentAudio.getTranslations().put(locale, audioFilename);
+        } else {
+            contentAudio.setValue(audioFilename);
+        }
+
+        collectionExportRepository.save(collectionExport);
+
+        return audioFilename;
+    }
+
+    /**
      * Returns the path to the export file of the collection export with the given ID.
      *
      * @param id The collection export's ID.
@@ -353,6 +513,64 @@ public class ManageCollectionExportService
 
         if (collectionExport.getContent() == null) {
             collectionExport.setContent(new TranslatableString(""));
+        }
+    }
+
+    /**
+     * Generates the audio filename for a collection export and locale.
+     *
+     * @param id     The collection export's ID.
+     * @param locale The locale (empty string for default).
+     * @return The audio filename.
+     */
+    private String getContentAudioFilename(String id, String locale) {
+        if (StringUtils.hasText(locale)) {
+            return id + "-" + locale + ".mp3";
+        }
+        return id + ".mp3";
+    }
+
+    /**
+     * Deletes all content audio files for the given collection export.
+     *
+     * @param id The collection export's ID.
+     */
+    private void deleteAllContentAudioFiles(String id) {
+        CollectionExport collectionExport = collectionExportRepository.findById(id).orElse(null);
+        if (collectionExport == null || collectionExport.getContentAudio() == null) {
+            return;
+        }
+        TranslatableString contentAudio = collectionExport.getContentAudio();
+
+        if (StringUtils.hasText(contentAudio.getValue())) {
+            Path audioFile = useProjectDirsUseCase.getExportsDir().resolve(contentAudio.getValue());
+            if (fileRepository.exists(audioFile)) {
+                fileRepository.delete(audioFile);
+            }
+        }
+
+        contentAudio.getTranslations().values().forEach(filename -> {
+            if (StringUtils.hasText(filename)) {
+                Path audioFile = useProjectDirsUseCase.getExportsDir().resolve(filename);
+                if (fileRepository.exists(audioFile)) {
+                    fileRepository.delete(audioFile);
+                }
+            }
+        });
+
+        contentAudio.setValue("");
+        contentAudio.getTranslations().clear();
+        collectionExportRepository.save(collectionExport);
+    }
+
+    /**
+     * Validates the locale parameter to prevent path traversal attacks.
+     *
+     * @param locale The locale to validate.
+     */
+    private void validateLocale(String locale) {
+        if (StringUtils.hasText(locale) && !locale.matches("^[a-zA-Z_-]{1,15}$")) {
+            throw new ArtivactException("Invalid locale: " + locale);
         }
     }
 

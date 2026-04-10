@@ -607,6 +607,7 @@ export default {
       title: "Title",
       description: "Short Description",
       content: "Content",
+      contentAudio: "Content Audio (MP3)",
       xrExport: "Export for Artivact XR",
       applyRestrictions: "Exclude restricted elements",
       exportFileMissing:
@@ -620,6 +621,7 @@ export default {
       description:
         "A short (one to two sentences) description of the export's content.",
       content: "A longer description of the export's content.",
+      contentAudio: "Upload or generate an MP3 audio file for the export's content. Select a locale to manage audio per language.",
     },
     button: {
       create: "Create Export Configuration",
@@ -633,6 +635,7 @@ export default {
         "Create a new export file for this collection export configuration",
       download: "Download the export file",
       deleteCoverPicture: "Delete cover picture from collection export",
+      deleteContentAudio: "Delete content audio from collection export",
       restricted: "Access to this collection export is restricted",
       distributionOnly: "This collection export is for distribution only",
     },

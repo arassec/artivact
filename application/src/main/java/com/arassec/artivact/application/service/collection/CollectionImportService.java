@@ -13,9 +13,11 @@ import com.arassec.artivact.domain.model.exchange.CollectionExport;
 import com.arassec.artivact.domain.model.exchange.ContentSource;
 import com.arassec.artivact.domain.model.exchange.ExchangeMainData;
 import com.arassec.artivact.domain.model.exchange.ImportContext;
+import com.arassec.artivact.domain.model.TranslatableString;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.nio.file.Path;
@@ -141,6 +143,8 @@ public class CollectionImportService implements ImportCollectionUseCase {
                 }
             }
 
+            importContentAudioFiles(importContext, exchangeMainData);
+
             fileRepository.delete(importContext.getImportDir());
             fileRepository.delete(file);
 
@@ -167,8 +171,46 @@ public class CollectionImportService implements ImportCollectionUseCase {
         result.setContentSource(ContentSource.MENU);
         result.setSourceId(exchangeMainData.getSourceIds().getFirst());
         result.setCoverPictureExtension(exchangeMainData.getCoverPictureExtension());
+        result.setContentAudio(exchangeMainData.getContentAudio());
         result.setDistributionOnly(distributionOnly);
         return result;
+    }
+
+    /**
+     * Imports content audio files from the import directory to the exports directory.
+     *
+     * @param importContext    The import context.
+     * @param exchangeMainData The exchange main data.
+     */
+    private void importContentAudioFiles(ImportContext importContext, ExchangeMainData exchangeMainData) {
+        TranslatableString contentAudio = exchangeMainData.getContentAudio();
+        if (contentAudio == null) {
+            return;
+        }
+        if (StringUtils.hasText(contentAudio.getValue())) {
+            copyAudioFileFromImport(importContext, contentAudio.getValue());
+        }
+        if (contentAudio.getTranslations() != null) {
+            contentAudio.getTranslations().values().forEach(filename -> {
+                if (StringUtils.hasText(filename)) {
+                    copyAudioFileFromImport(importContext, filename);
+                }
+            });
+        }
+    }
+
+    /**
+     * Copies a single audio file from the import directory to the exports directory.
+     *
+     * @param importContext The import context.
+     * @param filename     The audio filename.
+     */
+    private void copyAudioFileFromImport(ImportContext importContext, String filename) {
+        Path audioFile = importContext.getImportDir().resolve(filename);
+        if (fileRepository.exists(audioFile)) {
+            fileRepository.copy(audioFile, getProjectRootUseCase.getExportsDir().resolve(filename),
+                    StandardCopyOption.REPLACE_EXISTING);
+        }
     }
 
 }
