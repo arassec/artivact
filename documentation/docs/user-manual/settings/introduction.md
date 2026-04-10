@@ -18,4 +18,5 @@ which offer the following functionality:
 | Tags        | Configures tags that can be assigned to items for item management or selection.                               | 
 | Exchange    | Configures a remote Artivact instance for item upload as well as options to export and import the collection. | 
 | Appearance  | Configures various aspects of the application's appearance.                                                   | 
+| AI          | Configures the artificial intelligence integration for automatic translation and audio content generation.    | 
 | Peripherals | <Badge type="warning" text="desktop"/> Configures external hard- and software for 3D scanning of items.       | 
