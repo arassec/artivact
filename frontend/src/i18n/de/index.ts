@@ -606,7 +606,7 @@ export default {
       description:
         'Eine ein bis zwei Sätze umfassende, kurze Beschreibung des Sammlungsexports.',
       content: 'Eine längere Beschreibung des Inhalts des Sammlungsexports.',
-      contentAudio: 'Laden Sie eine MP3-Audiodatei für den Inhalt des Exports hoch oder generieren Sie diese. Wählen Sie eine Sprache, um Audio pro Sprache zu verwalten.',
+      contentAudio: 'Laden Sie eine MP3 mit der Exportbschreibung als Audio hoch oder generieren Sie diese. Nutzen Sie die Sprachauswahl in der Menuleiste, um Audio für eine bestimmte Sprache zu verwalten.',
     },
     button: {
       create: 'Exportkonfiguration erstellen',

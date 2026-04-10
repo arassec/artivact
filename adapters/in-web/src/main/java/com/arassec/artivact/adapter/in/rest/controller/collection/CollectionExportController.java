@@ -343,9 +343,10 @@ public class CollectionExportController extends BaseImportController {
      * @return The generated audio filename.
      */
     @PostMapping(value = "/{id}/generate-audio", produces = MediaType.TEXT_PLAIN_VALUE)
-    public String generateContentAudio(@PathVariable String id,
+    public ResponseEntity<String> generateContentAudio(@PathVariable String id,
                                        @RequestParam(value = "locale", defaultValue = "") String locale) {
-        return generateCollectionExportContentAudioUseCase.generateContentAudio(id, locale);
+        String audioFilename = generateCollectionExportContentAudioUseCase.generateContentAudio(id, locale);
+        return ResponseEntity.ok(audioFilename);
     }
 
     /**

@@ -225,7 +225,7 @@ function translateText() {
     // the early return above): invert direction — translate selected locale →
     // application default locale.
     sourceText = selectedLocaleValue;
-    targetLocale = applicationSettingsStore.applicationLocale;
+    targetLocale = applicationSettingsStore.defaultLocale;
   }
 
   api

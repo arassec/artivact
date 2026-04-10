@@ -228,6 +228,7 @@ public class ProjectInitializationService {
             } else {
                 appearanceConfiguration.setAvailableLocales("");
             }
+            appearanceConfiguration.setDefaultLocale("en");
             appearanceConfiguration.setLicense(new License());
 
             ColorTheme colorTheme = new ColorTheme();

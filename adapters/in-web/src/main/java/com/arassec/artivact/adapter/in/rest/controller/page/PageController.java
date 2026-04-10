@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URLConnection;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -189,22 +190,7 @@ public class PageController {
     public HttpEntity<byte[]> loadFile(@PathVariable String widgetId,
                                        @PathVariable String filename,
                                        @RequestParam(required = false) ImageSize imageSize) {
-
-        if (!StringUtils.hasText(filename)) {
-            return new HttpEntity<>(new byte[0]);
-        }
-
-        var contentDisposition = ContentDisposition.builder("inline")
-                .filename(filename)
-                .build();
-
-        var headers = new HttpHeaders();
-        headers.setContentDisposition(contentDisposition);
-        headers.setContentType(MediaType.valueOf(URLConnection.guessContentTypeFromName(filename)));
-
-        byte[] model = managePageMediaUseCase.loadFile(widgetId, filename, imageSize, false);
-
-        return new HttpEntity<>(model, headers);
+        return loadFile(widgetId, filename, imageSize, false);
     }
 
     /**
@@ -219,22 +205,7 @@ public class PageController {
     public HttpEntity<byte[]> loadWipFile(@PathVariable String widgetId,
                                           @PathVariable String filename,
                                           @RequestParam(required = false) ImageSize imageSize) {
-
-        if (!StringUtils.hasText(filename)) {
-            return new HttpEntity<>(new byte[0]);
-        }
-
-        var contentDisposition = ContentDisposition.builder("inline")
-                .filename(filename)
-                .build();
-
-        var headers = new HttpHeaders();
-        headers.setContentDisposition(contentDisposition);
-        headers.setContentType(MediaType.valueOf(URLConnection.guessContentTypeFromName(filename)));
-
-        byte[] model = managePageMediaUseCase.loadFile(widgetId, filename, imageSize, true);
-
-        return new HttpEntity<>(model, headers);
+        return loadFile(widgetId, filename, imageSize, true);
     }
 
     /**
@@ -286,9 +257,36 @@ public class PageController {
         Set<String> roles = new HashSet<>();
         if (authentication != null) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            roles.addAll(userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList());
+            roles.addAll(Objects.requireNonNull(userDetails).getAuthorities().stream().map(GrantedAuthority::getAuthority).toList());
         }
         return roles;
+    }
+
+    /**
+     * Loads the given file.
+     *
+     * @param widgetId  The widget's ID.
+     * @param filename  The name of the file.
+     * @param imageSize Optional target size of an image.
+     * @param wip       Load the file from the work-in-progress space or not.
+     * @return The file as byte array.
+     */
+    private HttpEntity<byte[]> loadFile(String widgetId, String filename, ImageSize imageSize, boolean wip) {
+        if (!StringUtils.hasText(filename)) {
+            return new HttpEntity<>(new byte[0]);
+        }
+
+        var contentDisposition = ContentDisposition.builder("inline")
+                .filename(filename)
+                .build();
+
+        var headers = new HttpHeaders();
+        headers.setContentDisposition(contentDisposition);
+        headers.setContentType(MediaType.valueOf(URLConnection.guessContentTypeFromName(filename)));
+
+        byte[] model = managePageMediaUseCase.loadFile(widgetId, filename, imageSize, wip);
+
+        return new HttpEntity<>(model, headers);
     }
 
 }

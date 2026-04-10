@@ -152,6 +152,7 @@ function saveProperties() {
           item: i18n.t('Common.items.configuration.properties'),
         }),
         icon: 'check',
+        badgeColor: 'positive',
       });
     })
     .catch(() => {

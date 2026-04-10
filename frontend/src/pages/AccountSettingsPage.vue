@@ -153,6 +153,7 @@ function saveAccount() {
         position: 'bottom',
         message: i18n.t('Common.messages.saving.success', {item: i18n.t('Common.items.account')}),
         icon: 'check',
+        badgeColor: 'positive',
       });
     })
     .catch(() => {

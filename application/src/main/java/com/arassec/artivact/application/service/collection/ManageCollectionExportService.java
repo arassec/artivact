@@ -514,6 +514,10 @@ public class ManageCollectionExportService
         if (collectionExport.getContent() == null) {
             collectionExport.setContent(new TranslatableString(""));
         }
+
+        if (collectionExport.getContentAudio() == null) {
+            collectionExport.setContentAudio(new TranslatableString(""));
+        }
     }
 
     /**

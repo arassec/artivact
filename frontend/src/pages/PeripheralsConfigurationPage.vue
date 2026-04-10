@@ -277,6 +277,7 @@ function savePeripheralConfiguration() {
           item: i18n.t('Common.items.configuration.peripherals'),
         }),
         icon: 'check',
+        badgeColor: 'positive',
       });
     })
     .catch(() => {

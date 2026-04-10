@@ -110,6 +110,7 @@ function saveAppearanceConfiguration() {
         position: 'bottom',
         message: i18n.t('Common.messages.saving.success', {item: i18n.t('Common.items.configuration.appearance')}),
         icon: 'check',
+        badgeColor: 'positive',
         attrs: {
           'data-test': 'artivact-notify-success'
         },

@@ -155,6 +155,7 @@ function saveTagsConfiguration() {
           item: i18n.t('Common.items.configuration.tags'),
         }),
         icon: 'check',
+        badgeColor: 'positive',
       });
     })
     .catch(() => {

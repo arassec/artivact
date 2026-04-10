@@ -6,7 +6,6 @@ import com.arassec.artivact.domain.model.configuration.AiConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ai.openai.OpenAiAudioSpeechModel;
@@ -86,13 +85,14 @@ class OpenAiGatewayTest {
         assertThat(targetFile).doesNotExist();
     }
 
+    @SuppressWarnings("unused")
     @Test
     void convertToAudioWritesGeneratedAudioToTargetFile(@TempDir Path tempDir) throws Exception {
         AiConfiguration aiConfiguration = aiConfiguration(true, "api-key");
         Path targetFile = tempDir.resolve("audio.mp3");
         byte[] audioBytes = new byte[]{1, 2, 3};
 
-        try (MockedConstruction<OpenAiAudioSpeechModel> ignored =
+        try (var ignored =
                      org.mockito.Mockito.mockConstruction(OpenAiAudioSpeechModel.class,
                              (mock, context) -> when(mock.call("prompt")).thenReturn(audioBytes))) {
             openAiGateway.convertToAudio(aiConfiguration, "prompt", targetFile);
@@ -101,12 +101,13 @@ class OpenAiGatewayTest {
         assertThat(Files.readAllBytes(targetFile)).isEqualTo(audioBytes);
     }
 
+    @SuppressWarnings("unused")
     @Test
     void convertToAudioThrowsArtivactExceptionWhenTargetFileCannotBeWritten(@TempDir Path tempDir) {
         AiConfiguration aiConfiguration = aiConfiguration(true, "api-key");
         Path targetFile = tempDir.resolve("missing-directory").resolve("audio.mp3");
 
-        try (MockedConstruction<OpenAiAudioSpeechModel> ignored =
+        try (var ignored =
                      org.mockito.Mockito.mockConstruction(OpenAiAudioSpeechModel.class,
                              (mock, context) -> when(mock.call("prompt")).thenReturn(new byte[]{1, 2, 3}))) {
             assertThatThrownBy(() -> openAiGateway.convertToAudio(aiConfiguration, "prompt", targetFile))

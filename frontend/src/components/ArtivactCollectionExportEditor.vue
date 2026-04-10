@@ -250,11 +250,6 @@
         </q-card-section>
       </template>
 
-      <template v-slot:cancel>
-        <q-btn color="primary" :label="$t('Common.cancel')"
-               @click="showCollectionExportConfigurationDialogRef = false"/>
-      </template>
-
       <template v-slot:approve>
         <q-btn color="primary"
                :label="createNewExportConfigurationRef ? $t('ArtivactCollectionExportEditor.dialog.create.approve') : $t('ArtivactCollectionExportEditor.dialog.edit.approve')"

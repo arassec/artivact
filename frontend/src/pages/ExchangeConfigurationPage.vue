@@ -275,8 +275,8 @@ function loadCollectionExports() {
     });
 }
 
-function saveCollectionExport(collectionExport: CollectionExport) {
-  api
+async function saveCollectionExport(collectionExport: CollectionExport) {
+  await api
     .post('/api/collection/export', collectionExport)
     .then((response) => {
       refreshCollectionExports(response.data);
@@ -287,6 +287,8 @@ function saveCollectionExport(collectionExport: CollectionExport) {
           item: i18n.t('Common.items.collectionExport'),
         }),
         icon: 'check',
+        badgeColor: 'positive',
+        badgeColor: 'positive',
       });
     })
     .catch(() => {
@@ -354,6 +356,7 @@ function deleteCollectionExport() {
           item: i18n.t('Common.items.collectionExport'),
         }),
         icon: 'check',
+        badgeColor: 'positive',
       });
     })
     .catch(() => {
@@ -380,6 +383,7 @@ function saveSortOrder() {
           item: i18n.t('Common.items.collectionExports'),
         }),
         icon: 'check',
+        badgeColor: 'positive',
       });
     })
     .catch(() => {
@@ -406,6 +410,7 @@ function deleteCoverPicture(collectionExport: CollectionExport) {
           item: i18n.t('Common.items.collectionExport'),
         }),
         icon: 'check',
+        badgeColor: 'positive',
       });
     })
     .catch(() => {

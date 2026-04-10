@@ -31,7 +31,7 @@
       round
       dense
       flat
-      color="negative"
+      color="primary"
       icon="delete"
       class="q-ml-sm"
       @click="deleteContentAudio"
@@ -41,7 +41,7 @@
     <q-icon
       v-if="hasContentAudio"
       name="check_circle"
-      color="positive"
+      color="secondary"
       size="sm"
       class="q-ml-sm"
     />
@@ -50,10 +50,10 @@
 
 <script setup lang="ts">
 import {computed, PropType, ref, toRef} from 'vue';
-import {TranslatableString} from '../artivact-models';
-import {useLocaleStore} from '../../stores/locale';
-import {useApplicationSettingsStore} from '../../stores/application-settings';
-import {api} from '../../boot/axios';
+import {TranslatableString} from './artivact-models';
+import {useLocaleStore} from '../stores/locale';
+import {useApplicationSettingsStore} from '../stores/application-settings';
+import {api} from '../boot/axios';
 import {useQuasar} from 'quasar';
 import {useI18n} from 'vue-i18n';
 
@@ -202,6 +202,7 @@ async function generateContentAudio() {
 
 async function deleteContentAudio() {
   const filename = getCurrentFilename();
+  console.log(filename);
   if (!filename) {
     return;
   }

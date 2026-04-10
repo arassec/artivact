@@ -888,6 +888,7 @@ function createItem() {
           item: i18n.t('Common.items.item'),
         }),
         icon: 'check',
+        badgeColor: 'positive',
       });
     })
     .catch(() => {

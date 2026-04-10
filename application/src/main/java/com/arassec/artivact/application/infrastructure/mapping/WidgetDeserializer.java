@@ -58,13 +58,13 @@ public class WidgetDeserializer extends ValueDeserializer<Widget> {
                     pageTitleWidget.setButtonConfigs(new LinkedList<>());
                 }
             }
-            if (widget instanceof ContentAudioProvider contentAudioProvider) {
-                if (contentAudioProvider.getContentAudio() == null) {
-                    contentAudioProvider.setContentAudio(TranslatableString.builder().build());
-                }
+            if (widget instanceof ContentAudioProvider contentAudioProvider
+                    && contentAudioProvider.getContentAudio() == null) {
+                contentAudioProvider.setContentAudio(TranslatableString.builder().build());
             }
             return widget;
-        } catch (NoSuchElementException _) {
+        } catch (
+                NoSuchElementException _) {
             log.warn("No widget found for type {}. Ignoring widget...", getType(map));
             return null;
         }

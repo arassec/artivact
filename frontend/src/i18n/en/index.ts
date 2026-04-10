@@ -627,7 +627,7 @@ export default {
       description:
         "A short (one to two sentences) description of the export's content.",
       content: "A longer description of the export's content.",
-      contentAudio: "Upload or generate an MP3 audio file for the export's content. Select a locale to manage audio per language.",
+      contentAudio: "Upload or generate an MP3 audio file for the export's content description. Select a locale to manage audio for a specific language.",
     },
     button: {
       create: "Create Export Configuration",

@@ -225,7 +225,7 @@ class ManageCollectionExportServiceTest {
 
         assertThat(export.getContentAudio()).isNotNull();
         assertThat(export.getContentAudio().getTranslations()).containsKey("de");
-        assertThat(export.getContentAudio().getTranslations().get("de")).isEqualTo("test-id-de.mp3");
+        assertThat(export.getContentAudio().getTranslations()).containsEntry("de", "test-id-de.mp3");
         verify(collectionExportRepository).save(export);
     }
 

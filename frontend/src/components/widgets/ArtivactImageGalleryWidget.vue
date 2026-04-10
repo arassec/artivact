@@ -228,7 +228,7 @@ import {useLocaleStore} from '../../stores/locale';
 import ArtivactRestrictedTranslatableItemEditor from '../ArtivactRestrictedTranslatableItemEditor.vue';
 import {QUploader, useQuasar} from 'quasar';
 import Draggable from 'vuedraggable';
-import ArtivactContentAudioEditor from '../../components/widgets/ArtivactContentAudioEditor.vue';
+import ArtivactContentAudioEditor from '../ArtivactContentAudioEditor.vue';
 
 const props = defineProps({
   inEditMode: {
@@ -338,6 +338,7 @@ async function saveWidgetBeforeUpload() {
 
 </script>
 
+<!--suppress CssUnusedSymbol -->
 <style scoped>
 .image-preview {
   width: 240px;

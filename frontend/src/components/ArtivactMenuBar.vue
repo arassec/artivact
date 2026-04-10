@@ -1077,6 +1077,7 @@ function deleteMenu() {
           item: i18n.t('Common.items.menu'),
         }),
         icon: 'check',
+        badgeColor: 'positive',
       });
     })
     .catch(() => {
@@ -1217,6 +1218,7 @@ function menuImported() {
           item: i18n.t('Common.items.menus'),
         }),
         icon: 'check',
+        badgeColor: 'positive',
       });
     })
     .catch(() => {

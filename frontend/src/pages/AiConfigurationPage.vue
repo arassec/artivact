@@ -150,6 +150,7 @@ function saveAiConfiguration() {
           item: i18n.t('Common.items.configuration.ai'),
         }),
         icon: 'check',
+        badgeColor: 'positive',
       });
     })
     .catch(() => {

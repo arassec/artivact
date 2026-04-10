@@ -245,9 +245,9 @@ class ItemExportServiceTest {
 
         // Then
         verify(fileRepository).copy(
-                eq(itemSourceDir.resolve("models").resolve("model1.glb")),
-                eq(itemExportDir.resolve("models").resolve("model1.glb")),
-                eq(StandardCopyOption.REPLACE_EXISTING)
+                itemSourceDir.resolve("models").resolve("model1.glb"),
+                itemExportDir.resolve("models").resolve("model1.glb"),
+                StandardCopyOption.REPLACE_EXISTING
         );
         verify(fileRepository, times(1)).copy(any(Path.class), any(Path.class), eq(StandardCopyOption.REPLACE_EXISTING));
         assertThat(item.getMediaContent().getModels()).containsExactly("model1.glb");

@@ -31,7 +31,7 @@
       round
       dense
       flat
-      color="negative"
+      color="primary"
       icon="delete"
       class="q-ml-sm"
       @click="deleteContentAudio"
@@ -41,7 +41,7 @@
     <q-icon
       v-if="hasContentAudio"
       name="check_circle"
-      color="positive"
+      color="secondary"
       size="sm"
       class="q-ml-sm"
     />
@@ -144,7 +144,8 @@ async function generateContentAudio() {
         color: 'positive',
         position: 'bottom',
         message: i18n.t('ContentAudioEditor.messages.generateSuccess'),
-        icon: 'check_circle',
+        icon: 'check',
+        badgeColor: 'positive',
       });
       emit('audio-changed');
     })

@@ -396,6 +396,7 @@ function deleteAccount(id: number) {
         position: 'bottom',
         message: i18n.t('Common.messages.deleting.success', {item: i18n.t('Common.items.account')}),
         icon: 'check',
+        badgeColor: 'positive',
       });
     })
     .catch(() => {

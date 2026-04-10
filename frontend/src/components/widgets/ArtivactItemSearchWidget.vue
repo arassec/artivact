@@ -192,7 +192,7 @@ import ArtivactWidgetTemplate from '../../components/widgets/ArtivactWidgetTempl
 import ArtivactRestrictedTranslatableItemEditor from '../../components/ArtivactRestrictedTranslatableItemEditor.vue';
 import {useLocaleStore} from '../../stores/locale';
 import {formatMarkdown, translate} from '../artivact-utils';
-import ArtivactContentAudioEditor from '../../components/widgets/ArtivactContentAudioEditor.vue';
+import ArtivactContentAudioEditor from '../ArtivactContentAudioEditor.vue';
 
 const props = defineProps({
   inEditMode: {
