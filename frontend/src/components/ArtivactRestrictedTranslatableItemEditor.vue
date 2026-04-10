@@ -197,16 +197,50 @@ function deleteRestriction(value: string) {
 }
 
 function translateText() {
-  if (!translatableStringRef.value || !localeStore.selectedLocale || !translatableStringRef.value.value) {
+  if (!translatableStringRef.value || !localeStore.selectedLocale) {
     return;
   }
+
+  const fallbackValue = translatableStringRef.value.value;
+  const selectedLocaleValue = translatableStringRef.value.translations[localeStore.selectedLocale];
+
+  // If both fallback and selected locale values are empty, do nothing.
+  if (!fallbackValue && !selectedLocaleValue) {
+    return;
+  }
+
+  // Determine the translation direction before the async call so that the
+  // response handler uses a stable flag regardless of any user edits in between.
+  const translateToSelectedLocale = !!fallbackValue;
+
+  let sourceText: string;
+  let targetLocale: string;
+
+  if (translateToSelectedLocale) {
+    // Fallback locale value is present: translate fallback → selected locale.
+    sourceText = fallbackValue;
+    targetLocale = localeStore.selectedLocale;
+  } else {
+    // Fallback locale is empty but selected locale has a value (guaranteed by
+    // the early return above): invert direction — translate selected locale →
+    // application default locale.
+    sourceText = selectedLocaleValue;
+    targetLocale = applicationSettingsStore.applicationLocale;
+  }
+
   api
-    .post('/api/configuration/ai/translate/' + localeStore.selectedLocale, translatableStringRef.value.value, {
+    .post('/api/configuration/ai/translate/' + targetLocale, sourceText, {
       headers: {'Content-Type': 'text/plain'}
     })
     .then((response) => {
       if (translatableStringRef.value && localeStore.selectedLocale) {
-        translatableStringRef.value.translations[localeStore.selectedLocale] = response.data;
+        if (translateToSelectedLocale) {
+          // Assign translated text to the selected locale translation.
+          translatableStringRef.value.translations[localeStore.selectedLocale] = response.data;
+        } else {
+          // Assign translated text to the fallback locale value.
+          translatableStringRef.value.value = response.data;
+        }
       }
     })
     .catch(() => {
