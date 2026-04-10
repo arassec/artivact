@@ -19,6 +19,7 @@ import com.arassec.artivact.domain.model.operation.BackgroundOperation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -216,9 +217,9 @@ class ManageCollectionExportServiceTest {
     }
 
     @Test
-    void testSaveContentAudioStoresFileAndUpdatesExport() {
+    void testSaveContentAudioStoresFileAndUpdatesExport(@TempDir Path tempDir) {
         when(collectionExportRepository.findById("test-id")).thenReturn(Optional.of(export));
-        when(useProjectDirsUseCase.getExportsDir()).thenReturn(Path.of("/tmp"));
+        when(useProjectDirsUseCase.getExportsDir()).thenReturn(tempDir);
 
         service.saveContentAudio("test-id", "de", "audio.mp3", new ByteArrayInputStream(new byte[0]));
 
@@ -229,9 +230,9 @@ class ManageCollectionExportServiceTest {
     }
 
     @Test
-    void testSaveContentAudioDefaultLocale() {
+    void testSaveContentAudioDefaultLocale(@TempDir Path tempDir) {
         when(collectionExportRepository.findById("test-id")).thenReturn(Optional.of(export));
-        when(useProjectDirsUseCase.getExportsDir()).thenReturn(Path.of("/tmp"));
+        when(useProjectDirsUseCase.getExportsDir()).thenReturn(tempDir);
 
         service.saveContentAudio("test-id", "", "audio.mp3", new ByteArrayInputStream(new byte[0]));
 
