@@ -1,15 +1,18 @@
 package com.arassec.artivact.application.service.collection;
 
 import com.arassec.artivact.application.port.in.collection.ExportCollectionUseCase;
+import com.arassec.artivact.application.port.in.configuration.LoadAiConfigurationUseCase;
 import com.arassec.artivact.application.port.in.configuration.LoadPropertiesConfigurationUseCase;
 import com.arassec.artivact.application.port.in.configuration.LoadTagsConfigurationUseCase;
 import com.arassec.artivact.application.port.in.menu.LoadMenuUseCase;
 import com.arassec.artivact.application.port.in.operation.RunBackgroundOperationUseCase;
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
+import com.arassec.artivact.application.port.out.gateway.AiGateway;
 import com.arassec.artivact.application.port.out.repository.CollectionExportRepository;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.TranslatableString;
+import com.arassec.artivact.domain.model.configuration.AiConfiguration;
 import com.arassec.artivact.domain.model.exchange.CollectionExport;
 import com.arassec.artivact.domain.model.misc.ProgressMonitor;
 import com.arassec.artivact.domain.model.operation.BackgroundOperation;
@@ -30,8 +33,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @SuppressWarnings("unused")
@@ -64,6 +66,12 @@ class ManageCollectionExportServiceTest {
 
     @Mock
     private RunBackgroundOperationUseCase runBackgroundOperationUseCase;
+
+    @Mock
+    private AiGateway aiGateway;
+
+    @Mock
+    private LoadAiConfigurationUseCase loadAiConfigurationUseCase;
 
     @InjectMocks
     private ManageCollectionExportService service;
@@ -205,6 +213,144 @@ class ManageCollectionExportServiceTest {
         service.createCollectionExportInfos(outputStream, List.of(export));
 
         assertThat(outputStream.toByteArray()).isNotEmpty();
+    }
+
+    @Test
+    void testSaveContentAudioStoresFileAndUpdatesExport() {
+        when(collectionExportRepository.findById("test-id")).thenReturn(Optional.of(export));
+        when(useProjectDirsUseCase.getExportsDir()).thenReturn(Path.of("/tmp"));
+
+        service.saveContentAudio("test-id", "de", "audio.mp3", new ByteArrayInputStream(new byte[0]));
+
+        assertThat(export.getContentAudio()).isNotNull();
+        assertThat(export.getContentAudio().getTranslations()).containsKey("de");
+        assertThat(export.getContentAudio().getTranslations().get("de")).isEqualTo("test-id-de.mp3");
+        verify(collectionExportRepository).save(export);
+    }
+
+    @Test
+    void testSaveContentAudioDefaultLocale() {
+        when(collectionExportRepository.findById("test-id")).thenReturn(Optional.of(export));
+        when(useProjectDirsUseCase.getExportsDir()).thenReturn(Path.of("/tmp"));
+
+        service.saveContentAudio("test-id", "", "audio.mp3", new ByteArrayInputStream(new byte[0]));
+
+        assertThat(export.getContentAudio()).isNotNull();
+        assertThat(export.getContentAudio().getValue()).isEqualTo("test-id.mp3");
+        verify(collectionExportRepository).save(export);
+    }
+
+    @Test
+    void testDeleteContentAudioRemovesFileAndClearsEntry() {
+        TranslatableString contentAudio = new TranslatableString();
+        contentAudio.getTranslations().put("de", "test-id-de.mp3");
+        export.setContentAudio(contentAudio);
+
+        when(collectionExportRepository.findById("test-id")).thenReturn(Optional.of(export));
+        when(useProjectDirsUseCase.getExportsDir()).thenReturn(Path.of("/tmp"));
+        when(fileRepository.exists(any())).thenReturn(true);
+
+        service.deleteContentAudio("test-id", "de");
+
+        assertThat(export.getContentAudio().getTranslations()).doesNotContainKey("de");
+        verify(fileRepository).delete(any());
+        verify(collectionExportRepository).save(export);
+    }
+
+    @Test
+    void testDeleteContentAudioDefaultLocale() {
+        TranslatableString contentAudio = new TranslatableString("test-id.mp3");
+        export.setContentAudio(contentAudio);
+
+        when(collectionExportRepository.findById("test-id")).thenReturn(Optional.of(export));
+        when(useProjectDirsUseCase.getExportsDir()).thenReturn(Path.of("/tmp"));
+        when(fileRepository.exists(any())).thenReturn(true);
+
+        service.deleteContentAudio("test-id", "");
+
+        assertThat(export.getContentAudio().getValue()).isEmpty();
+        verify(fileRepository).delete(any());
+        verify(collectionExportRepository).save(export);
+    }
+
+    @Test
+    void testDeleteContentAudioNoContentAudio() {
+        when(collectionExportRepository.findById("test-id")).thenReturn(Optional.of(export));
+
+        service.deleteContentAudio("test-id", "de");
+
+        verify(collectionExportRepository, never()).save(any());
+    }
+
+    @Test
+    void testLoadContentAudioNotFound() {
+        when(useProjectDirsUseCase.getExportsDir()).thenReturn(Path.of("/tmp"));
+        when(fileRepository.exists(any())).thenReturn(false);
+
+        assertThatThrownBy(() -> service.loadContentAudio("test-id", "test-id.mp3"))
+                .isInstanceOf(ArtivactException.class)
+                .hasMessageContaining("Content audio file not found");
+    }
+
+    @Test
+    void testLoadContentAudioSuccess() {
+        when(useProjectDirsUseCase.getExportsDir()).thenReturn(Path.of("/tmp"));
+        when(fileRepository.exists(any())).thenReturn(true);
+        when(fileRepository.readBytes(any())).thenReturn(new byte[]{1, 2, 3});
+
+        byte[] result = service.loadContentAudio("test-id", "test-id.mp3");
+
+        assertThat(result).containsExactly(1, 2, 3);
+    }
+
+    @Test
+    void testGenerateContentAudioInvalidLocale() {
+        assertThatThrownBy(() -> service.generateContentAudio("test-id", "../etc"))
+                .isInstanceOf(ArtivactException.class)
+                .hasMessageContaining("Invalid locale");
+    }
+
+    @Test
+    void testGenerateContentAudioNoContent() {
+        when(collectionExportRepository.findById("test-id")).thenReturn(Optional.of(export));
+
+        assertThatThrownBy(() -> service.generateContentAudio("test-id", "de"))
+                .isInstanceOf(ArtivactException.class)
+                .hasMessageContaining("No content available");
+    }
+
+    @Test
+    void testGenerateContentAudioSuccess() {
+        TranslatableString content = new TranslatableString("Some content text");
+        export.setContent(content);
+
+        when(collectionExportRepository.findById("test-id")).thenReturn(Optional.of(export));
+        when(useProjectDirsUseCase.getExportsDir()).thenReturn(Path.of("/tmp"));
+        when(loadAiConfigurationUseCase.loadAiConfiguration()).thenReturn(new AiConfiguration());
+
+        String result = service.generateContentAudio("test-id", "");
+
+        assertThat(result).isEqualTo("test-id.mp3");
+        assertThat(export.getContentAudio()).isNotNull();
+        assertThat(export.getContentAudio().getValue()).isEqualTo("test-id.mp3");
+        verify(aiGateway).convertToAudio(any(AiConfiguration.class), eq("Some content text"), any(Path.class));
+        verify(collectionExportRepository).save(export);
+    }
+
+    @Test
+    void testDeleteRemovesContentAudioFiles() {
+        TranslatableString contentAudio = new TranslatableString("test-id.mp3");
+        contentAudio.getTranslations().put("de", "test-id-de.mp3");
+        export.setContentAudio(contentAudio);
+
+        when(useProjectDirsUseCase.getExportsDir()).thenReturn(Path.of("/tmp"));
+        when(fileRepository.exists(any())).thenReturn(true);
+        when(collectionExportRepository.findById("test-id")).thenReturn(Optional.of(export));
+
+        service.delete("test-id");
+
+        verify(fileRepository, atLeast(3)).delete(any());
+        verify(collectionExportRepository).delete("test-id");
     }
 
 }

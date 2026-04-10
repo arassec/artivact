@@ -391,11 +391,10 @@ public class ManageCollectionExportService
     @Override
     public byte[] loadContentAudio(String id, String filename) {
         Path audioFile = useProjectDirsUseCase.getExportsDir().resolve(filename);
-        try {
-            return Files.readAllBytes(audioFile);
-        } catch (IOException e) {
-            throw new ArtivactException("Could not load content audio file!", e);
+        if (!fileRepository.exists(audioFile)) {
+            throw new ArtivactException("Content audio file not found: " + filename);
         }
+        return fileRepository.readBytes(audioFile);
     }
 
     /**

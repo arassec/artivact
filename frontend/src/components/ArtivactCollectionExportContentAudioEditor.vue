@@ -50,10 +50,10 @@
 
 <script setup lang="ts">
 import {computed, PropType, ref, toRef} from 'vue';
-import {TranslatableString} from '../artivact-models';
-import {useLocaleStore} from '../../stores/locale';
-import {useApplicationSettingsStore} from '../../stores/application-settings';
-import {api} from '../../boot/axios';
+import {TranslatableString} from './artivact-models';
+import {useLocaleStore} from '../stores/locale';
+import {useApplicationSettingsStore} from '../stores/application-settings';
+import {api} from '../boot/axios';
 import {useQuasar} from 'quasar';
 import {useI18n} from 'vue-i18n';
 

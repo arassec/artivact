@@ -5,6 +5,7 @@ import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.model.exchange.CollectionExport;
 import com.arassec.artivact.domain.model.exchange.ExchangeMainData;
+import com.arassec.artivact.domain.model.TranslatableString;
 import com.arassec.artivact.domain.model.menu.Menu;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
@@ -131,6 +132,34 @@ class CollectionExportServiceTest {
         ArgumentCaptor<File> argCap = ArgumentCaptor.forClass(File.class);
         verify(jsonMapper).writeValue(argCap.capture(), any(ExchangeMainData.class));
         assertThat(argCap.getValue().toString()).endsWith("artivact.content.json");
+    }
+
+    @Test
+    @SneakyThrows
+    void testExportCollectionWithContentAudio() {
+        CollectionExport collectionExport = new CollectionExport();
+        collectionExport.setId("col4");
+
+        TranslatableString contentAudio = new TranslatableString("col4.mp3");
+        contentAudio.getTranslations().put("de", "col4-de.mp3");
+        collectionExport.setContentAudio(contentAudio);
+
+        Menu menu = new Menu();
+        menu.setId("menu4");
+
+        when(useProjectDirsUseCase.getProjectRoot()).thenReturn(Path.of("exports"));
+
+        Path defaultAudio = exportsDir.resolve("col4.mp3");
+        Path deAudio = exportsDir.resolve("col4-de.mp3");
+        lenient().doReturn(true).when(fileRepository).exists(defaultAudio);
+        lenient().doReturn(true).when(fileRepository).exists(deAudio);
+
+        Path result = service.exportCollection(collectionExport, menu);
+
+        assertThat(result.toString()).endsWith("col4.artivact.collection.zip");
+
+        verify(fileRepository).copy(eq(defaultAudio), argThat(p -> p.toString().endsWith("col4.mp3")), eq(StandardCopyOption.REPLACE_EXISTING));
+        verify(fileRepository).copy(eq(deAudio), argThat(p -> p.toString().endsWith("col4-de.mp3")), eq(StandardCopyOption.REPLACE_EXISTING));
     }
 
 }
