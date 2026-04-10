@@ -11,6 +11,7 @@ import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.gateway.AiGateway;
 import com.arassec.artivact.application.port.out.repository.CollectionExportRepository;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
+import com.arassec.artivact.application.service.ContentGenerator;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.TranslatableString;
 import com.arassec.artivact.domain.model.configuration.AiConfiguration;
@@ -44,8 +45,8 @@ import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.ZIP_FIL
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class ManageCollectionExportService
-        implements LoadCollectionExportUseCase,
+public class ManageCollectionExportService implements ContentGenerator,
+        LoadCollectionExportUseCase,
         SaveCollectionExportUseCase,
         DeleteCollectionExportUseCase,
         BuildCollectionExportFileUseCase,
@@ -353,7 +354,9 @@ public class ManageCollectionExportService
      */
     @Override
     public void saveContentAudio(String id, String locale, String originalFilename, InputStream inputStream) {
-        validateLocale(locale);
+        if (isInvalidJavaLocale(locale)) {
+            throw new ArtivactException("Invalid locale: " + locale);
+        }
         CollectionExport collectionExport = collectionExportRepository.findById(id).orElseThrow();
 
         Path targetDir = useProjectDirsUseCase.getExportsDir();
@@ -368,16 +371,7 @@ public class ManageCollectionExportService
             throw new ArtivactException("Could not save content audio file!", e);
         }
 
-        TranslatableString contentAudio = collectionExport.getContentAudio();
-        if (contentAudio == null) {
-            contentAudio = new TranslatableString();
-            collectionExport.setContentAudio(contentAudio);
-        }
-        if (StringUtils.hasText(locale)) {
-            contentAudio.getTranslations().put(locale, audioFilename);
-        } else {
-            contentAudio.setValue(audioFilename);
-        }
+        processContentAudio(locale, collectionExport, audioFilename);
 
         collectionExportRepository.save(collectionExport);
     }
@@ -409,7 +403,9 @@ public class ManageCollectionExportService
      */
     @Override
     public void deleteContentAudio(String id, String locale) {
-        validateLocale(locale);
+        if (isInvalidJavaLocale(locale)) {
+            throw new ArtivactException("Invalid locale: " + locale);
+        }
         CollectionExport collectionExport = collectionExportRepository.findById(id).orElseThrow();
         TranslatableString contentAudio = collectionExport.getContentAudio();
         if (contentAudio == null) {
@@ -443,7 +439,9 @@ public class ManageCollectionExportService
      */
     @Override
     public String generateContentAudio(String id, String locale) {
-        validateLocale(locale);
+        if (isInvalidJavaLocale(locale)) {
+            throw new ArtivactException("Invalid locale: " + locale);
+        }
 
         CollectionExport collectionExport = collectionExportRepository.findById(id).orElseThrow();
 
@@ -468,16 +466,7 @@ public class ManageCollectionExportService
 
         aiGateway.convertToAudio(aiConfiguration, textContent, targetFile);
 
-        TranslatableString contentAudio = collectionExport.getContentAudio();
-        if (contentAudio == null) {
-            contentAudio = new TranslatableString();
-            collectionExport.setContentAudio(contentAudio);
-        }
-        if (StringUtils.hasText(locale)) {
-            contentAudio.getTranslations().put(locale, audioFilename);
-        } else {
-            contentAudio.setValue(audioFilename);
-        }
+        processContentAudio(locale, collectionExport, audioFilename);
 
         collectionExportRepository.save(collectionExport);
 
@@ -496,7 +485,7 @@ public class ManageCollectionExportService
     }
 
     /**
-     * Adds additional information, e.g., about the export file' size and last modification, to the provided collection
+     * Adds additional information, e.g., about the export file size and last modification, to the provided collection
      * export.
      *
      * @param collectionExport The {@link CollectionExport} to add additional information to.
@@ -565,17 +554,6 @@ public class ManageCollectionExportService
         contentAudio.setValue("");
         contentAudio.getTranslations().clear();
         collectionExportRepository.save(collectionExport);
-    }
-
-    /**
-     * Validates the locale parameter to prevent path traversal attacks.
-     *
-     * @param locale The locale to validate.
-     */
-    private void validateLocale(String locale) {
-        if (StringUtils.hasText(locale) && !locale.matches("^[a-zA-Z_-]{1,15}$")) {
-            throw new ArtivactException("Invalid locale: " + locale);
-        }
     }
 
 }

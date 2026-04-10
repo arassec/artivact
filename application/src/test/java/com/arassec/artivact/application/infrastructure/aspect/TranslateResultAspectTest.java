@@ -1,9 +1,7 @@
 package com.arassec.artivact.application.infrastructure.aspect;
 
-import com.arassec.artivact.application.port.out.repository.ConfigurationRepository;
+import com.arassec.artivact.application.service.DefaultLocaleProvider;
 import com.arassec.artivact.domain.model.TranslatableObject;
-import com.arassec.artivact.domain.model.configuration.AppearanceConfiguration;
-import com.arassec.artivact.domain.model.configuration.ConfigurationType;
 import lombok.Getter;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.junit.jupiter.api.Test;
@@ -16,7 +14,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class TranslateResultAspectTest {
@@ -28,7 +26,7 @@ class TranslateResultAspectTest {
     private ProceedingJoinPoint joinPoint;
 
     @Mock
-    private ConfigurationRepository configurationRepository;
+    private DefaultLocaleProvider defaultLocaleProvider;
 
     @Getter
     static class DummyTranslatable implements TranslatableObject {
@@ -70,8 +68,7 @@ class TranslateResultAspectTest {
     void testTranslateTranslatesSingleTranslatableObject() throws Throwable {
         DummyTranslatable obj = new DummyTranslatable();
         when(joinPoint.proceed()).thenReturn(obj);
-        when(configurationRepository.findByType(ConfigurationType.APPEARANCE, AppearanceConfiguration.class))
-                .thenReturn(Optional.empty());
+        when(defaultLocaleProvider.getDefaultLocale()).thenReturn(null);
 
         Object result = aspect.translate(joinPoint);
 
@@ -86,8 +83,7 @@ class TranslateResultAspectTest {
         List<DummyTranslatable> list = new ArrayList<>(List.of(t1, t2));
 
         when(joinPoint.proceed()).thenReturn(list);
-        when(configurationRepository.findByType(ConfigurationType.APPEARANCE, AppearanceConfiguration.class))
-                .thenReturn(Optional.empty());
+        when(defaultLocaleProvider.getDefaultLocale()).thenReturn(null);
 
         Object result = aspect.translate(joinPoint);
 
@@ -102,8 +98,7 @@ class TranslateResultAspectTest {
         entity.child = new DummyTranslatable();
 
         when(joinPoint.proceed()).thenReturn(entity);
-        when(configurationRepository.findByType(ConfigurationType.APPEARANCE, AppearanceConfiguration.class))
-                .thenReturn(Optional.empty());
+        when(defaultLocaleProvider.getDefaultLocale()).thenReturn(null);
 
         Object result = aspect.translate(joinPoint);
 
@@ -118,8 +113,7 @@ class TranslateResultAspectTest {
         entity.values.put(key, value);
 
         when(joinPoint.proceed()).thenReturn(entity);
-        when(configurationRepository.findByType(ConfigurationType.APPEARANCE, AppearanceConfiguration.class))
-                .thenReturn(Optional.empty());
+        when(defaultLocaleProvider.getDefaultLocale()).thenReturn(null);
 
         Object result = aspect.translate(joinPoint);
 
@@ -133,8 +127,7 @@ class TranslateResultAspectTest {
     @Test
     void testTranslateIgnoresNullValues() throws Throwable {
         when(joinPoint.proceed()).thenReturn(null);
-        when(configurationRepository.findByType(ConfigurationType.APPEARANCE, AppearanceConfiguration.class))
-                .thenReturn(Optional.empty());
+        when(defaultLocaleProvider.getDefaultLocale()).thenReturn(null);
 
         Object result = aspect.translate(joinPoint);
 
@@ -147,8 +140,7 @@ class TranslateResultAspectTest {
         DummyTranslatable obj = new DummyTranslatable();
 
         when(joinPoint.proceed()).thenReturn(obj);
-        when(configurationRepository.findByType(ConfigurationType.APPEARANCE, AppearanceConfiguration.class))
-                .thenReturn(Optional.empty());
+        when(defaultLocaleProvider.getDefaultLocale()).thenReturn("en");
 
         Object result = aspect.translate(joinPoint);
 
@@ -162,12 +154,8 @@ class TranslateResultAspectTest {
         LocaleContextHolder.setLocale(Locale.JAPANESE);
         DummyTranslatable obj = new DummyTranslatable();
 
-        AppearanceConfiguration config = new AppearanceConfiguration();
-        config.setDefaultLocale("de");
-
         when(joinPoint.proceed()).thenReturn(obj);
-        when(configurationRepository.findByType(ConfigurationType.APPEARANCE, AppearanceConfiguration.class))
-                .thenReturn(Optional.of(config));
+        when(defaultLocaleProvider.getDefaultLocale()).thenReturn("de");
 
         Object result = aspect.translate(joinPoint);
 

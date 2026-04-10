@@ -5,9 +5,12 @@ import com.arassec.artivact.application.infrastructure.aspect.RestrictResult;
 import com.arassec.artivact.application.infrastructure.aspect.TranslateResult;
 import com.arassec.artivact.application.port.in.configuration.*;
 import com.arassec.artivact.application.port.out.repository.ConfigurationRepository;
+import com.arassec.artivact.application.service.DefaultLocaleProvider;
 import com.arassec.artivact.domain.model.configuration.*;
 import com.arassec.artivact.domain.model.property.PropertyCategory;
+import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
@@ -24,8 +27,8 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class ManageConfigurationService
-        implements LoadPropertiesConfigurationUseCase,
+public class ManageConfigurationService implements DefaultLocaleProvider,
+        LoadPropertiesConfigurationUseCase,
         SavePropertiesConfigurationUseCase,
         LoadTagsConfigurationUseCase,
         SaveTagsConfigurationUseCase,
@@ -48,6 +51,22 @@ public class ManageConfigurationService
      * Spring's environment.
      */
     private final Environment environment;
+
+    /**
+     * The currently configured default locale.
+     */
+    @Getter
+    private String defaultLocale;
+
+    /**
+     * Initializes the service.
+     */
+    @PostConstruct
+    public void initialize() {
+        configurationRepository.findByType(ConfigurationType.APPEARANCE, AppearanceConfiguration.class)
+                .ifPresent(appearanceConfiguration
+                        -> this.defaultLocale = appearanceConfiguration.getDefaultLocale());
+    }
 
     /**
      * {@inheritDoc}
@@ -111,6 +130,7 @@ public class ManageConfigurationService
      */
     @Override
     public void saveAppearanceConfiguration(AppearanceConfiguration appearanceConfiguration) {
+        defaultLocale = appearanceConfiguration.getDefaultLocale();
         configurationRepository.saveConfiguration(ConfigurationType.APPEARANCE, appearanceConfiguration);
     }
 

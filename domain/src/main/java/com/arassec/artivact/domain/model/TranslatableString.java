@@ -71,17 +71,7 @@ public class TranslatableString implements TranslatableObject {
             translatedValue = value;
             return;
         }
-        if (translations.containsKey(locale)) {
-            translatedValue = translations.get(locale);
-            return;
-        }
-        for (Map.Entry<String, String> entry : translations.entrySet()) {
-            if (locale.startsWith(entry.getKey() + "_")) {
-                translatedValue = entry.getValue();
-                return;
-            }
-        }
-        translatedValue = value;
+        tryToTranslateWithLocale(locale);
     }
 
     /**
@@ -90,32 +80,12 @@ public class TranslatableString implements TranslatableObject {
     @Override
     public void translate(String locale, String defaultLocale) {
         if (locale == null || locale.isEmpty()) {
-            translatedValue = value;
+            translate(defaultLocale);
             return;
         }
-        if (translations.containsKey(locale)) {
-            translatedValue = translations.get(locale);
-            return;
+        if (!tryToTranslateWithLocale(locale)) {
+            tryToTranslateWithLocale(defaultLocale);
         }
-        for (Map.Entry<String, String> entry : translations.entrySet()) {
-            if (locale.startsWith(entry.getKey() + "_")) {
-                translatedValue = entry.getValue();
-                return;
-            }
-        }
-        if (defaultLocale != null && !defaultLocale.isEmpty()) {
-            if (translations.containsKey(defaultLocale)) {
-                translatedValue = translations.get(defaultLocale);
-                return;
-            }
-            for (Map.Entry<String, String> entry : translations.entrySet()) {
-                if (defaultLocale.startsWith(entry.getKey() + "_")) {
-                    translatedValue = entry.getValue();
-                    return;
-                }
-            }
-        }
-        translatedValue = value;
     }
 
     /**
@@ -132,6 +102,31 @@ public class TranslatableString implements TranslatableObject {
     @Override
     public void clear() {
         this.translatedValue = null;
+    }
+
+    /**
+     * Tries to translate the string with the given locale.
+     *
+     * @param locale The locale to use.
+     * @return {@code true} if a translation has been found, {@code false} if the fallback has been used.
+     */
+    private boolean tryToTranslateWithLocale(String locale) {
+        if (locale == null || locale.isEmpty()) {
+            translatedValue = value;
+            return false;
+        }
+        if (translations.containsKey(locale)) {
+            translatedValue = translations.get(locale);
+            return true;
+        }
+        for (Map.Entry<String, String> entry : translations.entrySet()) {
+            if (locale.startsWith(entry.getKey() + "_")) {
+                translatedValue = entry.getValue();
+                return true;
+            }
+        }
+        translatedValue = value;
+        return false;
     }
 
 }

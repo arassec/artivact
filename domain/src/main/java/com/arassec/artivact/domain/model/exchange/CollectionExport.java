@@ -1,6 +1,7 @@
 package com.arassec.artivact.domain.model.exchange;
 
 import com.arassec.artivact.domain.model.BaseRestrictedObject;
+import com.arassec.artivact.domain.model.ContentAudioProvider;
 import com.arassec.artivact.domain.model.TranslatableString;
 import lombok.*;
 
@@ -12,7 +13,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class CollectionExport extends BaseRestrictedObject {
+public class CollectionExport extends BaseRestrictedObject implements ContentAudioProvider {
 
     /**
      * Schema version for versioning exchange formats.

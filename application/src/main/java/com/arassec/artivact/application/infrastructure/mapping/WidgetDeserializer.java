@@ -1,7 +1,7 @@
 package com.arassec.artivact.application.infrastructure.mapping;
 
+import com.arassec.artivact.domain.model.ContentAudioProvider;
 import com.arassec.artivact.domain.model.TranslatableString;
-import com.arassec.artivact.domain.model.page.ContentAudioProvider;
 import com.arassec.artivact.domain.model.page.Widget;
 import com.arassec.artivact.domain.model.page.widget.*;
 import lombok.extern.slf4j.Slf4j;

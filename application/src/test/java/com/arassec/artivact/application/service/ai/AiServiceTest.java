@@ -1,6 +1,7 @@
 package com.arassec.artivact.application.service.ai;
 
 import com.arassec.artivact.application.port.in.configuration.LoadAiConfigurationUseCase;
+import com.arassec.artivact.application.port.in.configuration.LoadAppearanceConfigurationUseCase;
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.gateway.AiGateway;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
@@ -8,6 +9,7 @@ import com.arassec.artivact.application.port.out.repository.PageRepository;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.TranslatableString;
 import com.arassec.artivact.domain.model.configuration.AiConfiguration;
+import com.arassec.artivact.domain.model.configuration.AppearanceConfiguration;
 import com.arassec.artivact.domain.model.page.Page;
 import com.arassec.artivact.domain.model.page.PageContent;
 import com.arassec.artivact.domain.model.page.widget.AvatarWidget;
@@ -49,6 +51,9 @@ class AiServiceTest {
     @Mock
     private LoadAiConfigurationUseCase loadAiConfigurationUseCase;
 
+    @Mock
+    private LoadAppearanceConfigurationUseCase loadAppearanceConfigurationUseCase;
+
     @InjectMocks
     private AiService aiService;
 
@@ -73,7 +78,7 @@ class AiServiceTest {
         when(loadAiConfigurationUseCase.loadAiConfiguration()).thenReturn(aiConfiguration);
         when(aiGateway.execute(eq(aiConfiguration), anyString())).thenReturn("Hallo");
 
-        String result = aiService.translateText("Hello", "");
+        String result = aiService.translateText("Hello", "de");
 
         assertThat(result).isEqualTo("Hallo");
         verify(aiGateway).execute(eq(aiConfiguration), anyString());
@@ -148,7 +153,13 @@ class AiServiceTest {
         when(useProjectDirsUseCase.getWidgetsDir()).thenReturn(widgetsDir);
         when(fileRepository.getSubdirFilePath(widgetsDir, "widget-1", "wip")).thenReturn(widgetWipDir);
 
-        String result = aiService.convertToAudio("page-1", "widget-1", "");
+        AppearanceConfiguration appearanceConfiguration = new AppearanceConfiguration();
+        appearanceConfiguration.setDefaultLocale("");
+
+        when(loadAppearanceConfigurationUseCase.loadTranslatedAppearanceConfiguration())
+                .thenReturn(appearanceConfiguration);
+
+        String result = aiService.convertToAudio("page-1", "widget-1", null);
 
         assertThat(result).isEqualTo("content-audio.mp3");
         assertThat(widget.getContentAudio().getValue()).isEqualTo("content-audio.mp3");
@@ -224,7 +235,7 @@ class AiServiceTest {
 
         when(pageRepository.findByIdOrAlias("page-1")).thenReturn(Optional.of(page));
 
-        assertThatThrownBy(() -> aiService.convertToAudio("page-1", "widget-1", ""))
+        assertThatThrownBy(() -> aiService.convertToAudio("page-1", "widget-1", "de"))
                 .isInstanceOf(ArtivactException.class)
                 .hasMessage("No content available for audio generation in widget: widget-1");
     }

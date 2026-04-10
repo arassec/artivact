@@ -1,7 +1,7 @@
 package com.arassec.artivact.domain.model.page.widget;
 
+import com.arassec.artivact.domain.model.ContentAudioProvider;
 import com.arassec.artivact.domain.model.TranslatableString;
-import com.arassec.artivact.domain.model.page.ContentAudioProvider;
 import com.arassec.artivact.domain.model.page.FileProcessingOperation;
 import com.arassec.artivact.domain.model.page.FileProcessingWidget;
 import com.arassec.artivact.domain.model.page.Widget;

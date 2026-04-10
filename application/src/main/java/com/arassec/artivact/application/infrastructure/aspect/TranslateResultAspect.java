@@ -1,10 +1,8 @@
 package com.arassec.artivact.application.infrastructure.aspect;
 
-import com.arassec.artivact.application.port.out.repository.ConfigurationRepository;
+import com.arassec.artivact.application.service.DefaultLocaleProvider;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.TranslatableObject;
-import com.arassec.artivact.domain.model.configuration.AppearanceConfiguration;
-import com.arassec.artivact.domain.model.configuration.ConfigurationType;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -33,7 +31,7 @@ public class TranslateResultAspect {
     /**
      * Repository for loading the application's configuration.
      */
-    private final ConfigurationRepository configurationRepository;
+    private final DefaultLocaleProvider defaultLocaleProvider;
 
     /**
      * Processes a method's result value and translates it if required.
@@ -46,10 +44,7 @@ public class TranslateResultAspect {
     public Object translate(ProceedingJoinPoint joinPoint) throws Throwable {
         Object result = joinPoint.proceed();
 
-        String defaultLocale = configurationRepository
-                .findByType(ConfigurationType.APPEARANCE, AppearanceConfiguration.class)
-                .map(AppearanceConfiguration::getDefaultLocale)
-                .orElse("en");
+        String defaultLocale = defaultLocaleProvider.getDefaultLocale();
 
         translateIfPossible(result, LocaleContextHolder.getLocale(), defaultLocale);
         return result;

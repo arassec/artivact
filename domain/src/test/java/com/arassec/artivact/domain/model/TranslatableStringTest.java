@@ -100,6 +100,9 @@ class TranslatableStringTest {
         translatableString.translate("ja", null);
         assertThat(translatableString.getTranslatedValue()).isEqualTo("Item");
 
+        translatableString.translate(null, null);
+        assertThat(translatableString.getTranslatedValue()).isEqualTo("Item");
+
         translatableString.translate("ja", "");
         assertThat(translatableString.getTranslatedValue()).isEqualTo("Item");
     }
@@ -113,10 +116,10 @@ class TranslatableStringTest {
         translatableString.setTranslations(Map.of("de", "Objekt"));
 
         translatableString.translate(null, "de");
-        assertThat(translatableString.getTranslatedValue()).isEqualTo("Item");
+        assertThat(translatableString.getTranslatedValue()).isEqualTo("Objekt");
 
         translatableString.translate("", "de");
-        assertThat(translatableString.getTranslatedValue()).isEqualTo("Item");
+        assertThat(translatableString.getTranslatedValue()).isEqualTo("Objekt");
     }
 
 }

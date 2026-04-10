@@ -9,11 +9,11 @@ import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.gateway.AiGateway;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.application.port.out.repository.PageRepository;
-import com.arassec.artivact.application.service.LocaleValidator;
+import com.arassec.artivact.application.service.ContentGenerator;
 import com.arassec.artivact.domain.exception.ArtivactException;
+import com.arassec.artivact.domain.model.ContentAudioProvider;
 import com.arassec.artivact.domain.model.TranslatableString;
 import com.arassec.artivact.domain.model.configuration.AiConfiguration;
-import com.arassec.artivact.domain.model.page.ContentAudioProvider;
 import com.arassec.artivact.domain.model.page.Page;
 import com.arassec.artivact.domain.model.page.Widget;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ import java.nio.file.Path;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class AiService implements LocaleValidator,
+public class AiService implements ContentGenerator,
         TranslateTextUseCase,
         ConvertToAudioUseCase,
         TestAiConfigurationUseCase {
@@ -78,7 +78,7 @@ public class AiService implements LocaleValidator,
             locale = loadAppearanceConfigurationUseCase.loadTranslatedAppearanceConfiguration().getDefaultLocale();
         }
 
-        if (!isValidJavaLocale(locale)) {
+        if (isInvalidJavaLocale(locale)) {
             throw new ArtivactException("Invalid locale: " + locale);
         }
 
@@ -100,8 +100,11 @@ public class AiService implements LocaleValidator,
      */
     @Override
     public String convertToAudio(String pageId, String widgetId, String locale) {
+        if (locale == null) {
+            locale = loadAppearanceConfigurationUseCase.loadTranslatedAppearanceConfiguration().getDefaultLocale();
+        }
 
-        if (!isValidJavaLocale(locale)) {
+        if (isInvalidJavaLocale(locale)) {
             throw new ArtivactException("Invalid locale: " + locale);
         }
 
@@ -136,16 +139,7 @@ public class AiService implements LocaleValidator,
 
         aiGateway.convertToAudio(aiConfiguration, textContent, targetFile);
 
-        TranslatableString contentAudio = contentAudioProvider.getContentAudio();
-        if (contentAudio == null) {
-            contentAudio = new TranslatableString();
-            contentAudioProvider.setContentAudio(contentAudio);
-        }
-        if (StringUtils.hasText(locale)) {
-            contentAudio.getTranslations().put(locale, audioFilename);
-        } else {
-            contentAudio.setValue(audioFilename);
-        }
+        processContentAudio(locale, contentAudioProvider, audioFilename);
 
         pageRepository.save(page);
 

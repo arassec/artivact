@@ -1,6 +1,4 @@
-package com.arassec.artivact.domain.model.page;
-
-import com.arassec.artivact.domain.model.TranslatableString;
+package com.arassec.artivact.domain.model;
 
 /**
  * Interface for widgets that provide content and content audio.
