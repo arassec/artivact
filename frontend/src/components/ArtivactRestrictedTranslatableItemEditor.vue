@@ -209,16 +209,21 @@ function translateText() {
     return;
   }
 
+  // Determine the translation direction before the async call so that the
+  // response handler uses a stable flag regardless of any user edits in between.
+  const translateToSelectedLocale = !!fallbackValue;
+
   let sourceText: string;
   let targetLocale: string;
 
-  if (fallbackValue) {
+  if (translateToSelectedLocale) {
     // Fallback locale value is present: translate fallback → selected locale.
     sourceText = fallbackValue;
     targetLocale = localeStore.selectedLocale;
   } else {
-    // Fallback locale is empty but selected locale has a value:
-    // Invert translation direction — translate selected locale → application default locale.
+    // Fallback locale is empty but selected locale has a value (guaranteed by
+    // the early return above): invert direction — translate selected locale →
+    // application default locale.
     sourceText = selectedLocaleValue;
     targetLocale = applicationSettingsStore.applicationLocale;
   }
@@ -229,7 +234,7 @@ function translateText() {
     })
     .then((response) => {
       if (translatableStringRef.value && localeStore.selectedLocale) {
-        if (fallbackValue) {
+        if (translateToSelectedLocale) {
           // Assign translated text to the selected locale translation.
           translatableStringRef.value.translations[localeStore.selectedLocale] = response.data;
         } else {
