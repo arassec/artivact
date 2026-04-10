@@ -111,6 +111,42 @@
       </q-expansion-item>
 
       <q-expansion-item
+        data-test="appearance-config-default-locale"
+        group="appearanceConfig"
+        header-class="bg-primary text-white"
+        class="list-entry"
+        expand-separator
+        expand-icon-class="text-white"
+      >
+        <template v-slot:header>
+          <q-item-section class="list-entry-label">
+            {{
+              $t('ArtivactAppearanceConfigurationEditor.list.defaultLocale.heading')
+            }}
+          </q-item-section>
+        </template>
+        <q-card class="q-mb-lg">
+          <q-card-section>
+            <div class="q-mb-md">
+              {{
+                $t(
+                  'ArtivactAppearanceConfigurationEditor.list.defaultLocale.description',
+                )
+              }}
+            </div>
+            <q-input
+              data-test="appearance-config-default-locale-input"
+              outlined
+              :label="
+                $t('ArtivactAppearanceConfigurationEditor.list.defaultLocale.label')
+              "
+              v-model="appearanceConfigurationRef.defaultLocale"
+            ></q-input>
+          </q-card-section>
+        </q-card>
+      </q-expansion-item>
+
+      <q-expansion-item
         data-test="appearance-config-language"
         group="appearanceConfig"
         header-class="bg-primary text-white"

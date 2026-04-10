@@ -14,6 +14,9 @@ Die folgenden Aspekte des Erscheinungsbildes der Anwendung können auf dieser Se
       den Browsereinstellungen (<Badge type="warning" text="server"/>) ausgewählt.
     - Die ``default``-Sprache wird verwendet, falls keine der konfigurierten Sprachen den Präferenzen des Benutzers
       entspricht.
+- Standardsprache (Default Locale)
+    - Die Standardsprache, die als Fallback verwendet wird, wenn ein übersetzbarer Text nicht in der bevorzugten Sprache des Benutzers verfügbar ist.
+    - Z.B. ``en`` oder ``de``. Standardwert ist ``en``, wenn nicht konfiguriert.
 - Anwendungssprache <Badge type="warning" text="desktop"/>
     - Sprache der Artivact-Oberfläche, d.h. der UI-Elemente, Nachrichten usw.
     - Derzeit unterstützt: Englisch und Deutsch.

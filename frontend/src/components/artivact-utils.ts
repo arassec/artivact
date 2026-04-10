@@ -1,10 +1,12 @@
 import {TranslatableString} from './artivact-models';
 import {useLocaleStore} from '../stores/locale';
 import {useUserdataStore} from '../stores/userdata';
+import {useApplicationSettingsStore} from '../stores/application-settings';
 import MarkdownIt from 'markdown-it';
 
 const localeStore = useLocaleStore();
 const userdataStore = useUserdataStore();
+const applicationSettingsStore = useApplicationSettingsStore();
 
 export function moveUp(array: [unknown], index: number) {
   if (index > 0 && array.length >= index) {
@@ -33,6 +35,14 @@ export function translate(translatableString: TranslatableString) {
   }
   if (localeStore.selectedLocale === null && userdataStore.isUserOrAdmin) {
     return translatableString.value;
+  }
+  if (translatableString && translatableString.translations) {
+    const defaultLocale = applicationSettingsStore.defaultLocale;
+    if (defaultLocale
+      && defaultLocale in translatableString.translations
+      && translatableString.translations[defaultLocale]) {
+      return translatableString.translations[defaultLocale];
+    }
   }
   if (translatableString && translatableString.translatedValue) {
     return translatableString.translatedValue;

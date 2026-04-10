@@ -21,6 +21,9 @@ export const useApplicationSettingsStore = defineStore('applicationSettings', {
     applicationLocale(state): string {
       return state.data.settings.applicationLocale;
     },
+    defaultLocale(state): string {
+      return state.data.settings.defaultLocale;
+    },
     colorTheme(state): ColorTheme {
       return state.data.settings.colorTheme;
     },

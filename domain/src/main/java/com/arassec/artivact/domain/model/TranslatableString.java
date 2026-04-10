@@ -88,6 +88,40 @@ public class TranslatableString implements TranslatableObject {
      * {@inheritDoc}
      */
     @Override
+    public void translate(String locale, String defaultLocale) {
+        if (locale == null || locale.isEmpty()) {
+            translatedValue = value;
+            return;
+        }
+        if (translations.containsKey(locale)) {
+            translatedValue = translations.get(locale);
+            return;
+        }
+        for (Map.Entry<String, String> entry : translations.entrySet()) {
+            if (locale.startsWith(entry.getKey() + "_")) {
+                translatedValue = entry.getValue();
+                return;
+            }
+        }
+        if (defaultLocale != null && !defaultLocale.isEmpty()) {
+            if (translations.containsKey(defaultLocale)) {
+                translatedValue = translations.get(defaultLocale);
+                return;
+            }
+            for (Map.Entry<String, String> entry : translations.entrySet()) {
+                if (defaultLocale.startsWith(entry.getKey() + "_")) {
+                    translatedValue = entry.getValue();
+                    return;
+                }
+            }
+        }
+        translatedValue = value;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void translate(Locale locale) {
         translate(locale.toString());
     }

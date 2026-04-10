@@ -45,6 +45,11 @@ public class AppearanceConfiguration implements ConfigurationTypeProvider {
     private License license;
 
     /**
+     * The default locale used as fallback for translatable strings.
+     */
+    private String defaultLocale = "en";
+
+    /**
      * The ID of the index page.
      */
     private String indexPageId;
