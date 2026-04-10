@@ -472,12 +472,11 @@ public class ConfigurationController extends BaseController {
     /**
      * Tests the AI text-to-speech by generating an audio file from the given text.
      *
-     * @param targetLocale The target locale for the audio generation.
      * @param text         The text to convert to audio.
      */
-    @PostMapping(value = "/ai/test/tts/{targetLocale}")
-    public void testAiTts(@PathVariable String targetLocale, @RequestBody String text) {
-        testAiConfigurationUseCase.testTts(text, targetLocale);
+    @PostMapping(value = "/ai/test/tts")
+    public void testAiTts(@RequestBody String text) {
+        testAiConfigurationUseCase.testTts(text);
     }
 
     /**

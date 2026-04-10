@@ -237,7 +237,7 @@ class AiServiceTest {
         when(loadAiConfigurationUseCase.loadAiConfiguration()).thenReturn(aiConfiguration);
         when(useProjectDirsUseCase.getTempDir()).thenReturn(tempDir);
 
-        aiService.testTts("Hello", "de");
+        aiService.testTts("Hello");
 
         verify(fileRepository).createDirIfRequired(tempDir);
         verify(aiGateway).convertToAudio(aiConfiguration, "Hello", tempDir.resolve("audio-content.mp3"));

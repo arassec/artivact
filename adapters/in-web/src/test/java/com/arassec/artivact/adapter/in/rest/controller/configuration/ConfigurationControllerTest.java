@@ -358,9 +358,9 @@ class ConfigurationControllerTest {
 
     @Test
     void testTestAiTts() {
-        controller.testAiTts("en", "Hello World");
+        controller.testAiTts("Hello World");
 
-        verify(testAiConfigurationUseCase).testTts("Hello World", "en");
+        verify(testAiConfigurationUseCase).testTts("Hello World");
     }
 
     @Test

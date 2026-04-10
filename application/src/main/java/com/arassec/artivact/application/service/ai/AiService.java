@@ -9,6 +9,7 @@ import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.gateway.AiGateway;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.application.port.out.repository.PageRepository;
+import com.arassec.artivact.application.service.LocaleValidator;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.TranslatableString;
 import com.arassec.artivact.domain.model.configuration.AiConfiguration;
@@ -28,7 +29,10 @@ import java.nio.file.Path;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class AiService implements TranslateTextUseCase, ConvertToAudioUseCase, TestAiConfigurationUseCase {
+public class AiService implements LocaleValidator,
+        TranslateTextUseCase,
+        ConvertToAudioUseCase,
+        TestAiConfigurationUseCase {
 
     /**
      * The name of the test audio file.
@@ -60,6 +64,9 @@ public class AiService implements TranslateTextUseCase, ConvertToAudioUseCase, T
      */
     private final LoadAiConfigurationUseCase loadAiConfigurationUseCase;
 
+    /**
+     * Use case to load the appearance configuration.
+     */
     private final LoadAppearanceConfigurationUseCase loadAppearanceConfigurationUseCase;
 
     /**
@@ -67,12 +74,12 @@ public class AiService implements TranslateTextUseCase, ConvertToAudioUseCase, T
      */
     @Override
     public String translateText(String text, String locale) {
-        if (StringUtils.hasText(locale) && !locale.matches("[a-zA-Z_-]+")) {
-            throw new ArtivactException("Invalid locale: " + locale);
-        }
-
         if (locale == null) {
             locale = loadAppearanceConfigurationUseCase.loadTranslatedAppearanceConfiguration().getDefaultLocale();
+        }
+
+        if (!isValidJavaLocale(locale)) {
+            throw new ArtivactException("Invalid locale: " + locale);
         }
 
         AiConfiguration aiConfiguration = loadAiConfigurationUseCase.loadAiConfiguration();
@@ -94,7 +101,7 @@ public class AiService implements TranslateTextUseCase, ConvertToAudioUseCase, T
     @Override
     public String convertToAudio(String pageId, String widgetId, String locale) {
 
-        if (StringUtils.hasText(locale) && !locale.matches("[a-zA-Z_-]+")) {
+        if (!isValidJavaLocale(locale)) {
             throw new ArtivactException("Invalid locale: " + locale);
         }
 
@@ -149,7 +156,7 @@ public class AiService implements TranslateTextUseCase, ConvertToAudioUseCase, T
      * {@inheritDoc}
      */
     @Override
-    public void testTts(String text, String locale) {
+    public void testTts(String text) {
         AiConfiguration aiConfiguration = loadAiConfigurationUseCase.loadAiConfiguration();
 
         Path tempDir = useProjectDirsUseCase.getTempDir();

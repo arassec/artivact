@@ -212,7 +212,7 @@ function runTtsTest(locale: string) {
   translationResultRef.value = '';
   audioUrlRef.value = '';
   api
-    .post('/api/configuration/ai/test/tts/' + locale, testTextRef.value, {
+    .post('/api/configuration/ai/test/tts', testTextRef.value, {
       headers: {'Content-Type': 'text/plain'},
     })
     .then(() => {
