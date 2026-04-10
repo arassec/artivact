@@ -72,7 +72,7 @@ export default defineConfig({
                         {text: 'Tags', link: '/user-manual/settings/tags'},
                         {text: 'Exchange', link: '/user-manual/settings/exchange'},
                         {text: 'Appearance', link: '/user-manual/settings/appearance'},
-                        {text: 'AI', link: '/user-manual/settings/ai'},
+                        {text: 'Artificial Intelligence', link: '/user-manual/settings/ai'},
                         {text: 'Peripherals', link: '/user-manual/settings/peripherals'},
                     ]
                 },
@@ -162,7 +162,7 @@ export default defineConfig({
                                 {text: 'Tags', link: '/de/user-manual/settings/tags'},
                                 {text: 'Austausch', link: '/de/user-manual/settings/exchange'},
                                 {text: 'Darstellung', link: '/de/user-manual/settings/appearance'},
-                                {text: 'KI', link: '/de/user-manual/settings/ai'},
+                                {text: 'Künstliche Intelligenz', link: '/de/user-manual/settings/ai'},
                                 {text: 'Peripheriegeräte', link: '/de/user-manual/settings/peripherals'},
                             ]
                         },
