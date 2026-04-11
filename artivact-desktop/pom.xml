@@ -38,7 +38,7 @@
                                 </goals>
                                 <configuration>
                                     <outputDirectory>${project.build.directory}/artivact-desktop-windows-v${revision}</outputDirectory>
-                                    <overwrite>true</overwrite>
+                                    <changeDetection>always</changeDetection>
                                     <resources>
                                         <resource>
                                             <directory>${project.basedir}/../frontend/dist/electron/Packaged/Artivact-win32-x64</directory>
@@ -57,7 +57,7 @@
                                 </goals>
                                 <configuration>
                                     <outputDirectory>${project.build.directory}/artivact-desktop-windows-v${revision}/resources/project-setup</outputDirectory>
-                                    <overwrite>true</overwrite>
+                                    <changeDetection>always</changeDetection>
                                     <resources>
                                         <resource>
                                             <directory>
@@ -78,7 +78,7 @@
                                 </goals>
                                 <configuration>
                                     <outputDirectory>${project.build.directory}/artivact-desktop-windows-v${revision}</outputDirectory>
-                                    <overwrite>true</overwrite>
+                                    <changeDetection>always</changeDetection>
                                     <resources>
                                         <resource>
                                             <directory>${java.home}</directory>
@@ -100,7 +100,7 @@
                                 </goals>
                                 <configuration>
                                     <outputDirectory>${project.build.directory}/artivact-desktop-windows-v${revision}/lib/security</outputDirectory>
-                                    <overwrite>true</overwrite>
+                                    <changeDetection>always</changeDetection>
                                     <resources>
                                         <resource>
                                             <directory>${project.basedir}/src/main/resources/</directory>
@@ -174,7 +174,7 @@
                                 </goals>
                                 <configuration>
                                     <outputDirectory>${project.build.directory}/artivact-desktop-linux-v${revision}</outputDirectory>
-                                    <overwrite>true</overwrite>
+                                    <changeDetection>always</changeDetection>
                                     <resources>
                                         <resource>
                                             <directory>${project.basedir}/../frontend/dist/electron/Packaged/Artivact-linux-x64</directory>
@@ -193,7 +193,7 @@
                                 </goals>
                                 <configuration>
                                     <outputDirectory>${project.build.directory}/artivact-desktop-linux-v${revision}/resources/project-setup</outputDirectory>
-                                    <overwrite>true</overwrite>
+                                    <changeDetection>always</changeDetection>
                                     <resources>
                                         <resource>
                                             <directory>
@@ -214,7 +214,7 @@
                                 </goals>
                                 <configuration>
                                     <outputDirectory>${project.build.directory}/artivact-desktop-linux-v${revision}</outputDirectory>
-                                    <overwrite>true</overwrite>
+                                    <changeDetection>always</changeDetection>
                                     <resources>
                                         <resource>
                                             <directory>${java.home}</directory>
@@ -236,7 +236,7 @@
                                 </goals>
                                 <configuration>
                                     <outputDirectory>${project.build.directory}/artivact-desktop-linux-v${revision}/lib/security</outputDirectory>
-                                    <overwrite>true</overwrite>
+                                    <changeDetection>always</changeDetection>
                                     <resources>
                                         <resource>
                                             <directory>${project.basedir}/src/main/resources/</directory>
