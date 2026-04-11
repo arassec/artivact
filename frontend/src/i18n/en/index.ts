@@ -1250,6 +1250,7 @@ export default {
   ContentAudioEditor: {
     tooltip: {
       generateAudio: "Generate audio with AI",
+      playAudio: "Play audio",
     },
     messages: {
       generateSuccess: "Audio generated successfully.",
