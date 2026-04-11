@@ -1300,6 +1300,10 @@ export default {
       export: 'Erzeuge Sammlungsexportdatei...',
       failed: 'Sammlungsexport fehlgeschlagen!',
     },
+    collectionExportUpload: {
+      uploading: "Lade Exportdatei zu entfernter Artivact-Instanz hoch.",
+      failed: "Konnte Exportdatei nicht zu entfernter Artivact-Instanz hochladen!",
+    },
     scanPeripherals: {
       init: 'Scanne Peripheriekonfigurationen...',
       scanTurntables: 'Suche Drehteller-Konfigurationen...',

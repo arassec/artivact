@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -326,6 +327,46 @@ class ManagePageServiceTest {
         when(useProjectDirsUseCase.getWidgetsDir()).thenReturn(widgetsPath);
         byte[] data = service.loadFile("widget1", "file.txt", null, true);
         assertThat(data).containsExactly(1, 2, 3);
+    }
+
+    @Test
+    void testSaveContentAudioFile() throws Exception {
+        // Given
+        MultipartFile file = mock(MultipartFile.class);
+        when(file.getOriginalFilename()).thenReturn("audio.mp3");
+        when(file.getInputStream()).thenReturn(System.in);
+
+        Path widgetsDir = Path.of("widgets");
+        Path widgetWipDir = Path.of("widgets/widget1/wip");
+
+        when(useProjectDirsUseCase.getWidgetsDir()).thenReturn(widgetsDir);
+        when(fileRepository.getSubdirFilePath(widgetsDir, "widget1", "wip")).thenReturn(widgetWipDir);
+
+        // When
+        String filename = service.saveContentAudioFile("page-1", "widget1", file);
+
+        // Then
+        assertThat(filename).isEqualTo("audio.mp3");
+        verify(fileRepository).createDirIfRequired(widgetWipDir);
+        verify(fileRepository).copy(file.getInputStream(), widgetWipDir.resolve("audio.mp3"), StandardCopyOption.REPLACE_EXISTING);
+        verifyNoInteractions(pageRepository);
+    }
+
+    @Test
+    void testDeleteContentAudioFile() {
+        // Given
+        Path widgetsDir = Path.of("widgets");
+        Path widgetWipDir = Path.of("widgets/widget1/wip");
+
+        when(useProjectDirsUseCase.getWidgetsDir()).thenReturn(widgetsDir);
+        when(fileRepository.getSubdirFilePath(widgetsDir, "widget1", "wip")).thenReturn(widgetWipDir);
+
+        // When
+        service.deleteContentAudioFile("page-1", "widget1", "audio.mp3");
+
+        // Then
+        verify(fileRepository).delete(widgetWipDir.resolve("audio.mp3"));
+        verifyNoInteractions(pageRepository);
     }
 
 }

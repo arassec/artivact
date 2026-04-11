@@ -242,4 +242,26 @@ class ManageConfigurationServiceTest {
         verify(configurationRepository).saveConfiguration(ConfigurationType.ARTIFICIAL_INTELLIGENCE, config);
     }
 
+    @Test
+    void testInitializeSetsDefaultLocaleFromAppearanceConfiguration() {
+        AppearanceConfiguration config = new AppearanceConfiguration();
+        config.setDefaultLocale("de");
+
+        when(configurationRepository.findByType(ConfigurationType.APPEARANCE, AppearanceConfiguration.class))
+                .thenReturn(Optional.of(config));
+
+        service.initialize();
+
+        assertThat(service.getDefaultLocale()).isEqualTo("de");
+    }
+
+    @Test
+    void testInitializeKeepsDefaultLocaleNullWhenAppearanceConfigurationIsMissing() {
+        when(configurationRepository.findByType(ConfigurationType.APPEARANCE, AppearanceConfiguration.class))
+                .thenReturn(Optional.empty());
+
+        service.initialize();
+
+        assertThat(service.getDefaultLocale()).isNull();
+    }
 }

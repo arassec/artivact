@@ -302,6 +302,7 @@ public class CollectionExportController extends BaseImportController {
      * @param locale The locale of the audio (optional).
      * @param file   The uploaded MP3 file.
      */
+    @SuppressWarnings("javasecurity:S2083") // The locale is validated by the application.
     @PostMapping("/{id}/content-audio")
     public void saveContentAudio(@PathVariable String id,
                                  @RequestParam(value = "locale", defaultValue = "") String locale,

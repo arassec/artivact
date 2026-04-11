@@ -6,7 +6,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ContentGeneratorTest {
+/**
+ * Tests the {@link ContentGenerator}.
+ */
+class ContentGeneratorTest {
 
     private final ContentGenerator contentGenerator = new ContentGenerator() {
     };

@@ -1319,6 +1319,10 @@ export default {
       export: "Building collection export file...",
       failed: "Operation failed!",
     },
+    collectionExportUpload: {
+      uploading: "Uploading collection export file to remote Artivact instance.",
+      failed: "Upload of collection export file unexpectedly failed.",
+    },
     scanPeripherals: {
       init: "Scanning peripherals...",
       scanTurntables: "Scanning for turntables...",
