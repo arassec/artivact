@@ -61,4 +61,44 @@ class RestApiArtivactGatewayTest {
         }
     }
 
+    /**
+     * Tests importing a collection for distribution on a remote Artivact instance.
+     */
+    @Test
+    @SneakyThrows
+    void testImportCollectionForDistribution() {
+        RestApiArtivactGateway artivactGateway = new RestApiArtivactGateway();
+
+        CloseableHttpClient httpClientMock = mock(CloseableHttpClient.class);
+
+        try (MockedStatic<HttpClients> httpClientsMock = Mockito.mockStatic(HttpClients.class)) {
+            httpClientsMock.when(HttpClients::createDefault).thenReturn(httpClientMock);
+
+            artivactGateway.importCollectionForDistribution("removeServer", "apiKey", Path.of("collection-export.zip"));
+
+            verify(httpClientMock).execute(any(HttpPost.class), any(HttpClientResponseHandler.class));
+        }
+    }
+
+    /**
+     * Tests error handling during importing a collection for distribution on a remote Artivact instance.
+     */
+    @Test
+    @SneakyThrows
+    void testImportCollectionForDistributionFail() {
+        RestApiArtivactGateway artivactGateway = new RestApiArtivactGateway();
+
+        CloseableHttpClient httpClientMock = mock(CloseableHttpClient.class);
+
+        try (MockedStatic<HttpClients> httpClientsMock = Mockito.mockStatic(HttpClients.class)) {
+            httpClientsMock.when(HttpClients::createDefault).thenReturn(httpClientMock);
+            when(httpClientMock.execute(any(HttpPost.class), any(HttpClientResponseHandler.class)))
+                    .thenThrow(IOException.class);
+
+            Path zipPath = Path.of("collection-export.zip");
+
+            assertThrows(ArtivactException.class, () -> artivactGateway.importCollectionForDistribution("removeServer", "apiKey", zipPath));
+        }
+    }
+
 }
