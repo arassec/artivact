@@ -16,4 +16,13 @@ public interface ArtivactGateway {
      */
     void importItem(String remoteServer, String apiToken, Path exportFile);
 
+    /**
+     * Imports a collection export for distribution on a remote artivact server.
+     *
+     * @param remoteServer The remote server's URL.
+     * @param apiToken     The API token to use for authentication.
+     * @param exportFile   Path to the exported collection file.
+     */
+    void importCollectionForDistribution(String remoteServer, String apiToken, Path exportFile);
+
 }

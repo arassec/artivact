@@ -1,5 +1,6 @@
 package com.arassec.artivact.application.service.collection;
 
+import com.arassec.artivact.application.port.in.account.LoadAccountUseCase;
 import com.arassec.artivact.application.port.in.collection.ImportCollectionUseCase;
 import com.arassec.artivact.application.port.in.configuration.ImportPropertiesConfigurationUseCase;
 import com.arassec.artivact.application.port.in.configuration.ImportTagsConfigurationUseCase;
@@ -9,6 +10,7 @@ import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.repository.CollectionExportRepository;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.exception.ArtivactException;
+import com.arassec.artivact.domain.model.account.Account;
 import com.arassec.artivact.domain.model.exchange.CollectionExport;
 import com.arassec.artivact.domain.model.exchange.ContentSource;
 import com.arassec.artivact.domain.model.exchange.ExchangeMainData;
@@ -32,6 +34,11 @@ import static com.arassec.artivact.domain.model.misc.ExchangeDefinitions.*;
 @Service
 @RequiredArgsConstructor
 public class CollectionImportService implements ImportCollectionUseCase {
+
+    /**
+     * Use case for loading accounts.
+     */
+    private final LoadAccountUseCase loadAccountUseCase;
 
     /**
      * Use case for run background operation.
@@ -91,6 +98,27 @@ public class CollectionImportService implements ImportCollectionUseCase {
     @Override
     public synchronized void importCollectionForDistribution(Path file) {
         importCollection(file, true);
+    }
+
+    /**
+     * Imports previously created collection exports to the application by saving the exported ZIP file.
+     * Authenticates via API token.
+     *
+     * @param file     The exported ZIP file.
+     * @param apiToken The API token for authentication and authorization.
+     */
+    @Override
+    public synchronized void importCollectionForDistribution(Path file, String apiToken) {
+        if (!StringUtils.hasText(apiToken)) {
+            throw new ArtivactException("API token cannot be empty!");
+        }
+
+        Account account = loadAccountUseCase.loadByApiToken(apiToken).orElseThrow();
+        if (!Boolean.TRUE.equals(account.getUser()) && !Boolean.TRUE.equals(account.getAdmin())) {
+            throw new ArtivactException("Collection import not allowed!");
+        }
+
+        importCollectionForDistribution(file);
     }
 
     /**

@@ -121,6 +121,11 @@ public class CollectionExportController extends BaseImportController {
     private final GenerateCollectionExportContentAudioUseCase generateCollectionExportContentAudioUseCase;
 
     /**
+     * Use case to upload a collection export to a remote instance.
+     */
+    private final UploadCollectionExportUseCase uploadCollectionExportUseCase;
+
+    /**
      * Returns the available collection exports.
      *
      * @return List of {@link CollectionExport}s.
@@ -175,6 +180,16 @@ public class CollectionExportController extends BaseImportController {
     @PostMapping("/{id}/build")
     public void build(@PathVariable String id) {
         buildCollectionExportFileUseCase.buildExportFile(id);
+    }
+
+    /**
+     * Uploads a collection export to the configured remote Artivact instance.
+     *
+     * @param id The ID of the collection export to upload.
+     */
+    @PostMapping("/{id}/upload")
+    public void uploadToRemoteInstance(@PathVariable String id) {
+        uploadCollectionExportUseCase.uploadCollectionExportToRemoteInstance(id);
     }
 
     /**
@@ -385,6 +400,20 @@ public class CollectionExportController extends BaseImportController {
     public void importCollectionForDistribution(@RequestPart(value = "file") final MultipartFile file) {
         Path tempFile = saveTempZipFile(file);
         importCollectionUseCase.importCollectionForDistribution(tempFile);
+    }
+
+    /**
+     * Imports a collection export for distribution into the application with API token authentication.
+     * Called by another Artivact instance for remote import.
+     *
+     * @param file     The collection export to import.
+     * @param apiToken The API token of the local user account used to import the collection.
+     */
+    @PostMapping("/import/for-distribution/{apiToken}")
+    public void importCollectionForDistributionWithApiToken(@RequestPart(value = "file") final MultipartFile file,
+                                                            @PathVariable final String apiToken) {
+        Path tempFile = saveTempZipFile(file);
+        importCollectionUseCase.importCollectionForDistribution(tempFile, apiToken);
     }
 
 }

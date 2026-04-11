@@ -21,4 +21,13 @@ public interface ImportCollectionUseCase {
      */
     void importCollectionForDistribution(Path file);
 
+    /**
+     * Imports previously created collection exports to the application by saving the exported ZIP file.
+     * Authenticates via API token.
+     *
+     * @param file     The exported ZIP file.
+     * @param apiToken The API token for authentication and authorization.
+     */
+    void importCollectionForDistribution(Path file, String apiToken);
+
 }
