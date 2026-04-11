@@ -198,7 +198,7 @@ export default defineConfig((/* ctx */) => {
       // extendPackageJson (json) {},
 
       // Electron preload scripts (if any) from /src-electron, WITHOUT file extension
-      preloadScripts: ['electron-preload'],
+      preloadScripts: ['electron-preload', 'project-select-preload'],
 
       // specify the debugging port to use for the Electron app when running in development mode
       inspectPort: 5858,
