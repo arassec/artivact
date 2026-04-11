@@ -8,12 +8,6 @@ import java.util.*;
 
 public interface ContentGenerator {
 
-    Set<String> ISO_LANGUAGES =
-            new HashSet<>(Arrays.asList(Locale.getISOLanguages()));
-
-    Set<String> ISO_COUNTRIES =
-            new HashSet<>(Arrays.asList(Locale.getISOCountries()));
-
     default boolean isInvalidJavaLocale(String input) {
         if (input == null || input.isBlank()) {
             return false;
@@ -29,13 +23,19 @@ public interface ContentGenerator {
             String language = locale.getLanguage();
             String country = locale.getCountry();
 
-            if (language.isEmpty() || !ISO_LANGUAGES.contains(language)) {
+            Set<String> isoLanguages =
+                    new HashSet<>(Arrays.asList(Locale.getISOLanguages()));
+
+            Set<String> isoCountries =
+                    new HashSet<>(Arrays.asList(Locale.getISOCountries()));
+
+            if (language.isEmpty() || !isoLanguages.contains(language)) {
                 return true;
             }
 
-            return !country.isEmpty() && ISO_COUNTRIES.contains(country);
+            return !country.isEmpty() && !isoCountries.contains(country);
 
-        } catch (IllformedLocaleException e) {
+        } catch (IllformedLocaleException _) {
             return true;
         }
     }

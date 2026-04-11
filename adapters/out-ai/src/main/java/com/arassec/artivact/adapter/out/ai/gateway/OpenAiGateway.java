@@ -1,7 +1,7 @@
 package com.arassec.artivact.adapter.out.ai.gateway;
 
 import com.arassec.artivact.application.port.out.gateway.AiGateway;
-import com.arassec.artivact.domain.exception.ArtivactException;
+import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.model.configuration.AiConfiguration;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,8 +15,6 @@ import org.springframework.ai.openai.api.OpenAiAudioApi;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
@@ -26,6 +24,11 @@ import java.nio.file.Path;
 @Component
 @RequiredArgsConstructor
 public class OpenAiGateway implements AiGateway {
+
+    /**
+     * The application's file repository.
+     */
+    private final FileRepository fileRepository;
 
     /**
      * {@inheritDoc}
@@ -46,6 +49,8 @@ public class OpenAiGateway implements AiGateway {
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("javasecurity:S2083")
+    // The file path is controlled and validated by the application, not user input.
     @Override
     public void convertToAudio(AiConfiguration aiConfiguration, String prompt, Path targetFile) {
         TextToSpeechModel textToSpeechModel = openAiAudioSpeechModel(aiConfiguration);
@@ -58,11 +63,7 @@ public class OpenAiGateway implements AiGateway {
 
         byte[] audioBytes = textToSpeechModel.call(prompt);
 
-        try {
-            Files.write(targetFile, audioBytes);
-        } catch (IOException e) {
-            throw new ArtivactException("Could not save audio file: " + targetFile, e);
-        }
+        fileRepository.write(targetFile, audioBytes);
     }
 
 

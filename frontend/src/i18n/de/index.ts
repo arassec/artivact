@@ -249,8 +249,9 @@ export default {
       ttsVoice: 'Text-To-Speech-Stimme',
     },
     test: {
+      translationPrompt: "Der unten konfigurierte Prompt wird für die Übersetzung von Texten verwendet. Dabei muss der Platzhalter '$_locale_$' vorhanden sein. Dieser wird von Artivact mit der gewünschten Zielsprache ersetzt.",
       description:
-        'Sie können die KI-Konfiguration unten testen. Geben Sie einen Text ein und wählen Sie, ob Sie die Übersetzung oder Text-to-Speech testen möchten. Die konfigurierten Prompts und Stimme werden für den Test verwendet.',
+        'Sie können die KI-Konfiguration unten testen. Geben Sie einen Text ein und wählen Sie, ob Sie die Übersetzung oder Text-to-Speech testen möchten. Der konfigurierte Prompt oder die konfigurierte Stimme werden für den Test verwendet.',
       textInput: 'Testtext',
       translationMode: 'Übersetzung',
       ttsMode: 'Text-to-Speech',

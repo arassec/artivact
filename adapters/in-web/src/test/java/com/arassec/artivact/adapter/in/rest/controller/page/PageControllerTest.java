@@ -215,6 +215,46 @@ class PageControllerTest {
         assertThat(result.getBody()).isEqualTo("content-audio.mp3");
     }
 
+    @Test
+    void saveContentAudioFileReturnsSavedFilename() {
+        MultipartFile file = mock(MultipartFile.class);
+        when(managePageMediaUseCase.saveContentAudioFile("p1", "w1", file)).thenReturn("content-audio.mp3");
+
+        ResponseEntity<String> response = controller.saveContentAudioFile("p1", "w1", file);
+
+        assertThat(response.getStatusCode().value()).isEqualTo(200);
+        assertThat(response.getBody()).isEqualTo("content-audio.mp3");
+    }
+
+    @Test
+    void deleteContentAudioFileDeletesTheRequestedFile() {
+        doNothing().when(managePageMediaUseCase).deleteContentAudioFile("p2", "w2", "content-audio.mp3");
+
+        controller.deleteContentAudioFile("p2", "w2", "content-audio.mp3");
+
+        verify(managePageMediaUseCase).deleteContentAudioFile("p2", "w2", "content-audio.mp3");
+    }
+
+    @Test
+    void generateContentAudioReturnsGeneratedFilenameForProvidedLocale() {
+        when(convertToAudioUseCase.convertToAudio("page1", "widget1", "de")).thenReturn("content-audio-de.mp3");
+
+        ResponseEntity<String> result = controller.generateContentAudio("page1", "widget1", "de");
+
+        assertThat(result.getStatusCode().value()).isEqualTo(200);
+        assertThat(result.getBody()).isEqualTo("content-audio-de.mp3");
+    }
+
+    @Test
+    void generateContentAudioUsesEmptyLocaleWhenLocaleIsNotProvided() {
+        when(convertToAudioUseCase.convertToAudio("page1", "widget1", "")).thenReturn("content-audio.mp3");
+
+        ResponseEntity<String> result = controller.generateContentAudio("page1", "widget1", "");
+
+        assertThat(result.getStatusCode().value()).isEqualTo(200);
+        assertThat(result.getBody()).isEqualTo("content-audio.mp3");
+    }
+
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void mockRoles(String... roles) {
         when(authentication.getPrincipal()).thenReturn(userDetails);

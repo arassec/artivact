@@ -1,22 +1,22 @@
 package com.arassec.artivact.adapter.out.ai;
 
 import com.arassec.artivact.adapter.out.ai.gateway.OpenAiGateway;
-import com.arassec.artivact.domain.exception.ArtivactException;
+import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.model.configuration.AiConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ai.openai.OpenAiAudioSpeechModel;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.ai.openai.api.OpenAiApi;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -26,7 +26,11 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class OpenAiGatewayTest {
 
-    private final OpenAiGateway openAiGateway = new OpenAiGateway();
+    @Mock
+    private FileRepository fileRepository;
+
+    @InjectMocks
+    private OpenAiGateway openAiGateway;
 
     @Test
     void executeReturnsNullWhenAiIsDisabled() {
@@ -87,7 +91,7 @@ class OpenAiGatewayTest {
 
     @SuppressWarnings("unused")
     @Test
-    void convertToAudioWritesGeneratedAudioToTargetFile(@TempDir Path tempDir) throws Exception {
+    void convertToAudioWritesGeneratedAudioToTargetFile(@TempDir Path tempDir) {
         AiConfiguration aiConfiguration = aiConfiguration(true, "api-key");
         Path targetFile = tempDir.resolve("audio.mp3");
         byte[] audioBytes = new byte[]{1, 2, 3};
@@ -98,22 +102,7 @@ class OpenAiGatewayTest {
             openAiGateway.convertToAudio(aiConfiguration, "prompt", targetFile);
         }
 
-        assertThat(Files.readAllBytes(targetFile)).isEqualTo(audioBytes);
-    }
-
-    @SuppressWarnings("unused")
-    @Test
-    void convertToAudioThrowsArtivactExceptionWhenTargetFileCannotBeWritten(@TempDir Path tempDir) {
-        AiConfiguration aiConfiguration = aiConfiguration(true, "api-key");
-        Path targetFile = tempDir.resolve("missing-directory").resolve("audio.mp3");
-
-        try (var ignored =
-                     org.mockito.Mockito.mockConstruction(OpenAiAudioSpeechModel.class,
-                             (mock, context) -> when(mock.call("prompt")).thenReturn(new byte[]{1, 2, 3}))) {
-            assertThatThrownBy(() -> openAiGateway.convertToAudio(aiConfiguration, "prompt", targetFile))
-                    .isInstanceOf(ArtivactException.class)
-                    .hasMessageContaining(targetFile.toString());
-        }
+        verify(fileRepository, times(1)).write(targetFile, audioBytes);
     }
 
     private AiConfiguration aiConfiguration(boolean enabled, String apiKey) {

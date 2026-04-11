@@ -74,6 +74,18 @@ class CollectionExportControllerTest {
     @Mock
     private CreateCollectionExportInfosUseCase createCollectionExportInfosUseCase;
 
+    @Mock
+    private SaveCollectionExportContentAudioUseCase saveCollectionExportContentAudioUseCase;
+
+    @Mock
+    private LoadCollectionExportContentAudioUseCase loadCollectionExportContentAudioUseCase;
+
+    @Mock
+    private DeleteCollectionExportContentAudioUseCase deleteCollectionExportContentAudioUseCase;
+
+    @Mock
+    private GenerateCollectionExportContentAudioUseCase generateCollectionExportContentAudioUseCase;
+
     @InjectMocks
     private CollectionExportController controller;
 
@@ -241,6 +253,72 @@ class CollectionExportControllerTest {
         MultipartFile file = new MockMultipartFile("file", "export.zip", "application/zip", new byte[]{1, 2, 3});
         controller.importCollectionForDistribution(file);
         verify(importCollectionUseCase).importCollectionForDistribution(any());
+    }
+
+    @Test
+    void testSaveContentAudio() {
+        MultipartFile file = new MockMultipartFile("file", "content-audio.mp3", "audio/mpeg", "audio-data".getBytes());
+
+        controller.saveContentAudio("id-1", "de", file);
+
+        verify(saveCollectionExportContentAudioUseCase)
+                .saveContentAudio(eq("id-1"), eq("de"), eq("content-audio.mp3"), any());
+    }
+
+    @Test
+    void testSaveContentAudioIOException() throws IOException {
+        MultipartFile file = mock(MultipartFile.class);
+        when(file.getOriginalFilename()).thenReturn("content-audio.mp3");
+        when(file.getInputStream()).thenThrow(new IOException("fail"));
+
+        assertThatThrownBy(() -> controller.saveContentAudio("id-1", "de", file))
+                .isInstanceOf(ArtivactException.class)
+                .hasMessageContaining("Could not save uploaded content audio!");
+    }
+
+    @Test
+    void testLoadContentAudio() {
+        byte[] audio = new byte[]{1, 2, 3};
+        when(loadCollectionExportContentAudioUseCase.loadContentAudio("id-1", "content-audio.mp3")).thenReturn(audio);
+
+        HttpEntity<byte[]> result = controller.loadContentAudio("id-1", "content-audio.mp3");
+
+        assertThat(result.getBody()).isEqualTo(audio);
+        assertThat(result.getHeaders().getContentType()).hasToString("audio/mpeg");
+        assertThat(result.getHeaders().getContentDisposition().getFilename()).isEqualTo("content-audio.mp3");
+    }
+
+    @Test
+    void testDeleteContentAudio() {
+        List<CollectionExport> exports = List.of(new CollectionExport());
+        when(loadCollectionExportUseCase.loadAll()).thenReturn(exports);
+
+        List<CollectionExport> result = controller.deleteContentAudio("id-1", "de");
+
+        assertThat(result).isEqualTo(exports);
+        verify(deleteCollectionExportContentAudioUseCase).deleteContentAudio("id-1", "de");
+    }
+
+    @Test
+    void testGenerateContentAudio() {
+        when(generateCollectionExportContentAudioUseCase.generateContentAudio("id-1", "de"))
+                .thenReturn("content-audio-de.mp3");
+
+        ResponseEntity<String> result = controller.generateContentAudio("id-1", "de");
+
+        assertThat(result.getStatusCode().is2xxSuccessful()).isTrue();
+        assertThat(result.getBody()).isEqualTo("content-audio-de.mp3");
+    }
+
+    @Test
+    void testGenerateContentAudioDefaultLocale() {
+        when(generateCollectionExportContentAudioUseCase.generateContentAudio("id-1", ""))
+                .thenReturn("content-audio.mp3");
+
+        ResponseEntity<String> result = controller.generateContentAudio("id-1", "");
+
+        assertThat(result.getStatusCode().is2xxSuccessful()).isTrue();
+        assertThat(result.getBody()).isEqualTo("content-audio.mp3");
     }
 
 }

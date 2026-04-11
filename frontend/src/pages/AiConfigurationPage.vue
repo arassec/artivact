@@ -25,6 +25,14 @@
           v-model="aiConfigurationRef.apiKey"
         />
 
+        <div class="row q-mb-md">
+          {{
+            $t(
+              'AiConfigurationPage.test.translationPrompt',
+            ).replaceAll('$_locale_$', '{locale}')
+          }}
+        </div>
+
         <q-input
           outlined
           class="q-mb-lg"
@@ -40,13 +48,15 @@
           v-model="aiConfigurationRef.ttsVoice"
         />
 
-        <div class="full-width">
-          <q-btn
-            :label="$t('Common.save')"
-            color="primary"
-            class="q-mb-lg float-right"
-            @click="saveAiConfiguration()"
-          />
+        <div class="row q-mb-lg">
+          <div class="full-width">
+            <q-btn
+              :label="$t('Common.save')"
+              color="primary"
+              class="q-mb-lg float-right"
+              @click="saveAiConfiguration()"
+            />
+          </div>
         </div>
 
         <div class="q-mb-lg">
@@ -173,7 +183,7 @@ function runTest() {
     .post('/api/configuration/ai', aiConfigurationRef.value)
     .then(() => {
       if (testTtsModeRef.value) {
-        runTtsTest(locale);
+        runTtsTest();
       } else {
         runTranslationTest(locale);
       }
@@ -208,7 +218,7 @@ function runTranslationTest(locale: string) {
     });
 }
 
-function runTtsTest(locale: string) {
+function runTtsTest() {
   translationResultRef.value = '';
   audioUrlRef.value = '';
   api

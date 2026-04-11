@@ -257,8 +257,9 @@ export default {
       ttsVoice: "Text-To-Speech Voice",
     },
     test: {
+      translationPrompt: "The prompt configured below is used for translating texts. The placeholder “$_locale_$” must be included. It will be replaced by Artivact with the desired target language.",
       description:
-        "You can test the AI configuration below. Enter a text and select whether to test translation or text-to-speech. The configured prompts and voice will be used for the test.",
+        "You can test the AI configuration below. Enter a text and select whether to test translation or text-to-speech. The configured prompt or voice will be used for the test.",
       textInput: "Test Text",
       translationMode: "Translation",
       ttsMode: "Text-to-Speech",
