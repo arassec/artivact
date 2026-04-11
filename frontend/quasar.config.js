@@ -122,7 +122,7 @@ export default defineConfig((/* ctx */) => {
       // Quasar plugins
 
       // Artivact: +++
-      plugins: ['Notify', 'Meta'],
+      plugins: ['Notify', 'Meta', 'Loading'],
       // Artivact: ---
     },
 

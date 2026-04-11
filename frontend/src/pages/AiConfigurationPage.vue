@@ -178,14 +178,16 @@ function saveAiConfiguration() {
 function runTest() {
   const locale = localeStore.selectedLocale || 'en';
 
+  quasar.loading.show();
+
   // Save the configuration first so the test uses the current values.
   api
     .post('/api/configuration/ai', aiConfigurationRef.value)
     .then(() => {
       if (testTtsModeRef.value) {
-        runTtsTest();
+        return runTtsTest();
       } else {
-        runTranslationTest(locale);
+        return runTranslationTest(locale);
       }
     })
     .catch(() => {
@@ -195,47 +197,34 @@ function runTest() {
         message: i18n.t('AiConfigurationPage.test.testFailed'),
         icon: 'report_problem',
       });
+    })
+    .finally(() => {
+      quasar.loading.hide();
     });
 }
 
 function runTranslationTest(locale: string) {
   translationResultRef.value = '';
   audioUrlRef.value = '';
-  api
+  return api
     .post('/api/configuration/ai/translate/' + locale, testTextRef.value, {
       headers: {'Content-Type': 'text/plain'},
     })
     .then((response) => {
       translationResultRef.value = response.data;
-    })
-    .catch(() => {
-      quasar.notify({
-        color: 'negative',
-        position: 'bottom',
-        message: i18n.t('AiConfigurationPage.test.testFailed'),
-        icon: 'report_problem',
-      });
     });
 }
 
 function runTtsTest() {
   translationResultRef.value = '';
   audioUrlRef.value = '';
-  api
+  return api
     .post('/api/configuration/ai/test/tts', testTextRef.value, {
       headers: {'Content-Type': 'text/plain'},
     })
     .then(() => {
       audioUrlRef.value =
         '/api/configuration/ai/test/tts/audio?t=' + Date.now();
-    })
-    .catch(() => {
-      quasar.notify({
-        color: 'negative',
-        position: 'bottom',
-        message: i18n.t('AiConfigurationPage.test.testFailed'),
-        icon: 'report_problem',
-      });
     });
 }
 

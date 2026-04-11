@@ -166,6 +166,7 @@ async function uploadContentAudio(file: File | null) {
 
 async function generateContentAudio() {
   generatingRef.value = true;
+  quasar.loading.show();
 
   // Save the widget before generating audio
   await new Promise((resolve, reject) => {
@@ -197,6 +198,7 @@ async function generateContentAudio() {
     })
     .finally(() => {
       generatingRef.value = false;
+      quasar.loading.hide();
     });
 }
 
