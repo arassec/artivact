@@ -113,7 +113,8 @@ public class CollectionImportService implements ImportCollectionUseCase {
             throw new ArtivactException("API token cannot be empty!");
         }
 
-        Account account = loadAccountUseCase.loadByApiToken(apiToken).orElseThrow();
+        Account account = loadAccountUseCase.loadByApiToken(apiToken)
+                .orElseThrow(() -> new ArtivactException("Invalid API token!"));
         if (!Boolean.TRUE.equals(account.getUser()) && !Boolean.TRUE.equals(account.getAdmin())) {
             throw new ArtivactException("Collection import not allowed!");
         }
