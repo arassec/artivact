@@ -54,6 +54,18 @@
                     v-if="element.filePresent"
                     round
                     dense
+                    flat
+                    :disable="!syncAvailable"
+                    color="white"
+                    icon="cloud_upload"
+                    size="md"
+                    @click.stop="$emit('upload-collection-export', element)">
+                    <q-tooltip>{{ $t('ArtivactCollectionExportEditor.tooltip.upload') }}</q-tooltip>
+                  </q-btn>
+                  <q-btn
+                    v-if="element.filePresent"
+                    round
+                    dense
                     type="submit"
                     flat
                     color="white"
@@ -283,6 +295,11 @@ const props = defineProps({
   collectionExports: {
     required: true,
     type: Array as PropType<Array<CollectionExport>>
+  },
+  syncAvailable: {
+    required: false,
+    type: Boolean,
+    default: false
   }
 });
 
@@ -292,6 +309,7 @@ const emit = defineEmits<{
   (e: 'save-sort-order'): void;
   (e: 'build-collection-export-file', collectionExport: CollectionExport): void;
   (e: 'download-collection-export-file', collectionExport: CollectionExport): void;
+  (e: 'upload-collection-export', collectionExport: CollectionExport): void;
   (e: 'cover-picture-uploaded'): void;
   (e: 'delete-cover-picture', collectionExport: CollectionExport): void;
 }>();
@@ -299,6 +317,7 @@ const emit = defineEmits<{
 const menuStore = useMenuStore();
 const localeStore = useLocaleStore();
 
+const syncAvailable = toRef(props, 'syncAvailable');
 const collectionExportsRef = toRef(props.collectionExports);
 
 const availableSourceIdOptionsRef: Ref<SelectboxModel[]> = ref([] as SelectboxModel[]);

@@ -57,10 +57,12 @@
 
         <artivact-collection-export-editor
           :collection-exports="collectionExportsRef"
+          :sync-available="applicationSettingsStore.syncAvailable"
           @save-collection-export="saveCollectionExport"
           @delete-collection-export="showConfirmDelete"
           @save-sort-order="saveSortOrder"
           @build-collection-export-file="showBuildDialog"
+          @upload-collection-export="uploadCollectionExport"
           @cover-picture-uploaded="loadCollectionExports"
           @delete-cover-picture="deleteCoverPicture"
         />
@@ -329,6 +331,25 @@ function buildCollectionExportFile() {
         position: 'bottom',
         message: i18n.t(
           'ExchangeConfigurationPage.messages.buildExportFileFailed',
+        ),
+        icon: 'report_problem',
+      });
+    });
+}
+
+function uploadCollectionExport(collectionExport: CollectionExport) {
+  api
+    .post('/api/collection/export/' + collectionExport.id + '/upload')
+    .then(() => {
+      reloadMenusRef.value = false;
+      showOperationInProgressModalRef.value = true;
+    })
+    .catch(() => {
+      quasar.notify({
+        color: 'negative',
+        position: 'bottom',
+        message: i18n.t(
+          'ExchangeConfigurationPage.messages.uploadFailed',
         ),
         icon: 'report_problem',
       });
