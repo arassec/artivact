@@ -185,7 +185,14 @@
         projects.forEach((projectPath, index) => {
           const item = document.createElement('div');
           item.className = 'project-item' + (projectPath === selectedProject ? ' selected' : '');
-          item.innerHTML = '<span class="folder-icon">📁</span><span class="project-path">' + escapeHtml(projectPath) + '</span>';
+          const icon = document.createElement('span');
+          icon.className = 'folder-icon';
+          icon.textContent = '📁';
+          const pathSpan = document.createElement('span');
+          pathSpan.className = 'project-path';
+          pathSpan.textContent = projectPath;
+          item.appendChild(icon);
+          item.appendChild(pathSpan);
           item.onclick = () => selectProject(projectPath);
           item.ondblclick = () => { selectProject(projectPath); startProject(); };
           list.appendChild(item);
@@ -193,12 +200,6 @@
       }
 
       updateButtons();
-    }
-
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
     }
 
     function selectProject(projectPath) {

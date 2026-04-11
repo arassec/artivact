@@ -38,7 +38,7 @@ function loadProjectList() {
       return JSON.parse(data);
     }
   } catch (e) {
-    console.error('Failed to load project list:', e.message);
+    console.error('Failed to load project list:', e);
   }
   return [];
 }
@@ -47,7 +47,7 @@ function saveProjectList(projects) {
   try {
     fs.writeFileSync(projectListFile, JSON.stringify(projects, null, 2), 'utf-8');
   } catch (e) {
-    console.error('Failed to save project list:', e.message);
+    console.error('Failed to save project list:', e);
   }
 }
 
@@ -58,7 +58,6 @@ if (projectRoot) {
 } else {
   projectRoot = null;
 }
-const defaultProjectRoot = '${user.home}/.avdata';
 
 function startBackend() {
   backendPort = 51232;
@@ -261,10 +260,6 @@ async function startup() {
   // If project root was not set by command-line, show the project selection dialog.
   if (!projectRoot) {
     await showProjectSelectDialog();
-  }
-  // Use default project root as fallback if still not set.
-  if (!projectRoot) {
-    projectRoot = defaultProjectRoot;
   }
   await createWindow();
 }
