@@ -1230,6 +1230,7 @@ export default {
   ContentAudioEditor: {
     tooltip: {
       generateAudio: 'Audio mit KI generieren',
+      playAudio: 'Audio abspielen',
     },
     messages: {
       generateSuccess: 'Audio erfolgreich generiert.',

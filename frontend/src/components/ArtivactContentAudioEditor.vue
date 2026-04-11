@@ -1,50 +1,60 @@
 <template>
-  <div v-if="contentAudioRef" class="row items-center full-width q-mb-md">
-    <q-file
-      v-model="fileRef"
-      outlined
-      dense
-      accept=".mp3"
-      :label="label"
-      class="col"
-      @update:model-value="uploadContentAudio"
-    >
-      <template v-slot:prepend>
-        <q-icon name="audiotrack"/>
-      </template>
-    </q-file>
-    <q-btn
-      v-if="applicationSettingsStore.aiEnabled"
-      round
-      dense
-      flat
-      color="primary"
-      icon="smart_toy"
-      class="q-ml-sm"
-      :loading="generatingRef"
-      @click="generateContentAudio"
-    >
-      <q-tooltip>{{ $t('ContentAudioEditor.tooltip.generateAudio') }}</q-tooltip>
-    </q-btn>
-    <q-btn
-      v-if="hasContentAudio"
-      round
-      dense
-      flat
-      color="primary"
-      icon="delete"
-      class="q-ml-sm"
-      @click="deleteContentAudio"
-    >
-      <q-tooltip>{{ deleteLabel }}</q-tooltip>
-    </q-btn>
-    <q-icon
-      v-if="hasContentAudio"
-      name="check_circle"
-      color="secondary"
-      size="sm"
-      class="q-ml-sm"
-    />
+  <div v-if="contentAudioRef" class="full-width q-mb-md">
+    <div class="row items-center full-width">
+      <q-file
+        v-model="fileRef"
+        outlined
+        dense
+        accept=".mp3"
+        :label="label"
+        class="col"
+        @update:model-value="uploadContentAudio"
+      >
+        <template v-slot:prepend>
+          <q-icon name="audiotrack"/>
+        </template>
+      </q-file>
+      <q-btn
+        v-if="applicationSettingsStore.aiEnabled"
+        round
+        dense
+        flat
+        color="primary"
+        icon="smart_toy"
+        class="q-ml-sm"
+        :loading="generatingRef"
+        @click="generateContentAudio"
+      >
+        <q-tooltip>{{ $t('ContentAudioEditor.tooltip.generateAudio') }}</q-tooltip>
+      </q-btn>
+      <q-btn
+        v-if="hasContentAudio"
+        round
+        dense
+        flat
+        color="primary"
+        icon="delete"
+        class="q-ml-sm"
+        @click="deleteContentAudio"
+      >
+        <q-tooltip>{{ deleteLabel }}</q-tooltip>
+      </q-btn>
+      <q-btn
+        v-if="hasContentAudio"
+        round
+        dense
+        flat
+        color="primary"
+        :icon="showPlayerRef ? 'stop' : 'play_arrow'"
+        class="q-ml-sm"
+        @click="togglePlayer"
+      >
+        <q-tooltip>{{ $t('ContentAudioEditor.tooltip.playAudio') }}</q-tooltip>
+      </q-btn>
+    </div>
+    <div v-if="showPlayerRef && audioUrlRef" class="q-mt-sm">
+      <audio controls :src="audioUrlRef" class="full-width"></audio>
+    </div>
   </div>
 </template>
 
@@ -91,6 +101,8 @@ const i18n = useI18n();
 const contentAudioRef = toRef(props, 'contentAudio');
 const fileRef = ref(null as File | null);
 const generatingRef = ref(false);
+const showPlayerRef = ref(false);
+const audioUrlRef = ref('');
 
 const hasContentAudio = computed(() => {
   if (!contentAudioRef.value) {
@@ -102,6 +114,18 @@ const hasContentAudio = computed(() => {
   }
   return !!contentAudioRef.value.value;
 });
+
+function togglePlayer() {
+  showPlayerRef.value = !showPlayerRef.value;
+  if (showPlayerRef.value) {
+    const filename = getCurrentFilename();
+    if (filename) {
+      audioUrlRef.value = `/api/page/widget/${props.widgetId}/${filename}?t=${Date.now()}`;
+    }
+  } else {
+    audioUrlRef.value = '';
+  }
+}
 
 function getContentAudioFilename(): string {
   const locale = localeStore.selectedLocale;
