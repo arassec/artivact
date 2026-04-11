@@ -301,6 +301,7 @@ export default {
       messages: {
         buildExportFileFailed: 'Erzeugung der Exportdatei fehlgeschlagen!',
         importSuccess: 'Import erfolgreich',
+        uploadFailed: 'Hochladen des Sammlungsexports fehlgeschlagen!',
       },
     },
   },
@@ -619,6 +620,7 @@ export default {
       build: 'Exportdatei für diesen Sammlungsexport erneuern',
       buildNew: 'Exportdatei für diesen Sammlungsexport erzeugen',
       download: 'Exportdatei herunterladen',
+      upload: 'Exportdatei auf die konfigurierte entfernte Instanz hochladen',
       deleteCoverPicture: 'Titelbild von Sammlungsexport entfernen',
       deleteContentAudio: 'Audio-Inhalt vom Sammlungsexport entfernen',
       restricted: 'Der Zugriff auf diesen Sammlungsexport ist eingeschränkt',

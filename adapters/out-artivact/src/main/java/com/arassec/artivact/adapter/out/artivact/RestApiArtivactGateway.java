@@ -26,6 +26,11 @@ public class RestApiArtivactGateway implements ArtivactGateway {
     private static final String IMPORT_ITEM_API = "api/item/import/";
 
     /**
+     * URI part of the import collection for distribution API.
+     */
+    private static final String IMPORT_COLLECTION_FOR_DISTRIBUTION_API = "api/collection/export/import/for-distribution/";
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -48,6 +53,32 @@ public class RestApiArtivactGateway implements ArtivactGateway {
             });
         } catch (IOException e) {
             throw new ArtivactException("Could not upload item!", e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void importCollectionForDistribution(String remoteServer, String apiToken, Path exportFile) {
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+            HttpPost httpPost = new HttpPost(remoteServer + IMPORT_COLLECTION_FOR_DISTRIBUTION_API + apiToken);
+
+            HttpEntity entity = MultipartEntityBuilder.create()
+                    .setMode(HttpMultipartMode.STRICT)
+                    .addPart("file", new FileBody(exportFile.toFile()))
+                    .build();
+            httpPost.setEntity(entity);
+
+            httpclient.execute(httpPost, response -> {
+                if (response.getCode() != 200) {
+                    throw new ArtivactException("Could not upload collection export file to remote server: HTTP result code "
+                            + response.getCode() + ", File '" + exportFile + "'");
+                }
+                return response;
+            });
+        } catch (IOException e) {
+            throw new ArtivactException("Could not upload collection export!", e);
         }
     }
 

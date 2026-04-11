@@ -86,6 +86,9 @@ class CollectionExportControllerTest {
     @Mock
     private GenerateCollectionExportContentAudioUseCase generateCollectionExportContentAudioUseCase;
 
+    @Mock
+    private UploadCollectionExportUseCase uploadCollectionExportUseCase;
+
     @InjectMocks
     private CollectionExportController controller;
 
@@ -319,6 +322,20 @@ class CollectionExportControllerTest {
 
         assertThat(result.getStatusCode().is2xxSuccessful()).isTrue();
         assertThat(result.getBody()).isEqualTo("content-audio.mp3");
+    }
+
+    @Test
+    void testUploadToRemoteInstance() {
+        controller.uploadToRemoteInstance("id-1");
+        verify(uploadCollectionExportUseCase).uploadCollectionExportToRemoteInstance("id-1");
+    }
+
+    @Test
+    void testImportCollectionForDistributionWithApiToken() {
+        when(useProjectDirsUseCase.getTempDir()).thenReturn(Path.of("tmp"));
+        MultipartFile file = new MockMultipartFile("file", "export.zip", "application/zip", new byte[]{1, 2, 3});
+        controller.importCollectionForDistributionWithApiToken(file, "test-token");
+        verify(importCollectionUseCase).importCollectionForDistribution(any(), eq("test-token"));
     }
 
 }

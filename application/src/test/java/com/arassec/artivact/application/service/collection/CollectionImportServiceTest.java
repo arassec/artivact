@@ -1,5 +1,6 @@
 package com.arassec.artivact.application.service.collection;
 
+import com.arassec.artivact.application.port.in.account.LoadAccountUseCase;
 import com.arassec.artivact.application.port.in.configuration.ImportPropertiesConfigurationUseCase;
 import com.arassec.artivact.application.port.in.configuration.ImportTagsConfigurationUseCase;
 import com.arassec.artivact.application.port.in.menu.ImportMenuUseCase;
@@ -8,6 +9,7 @@ import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
 import com.arassec.artivact.application.port.out.repository.CollectionExportRepository;
 import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.domain.exception.ArtivactException;
+import com.arassec.artivact.domain.model.account.Account;
 import com.arassec.artivact.domain.model.exchange.CollectionExport;
 import com.arassec.artivact.domain.model.exchange.ContentSource;
 import com.arassec.artivact.domain.model.exchange.ExchangeMainData;
@@ -24,6 +26,7 @@ import tools.jackson.databind.json.JsonMapper;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -32,6 +35,9 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CollectionImportServiceTest {
+
+    @Mock
+    private LoadAccountUseCase loadAccountUseCase;
 
     @Mock
     private RunBackgroundOperationUseCase runBackgroundOperationUseCase;
@@ -151,6 +157,76 @@ class CollectionImportServiceTest {
         assertThat(export.getSourceId()).isEqualTo("source");
         assertThat(export.getContentSource()).isEqualTo(ContentSource.MENU);
         assertThat(export.isDistributionOnly()).isTrue();
+    }
+
+    @Test
+    void testImportCollectionForDistributionWithApiTokenFailsOnEmptyToken() {
+        // Given
+        Path file = Path.of("export.artivact.collection.zip");
+
+        // When / Then
+        assertThatThrownBy(() -> service.importCollectionForDistribution(file, ""))
+                .isInstanceOf(ArtivactException.class)
+                .hasMessage("API token cannot be empty!");
+    }
+
+    @Test
+    void testImportCollectionForDistributionWithApiTokenFailsOnInvalidToken() {
+        // Given
+        Path file = Path.of("export.artivact.collection.zip");
+        when(loadAccountUseCase.loadByApiToken("invalid-token")).thenReturn(Optional.empty());
+
+        // When / Then
+        assertThatThrownBy(() -> service.importCollectionForDistribution(file, "invalid-token"))
+                .isInstanceOf(ArtivactException.class)
+                .hasMessage("Invalid API token!");
+    }
+
+    @Test
+    void testImportCollectionForDistributionWithApiTokenFailsOnUnauthorizedAccount() {
+        // Given
+        Path file = Path.of("export.artivact.collection.zip");
+        Account account = new Account();
+        account.setUser(false);
+        account.setAdmin(false);
+
+        when(loadAccountUseCase.loadByApiToken("valid-token")).thenReturn(Optional.of(account));
+
+        // When / Then
+        assertThatThrownBy(() -> service.importCollectionForDistribution(file, "valid-token"))
+                .isInstanceOf(ArtivactException.class)
+                .hasMessage("Collection import not allowed!");
+    }
+
+    @Test
+    void testImportCollectionForDistributionWithApiTokenSucceeds() {
+        // Given
+        Path file = Path.of("export.artivact.collection.zip");
+        Account account = new Account();
+        account.setUser(true);
+        account.setAdmin(false);
+
+        when(loadAccountUseCase.loadByApiToken("valid-token")).thenReturn(Optional.of(account));
+        when(useProjectDirsUseCase.getExportsDir()).thenReturn(exportsDir);
+        when(useProjectDirsUseCase.getTempDir()).thenReturn(tempDir);
+
+        doAnswer(invocation -> {
+            BackgroundOperation backgroundOperation = invocation.getArgument(2);
+            backgroundOperation.execute(new ProgressMonitor("test", "test"));
+            return null;
+        }).when(runBackgroundOperationUseCase).execute(any(), any(), any());
+
+        when(jsonMapper.readValue(any(File.class), eq(ExchangeMainData.class))).thenReturn(exchangeMainData);
+        when(fileRepository.exists(any())).thenReturn(false);
+
+        // When
+        service.importCollectionForDistribution(file, "valid-token");
+
+        // Then
+        verify(importPropertiesConfigurationUseCase, never()).importPropertiesConfiguration(any(ImportContext.class));
+        verify(importTagsConfigurationUseCase, never()).importTagsConfiguration(any(ImportContext.class));
+        verify(importMenuUseCase, never()).importMenu(any(), any(), anyBoolean());
+        verify(collectionExportRepository).save(any(CollectionExport.class));
     }
 
 }

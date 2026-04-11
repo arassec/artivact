@@ -310,6 +310,7 @@ export default {
     messages: {
       buildExportFileFailed: "Export file building failed!",
       importSuccess: "Import successful",
+      uploadFailed: "Uploading collection export failed!",
     },
   },
 
@@ -642,6 +643,7 @@ export default {
       buildNew:
         "Create a new export file for this collection export configuration",
       download: "Download the export file",
+      upload: "Upload the export file to the configured remote instance",
       deleteCoverPicture: "Delete cover picture from collection export",
       deleteContentAudio: "Delete content audio from collection export",
       restricted: "Access to this collection export is restricted",
