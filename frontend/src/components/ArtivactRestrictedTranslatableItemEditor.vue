@@ -228,6 +228,7 @@ function translateText() {
     targetLocale = applicationSettingsStore.defaultLocale;
   }
 
+  quasar.loading.show();
   api
     .post('/api/configuration/ai/translate/' + targetLocale, sourceText, {
       headers: {'Content-Type': 'text/plain'}
@@ -250,6 +251,9 @@ function translateText() {
         message: i18n.t('ArtivactRestrictedTranslatableItemEditor.messages.translationFailed'),
         icon: 'report_problem',
       });
+    })
+    .finally(() => {
+      quasar.loading.hide();
     });
 }
 </script>

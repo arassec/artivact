@@ -178,6 +178,8 @@ function saveAiConfiguration() {
 function runTest() {
   const locale = localeStore.selectedLocale || 'en';
 
+  quasar.loading.show();
+
   // Save the configuration first so the test uses the current values.
   api
     .post('/api/configuration/ai', aiConfigurationRef.value)
@@ -189,6 +191,7 @@ function runTest() {
       }
     })
     .catch(() => {
+      quasar.loading.hide();
       quasar.notify({
         color: 'negative',
         position: 'bottom',
@@ -215,6 +218,9 @@ function runTranslationTest(locale: string) {
         message: i18n.t('AiConfigurationPage.test.testFailed'),
         icon: 'report_problem',
       });
+    })
+    .finally(() => {
+      quasar.loading.hide();
     });
 }
 
@@ -236,6 +242,9 @@ function runTtsTest() {
         message: i18n.t('AiConfigurationPage.test.testFailed'),
         icon: 'report_problem',
       });
+    })
+    .finally(() => {
+      quasar.loading.hide();
     });
 }
 
