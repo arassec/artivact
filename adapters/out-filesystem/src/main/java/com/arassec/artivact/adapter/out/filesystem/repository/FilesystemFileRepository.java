@@ -319,6 +319,7 @@ public class FilesystemFileRepository implements FileRepository {
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("javasecurity:S2083") // The file path is controlled and validated by the application.
     @Override
     public void write(Path file, byte[] target) {
         try {
