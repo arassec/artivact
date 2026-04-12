@@ -94,6 +94,7 @@ class ManageCollectionExportServiceTest {
         when(useProjectDirsUseCase.getExportsDir()).thenReturn(Path.of("exports"));
         when(fileRepository.lastModified(any(Path.class))).thenReturn(Instant.now());
         when(fileRepository.size(any(Path.class))).thenReturn(12345L);
+        when(fileRepository.list(Path.of("exports"))).thenReturn(List.of());
 
         CollectionExport collectionExport = service.load("test-id");
 
@@ -107,6 +108,7 @@ class ManageCollectionExportServiceTest {
     void testLoadAllRestrictedDelegatesToLoadAll() {
         when(useProjectDirsUseCase.getExportsDir()).thenReturn(Path.of("exports"));
         when(collectionExportRepository.findAll()).thenReturn(List.of(export));
+        when(fileRepository.list(Path.of("exports"))).thenReturn(List.of());
         var result = service.loadAllRestricted();
         assertThat(result).hasSize(1);
         verify(collectionExportRepository).findAll();
@@ -135,6 +137,7 @@ class ManageCollectionExportServiceTest {
         when(useProjectDirsUseCase.getExportsDir()).thenReturn(Path.of("/tmp"));
         when(fileRepository.exists(any())).thenReturn(true);
         when(collectionExportRepository.findById("test-id")).thenReturn(Optional.of(export));
+        when(fileRepository.list(Path.of("/tmp"))).thenReturn(List.of());
         export.setCoverPictureExtension("jpg");
 
         service.delete("test-id");
@@ -156,6 +159,8 @@ class ManageCollectionExportServiceTest {
     @Test
     void testBuildExportFileRunsBackgroundOperation() {
         when(collectionExportRepository.findById("test-id")).thenReturn(Optional.of(export));
+        when(useProjectDirsUseCase.getExportsDir()).thenReturn(Path.of("exports"));
+        when(fileRepository.list(Path.of("exports"))).thenReturn(List.of());
 
         doAnswer(invocation -> {
             BackgroundOperation backgroundOperation = invocation.getArgument(2);
@@ -218,68 +223,54 @@ class ManageCollectionExportServiceTest {
 
     @Test
     void testSaveContentAudioStoresFileAndUpdatesExport(@TempDir Path tempDir) {
-        when(collectionExportRepository.findById("test-id")).thenReturn(Optional.of(export));
         when(useProjectDirsUseCase.getExportsDir()).thenReturn(tempDir);
 
         service.saveContentAudio("test-id", "de", "audio.mp3", new ByteArrayInputStream(new byte[0]));
 
-        assertThat(export.getContentAudio()).isNotNull();
-        assertThat(export.getContentAudio().getTranslations()).containsKey("de");
-        assertThat(export.getContentAudio().getTranslations()).containsEntry("de", "test-id-de.mp3");
-        verify(collectionExportRepository).save(export);
+        assertThat(tempDir.resolve("test-id-de.mp3")).exists();
+        verify(collectionExportRepository, never()).save(any());
     }
 
     @Test
     void testSaveContentAudioDefaultLocale(@TempDir Path tempDir) {
-        when(collectionExportRepository.findById("test-id")).thenReturn(Optional.of(export));
         when(useProjectDirsUseCase.getExportsDir()).thenReturn(tempDir);
 
         service.saveContentAudio("test-id", "", "audio.mp3", new ByteArrayInputStream(new byte[0]));
 
-        assertThat(export.getContentAudio()).isNotNull();
-        assertThat(export.getContentAudio().getValue()).isEqualTo("test-id.mp3");
-        verify(collectionExportRepository).save(export);
+        assertThat(tempDir.resolve("test-id.mp3")).exists();
+        verify(collectionExportRepository, never()).save(any());
     }
 
     @Test
-    void testDeleteContentAudioRemovesFileAndClearsEntry() {
-        TranslatableString contentAudio = new TranslatableString();
-        contentAudio.getTranslations().put("de", "test-id-de.mp3");
-        export.setContentAudio(contentAudio);
-
-        when(collectionExportRepository.findById("test-id")).thenReturn(Optional.of(export));
+    void testDeleteContentAudioRemovesFile() {
         when(useProjectDirsUseCase.getExportsDir()).thenReturn(Path.of("/tmp"));
         when(fileRepository.exists(any())).thenReturn(true);
 
         service.deleteContentAudio("test-id", "de");
 
-        assertThat(export.getContentAudio().getTranslations()).doesNotContainKey("de");
-        verify(fileRepository).delete(any());
-        verify(collectionExportRepository).save(export);
+        verify(fileRepository).delete(Path.of("/tmp/test-id-de.mp3"));
+        verify(collectionExportRepository, never()).save(any());
     }
 
     @Test
     void testDeleteContentAudioDefaultLocale() {
-        TranslatableString contentAudio = new TranslatableString("test-id.mp3");
-        export.setContentAudio(contentAudio);
-
-        when(collectionExportRepository.findById("test-id")).thenReturn(Optional.of(export));
         when(useProjectDirsUseCase.getExportsDir()).thenReturn(Path.of("/tmp"));
         when(fileRepository.exists(any())).thenReturn(true);
 
         service.deleteContentAudio("test-id", "");
 
-        assertThat(export.getContentAudio().getValue()).isEmpty();
-        verify(fileRepository).delete(any());
-        verify(collectionExportRepository).save(export);
+        verify(fileRepository).delete(Path.of("/tmp/test-id.mp3"));
+        verify(collectionExportRepository, never()).save(any());
     }
 
     @Test
-    void testDeleteContentAudioNoContentAudio() {
-        when(collectionExportRepository.findById("test-id")).thenReturn(Optional.of(export));
+    void testDeleteContentAudioFileNotPresent() {
+        when(useProjectDirsUseCase.getExportsDir()).thenReturn(Path.of("/tmp"));
+        when(fileRepository.exists(any())).thenReturn(false);
 
         service.deleteContentAudio("test-id", "de");
 
+        verify(fileRepository, never()).delete(any());
         verify(collectionExportRepository, never()).save(any());
     }
 
@@ -339,21 +330,20 @@ class ManageCollectionExportServiceTest {
         String result = service.generateContentAudio("test-id", "");
 
         assertThat(result).isEqualTo("test-id.mp3");
-        assertThat(export.getContentAudio()).isNotNull();
-        assertThat(export.getContentAudio().getValue()).isEqualTo("test-id.mp3");
         verify(aiGateway).convertToAudio(any(AiConfiguration.class), eq("Some content text"), any(Path.class));
-        verify(collectionExportRepository).save(export);
+        verify(collectionExportRepository, never()).save(any());
     }
 
     @Test
     void testDeleteRemovesContentAudioFiles() {
-        TranslatableString contentAudio = new TranslatableString("test-id.mp3");
-        contentAudio.getTranslations().put("de", "test-id-de.mp3");
-        export.setContentAudio(contentAudio);
-
         when(useProjectDirsUseCase.getExportsDir()).thenReturn(Path.of("/tmp"));
         when(fileRepository.exists(any())).thenReturn(true);
         when(collectionExportRepository.findById("test-id")).thenReturn(Optional.of(export));
+        when(fileRepository.list(Path.of("/tmp"))).thenReturn(List.of(
+                Path.of("/tmp/test-id-de.mp3")
+        ));
+
+        export.setCoverPictureExtension("jpg");
 
         service.delete("test-id");
 
