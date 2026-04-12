@@ -120,7 +120,7 @@ function togglePlayer() {
   if (showPlayerRef.value) {
     const filename = getCurrentFilename();
     if (filename) {
-      audioUrlRef.value = `/api/page/widget/${props.widgetId}/${filename}?t=${Date.now()}`;
+      audioUrlRef.value = `/api/page/widget/${props.widgetId}/${filename}/wip?t=${Date.now()}`;
     }
   } else {
     audioUrlRef.value = '';
