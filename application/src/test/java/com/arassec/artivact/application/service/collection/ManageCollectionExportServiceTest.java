@@ -105,6 +105,27 @@ class ManageCollectionExportServiceTest {
     }
 
     @Test
+    void testLoadResolvesContentAudioFromFilesystem() {
+        when(collectionExportRepository.findById("test-id")).thenReturn(Optional.of(export));
+        when(useProjectDirsUseCase.getExportsDir()).thenReturn(Path.of("exports"));
+        when(fileRepository.exists(Path.of("exports/test-id.artivact.collection.zip"))).thenReturn(false);
+        when(fileRepository.exists(Path.of("exports/test-id.mp3"))).thenReturn(true);
+        when(fileRepository.list(Path.of("exports"))).thenReturn(List.of(
+                Path.of("exports/test-id-de.mp3"),
+                Path.of("exports/test-id-fr.mp3"),
+                Path.of("exports/other-file.txt")
+        ));
+
+        CollectionExport collectionExport = service.load("test-id");
+
+        assertThat(collectionExport.getContentAudio()).isNotNull();
+        assertThat(collectionExport.getContentAudio().getValue()).isEqualTo("test-id.mp3");
+        assertThat(collectionExport.getContentAudio().getTranslations()).containsEntry("de", "test-id-de.mp3");
+        assertThat(collectionExport.getContentAudio().getTranslations()).containsEntry("fr", "test-id-fr.mp3");
+        assertThat(collectionExport.getContentAudio().getTranslations()).hasSize(2);
+    }
+
+    @Test
     void testLoadAllRestrictedDelegatesToLoadAll() {
         when(useProjectDirsUseCase.getExportsDir()).thenReturn(Path.of("exports"));
         when(collectionExportRepository.findAll()).thenReturn(List.of(export));
@@ -340,14 +361,16 @@ class ManageCollectionExportServiceTest {
         when(fileRepository.exists(any())).thenReturn(true);
         when(collectionExportRepository.findById("test-id")).thenReturn(Optional.of(export));
         when(fileRepository.list(Path.of("/tmp"))).thenReturn(List.of(
-                Path.of("/tmp/test-id-de.mp3")
+                Path.of("/tmp/test-id-de.mp3"),
+                Path.of("/tmp/test-id-fr.mp3")
         ));
 
         export.setCoverPictureExtension("jpg");
 
         service.delete("test-id");
 
-        verify(fileRepository, atLeast(3)).delete(any());
+        // Deletes: export file, cover picture, default audio, 2 localized audio files = at least 4 delete calls
+        verify(fileRepository, atLeast(4)).delete(any());
         verify(collectionExportRepository).delete("test-id");
     }
 

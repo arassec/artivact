@@ -61,6 +61,11 @@ public class ManageCollectionExportService implements ContentGenerator,
         GenerateCollectionExportContentAudioUseCase {
 
     /**
+     * Suffix for MP3 audio files.
+     */
+    private static final String MP3_SUFFIX = ".mp3";
+
+    /**
      * The application's file repository.
      */
     @Getter
@@ -501,20 +506,21 @@ public class ManageCollectionExportService implements ContentGenerator,
         TranslatableString contentAudio = new TranslatableString("");
         Path exportsDir = useProjectDirsUseCase.getExportsDir();
 
-        Path defaultAudioFile = exportsDir.resolve(id + ".mp3");
+        String defaultFilename = id + MP3_SUFFIX;
+        Path defaultAudioFile = exportsDir.resolve(defaultFilename);
         if (fileRepository.exists(defaultAudioFile)) {
-            contentAudio.setValue(id + ".mp3");
+            contentAudio.setValue(defaultFilename);
         }
 
         String prefix = id + "-";
         fileRepository.list(exportsDir).stream()
                 .filter(path -> {
                     String filename = path.getFileName().toString();
-                    return filename.startsWith(prefix) && filename.endsWith(".mp3");
+                    return filename.startsWith(prefix) && filename.endsWith(MP3_SUFFIX);
                 })
                 .forEach(path -> {
                     String filename = path.getFileName().toString();
-                    String locale = filename.substring(prefix.length(), filename.length() - 4);
+                    String locale = filename.substring(prefix.length(), filename.length() - MP3_SUFFIX.length());
                     contentAudio.getTranslations().put(locale, filename);
                 });
 
@@ -530,9 +536,9 @@ public class ManageCollectionExportService implements ContentGenerator,
      */
     private String getContentAudioFilename(String id, String locale) {
         if (StringUtils.hasText(locale)) {
-            return id + "-" + locale + ".mp3";
+            return id + "-" + locale + MP3_SUFFIX;
         }
-        return id + ".mp3";
+        return id + MP3_SUFFIX;
     }
 
     /**
@@ -543,7 +549,7 @@ public class ManageCollectionExportService implements ContentGenerator,
     private void deleteAllContentAudioFiles(String id) {
         Path exportsDir = useProjectDirsUseCase.getExportsDir();
 
-        Path defaultAudioFile = exportsDir.resolve(id + ".mp3");
+        Path defaultAudioFile = exportsDir.resolve(id + MP3_SUFFIX);
         if (fileRepository.exists(defaultAudioFile)) {
             fileRepository.delete(defaultAudioFile);
         }
@@ -552,7 +558,7 @@ public class ManageCollectionExportService implements ContentGenerator,
         fileRepository.list(exportsDir).stream()
                 .filter(path -> {
                     String filename = path.getFileName().toString();
-                    return filename.startsWith(prefix) && filename.endsWith(".mp3");
+                    return filename.startsWith(prefix) && filename.endsWith(MP3_SUFFIX);
                 })
                 .forEach(fileRepository::delete);
     }
