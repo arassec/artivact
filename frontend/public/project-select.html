@@ -7,8 +7,8 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background: #6e7e85;
-      color: #e0e0e0;
+      background: #F5F5F5;
+      color: #364958;
       height: 100vh;
       overflow: hidden;
       display: flex;
@@ -23,15 +23,16 @@
     .header img {
       width: 64px;
       height: 64px;
+      border: 1px solid #364958;
     }
     .header-text h1 {
       font-size: 1.6rem;
       font-weight: 600;
-      color: #ffffff;
+      color: #364958;
     }
     .header-text p {
       font-size: 0.9rem;
-      color: #ffffff;
+      color: #364958;
       margin-top: 4px;
     }
     .content {
@@ -49,15 +50,14 @@
     .project-list {
       flex: 1;
       border: 1px solid #364958;
-      border-radius: 8px;
       overflow-y: auto;
-      background: #6e7e85;
+      background: #F5F5F5;
       min-height: 0;
     }
     .project-item {
       padding: 12px 16px;
       cursor: pointer;
-      border-bottom: 1px solid #364958;
+      border-bottom: 1px solid #F5F5F5;
       transition: background 0.15s;
       display: flex;
       align-items: center;
@@ -67,10 +67,12 @@
 
     .project-item:hover {
       background: #6e7e85;
+      color: #F5F5F5;
     }
 
     .project-item.selected {
       background: #364958;
+      color: #F5F5F5;
     }
     .project-item .folder-icon {
       font-size: 1.3rem;
@@ -85,7 +87,7 @@
       align-items: center;
       justify-content: center;
       height: 100%;
-      color: #ffffff;
+      color: #F5F5F5;
       font-size: 0.95rem;
       padding: 32px;
       text-align: center;
@@ -97,34 +99,34 @@
     }
     button {
       padding: 8px 20px;
-      border: 1px solid black;
+      border: 1px solid #364958;
       border-radius: 6px;
-      background: #364958;
-      color: #ffffff;
+      background: #6e7e85;
+      color: #F5F5F5;
       font-size: 0.9rem;
       cursor: pointer;
       transition: background 0.15s, border-color 0.15s;
     }
 
     button:hover {
-      background: #6e7e85;
-      border-color: #364958;
+      background: #364958;
+      border-color: #6e7e85;
     }
     button:disabled { opacity: 0.4; cursor: not-allowed; }
     button.primary {
       background: #6e7e85;
-      border-color: #364958;
-      color: #ffffff;
+      color: #F5F5F5;
       font-weight: 600;
       padding: 10px 32px;
     }
 
     button.primary:hover {
-      background: #6e7e85;
+      background: #364958;
+      border-color: #6e7e85;
     }
 
     button.primary:disabled {
-      background: #364958;
+      background: #6e7e85;
     }
     button.danger:hover { background: #6e2a2a; border-color: #8a3a3a; }
   </style>
@@ -155,16 +157,16 @@
   <script>
     const i18n = {
       en: {
-        description: 'Select a project directory to open or add a new one.',
+        description: 'Select an existing project directory to open it or add an empty one to start a new project.',
         addButton: 'Add Project Directory',
-        removeButton: 'Remove Selected',
+        removeButton: 'Remove Entry',
         startButton: 'Start',
         emptyState: 'No project directories configured yet. Click "Add Project Directory" to get started.',
       },
       de: {
-        description: 'Projektverzeichnis zum Öffnen auswählen oder ein neues hinzufügen.',
+        description: 'Wählen Sie ein bestehendes Projektverzeichnis zum Öffnen des Projekts, oder wählen Sie ein leeres Verzeichnis aus, um ein neues Projekt zu starten.',
         addButton: 'Projektverzeichnis hinzufügen',
-        removeButton: 'Ausgewähltes entfernen',
+        removeButton: 'Eintrag entfernen',
         startButton: 'Starten',
         emptyState: 'Noch keine Projektverzeichnisse konfiguriert. Klicken Sie auf "Projektverzeichnis hinzufügen", um zu beginnen.',
       }

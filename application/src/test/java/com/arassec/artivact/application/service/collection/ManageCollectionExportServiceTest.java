@@ -27,6 +27,7 @@ import tools.jackson.databind.json.JsonMapper;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.List;
@@ -246,6 +247,12 @@ class ManageCollectionExportServiceTest {
     void testSaveContentAudioStoresFileAndUpdatesExport(@TempDir Path tempDir) {
         when(useProjectDirsUseCase.getExportsDir()).thenReturn(tempDir);
 
+        doAnswer(invocation -> {
+            Path target = invocation.getArgument(1);
+            java.nio.file.Files.createFile(target);
+            return null;
+        }).when(fileRepository).copy(any(InputStream.class), any(Path.class), any());
+
         service.saveContentAudio("test-id", "de", "audio.mp3", new ByteArrayInputStream(new byte[0]));
 
         assertThat(tempDir.resolve("test-id-de.mp3")).exists();
@@ -255,6 +262,12 @@ class ManageCollectionExportServiceTest {
     @Test
     void testSaveContentAudioDefaultLocale(@TempDir Path tempDir) {
         when(useProjectDirsUseCase.getExportsDir()).thenReturn(tempDir);
+
+        doAnswer(invocation -> {
+            Path target = invocation.getArgument(1);
+            java.nio.file.Files.createFile(target);
+            return null;
+        }).when(fileRepository).copy(any(InputStream.class), any(Path.class), any());
 
         service.saveContentAudio("test-id", "", "audio.mp3", new ByteArrayInputStream(new byte[0]));
 

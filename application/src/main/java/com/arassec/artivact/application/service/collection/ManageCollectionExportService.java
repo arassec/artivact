@@ -28,7 +28,6 @@ import org.springframework.util.StringUtils;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
@@ -203,11 +202,7 @@ public class ManageCollectionExportService implements ContentGenerator,
     public InputStream readExportFile(String id) {
         Path exportFile = getExportFile(id);
         if (fileRepository.exists(exportFile)) {
-            try {
-                return Files.newInputStream(exportFile);
-            } catch (IOException e) {
-                throw new ArtivactException("Cannot read export file for export with ID: " + id, e);
-            }
+            return fileRepository.readStream(exportFile);
         }
         throw new ArtivactException("Cannot read export file for export with ID: " + id);
     }
@@ -271,11 +266,7 @@ public class ManageCollectionExportService implements ContentGenerator,
 
         Path coverPicture = useProjectDirsUseCase.getExportsDir().resolve(id + "." + collectionExport.getCoverPictureExtension());
 
-        try {
-            return Files.readAllBytes(coverPicture);
-        } catch (IOException e) {
-            throw new ArtivactException("Could not load image!", e);
-        }
+        return fileRepository.readBytes(coverPicture);
     }
 
     /**
@@ -373,11 +364,7 @@ public class ManageCollectionExportService implements ContentGenerator,
         String audioFilename = getContentAudioFilename(id, locale);
         Path targetPath = targetDir.resolve(audioFilename);
 
-        try {
-            Files.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            throw new ArtivactException("Could not save content audio file!", e);
-        }
+        fileRepository.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
     }
 
     /**
