@@ -61,6 +61,11 @@ public class ManageCollectionExportService implements ContentGenerator,
         GenerateCollectionExportContentAudioUseCase {
 
     /**
+     * Suffix for MP3 audio files.
+     */
+    private static final String MP3_SUFFIX = ".mp3";
+
+    /**
      * The application's file repository.
      */
     @Getter
@@ -217,6 +222,7 @@ public class ManageCollectionExportService implements ContentGenerator,
     public synchronized void buildExportFile(String id) {
         runBackgroundOperationUseCase.execute("collectionExport", "export", progressMonitor -> {
             CollectionExport collectionExport = collectionExportRepository.findById(id).orElseThrow();
+            addAdditionalInformation(collectionExport);
             Path exportedFile = exportCollectionUseCase.exportCollection(collectionExport,
                     loadMenuUseCase.loadMenu(collectionExport.getSourceId()));
             log.info("Build export: {}", exportedFile);
@@ -346,6 +352,8 @@ public class ManageCollectionExportService implements ContentGenerator,
 
     /**
      * Saves a content audio file for a collection export.
+     * Only writes the MP3 file to the filesystem. The contentAudio property is dynamically
+     * resolved when loading the export, avoiding OptimisticLockingExceptions.
      *
      * @param id               The collection export's ID.
      * @param locale           The locale of the audio file (empty string for default).
@@ -358,7 +366,6 @@ public class ManageCollectionExportService implements ContentGenerator,
         if (isInvalidJavaLocale(locale)) {
             throw new ArtivactException("Invalid locale: " + locale);
         }
-        CollectionExport collectionExport = collectionExportRepository.findById(id).orElseThrow();
 
         Path targetDir = useProjectDirsUseCase.getExportsDir();
         fileRepository.createDirIfRequired(targetDir);
@@ -371,10 +378,6 @@ public class ManageCollectionExportService implements ContentGenerator,
         } catch (IOException e) {
             throw new ArtivactException("Could not save content audio file!", e);
         }
-
-        processContentAudio(locale, collectionExport, audioFilename);
-
-        collectionExportRepository.save(collectionExport);
     }
 
     /**
@@ -398,6 +401,8 @@ public class ManageCollectionExportService implements ContentGenerator,
 
     /**
      * Deletes a content audio file from a collection export.
+     * Only removes the MP3 file from the filesystem. The contentAudio property is dynamically
+     * resolved when loading the export.
      *
      * @param id     The collection export's ID.
      * @param locale The locale of the audio to delete (empty string for default).
@@ -407,32 +412,18 @@ public class ManageCollectionExportService implements ContentGenerator,
         if (isInvalidJavaLocale(locale)) {
             throw new ArtivactException("Invalid locale: " + locale);
         }
-        CollectionExport collectionExport = collectionExportRepository.findById(id).orElseThrow();
-        TranslatableString contentAudio = collectionExport.getContentAudio();
-        if (contentAudio == null) {
-            return;
-        }
 
-        String audioFilename;
-        if (StringUtils.hasText(locale)) {
-            audioFilename = contentAudio.getTranslations().remove(locale);
-        } else {
-            audioFilename = contentAudio.getValue();
-            contentAudio.setValue("");
+        String audioFilename = getContentAudioFilename(id, locale);
+        Path audioFile = useProjectDirsUseCase.getExportsDir().resolve(audioFilename);
+        if (fileRepository.exists(audioFile)) {
+            fileRepository.delete(audioFile);
         }
-
-        if (StringUtils.hasText(audioFilename)) {
-            Path audioFile = useProjectDirsUseCase.getExportsDir().resolve(audioFilename);
-            if (fileRepository.exists(audioFile)) {
-                fileRepository.delete(audioFile);
-            }
-        }
-
-        collectionExportRepository.save(collectionExport);
     }
 
     /**
      * Generates an audio file from the collection export's content using AI.
+     * Only creates the MP3 file on the filesystem. The contentAudio property is dynamically
+     * resolved when loading the export, avoiding OptimisticLockingExceptions.
      *
      * @param id     The collection export's ID.
      * @param locale The locale for the audio generation (empty string for default).
@@ -468,10 +459,6 @@ public class ManageCollectionExportService implements ContentGenerator,
 
         aiGateway.convertToAudio(aiConfiguration, textContent, targetFile);
 
-        processContentAudio(locale, collectionExport, audioFilename);
-
-        collectionExportRepository.save(collectionExport);
-
         return audioFilename;
     }
 
@@ -488,7 +475,7 @@ public class ManageCollectionExportService implements ContentGenerator,
 
     /**
      * Adds additional information, e.g., about the export file size and last modification, to the provided collection
-     * export.
+     * export. The contentAudio property is dynamically filled based on existing audio files in the exports directory.
      *
      * @param collectionExport The {@link CollectionExport} to add additional information to.
      */
@@ -506,9 +493,38 @@ public class ManageCollectionExportService implements ContentGenerator,
             collectionExport.setContent(new TranslatableString(""));
         }
 
-        if (collectionExport.getContentAudio() == null) {
-            collectionExport.setContentAudio(new TranslatableString(""));
+        collectionExport.setContentAudio(resolveContentAudioFromFilesystem(collectionExport.getId()));
+    }
+
+    /**
+     * Resolves the contentAudio property by scanning the exports directory for audio files matching the export ID.
+     *
+     * @param id The collection export's ID.
+     * @return A {@link TranslatableString} with audio filenames populated from the filesystem.
+     */
+    private TranslatableString resolveContentAudioFromFilesystem(String id) {
+        TranslatableString contentAudio = new TranslatableString("");
+        Path exportsDir = useProjectDirsUseCase.getExportsDir();
+
+        String defaultFilename = id + MP3_SUFFIX;
+        Path defaultAudioFile = exportsDir.resolve(defaultFilename);
+        if (fileRepository.exists(defaultAudioFile)) {
+            contentAudio.setValue(defaultFilename);
         }
+
+        String prefix = id + "-";
+        fileRepository.list(exportsDir).stream()
+                .filter(path -> {
+                    String filename = path.getFileName().toString();
+                    return filename.startsWith(prefix) && filename.endsWith(MP3_SUFFIX);
+                })
+                .forEach(path -> {
+                    String filename = path.getFileName().toString();
+                    String locale = filename.substring(prefix.length(), filename.length() - MP3_SUFFIX.length());
+                    contentAudio.getTranslations().put(locale, filename);
+                });
+
+        return contentAudio;
     }
 
     /**
@@ -520,42 +536,31 @@ public class ManageCollectionExportService implements ContentGenerator,
      */
     private String getContentAudioFilename(String id, String locale) {
         if (StringUtils.hasText(locale)) {
-            return id + "-" + locale + ".mp3";
+            return id + "-" + locale + MP3_SUFFIX;
         }
-        return id + ".mp3";
+        return id + MP3_SUFFIX;
     }
 
     /**
-     * Deletes all content audio files for the given collection export.
+     * Deletes all content audio files for the given collection export by scanning the filesystem.
      *
      * @param id The collection export's ID.
      */
     private void deleteAllContentAudioFiles(String id) {
-        CollectionExport collectionExport = collectionExportRepository.findById(id).orElse(null);
-        if (collectionExport == null || collectionExport.getContentAudio() == null) {
-            return;
-        }
-        TranslatableString contentAudio = collectionExport.getContentAudio();
+        Path exportsDir = useProjectDirsUseCase.getExportsDir();
 
-        if (StringUtils.hasText(contentAudio.getValue())) {
-            Path audioFile = useProjectDirsUseCase.getExportsDir().resolve(contentAudio.getValue());
-            if (fileRepository.exists(audioFile)) {
-                fileRepository.delete(audioFile);
-            }
+        Path defaultAudioFile = exportsDir.resolve(id + MP3_SUFFIX);
+        if (fileRepository.exists(defaultAudioFile)) {
+            fileRepository.delete(defaultAudioFile);
         }
 
-        contentAudio.getTranslations().values().forEach(filename -> {
-            if (StringUtils.hasText(filename)) {
-                Path audioFile = useProjectDirsUseCase.getExportsDir().resolve(filename);
-                if (fileRepository.exists(audioFile)) {
-                    fileRepository.delete(audioFile);
-                }
-            }
-        });
-
-        contentAudio.setValue("");
-        contentAudio.getTranslations().clear();
-        collectionExportRepository.save(collectionExport);
+        String prefix = id + "-";
+        fileRepository.list(exportsDir).stream()
+                .filter(path -> {
+                    String filename = path.getFileName().toString();
+                    return filename.startsWith(prefix) && filename.endsWith(MP3_SUFFIX);
+                })
+                .forEach(fileRepository::delete);
     }
 
 }
