@@ -14,6 +14,8 @@ class ProjectDirServiceTest {
 
     private final String projectRootStr = "testRoot";
 
+    private final Path normalizedProjectRoot = Path.of(projectRootStr).toAbsolutePath().normalize();
+
     @BeforeEach
     void setUp() {
         service = new ProjectDirService(projectRootStr);
@@ -21,43 +23,43 @@ class ProjectDirServiceTest {
 
     @Test
     void testProjectRoot() {
-        assertThat(service.getProjectRoot()).isEqualTo(Path.of(projectRootStr));
+        assertThat(service.getProjectRoot()).isEqualTo(normalizedProjectRoot);
     }
 
     @Test
     void testGetTempDir() {
         assertThat(service.getTempDir())
-                .isEqualTo(Path.of(projectRootStr).resolve(DirectoryDefinitions.TEMP_DIR));
+                .isEqualTo(normalizedProjectRoot.resolve(DirectoryDefinitions.TEMP_DIR));
     }
 
     @Test
     void testGetExportsDir() {
         assertThat(service.getExportsDir())
-                .isEqualTo(Path.of(projectRootStr).resolve(DirectoryDefinitions.EXPORT_DIR));
+                .isEqualTo(normalizedProjectRoot.resolve(DirectoryDefinitions.EXPORT_DIR));
     }
 
     @Test
     void testGetItemsDir() {
         assertThat(service.getItemsDir())
-                .isEqualTo(Path.of(projectRootStr).resolve(DirectoryDefinitions.ITEMS_DIR));
+                .isEqualTo(normalizedProjectRoot.resolve(DirectoryDefinitions.ITEMS_DIR));
     }
 
     @Test
     void testGetWidgetsDir() {
         assertThat(service.getWidgetsDir())
-                .isEqualTo(Path.of(projectRootStr).resolve(DirectoryDefinitions.WIDGETS_DIR));
+                .isEqualTo(normalizedProjectRoot.resolve(DirectoryDefinitions.WIDGETS_DIR));
     }
 
     @Test
     void testGetSearchIndexDir() {
         assertThat(service.getSearchIndexDir())
-                .isEqualTo(Path.of(projectRootStr).resolve(DirectoryDefinitions.SEARCH_INDEX_DIR));
+                .isEqualTo(normalizedProjectRoot.resolve(DirectoryDefinitions.SEARCH_INDEX_DIR));
     }
 
     @Test
     void testGetImagesDir() {
         String itemId = "abcdef123";
-        Path expected = Path.of(projectRootStr)
+        Path expected = normalizedProjectRoot
                 .resolve(DirectoryDefinitions.ITEMS_DIR)
                 .resolve("abc")
                 .resolve("def")
@@ -70,7 +72,7 @@ class ProjectDirServiceTest {
     @Test
     void testGetModelsDir() {
         String itemId = "xyz123456";
-        Path expected = Path.of(projectRootStr)
+        Path expected = normalizedProjectRoot
                 .resolve(DirectoryDefinitions.ITEMS_DIR)
                 .resolve("xyz")
                 .resolve("123")

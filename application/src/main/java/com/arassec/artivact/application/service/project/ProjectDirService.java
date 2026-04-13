@@ -28,7 +28,7 @@ public class ProjectDirService implements UseProjectDirsUseCase {
      * @param projectRoot The project's root directory as string.
      */
     public ProjectDirService(@Value("${artivact.project.root:avdata}") String projectRoot) {
-        this.projectRoot = Path.of(projectRoot);
+        this.projectRoot = Path.of(projectRoot).toAbsolutePath().normalize();
     }
 
     /**

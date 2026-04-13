@@ -351,7 +351,6 @@ public class ManageCollectionExportService implements ContentGenerator,
      * @param originalFilename The audio file's original name.
      * @param inputStream      The input stream providing the audio data.
      */
-    @SuppressWarnings("javasecurity:S2083") // locale is validated!
     @Override
     public void saveContentAudio(String id, String locale, String originalFilename, InputStream inputStream) {
         if (isInvalidJavaLocale(locale)) {
@@ -416,7 +415,6 @@ public class ManageCollectionExportService implements ContentGenerator,
      * @param locale The locale for the audio generation (empty string for default).
      * @return The generated audio filename.
      */
-    @SuppressWarnings("javasecurity:S2083") // locale input parameter is validated!
     @Override
     public String generateContentAudio(String id, String locale) {
         if (isInvalidJavaLocale(locale)) {
