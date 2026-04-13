@@ -190,7 +190,7 @@ class ManageItemModelsServiceTest {
     }
 
     @Test
-    void testTransferModelToMediaThrowsOnCopyFailure() {
+    void testTransferModelToMediaThrowsWhenFileRepositoryCopyFails() {
         Path sourceDir = Path.of("nonexistent-source-dir");
         Path targetDir = Path.of("nonexistent-target-dir");
 
@@ -212,7 +212,8 @@ class ManageItemModelsServiceTest {
                 .when(fileRepository).copy(any(Path.class), any(Path.class), any());
 
         assertThatThrownBy(() -> service.transferModelToMedia("id", 0))
-                .isInstanceOf(ArtivactException.class);
+                .isInstanceOf(ArtivactException.class)
+                .hasMessageContaining("Could not copy resource!");
     }
 
     @Test
