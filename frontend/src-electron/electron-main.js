@@ -5,6 +5,7 @@ import os from 'node:os';
 import fs from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import * as http from 'http';
+import * as net from 'net';
 import * as child_process from 'node:child_process';
 
 // needed in case process is undefined under Linux
@@ -26,6 +27,19 @@ let backendPort = 8080;
 
 function timer(ms) {
   return new Promise(res => setTimeout(res, ms));
+}
+
+// Finds a random free port by letting the OS assign one.
+function findFreePort() {
+  return new Promise((resolve, reject) => {
+    const server = net.createServer();
+    server.unref();
+    server.on('error', reject);
+    server.listen(0, '127.0.0.1', () => {
+      const port = server.address().port;
+      server.close(() => resolve(port));
+    });
+  });
 }
 
 // Path to the JSON file storing previously opened project directories.
@@ -59,8 +73,9 @@ if (projectRoot) {
   projectRoot = null;
 }
 
-function startBackend() {
-  backendPort = 51232;
+async function startBackend() {
+  backendPort = await findFreePort();
+  console.log('Starting backend on port ' + backendPort);
   backendChildProcess = child_process.spawn('bin/java', [
     '-Dserver.port=' + backendPort,
     '-Dspring.profiles.active=desktop',
@@ -222,7 +237,7 @@ async function createWindow() {
   })
 
   if (!process.env.DEBUGGING) {
-    startBackend();
+    await startBackend();
   } else {
     // Wait for splash window to show up...
     await timer(3000);
