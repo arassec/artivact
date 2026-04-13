@@ -49,7 +49,6 @@ public class OpenAiGateway implements AiGateway {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("javasecurity:S2083") // The file path is controlled and validated by the application.
     @Override
     public void convertToAudio(AiConfiguration aiConfiguration, String prompt, Path targetFile) {
         TextToSpeechModel textToSpeechModel = openAiAudioSpeechModel(aiConfiguration);

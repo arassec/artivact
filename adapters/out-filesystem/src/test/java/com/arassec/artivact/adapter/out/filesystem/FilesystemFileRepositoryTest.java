@@ -697,8 +697,8 @@ class FilesystemFileRepositoryTest {
      */
     @Test
     void testPathTraversalPreventionOnDelete() {
-        Path maliciousPath = Path.of("/tmp/../etc/passwd");
-        assertThrows(ArtivactException.class, () -> filesystemFileRepository.delete(maliciousPath));
+        Path outsidePath = Path.of("/tmp/outside-project-root");
+        assertThrows(ArtivactException.class, () -> filesystemFileRepository.delete(outsidePath));
     }
 
     /**
@@ -706,8 +706,8 @@ class FilesystemFileRepositoryTest {
      */
     @Test
     void testPathTraversalPreventionOnExists() {
-        Path maliciousPath = targetDir.resolve("../../../../../../etc/passwd");
-        assertThrows(ArtivactException.class, () -> filesystemFileRepository.exists(maliciousPath));
+        Path outsidePath = targetDir.resolve("../../../tmp/outside-project-root");
+        assertThrows(ArtivactException.class, () -> filesystemFileRepository.exists(outsidePath));
     }
 
     /**
@@ -715,8 +715,8 @@ class FilesystemFileRepositoryTest {
      */
     @Test
     void testPathTraversalPreventionOnRead() {
-        Path maliciousPath = Path.of("/etc/passwd");
-        assertThrows(ArtivactException.class, () -> filesystemFileRepository.read(maliciousPath));
+        Path outsidePath = Path.of("/tmp/outside-project-root");
+        assertThrows(ArtivactException.class, () -> filesystemFileRepository.read(outsidePath));
     }
 
     /**
@@ -742,8 +742,8 @@ class FilesystemFileRepositoryTest {
      */
     @Test
     void testPathTraversalPreventionOnCopy() {
-        Path maliciousSource = Path.of("/etc/passwd");
-        assertThrows(ArtivactException.class, () -> filesystemFileRepository.copy(maliciousSource, targetDir.resolve("output")));
+        Path outsidePath = Path.of("/tmp/outside-project-root");
+        assertThrows(ArtivactException.class, () -> filesystemFileRepository.copy(outsidePath, targetDir.resolve("output")));
     }
 
     /**
