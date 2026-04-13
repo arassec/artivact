@@ -34,6 +34,13 @@ public interface FileRepository {
     void emptyDir(Path directory);
 
     /**
+     * Empties a directory outside the project's root directory.
+     *
+     * @param directory The directory to empty.
+     */
+    void emptyDirOutsideProjectRoot(Path directory);
+
+    /**
      * Creates a directory (and required parent directories) if it doesn't exist.
      *
      * @param directory The director to create if required.
@@ -70,6 +77,15 @@ public interface FileRepository {
      * @param copyOptions The options to use for copying.
      */
     void copy(Path source, Path target, CopyOption... copyOptions);
+
+    /**
+     * Copies a source outside the project's root directory to a target.
+     *
+     * @param source      The source path.
+     * @param target      The target path.
+     * @param copyOptions The options to use for copying.
+     */
+    void copyFromOutsideProjectRoot(Path source, Path target, CopyOption... copyOptions);
 
     /**
      * Moves a file from source to target.

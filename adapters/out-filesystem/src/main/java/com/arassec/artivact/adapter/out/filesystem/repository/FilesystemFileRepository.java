@@ -138,15 +138,18 @@ public class FilesystemFileRepository implements FileRepository {
      * {@inheritDoc}
      */
     @Override
+    public void emptyDirOutsideProjectRoot(Path directory) {
+        deleteUnvalidated(directory);
+        createDirIfRequiredUnvalidated(directory);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void createDirIfRequired(Path directory) {
         validatePath(directory);
-        if (!Files.exists(directory)) {
-            try {
-                Files.createDirectories(directory);
-            } catch (IOException e) {
-                throw new ArtivactException("Could not create directory: " + directory, e);
-            }
-        }
+        createDirIfRequiredUnvalidated(directory);
     }
 
     /**
@@ -155,29 +158,7 @@ public class FilesystemFileRepository implements FileRepository {
     @Override
     public void delete(Path path) {
         validatePath(path);
-        try {
-            if (Files.exists(path) && Files.isDirectory(path)) {
-                Files.walkFileTree(path, new SimpleFileVisitor<>() {
-                    @Override
-                    @Nonnull
-                    public FileVisitResult visitFile(@NonNull Path file, @Nonnull BasicFileAttributes attrs) throws IOException {
-                        Files.delete(file);
-                        return FileVisitResult.CONTINUE;
-                    }
-
-                    @Override
-                    @Nonnull
-                    public FileVisitResult postVisitDirectory(@NonNull Path dir, IOException exc) throws IOException {
-                        Files.delete(dir);
-                        return FileVisitResult.CONTINUE;
-                    }
-                });
-            } else if (Files.exists(path)) {
-                Files.delete(path);
-            }
-        } catch (IOException e) {
-            throw new ArtivactException("Could not delete path!", e);
-        }
+        deleteUnvalidated(path);
     }
 
     /**
@@ -205,7 +186,6 @@ public class FilesystemFileRepository implements FileRepository {
      */
     @Override
     public boolean exists(Path path) {
-        validatePath(path);
         return Files.exists(path);
     }
 
@@ -215,6 +195,14 @@ public class FilesystemFileRepository implements FileRepository {
     @Override
     public void copy(Path source, Path target, CopyOption... copyOptions) {
         validatePath(source);
+        copyFromOutsideProjectRoot(source, target, copyOptions);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void copyFromOutsideProjectRoot(Path source, Path target, CopyOption... copyOptions) {
         validatePath(target);
         try {
             if (Files.exists(source) && Files.isDirectory(source)) {
@@ -306,7 +294,6 @@ public class FilesystemFileRepository implements FileRepository {
      */
     @Override
     public List<Path> list(Path dir) {
-        validatePath(dir);
         if (!Files.exists(dir)) {
             return List.of();
         }
@@ -363,7 +350,6 @@ public class FilesystemFileRepository implements FileRepository {
         if (path == null) {
             return false;
         }
-        validatePath(path);
         return Files.isDirectory(path);
     }
 
@@ -681,6 +667,48 @@ public class FilesystemFileRepository implements FileRepository {
             write(targetImage, byteArrayOutputStream.toByteArray());
         } catch (IOException e) {
             throw new ArtivactException(COULD_NOT_SCALE_IMAGE, e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    private void createDirIfRequiredUnvalidated(Path directory) {
+        if (!Files.exists(directory)) {
+            try {
+                Files.createDirectories(directory);
+            } catch (IOException e) {
+                throw new ArtivactException("Could not create directory: " + directory, e);
+            }
+        }
+    }
+
+    /**
+     * Deletes the given path without validating it.
+     */
+    private void deleteUnvalidated(Path path) {
+        try {
+            if (Files.exists(path) && Files.isDirectory(path)) {
+                Files.walkFileTree(path, new SimpleFileVisitor<>() {
+                    @Override
+                    @Nonnull
+                    public FileVisitResult visitFile(@NonNull Path file, @Nonnull BasicFileAttributes attrs) throws IOException {
+                        Files.delete(file);
+                        return FileVisitResult.CONTINUE;
+                    }
+
+                    @Override
+                    @Nonnull
+                    public FileVisitResult postVisitDirectory(@NonNull Path dir, IOException exc) throws IOException {
+                        Files.delete(dir);
+                        return FileVisitResult.CONTINUE;
+                    }
+                });
+            } else if (Files.exists(path)) {
+                Files.delete(path);
+            }
+        } catch (IOException e) {
+            throw new ArtivactException("Could not delete path!", e);
         }
     }
 

@@ -167,7 +167,7 @@ public class CreateItemModelService implements CreateItemModelUseCase {
             }
             var destination = Paths.get(targetDir.toString(), source.toString().substring(sourceDir.toString().length()));
             try {
-                fileRepository.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
+                fileRepository.copyFromOutsideProjectRoot(source, destination, StandardCopyOption.REPLACE_EXISTING);
             } catch (ArtivactException e) {
                 fileRepository.delete(targetDir);
                 throw new ArtivactException("Could not copy model files!", e);

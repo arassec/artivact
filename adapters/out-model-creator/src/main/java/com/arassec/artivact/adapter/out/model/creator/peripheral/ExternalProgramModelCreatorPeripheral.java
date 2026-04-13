@@ -178,8 +178,7 @@ public class ExternalProgramModelCreatorPeripheral extends BasePeripheral implem
         ModelCreatorPeripheralConfig config = ((ModelCreatorPeripheralConfig) initParams.getConfig());
         Path resultDir = Path.of(config.getResultDir().replace("{projectDir}", initParams.getProjectRoot().toAbsolutePath().toString()));
 
-        fileRepository.emptyDir(resultDir);
-        fileRepository.createDirIfRequired(resultDir);
+        fileRepository.emptyDirOutsideProjectRoot(resultDir);
 
         if (config.isOpenInputDirInOs()) {
             fileRepository.openDirInOs(tempDir);
@@ -211,7 +210,7 @@ public class ExternalProgramModelCreatorPeripheral extends BasePeripheral implem
         var index = new AtomicInteger(1);
         images.forEach(image -> {
             progressMonitor.updateProgress(index.getAndIncrement(), images.size());
-            getFileRepository().copy(image, destination.resolve(image.getFileName()), StandardCopyOption.REPLACE_EXISTING);
+            fileRepository.copy(image, destination.resolve(image.getFileName()), StandardCopyOption.REPLACE_EXISTING);
         });
     }
 
