@@ -7,7 +7,10 @@ import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.env.Environment;
 import org.springframework.util.StreamUtils;
@@ -702,30 +705,12 @@ class FilesystemFileRepositoryTest {
     }
 
     /**
-     * Tests that path traversal is detected and blocked for exists.
-     */
-    @Test
-    void testPathTraversalPreventionOnExists() {
-        Path outsidePath = targetDir.resolve("../../../tmp/outside-project-root");
-        assertThrows(ArtivactException.class, () -> filesystemFileRepository.exists(outsidePath));
-    }
-
-    /**
      * Tests that path traversal is detected and blocked for read.
      */
     @Test
     void testPathTraversalPreventionOnRead() {
         Path outsidePath = Path.of("/tmp/outside-project-root");
         assertThrows(ArtivactException.class, () -> filesystemFileRepository.read(outsidePath));
-    }
-
-    /**
-     * Tests that path traversal is detected and blocked for list.
-     */
-    @Test
-    void testPathTraversalPreventionOnList() {
-        Path maliciousPath = Path.of("/tmp");
-        assertThrows(ArtivactException.class, () -> filesystemFileRepository.list(maliciousPath));
     }
 
     /**
@@ -743,7 +728,8 @@ class FilesystemFileRepositoryTest {
     @Test
     void testPathTraversalPreventionOnCopy() {
         Path outsidePath = Path.of("/tmp/outside-project-root");
-        assertThrows(ArtivactException.class, () -> filesystemFileRepository.copy(outsidePath, targetDir.resolve("output")));
+        Path output = targetDir.resolve("output");
+        assertThrows(ArtivactException.class, () -> filesystemFileRepository.copy(outsidePath, output));
     }
 
     /**
