@@ -5,12 +5,13 @@ import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.item.ImageSize;
 import com.arassec.artivact.domain.model.misc.DirectoryDefinitions;
 import jakarta.annotation.Nonnull;
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.imgscalr.Scalr;
 import org.jspecify.annotations.NonNull;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Component;
@@ -37,7 +38,6 @@ import java.util.stream.Stream;
  */
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class FilesystemFileRepository implements FileRepository {
 
     /**
@@ -56,10 +56,46 @@ public class FilesystemFileRepository implements FileRepository {
     private final Environment environment;
 
     /**
+     * The project's root directory, normalized and absolute.
+     */
+    @Getter
+    private final Path projectRoot;
+
+    /**
+     * Creates a new instance.
+     *
+     * @param environment Spring's {@link Environment}.
+     * @param projectRoot The project's root directory as string.
+     */
+    public FilesystemFileRepository(Environment environment,
+                                    @Value("${artivact.project.root:avdata}") String projectRoot) {
+        this.environment = environment;
+        this.projectRoot = Path.of(projectRoot).toAbsolutePath().normalize();
+    }
+
+    /**
+     * Validates that the given path is within the project root directory. Prevents path traversal attacks by
+     * normalizing the path and checking that it starts with the project root.
+     *
+     * @param path The path to validate.
+     * @throws ArtivactException if the path is outside the project root.
+     */
+    private void validatePath(Path path) {
+        if (path == null) {
+            return;
+        }
+        Path normalizedPath = path.toAbsolutePath().normalize();
+        if (!normalizedPath.startsWith(projectRoot)) {
+            throw new ArtivactException("Path traversal detected! Access denied for path outside project root.");
+        }
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
     public void updateProjectDirectory(Path projectRoot, Path projectSetupDir, Path projectSetupDirFallback) {
+        validatePath(projectRoot);
 
         if (!environment.matchesProfiles("desktop", "e2e")) {
             return;
@@ -93,6 +129,7 @@ public class FilesystemFileRepository implements FileRepository {
      */
     @Override
     public void emptyDir(Path directory) {
+        validatePath(directory);
         delete(directory);
         createDirIfRequired(directory);
     }
@@ -101,8 +138,9 @@ public class FilesystemFileRepository implements FileRepository {
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("javasecurity:S2083") // Path is not entered by user!
+    @SuppressWarnings("javasecurity:S2083")
     public void createDirIfRequired(Path directory) {
+        validatePath(directory);
         if (!Files.exists(directory)) {
             try {
                 Files.createDirectories(directory);
@@ -117,6 +155,7 @@ public class FilesystemFileRepository implements FileRepository {
      */
     @Override
     public void delete(Path path) {
+        validatePath(path);
         try {
             if (Files.exists(path) && Files.isDirectory(path)) {
                 Files.walkFileTree(path, new SimpleFileVisitor<>() {
@@ -147,6 +186,7 @@ public class FilesystemFileRepository implements FileRepository {
      */
     @Override
     public void openDirInOs(Path directory) {
+        validatePath(directory);
         var osString = System.getProperty("os.name");
         String[] cmdArray;
         if (osString.contains("Windows")) {
@@ -166,6 +206,7 @@ public class FilesystemFileRepository implements FileRepository {
      */
     @Override
     public boolean exists(Path path) {
+        validatePath(path);
         return Files.exists(path);
     }
 
@@ -174,6 +215,8 @@ public class FilesystemFileRepository implements FileRepository {
      */
     @Override
     public void copy(Path source, Path target, CopyOption... copyOptions) {
+        validatePath(source);
+        validatePath(target);
         try {
             if (Files.exists(source) && Files.isDirectory(source)) {
                 FileUtils.copyDirectory(source.toFile(), target.toFile());
@@ -190,6 +233,8 @@ public class FilesystemFileRepository implements FileRepository {
      */
     @Override
     public void move(Path source, Path target, CopyOption... copyOptions) {
+        validatePath(source);
+        validatePath(target);
         try {
             Files.move(source, target, copyOptions);
         } catch (IOException e) {
@@ -201,8 +246,9 @@ public class FilesystemFileRepository implements FileRepository {
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("javasecurity:S2083") // Path is not entered by user!
+    @SuppressWarnings("javasecurity:S2083")
     public void copy(InputStream source, Path target, CopyOption... copyOptions) {
+        validatePath(target);
         try {
             Files.copy(source, target, copyOptions);
         } catch (IOException e) {
@@ -215,6 +261,7 @@ public class FilesystemFileRepository implements FileRepository {
      */
     @Override
     public long copy(Path source, OutputStream target) {
+        validatePath(source);
         try {
             return Files.copy(source, target);
         } catch (IOException e) {
@@ -227,6 +274,7 @@ public class FilesystemFileRepository implements FileRepository {
      */
     @Override
     public Path getDirFromId(Path root, String id) {
+        validatePath(root);
         return root.resolve(getSubDir(id, 0)).resolve(getSubDir(id, 1)).resolve(id);
     }
 
@@ -235,6 +283,7 @@ public class FilesystemFileRepository implements FileRepository {
      */
     @Override
     public Path getSubdirFilePath(Path root, String id, String dirOrFilename) {
+        validatePath(root);
         if (dirOrFilename != null) {
             return root.resolve(getSubDir(id, 0)).resolve(getSubDir(id, 1)).resolve(id).resolve(dirOrFilename);
         }
@@ -259,6 +308,7 @@ public class FilesystemFileRepository implements FileRepository {
      */
     @Override
     public List<Path> list(Path dir) {
+        validatePath(dir);
         if (!Files.exists(dir)) {
             return List.of();
         }
@@ -277,6 +327,7 @@ public class FilesystemFileRepository implements FileRepository {
     @SuppressWarnings("java:S6204") // Result list needs to be mutable!
     @Override
     public List<String> listNamesWithoutScaledImages(Path path) {
+        validatePath(path);
         if (exists(path)) {
             return list(path).stream()
                     .filter(filePath -> !isDir(filePath))
@@ -298,6 +349,7 @@ public class FilesystemFileRepository implements FileRepository {
      */
     @Override
     public Instant lastModified(Path path) {
+        validatePath(path);
         try {
             return Files.getLastModifiedTime(path).toInstant();
         } catch (IOException e) {
@@ -313,15 +365,17 @@ public class FilesystemFileRepository implements FileRepository {
         if (path == null) {
             return false;
         }
+        validatePath(path);
         return Files.isDirectory(path);
     }
 
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("javasecurity:S2083") // The file path is controlled and validated by the application.
+    @SuppressWarnings("javasecurity:S2083")
     @Override
     public void write(Path file, byte[] target) {
+        validatePath(file);
         try {
             Files.write(file, target);
         } catch (IOException e) {
@@ -334,6 +388,8 @@ public class FilesystemFileRepository implements FileRepository {
      */
     @Override
     public void scaleImage(Path originalImage, Path targetImage, int targetWidth) {
+        validatePath(originalImage);
+        validatePath(targetImage);
         try {
             log.debug("Scaling image from {} to {}", originalImage, targetImage);
             BufferedImage bufferedImage = ImageIO.read(originalImage.toFile());
@@ -350,6 +406,7 @@ public class FilesystemFileRepository implements FileRepository {
      */
     @Override
     public void scaleImage(InputStream originalImage, Path targetImage, String fileEnding, int targetWidth) {
+        validatePath(targetImage);
         try {
             BufferedImage bufferedImage = ImageIO.read(originalImage);
             scaleImage(bufferedImage, targetImage, fileEnding, targetWidth);
@@ -366,6 +423,7 @@ public class FilesystemFileRepository implements FileRepository {
         if (path == null || !Files.exists(path)) {
             return 0;
         }
+        validatePath(path);
         try {
             return Files.size(path);
         } catch (IOException e) {
@@ -378,6 +436,8 @@ public class FilesystemFileRepository implements FileRepository {
      */
     @Override
     public void pack(Path source, Path target) {
+        validatePath(source);
+        validatePath(target);
         ZipUtil.pack(source.toFile(), target.toFile());
     }
 
@@ -385,8 +445,10 @@ public class FilesystemFileRepository implements FileRepository {
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("javasecurity:S2083") // Path is not entered by user!
+    @SuppressWarnings("javasecurity:S2083")
     public void unpack(Path source, Path target) {
+        validatePath(source);
+        validatePath(target);
         ZipUtil.unpack(source.toFile(), target.toFile());
     }
 
@@ -395,6 +457,7 @@ public class FilesystemFileRepository implements FileRepository {
      */
     @Override
     public String read(Path source) {
+        validatePath(source);
         try {
             return Files.readString(source);
         } catch (IOException e) {
@@ -407,6 +470,7 @@ public class FilesystemFileRepository implements FileRepository {
      */
     @Override
     public InputStream readStream(Path source) {
+        validatePath(source);
         try {
             return Files.newInputStream(source);
         } catch (IOException e) {
@@ -419,6 +483,7 @@ public class FilesystemFileRepository implements FileRepository {
      */
     @Override
     public byte[] readBytes(Path source) {
+        validatePath(source);
         try {
             return Files.readAllBytes(source);
         } catch (IOException e) {
@@ -449,6 +514,7 @@ public class FilesystemFileRepository implements FileRepository {
      */
     @Override
     public int getNextAssetNumber(Path assetDir) {
+        validatePath(assetDir);
         var highestNumber = 0;
         if (!Files.exists(assetDir)) {
             try {
@@ -484,6 +550,7 @@ public class FilesystemFileRepository implements FileRepository {
      */
     @Override
     public void deleteAndPruneEmptyParents(Path directory) {
+        validatePath(directory);
         delete(directory);
 
         Path firstParent = directory.getParent();
@@ -502,6 +569,7 @@ public class FilesystemFileRepository implements FileRepository {
      */
     @Override
     public String saveFile(Path projectRoot, String itemId, String filename, InputStream data, String subDir, String requiredFileExtension, boolean keepAssetNumber) {
+        validatePath(projectRoot);
         Path targetDir = getSubdirFilePath(projectRoot.resolve(DirectoryDefinitions.ITEMS_DIR), itemId, subDir);
 
         int assetNumber = getNextAssetNumber(targetDir);
@@ -528,6 +596,7 @@ public class FilesystemFileRepository implements FileRepository {
      */
     @Override
     public void saveFile(Path targetPath, byte[] content) {
+        validatePath(targetPath);
         try {
             Files.write(targetPath, content, StandardOpenOption.CREATE_NEW);
         } catch (IOException e) {
@@ -560,6 +629,7 @@ public class FilesystemFileRepository implements FileRepository {
      */
     @Override
     public FileSystemResource loadImage(Path root, String id, String filename, ImageSize targetSize, String imagesSubdir) {
+        validatePath(root);
         Path originalImagePath = root
                 .resolve(id.substring(0, 3))
                 .resolve(id.substring(3, 6))

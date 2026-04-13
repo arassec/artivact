@@ -18,11 +18,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * Service for manage item models.
@@ -131,18 +129,14 @@ public class ManageItemModelsService implements ManageItemModelsUseCase {
     public List<Asset> getModelSetFiles(String itemId, int modelSetIndex) {
         Item item = loadItemUseCase.loadTranslatedRestricted(itemId);
         CreationModelSet creationModelSet = item.getMediaCreationContent().getModelSets().get(modelSetIndex);
-        try (Stream<Path> files = Files.list(useProjectDirsUseCase.getProjectRoot().resolve(creationModelSet.getDirectory()))) {
-            return files
-                    .map(file -> Asset.builder()
-                            .fileName(file.getFileName().toString())
-                            .url(createModelLogoUrl(file.getFileName().toString()))
-                            .transferable(file.getFileName().toString().endsWith("glb") || file.getFileName().toString().endsWith("gltf"))
-                            .build())
-                    .toList();
-        } catch (IOException e) {
-            log.error("Could not read files of model-set!", e);
-            return List.of();
-        }
+        Path modelSetDir = useProjectDirsUseCase.getProjectRoot().resolve(creationModelSet.getDirectory());
+        return fileRepository.list(modelSetDir).stream()
+                .map(file -> Asset.builder()
+                        .fileName(file.getFileName().toString())
+                        .url(createModelLogoUrl(file.getFileName().toString()))
+                        .transferable(file.getFileName().toString().endsWith("glb") || file.getFileName().toString().endsWith("gltf"))
+                        .build())
+                .toList();
     }
 
     /**
@@ -174,13 +168,9 @@ public class ManageItemModelsService implements ManageItemModelsUseCase {
             if (file.getFileName().toString().endsWith("glb") || file.getFileName().toString().endsWith("gltf")) {
                 Path sourcePath = useProjectDirsUseCase.getProjectRoot().resolve(creationModelSet.getDirectory()).resolve(file.getFileName());
                 Path targetPath = getTransferTargetPath(itemId, file);
-                try {
-                    Files.copy(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
-                    item.getMediaContent().getModels().add(targetPath.getFileName().toString());
-                    saveItemUseCase.save(item);
-                } catch (IOException e) {
-                    throw new ArtivactException("Could not copy model!", e);
-                }
+                fileRepository.copy(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
+                item.getMediaContent().getModels().add(targetPath.getFileName().toString());
+                saveItemUseCase.save(item);
             }
         });
     }

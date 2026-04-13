@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
@@ -179,7 +178,7 @@ public class OnnxImageBackgroundRemovalPeripheral extends BasePeripheral impleme
         Path onnxFile = Path.of(config.getOnnxModelFile()
                 .replace("{projectDir}", useProjectDirsUseCase.getProjectRoot().toAbsolutePath().toString()));
 
-        if (!Files.exists(onnxFile)) {
+        if (!fileRepository.exists(onnxFile)) {
             return PeripheralStatus.FILE_DOESNT_EXIST;
         }
 

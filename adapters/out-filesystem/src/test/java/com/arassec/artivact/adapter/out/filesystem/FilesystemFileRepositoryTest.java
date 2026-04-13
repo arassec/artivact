@@ -62,7 +62,6 @@ class FilesystemFileRepositoryTest {
     /**
      * Repository under test.
      */
-    @InjectMocks
     private FilesystemFileRepository filesystemFileRepository;
 
     /**
@@ -77,6 +76,7 @@ class FilesystemFileRepositoryTest {
     @BeforeEach
     @SneakyThrows
     void setUp() {
+        filesystemFileRepository = new FilesystemFileRepository(environment, ".");
         if (Files.exists(targetDir)) {
             FileUtils.deleteDirectory(targetDir.toFile());
         }
@@ -690,6 +690,77 @@ class FilesystemFileRepositoryTest {
         Files.copy(sourceImage, targetDir.resolve("one/two").resolve(sourceImage.getFileName()));
         filesystemFileRepository.deleteAndPruneEmptyParents(dirToDelete);
         assertThat(Files.exists(targetDir.resolve("one/two").resolve(sourceImage.getFileName()))).isTrue();
+    }
+
+    /**
+     * Tests that path traversal is detected and blocked for delete.
+     */
+    @Test
+    void testPathTraversalPreventionOnDelete() {
+        Path maliciousPath = Path.of("/tmp/../etc/passwd");
+        assertThrows(ArtivactException.class, () -> filesystemFileRepository.delete(maliciousPath));
+    }
+
+    /**
+     * Tests that path traversal is detected and blocked for exists.
+     */
+    @Test
+    void testPathTraversalPreventionOnExists() {
+        Path maliciousPath = targetDir.resolve("../../../../../../etc/passwd");
+        assertThrows(ArtivactException.class, () -> filesystemFileRepository.exists(maliciousPath));
+    }
+
+    /**
+     * Tests that path traversal is detected and blocked for read.
+     */
+    @Test
+    void testPathTraversalPreventionOnRead() {
+        Path maliciousPath = Path.of("/etc/passwd");
+        assertThrows(ArtivactException.class, () -> filesystemFileRepository.read(maliciousPath));
+    }
+
+    /**
+     * Tests that path traversal is detected and blocked for list.
+     */
+    @Test
+    void testPathTraversalPreventionOnList() {
+        Path maliciousPath = Path.of("/tmp");
+        assertThrows(ArtivactException.class, () -> filesystemFileRepository.list(maliciousPath));
+    }
+
+    /**
+     * Tests that path traversal is detected and blocked for createDirIfRequired.
+     */
+    @Test
+    void testPathTraversalPreventionOnCreateDir() {
+        Path maliciousPath = Path.of("/tmp/malicious-dir");
+        assertThrows(ArtivactException.class, () -> filesystemFileRepository.createDirIfRequired(maliciousPath));
+    }
+
+    /**
+     * Tests that path traversal is detected and blocked for copy.
+     */
+    @Test
+    void testPathTraversalPreventionOnCopy() {
+        Path maliciousSource = Path.of("/etc/passwd");
+        assertThrows(ArtivactException.class, () -> filesystemFileRepository.copy(maliciousSource, targetDir.resolve("output")));
+    }
+
+    /**
+     * Tests that path traversal is detected and blocked for write.
+     */
+    @Test
+    void testPathTraversalPreventionOnWrite() {
+        Path maliciousTarget = Path.of("/tmp/malicious-file");
+        assertThrows(ArtivactException.class, () -> filesystemFileRepository.write(maliciousTarget, new byte[]{1}));
+    }
+
+    /**
+     * Tests that validatePath allows null paths (some methods accept null).
+     */
+    @Test
+    void testValidatePathAllowsNull() {
+        assertFalse(filesystemFileRepository.isDir(null));
     }
 
 }

@@ -17,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
@@ -131,10 +130,8 @@ class ManageItemModelsServiceTest {
     }
 
     @Test
-    void testGetModelSetFilesReturnsAssets() throws Exception {
-        Path dir = Files.createTempDirectory("models");
-        Files.createFile(dir.resolve("a.glb"));
-        Files.createFile(dir.resolve("b.png"));
+    void testGetModelSetFilesReturnsAssets() {
+        Path dir = Path.of("models-dir");
 
         Item item = mock(Item.class, RETURNS_DEEP_STUBS);
 
@@ -142,6 +139,7 @@ class ManageItemModelsServiceTest {
         when(loadItemUseCase.loadTranslatedRestricted("id")).thenReturn(item);
         when(item.getMediaCreationContent().getModelSets()).thenReturn(new LinkedList<>(List.of(modelSet)));
         when(useProjectDirsUseCase.getProjectRoot()).thenReturn(Path.of(""));
+        when(fileRepository.list(dir)).thenReturn(List.of(dir.resolve("a.glb"), dir.resolve("b.png")));
 
         List<Asset> assets = service.getModelSetFiles("id", 0);
 
@@ -168,10 +166,9 @@ class ManageItemModelsServiceTest {
     }
 
     @Test
-    void testTransferModelToMediaCopiesAndSaves() throws Exception {
-        Path sourceDir = Files.createTempDirectory("src");
-        Path targetDir = Files.createTempDirectory("target");
-        Files.createFile(sourceDir.resolve("m.glb"));
+    void testTransferModelToMediaCopiesAndSaves() {
+        Path sourceDir = Path.of("src-dir");
+        Path targetDir = Path.of("target-dir");
 
         Item item = mock(Item.class, RETURNS_DEEP_STUBS);
 
@@ -188,11 +185,12 @@ class ManageItemModelsServiceTest {
 
         service.transferModelToMedia("id", 0);
 
+        verify(fileRepository).copy(eq(sourceDir.resolve("m.glb")), eq(targetDir.resolve("1.glb")), any());
         verify(saveItemUseCase).save(item);
     }
 
     @Test
-    void testTransferModelToMediaThrowsOnIOException() {
+    void testTransferModelToMediaThrowsOnCopyFailure() {
         Path sourceDir = Path.of("nonexistent-source-dir");
         Path targetDir = Path.of("nonexistent-target-dir");
 
@@ -210,10 +208,11 @@ class ManageItemModelsServiceTest {
         when(fileRepository.getExtension("m.glb")).thenReturn(Optional.of("glb"));
         when(fileRepository.getAssetName(1, "glb")).thenReturn("1.glb");
         when(item.getMediaContent().getModels()).thenReturn(new LinkedList<>());
+        doThrow(new ArtivactException("Could not copy resource!"))
+                .when(fileRepository).copy(any(Path.class), any(Path.class), any());
 
         assertThatThrownBy(() -> service.transferModelToMedia("id", 0))
-                .isInstanceOf(ArtivactException.class)
-                .hasMessageContaining("Could not copy model!");
+                .isInstanceOf(ArtivactException.class);
     }
 
     @Test
