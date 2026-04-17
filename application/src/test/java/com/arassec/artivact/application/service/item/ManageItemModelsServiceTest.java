@@ -150,7 +150,7 @@ class ManageItemModelsServiceTest {
     @Test
     void testLoadModelSetFileReturnsFileContents() {
         Path dir = Path.of("models-dir");
-        Path modelFile = dir.resolve("model.glb");
+        Path modelFile = Path.of("").toAbsolutePath().normalize().resolve(dir).resolve("model.glb");
 
         Item item = mock(Item.class, RETURNS_DEEP_STUBS);
 
@@ -163,6 +163,23 @@ class ManageItemModelsServiceTest {
         byte[] result = service.loadModelSetFile("id", 0, "model.glb");
 
         assertThat(result).isEqualTo("model".getBytes());
+    }
+
+    @Test
+    void testLoadModelSetFileRejectsPathTraversal() {
+        Path projectRoot = Path.of("project-root");
+        Path dir = Path.of("models-dir");
+
+        Item item = mock(Item.class, RETURNS_DEEP_STUBS);
+
+        CreationModelSet modelSet = CreationModelSet.builder().directory(dir.toString()).build();
+        when(loadItemUseCase.loadTranslatedRestricted("id")).thenReturn(item);
+        when(item.getMediaCreationContent().getModelSets()).thenReturn(new LinkedList<>(List.of(modelSet)));
+        when(useProjectDirsUseCase.getProjectRoot()).thenReturn(projectRoot);
+
+        assertThatThrownBy(() -> service.loadModelSetFile("id", 0, "../outside.glb"))
+                .isInstanceOf(ArtivactException.class)
+                .hasMessage("Invalid model-set file path!");
     }
 
     @Test

@@ -45,9 +45,11 @@
 
 <script setup lang="ts">
 import {computed, nextTick, onBeforeUnmount, onMounted, ref, watch} from 'vue';
-import {AmbientLight, Box3, Color, DirectionalLight, PerspectiveCamera, Scene, Vector3, WebGLRenderer} from 'three';
+import {AmbientLight, Box3, DirectionalLight, PerspectiveCamera, Scene, Vector3, WebGLRenderer} from 'three';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
 import {OBJLoader} from 'three/examples/jsm/loaders/OBJLoader.js';
+
+const MIN_MODEL_DIMENSION = 1;
 
 const props = defineProps({
   modelUrl: {
@@ -67,7 +69,7 @@ const viewerContainerRef = ref<HTMLDivElement | null>(null);
 const objViewerRef = ref<HTMLDivElement | null>(null);
 
 const modelExtension = computed(() => {
-  const sanitizedModelUrl = props.modelUrl.split('?')[0]?.split('#')[0] ?? '';
+  const sanitizedModelUrl = props.modelUrl.split('?')[0].split('#')[0];
   const extension = sanitizedModelUrl.split('.').pop();
   return extension ? extension.toLowerCase() : '';
 });
@@ -90,7 +92,7 @@ function fitCameraToObject() {
   const box = new Box3().setFromObject(scene);
   const size = box.getSize(new Vector3());
   const center = box.getCenter(new Vector3());
-  const largestDimension = Math.max(size.x, size.y, size.z, 1);
+  const largestDimension = Math.max(size.x, size.y, size.z, MIN_MODEL_DIMENSION);
   const distance = largestDimension * 2;
 
   controls.target.copy(center);
@@ -158,14 +160,13 @@ async function initializeObjViewer() {
   }
 
   scene = new Scene();
-  scene.background = new Color('#1d1d1d');
 
   const width = objViewerRef.value.clientWidth || 1;
   const height = objViewerRef.value.clientHeight || 1;
 
   camera = new PerspectiveCamera(45, width / height, 0.1, 1000);
 
-  renderer = new WebGLRenderer({antialias: true});
+  renderer = new WebGLRenderer({antialias: true, alpha: true});
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(width, height);
   objViewerRef.value.replaceChildren(renderer.domElement);

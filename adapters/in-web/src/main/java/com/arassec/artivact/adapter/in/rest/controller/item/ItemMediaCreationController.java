@@ -162,12 +162,27 @@ public class ItemMediaCreationController extends BaseController {
         var headers = new HttpHeaders();
         headers.setContentDisposition(contentDisposition);
 
-        String contentType = URLConnection.guessContentTypeFromName(filename);
-        headers.setContentType(contentType == null ? MediaType.APPLICATION_OCTET_STREAM : MediaType.valueOf(contentType));
+        headers.setContentType(determineMediaType(filename));
 
         byte[] modelSetFile = manageItemModelsUseCase.loadModelSetFile(itemId, modelSetIndex, filename);
 
         return new HttpEntity<>(modelSetFile, headers);
+    }
+
+    private MediaType determineMediaType(String filename) {
+        String lowerCaseFilename = filename.toLowerCase();
+        if (lowerCaseFilename.endsWith(".glb")) {
+            return MediaType.valueOf("model/gltf-binary");
+        }
+        if (lowerCaseFilename.endsWith(".gltf")) {
+            return MediaType.valueOf("model/gltf+json");
+        }
+        if (lowerCaseFilename.endsWith(".obj")) {
+            return MediaType.TEXT_PLAIN;
+        }
+
+        String contentType = URLConnection.guessContentTypeFromName(filename);
+        return contentType == null ? MediaType.APPLICATION_OCTET_STREAM : MediaType.valueOf(contentType);
     }
 
     /**

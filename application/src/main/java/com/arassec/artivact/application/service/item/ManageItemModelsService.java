@@ -146,7 +146,16 @@ public class ManageItemModelsService implements ManageItemModelsUseCase {
     public byte[] loadModelSetFile(String itemId, int modelSetIndex, String filename) {
         Item item = loadItemUseCase.loadTranslatedRestricted(itemId);
         CreationModelSet creationModelSet = item.getMediaCreationContent().getModelSets().get(modelSetIndex);
-        Path sourcePath = useProjectDirsUseCase.getProjectRoot().resolve(creationModelSet.getDirectory()).resolve(filename);
+        Path modelSetDir = useProjectDirsUseCase.getProjectRoot()
+                .resolve(creationModelSet.getDirectory())
+                .toAbsolutePath()
+                .normalize();
+        Path sourcePath = modelSetDir.resolve(filename).normalize();
+
+        if (!sourcePath.startsWith(modelSetDir)) {
+            throw new ArtivactException("Invalid model-set file path!");
+        }
+
         return fileRepository.readBytes(sourcePath);
     }
 
