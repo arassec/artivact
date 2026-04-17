@@ -9,6 +9,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -126,6 +128,31 @@ class ItemMediaCreationControllerTest {
         ResponseEntity<List<Asset>> response = controller.getModelSetFiles(itemId, modelSetIndex);
 
         assertThat(response.getBody()).isEqualTo(assets);
+    }
+
+    @Test
+    void getModelSetFileReturnsFileContents() {
+        String itemId = "item-123";
+        int modelSetIndex = 0;
+        byte[] content = "model".getBytes();
+
+        when(manageItemModelsUseCase.loadModelSetFile(itemId, modelSetIndex, "model.glb")).thenReturn(content);
+
+        HttpEntity<byte[]> response = controller.getModelSetFile(itemId, modelSetIndex, "model.glb");
+
+        assertThat(response.getBody()).isEqualTo(content);
+        assertThat(response.getHeaders().getContentDisposition().getFilename()).isEqualTo("model.glb");
+    }
+
+    @Test
+    void getModelSetFileReturnsGlbContentType() {
+        byte[] content = "model".getBytes();
+
+        when(manageItemModelsUseCase.loadModelSetFile("item-123", 0, "model.glb")).thenReturn(content);
+
+        HttpEntity<byte[]> response = controller.getModelSetFile("item-123", 0, "model.glb");
+
+        assertThat(response.getHeaders().getContentType()).isEqualTo(MediaType.valueOf("model/gltf-binary"));
     }
 
     @Test
