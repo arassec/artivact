@@ -63,6 +63,16 @@ public interface ManageItemModelsUseCase {
     List<Asset> getModelSetFiles(String itemId, int modelSetIndex);
 
     /**
+     * Loads a file from an item's model-set.
+     *
+     * @param itemId        The item's ID.
+     * @param modelSetIndex The model-set index containing the file.
+     * @param filename      The model-set filename.
+     * @return The model-set file as byte array.
+     */
+    byte[] loadModelSetFile(String itemId, int modelSetIndex, String filename);
+
+    /**
      * Checks whether a transferable model from an item's media-creation section exists or not.
      *
      * @param itemId        The item's ID.

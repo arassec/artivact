@@ -143,6 +143,17 @@ public class ManageItemModelsService implements ManageItemModelsUseCase {
      * {@inheritDoc}
      */
     @Override
+    public byte[] loadModelSetFile(String itemId, int modelSetIndex, String filename) {
+        Item item = loadItemUseCase.loadTranslatedRestricted(itemId);
+        CreationModelSet creationModelSet = item.getMediaCreationContent().getModelSets().get(modelSetIndex);
+        Path sourcePath = useProjectDirsUseCase.getProjectRoot().resolve(creationModelSet.getDirectory()).resolve(filename);
+        return fileRepository.readBytes(sourcePath);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public boolean hasTransferableModel(String itemId, int modelSetIndex) {
         Item item = loadItemUseCase.loadTranslatedRestricted(itemId);
         CreationModelSet creationModelSet = item.getMediaCreationContent().getModelSets().get(modelSetIndex);

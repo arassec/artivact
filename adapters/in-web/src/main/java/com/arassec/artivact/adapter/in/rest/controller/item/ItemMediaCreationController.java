@@ -8,9 +8,14 @@ import com.arassec.artivact.domain.model.media.CreateModelParams;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URLConnection;
 import java.util.List;
 
 /**
@@ -136,6 +141,33 @@ public class ItemMediaCreationController extends BaseController {
     @GetMapping("/model-set-files/{modelSetIndex}")
     public ResponseEntity<List<Asset>> getModelSetFiles(@PathVariable String itemId, @PathVariable int modelSetIndex) {
         return ResponseEntity.ok(manageItemModelsUseCase.getModelSetFiles(itemId, modelSetIndex));
+    }
+
+    /**
+     * Returns a file from an item's model-set.
+     *
+     * @param itemId        The item's ID.
+     * @param modelSetIndex The model-set index to get the file from.
+     * @param filename      The filename to load.
+     * @return The file as byte array.
+     */
+    @GetMapping(value = "/model-set-file/{modelSetIndex}/{filename:.+}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public HttpEntity<byte[]> getModelSetFile(@PathVariable String itemId,
+                                              @PathVariable int modelSetIndex,
+                                              @PathVariable String filename) {
+        var contentDisposition = ContentDisposition.builder("inline")
+                .filename(filename)
+                .build();
+
+        var headers = new HttpHeaders();
+        headers.setContentDisposition(contentDisposition);
+
+        String contentType = URLConnection.guessContentTypeFromName(filename);
+        headers.setContentType(contentType == null ? MediaType.APPLICATION_OCTET_STREAM : MediaType.valueOf(contentType));
+
+        byte[] modelSetFile = manageItemModelsUseCase.loadModelSetFile(itemId, modelSetIndex, filename);
+
+        return new HttpEntity<>(modelSetFile, headers);
     }
 
     /**

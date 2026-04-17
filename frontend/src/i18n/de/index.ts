@@ -1100,12 +1100,16 @@ export default {
       openModel: 'Verzeichnis mit 3D-Modell-Dateien öffnen',
       edit: '3D-Modell in Editor bearbeiten',
       editSelection: "3D-Modell mit ausgewähltem Editor bearbeiten",
+      preview: '3D-Modell anzeigen',
       delete: '3D-Modell löschen',
     },
     dialog: {
       details: {
         heading: '3D-Modell Details',
         transfer: '3D-Modell in Objekt-Medien kopieren',
+      },
+      preview: {
+        heading: '3D-Modell Vorschau',
       },
       delete: {
         heading: '3D-Modell löschen?',

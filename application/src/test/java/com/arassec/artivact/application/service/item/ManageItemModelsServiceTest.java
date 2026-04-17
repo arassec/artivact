@@ -148,6 +148,24 @@ class ManageItemModelsServiceTest {
     }
 
     @Test
+    void testLoadModelSetFileReturnsFileContents() {
+        Path dir = Path.of("models-dir");
+        Path modelFile = dir.resolve("model.glb");
+
+        Item item = mock(Item.class, RETURNS_DEEP_STUBS);
+
+        CreationModelSet modelSet = CreationModelSet.builder().directory(dir.toString()).build();
+        when(loadItemUseCase.loadTranslatedRestricted("id")).thenReturn(item);
+        when(item.getMediaCreationContent().getModelSets()).thenReturn(new LinkedList<>(List.of(modelSet)));
+        when(useProjectDirsUseCase.getProjectRoot()).thenReturn(Path.of(""));
+        when(fileRepository.readBytes(modelFile)).thenReturn("model".getBytes());
+
+        byte[] result = service.loadModelSetFile("id", 0, "model.glb");
+
+        assertThat(result).isEqualTo("model".getBytes());
+    }
+
+    @Test
     void testHasTransferableModel() {
         Item item = mock(Item.class, RETURNS_DEEP_STUBS);
         CreationModelSet modelSet = CreationModelSet.builder().directory("dir").build();

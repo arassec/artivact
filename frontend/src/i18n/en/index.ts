@@ -1121,12 +1121,16 @@ export default {
       openModel: "Open directory containing model files",
       edit: "Edit 3D model in editor",
       editSelection: "Edit 3D model with selected editor",
+      preview: "Preview 3D model",
       delete: "Delete 3D model",
     },
     dialog: {
       details: {
         heading: "Model-Set Details",
         transfer: "Transfer 3D model to item media",
+      },
+      preview: {
+        heading: "3D Model Preview",
       },
       delete: {
         heading: "Delete Model-Set?",
