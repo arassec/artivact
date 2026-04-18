@@ -9,6 +9,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.audio.tts.TextToSpeechModel;
 import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.elevenlabs.ElevenLabsTextToSpeechModel;
+import org.springframework.ai.elevenlabs.ElevenLabsTextToSpeechOptions;
+import org.springframework.ai.elevenlabs.api.ElevenLabsApi;
 import org.springframework.ai.openai.OpenAiAudioSpeechModel;
 import org.springframework.ai.openai.OpenAiAudioSpeechOptions;
 import org.springframework.ai.openai.OpenAiChatModel;
@@ -16,17 +19,8 @@ import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.ai.openai.api.OpenAiAudioApi;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import tools.jackson.databind.json.JsonMapper;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URLEncoder;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.nio.file.Path;
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 /**
  * Implements the {@link AiGateway} port using supported AI providers.
@@ -57,10 +51,10 @@ public class AiGatewayAdapter implements AiGateway {
     @Override
     public String execute(AiConfiguration aiConfiguration, String prompt) {
         AiModel translationModel = aiConfiguration.getTranslationModel() == null
-                ? AiModel.OpenAI
+                ? AiModel.OPEN_AI
                 : aiConfiguration.getTranslationModel();
 
-        if (translationModel != AiModel.OpenAI) {
+        if (translationModel != AiModel.OPEN_AI) {
             throw new ArtivactException("Unsupported translation model: " + translationModel);
         }
 
@@ -79,17 +73,19 @@ public class AiGatewayAdapter implements AiGateway {
      * {@inheritDoc}
      */
     @Override
-    public void convertToAudio(AiConfiguration aiConfiguration, String prompt, String voice, Path targetFile) {
+    public void convertToAudio(AiConfiguration aiConfiguration, String content, String voice, Path targetFile) {
         AiModel ttsModel = aiConfiguration.getTtsModel() == null
-                ? AiModel.OpenAI
+                ? AiModel.OPEN_AI
                 : aiConfiguration.getTtsModel();
 
-        byte[] audioBytes = switch (ttsModel) {
-            case OpenAI -> convertToAudioWithOpenAi(aiConfiguration, prompt, voice);
-            case Elevenlabs -> convertToAudioWithElevenlabs(aiConfiguration, prompt, voice);
+        TextToSpeechModel textToSpeechModel = switch (ttsModel) {
+            case OPEN_AI -> openAiAudioSpeechModel(aiConfiguration.getTtsApiKey(), voice);
+            case ELEVENLABS -> elevenlabsSpeechModel(aiConfiguration.getTtsApiKey(), voice);
         };
 
-        if (audioBytes == null || audioBytes.length == 0) {
+        byte[] audioBytes = textToSpeechModel.call(content);
+
+        if (audioBytes.length == 0) {
             return;
         }
 
@@ -122,26 +118,22 @@ public class AiGatewayAdapter implements AiGateway {
      * Creates the {@link OpenAiAudioSpeechModel} bean with the API key and voice
      * obtained from the application's AI configuration.
      *
-     * @param aiConfiguration The AI configuration.
-     * @param voice           The configured voice.
+     * @param apiKey The API Key.
+     * @param voice  The configured voice.
      * @return A configured {@link OpenAiAudioSpeechModel} instance.
      */
-    private TextToSpeechModel openAiAudioSpeechModel(AiConfiguration aiConfiguration, String voice) {
+    private TextToSpeechModel openAiAudioSpeechModel(String apiKey, String voice) {
 
-        if (!StringUtils.hasText(aiConfiguration.getTtsApiKey())) {
-            return null;
+        if (!StringUtils.hasText(apiKey) || !StringUtils.hasText(voice)) {
+            throw new ArtivactException("No API key or voice specified for TTS with OpenAI!");
         }
 
         OpenAiAudioApi openAiAudioApi = OpenAiAudioApi.builder()
-                .apiKey(aiConfiguration.getTtsApiKey())
+                .apiKey(apiKey)
                 .build();
 
-        String resolvedVoice = StringUtils.hasText(voice)
-                ? voice
-                : AiConfiguration.DEFAULT_TTS_VOICE;
-
         OpenAiAudioSpeechOptions options = OpenAiAudioSpeechOptions.builder()
-                .voice(resolvedVoice)
+                .voice(voice)
                 .responseFormat(OpenAiAudioApi.SpeechRequest.AudioResponseFormat.MP3)
                 .model(OPEN_AI_TTS_MODEL)
                 .build();
@@ -150,86 +142,29 @@ public class AiGatewayAdapter implements AiGateway {
     }
 
     /**
-     * Converts the given content to audio using OpenAI.
+     * Creates the {@link ElevenLabsTextToSpeechModel} bean with the API key and voice
+     * obtained from the application's AI configuration.
      *
-     * @param aiConfiguration The AI configuration.
-     * @param prompt          The content to convert.
-     * @param voice           The configured voice.
-     * @return The generated audio data.
+     * @param apiKey The API Key.
+     * @param voice  The configured voice.
+     * @return A configured {@link ElevenLabsTextToSpeechModel} instance.
      */
-    private byte[] convertToAudioWithOpenAi(AiConfiguration aiConfiguration, String prompt, String voice) {
-        TextToSpeechModel textToSpeechModel = openAiAudioSpeechModel(aiConfiguration, voice);
+    private TextToSpeechModel elevenlabsSpeechModel(String apiKey, String voice) {
 
-        if (textToSpeechModel == null) {
-            return null;
+        if (!StringUtils.hasText(apiKey) || !StringUtils.hasText(voice)) {
+            throw new ArtivactException("No API key or voice specified for TTS with Elevenlabs!");
         }
 
-        log.debug("Converting content to audio via OpenAI TTS.");
+        ElevenLabsApi elevenLabsApi = ElevenLabsApi.builder()
+                .apiKey(apiKey)
+                .build();
 
-        return textToSpeechModel.call(prompt);
-    }
+        ElevenLabsTextToSpeechOptions options = ElevenLabsTextToSpeechOptions.builder()
+                .voice(voice)
+                .model(ELEVENLABS_TTS_MODEL)
+                .build();
 
-    /**
-     * Converts the given content to audio using Elevenlabs.
-     *
-     * @param aiConfiguration The AI configuration.
-     * @param prompt          The content to convert.
-     * @param voice           The configured voice ID.
-     * @return The generated audio data.
-     */
-    byte[] convertToAudioWithElevenlabs(AiConfiguration aiConfiguration, String prompt, String voice) {
-        if (!StringUtils.hasText(aiConfiguration.getTtsApiKey()) || !StringUtils.hasText(voice)) {
-            return null;
-        }
-
-        try {
-            log.debug("Converting content to audio via Elevenlabs TTS.");
-
-            String requestBody = createJsonMapper().writeValueAsString(Map.of(
-                    "text", prompt,
-                    "model_id", ELEVENLABS_TTS_MODEL
-            ));
-
-            String encodedVoice = URLEncoder.encode(voice, StandardCharsets.UTF_8);
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("https://api.elevenlabs.io/v1/text-to-speech/" + encodedVoice + "?output_format=mp3_44100_128"))
-                    .header("xi-api-key", aiConfiguration.getTtsApiKey())
-                    .header("Content-Type", "application/json")
-                    .header("accept", "audio/mpeg")
-                    .POST(HttpRequest.BodyPublishers.ofString(requestBody))
-                    .build();
-
-            HttpResponse<byte[]> response = createHttpClient().send(request, HttpResponse.BodyHandlers.ofByteArray());
-
-            if (response.statusCode() >= 400) {
-                throw new ArtivactException("Elevenlabs TTS request failed with status: " + response.statusCode());
-            }
-
-            return response.body();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ArtivactException("Elevenlabs TTS request interrupted!", e);
-        } catch (IOException e) {
-            throw new ArtivactException("Elevenlabs TTS request failed!", e);
-        }
-    }
-
-    /**
-     * Creates an HTTP client.
-     *
-     * @return The HTTP client.
-     */
-    public HttpClient createHttpClient() {
-        return HttpClient.newHttpClient();
-    }
-
-    /**
-     * Creates the JSON mapper used for HTTP payloads.
-     *
-     * @return The JSON mapper.
-     */
-    public JsonMapper createJsonMapper() {
-        return JsonMapper.builder().build();
+        return new ElevenLabsTextToSpeechModel(elevenLabsApi, options);
     }
 
 }

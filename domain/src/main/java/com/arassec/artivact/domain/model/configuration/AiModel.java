@@ -8,11 +8,11 @@ public enum AiModel {
     /**
      * OpenAI.
      */
-    OpenAI,
+    OPEN_AI,
 
     /**
      * Elevenlabs.
      */
-    Elevenlabs
+    ELEVENLABS
 
 }

@@ -246,11 +246,10 @@ export default {
       description:
         'Konfigurieren Sie den KI-Anbieter, den API-Schlüssel und den Prompt für Textübersetzungen.',
       promptInfo:
-        "Der konfigurierte Prompt wird für Übersetzungen verwendet. Fügen Sie den Platzhalter '{locale}' ein, damit Artivact die Zielsprache einsetzen kann.",
+        "Der konfigurierte Prompt wird für Übersetzungen verwendet. Der zu übersetzende Text wird automatisch unter dem Prompt ergänzt.",
       testHeading: 'Übersetzung testen',
       testDescription:
         'Speichern Sie die aktuellen Übersetzungseinstellungen und testen Sie den konfigurierten Übersetzungsanbieter mit einem Beispieltext.',
-      testAction: 'Übersetzung testen',
     },
     tts: {
       heading: 'Text-to-Speech',
@@ -259,7 +258,6 @@ export default {
       testHeading: 'Text-to-Speech testen',
       testDescription:
         'Speichern Sie die aktuellen Text-to-Speech-Einstellungen und erzeugen Sie eine Beispiel-Audiodatei aus einem Testtext.',
-      testAction: 'Text-to-Speech testen',
     },
     fields: {
       translationModel: 'Übersetzungsmodell',

@@ -120,8 +120,8 @@ export interface ExchangeConfiguration {
 }
 
 export enum AiModel {
-  OpenAI = 'OpenAI',
-  Elevenlabs = 'Elevenlabs',
+  OPEN_AI = 'OPEN_AI',
+  ELEVENLABS = 'ELEVENLABS',
 }
 
 export interface AiConfiguration {
@@ -172,7 +172,6 @@ export interface ApplicationSettings {
   profiles: Profiles,
   availableRoles: string[],
   syncAvailable: boolean,
-  aiEnabled: boolean,
   translationEnabled: boolean,
   ttsEnabled: boolean
 }

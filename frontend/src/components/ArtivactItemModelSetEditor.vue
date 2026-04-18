@@ -291,12 +291,13 @@
     </template>
   </artivact-dialog>
 
+  <!-- MODEL PREVIEW -->
   <artivact-dialog
     :dialog-model="showModelViewerModalRef"
     v-if="showModelViewerModalRef && selectedPreviewModelUrlRef"
     :hide-buttons="true"
     :show-close-button="true"
-    :min-width="70"
+    :min-width="78.6"
     @close-dialog="closeModelViewer"
   >
     <template v-slot:header>
@@ -314,7 +315,7 @@
 
   <!-- LONG-RUNNING OPERATION -->
   <artivact-operation-in-progress-dialog
-    v-if="showOperationInProgressModalRef == true"
+    v-if="showOperationInProgressModalRef"
     :dialog-model="showOperationInProgressModalRef"
     @close-dialog="operationFinished()"
   />

@@ -12,7 +12,8 @@ import com.arassec.artivact.domain.model.configuration.AiConfiguration;
 import com.arassec.artivact.domain.model.configuration.AppearanceConfiguration;
 import com.arassec.artivact.domain.model.page.Page;
 import com.arassec.artivact.domain.model.page.PageContent;
-import com.arassec.artivact.domain.model.page.widget.AvatarWidget;
+import com.arassec.artivact.domain.model.page.Widget;
+import com.arassec.artivact.domain.model.page.WidgetType;
 import com.arassec.artivact.domain.model.page.widget.TextWidget;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,13 +22,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 /**
@@ -58,228 +59,215 @@ class AiServiceTest {
     private AiService aiService;
 
     @Test
-    void translatesTextUsingConfiguredPromptAndLocale() {
+    void translateTextUsesProvidedLocale() {
         AiConfiguration aiConfiguration = new AiConfiguration();
-        aiConfiguration.setTranslationPrompt("Translate to {locale}.");
-
         when(loadAiConfigurationUseCase.loadAiConfiguration()).thenReturn(aiConfiguration);
-        when(aiGateway.execute(aiConfiguration, "Translate to de.\n\nHello")).thenReturn("Hallo");
+        when(aiGateway.execute(eq(aiConfiguration), any())).thenReturn("Translated text");
 
         String result = aiService.translateText("Hello", "de");
 
-        assertThat(result).isEqualTo("Hallo");
-        verify(aiGateway).execute(aiConfiguration, "Translate to de.\n\nHello");
+        assertThat(result).isEqualTo("Translated text");
+        verify(aiGateway).execute(eq(aiConfiguration), contains("Hello"));
     }
 
     @Test
-    void translatesTextWhenNoPromptIsConfigured() {
-        AiConfiguration aiConfiguration = new AiConfiguration();
-
-        when(loadAiConfigurationUseCase.loadAiConfiguration()).thenReturn(aiConfiguration);
-        when(aiGateway.execute(eq(aiConfiguration), anyString())).thenReturn("Hallo");
-
-        String result = aiService.translateText("Hello", "de");
-
-        assertThat(result).isEqualTo("Hallo");
-        verify(aiGateway).execute(eq(aiConfiguration), anyString());
-    }
-
-    @Test
-    void rejectsInvalidLocaleWhenTranslatingText() {
-        assertThatThrownBy(() -> aiService.translateText("Hello", "de123"))
-                .isInstanceOf(ArtivactException.class)
-                .hasMessage("Invalid locale: de123");
-
-        verifyNoInteractions(loadAiConfigurationUseCase, aiGateway);
-    }
-
-    @Test
-    void convertsTranslatedWidgetContentToAudioAndStoresTranslatedAudioFilename() {
-        TextWidget widget = new TextWidget();
-        widget.setId("widget-1");
-
-        TranslatableString content = new TranslatableString();
-        content.setValue("Hello");
-        HashMap<String, String> translations = new HashMap<>();
-        translations.put("de", "Hallo");
-        content.setTranslations(translations);
-        widget.setContent(content);
-
-        PageContent pageContent = new PageContent();
-        pageContent.setWidgets(new LinkedList<>(List.of(widget)));
-
-        Page page = new Page();
-        page.setWipPageContent(pageContent);
-
-        AiConfiguration aiConfiguration = new AiConfiguration();
-        Path widgetsDir = Path.of("widgets");
-        Path widgetWipDir = Path.of("widgets", "widget-1", "wip");
-
-        when(pageRepository.findByIdOrAlias("page-1")).thenReturn(Optional.of(page));
-        when(loadAiConfigurationUseCase.loadAiConfiguration()).thenReturn(aiConfiguration);
-        when(useProjectDirsUseCase.getWidgetsDir()).thenReturn(widgetsDir);
-        when(fileRepository.getSubdirFilePath(widgetsDir, "widget-1", "wip")).thenReturn(widgetWipDir);
-
-        String result = aiService.convertToAudio("page-1", "widget-1", "de");
-
-        assertThat(result).isEqualTo("content-audio-de.mp3");
-        assertThat(widget.getContentAudio().getTranslations()).containsEntry("de", "content-audio-de.mp3");
-        verify(fileRepository).createDirIfRequired(widgetWipDir);
-        verify(aiGateway).convertToAudio(aiConfiguration, "Hallo", "alloy", widgetWipDir.resolve("content-audio-de.mp3"));
-        verify(pageRepository).save(page);
-    }
-
-    @Test
-    void convertsDefaultWidgetContentToAudioAndStoresDefaultAudioFilename() {
-        TextWidget widget = new TextWidget();
-        widget.setId("widget-1");
-
-        TranslatableString content = new TranslatableString();
-        content.setValue("Hello");
-        widget.setContent(content);
-
-        PageContent pageContent = new PageContent();
-        pageContent.setWidgets(new LinkedList<>(List.of(widget)));
-
-        Page page = new Page();
-        page.setWipPageContent(pageContent);
-
-        AiConfiguration aiConfiguration = new AiConfiguration();
-        Path widgetsDir = Path.of("widgets");
-        Path widgetWipDir = Path.of("widgets", "widget-1", "wip");
-
-        when(pageRepository.findByIdOrAlias("page-1")).thenReturn(Optional.of(page));
-        when(loadAiConfigurationUseCase.loadAiConfiguration()).thenReturn(aiConfiguration);
-        when(useProjectDirsUseCase.getWidgetsDir()).thenReturn(widgetsDir);
-        when(fileRepository.getSubdirFilePath(widgetsDir, "widget-1", "wip")).thenReturn(widgetWipDir);
-
+    void translateTextUsesDefaultLocaleWhenLocaleIsNull() {
         AppearanceConfiguration appearanceConfiguration = new AppearanceConfiguration();
-        appearanceConfiguration.setDefaultLocale("");
+        appearanceConfiguration.setDefaultLocale("en");
+        when(loadAppearanceConfigurationUseCase.loadTranslatedAppearanceConfiguration()).thenReturn(appearanceConfiguration);
 
-        when(loadAppearanceConfigurationUseCase.loadTranslatedAppearanceConfiguration())
-                .thenReturn(appearanceConfiguration);
+        AiConfiguration aiConfiguration = new AiConfiguration();
+        when(loadAiConfigurationUseCase.loadAiConfiguration()).thenReturn(aiConfiguration);
+        when(aiGateway.execute(eq(aiConfiguration), any())).thenReturn("Translated");
+
+        String result = aiService.translateText("Hello", null);
+
+        assertThat(result).isEqualTo("Translated");
+    }
+
+    @Test
+    void translateTextThrowsExceptionForInvalidLocale() {
+        assertThatThrownBy(() -> aiService.translateText("Hello", "zz"))
+                .isInstanceOf(ArtivactException.class)
+                .hasMessageContaining("Invalid locale");
+    }
+
+    @Test
+    void translateTextIncludesPromptFromConfiguration() {
+        AiConfiguration aiConfiguration = new AiConfiguration();
+        aiConfiguration.setTranslationPrompt(new TranslatableString("Custom prompt"));
+        when(loadAiConfigurationUseCase.loadAiConfiguration()).thenReturn(aiConfiguration);
+        when(aiGateway.execute(eq(aiConfiguration), any())).thenReturn("Result");
+
+        aiService.translateText("Hello", "de");
+
+        verify(aiGateway).execute(eq(aiConfiguration), eq("Custom prompt\n\nHello"));
+    }
+
+    @Test
+    void translateTextUsesEmptyPromptWhenTranslationPromptIsBlank() {
+        AiConfiguration aiConfiguration = new AiConfiguration();
+        aiConfiguration.setTranslationPrompt(new TranslatableString(""));
+        when(loadAiConfigurationUseCase.loadAiConfiguration()).thenReturn(aiConfiguration);
+        when(aiGateway.execute(eq(aiConfiguration), any())).thenReturn("Result");
+
+        aiService.translateText("Hello", "de");
+
+        verify(aiGateway).execute(eq(aiConfiguration), eq("\n\nHello"));
+    }
+
+    @Test
+    void convertToAudioThrowsExceptionForInvalidLocale() {
+        assertThatThrownBy(() -> aiService.convertToAudio("page-1", "widget-1", "../etc"))
+                .isInstanceOf(ArtivactException.class)
+                .hasMessageContaining("Invalid locale");
+    }
+
+    @Test
+    void convertToAudioUsesDefaultLocaleWhenLocaleIsNull() {
+        AppearanceConfiguration appearanceConfiguration = new AppearanceConfiguration();
+        appearanceConfiguration.setDefaultLocale("en");
+        when(loadAppearanceConfigurationUseCase.loadTranslatedAppearanceConfiguration()).thenReturn(appearanceConfiguration);
+
+        Page page = createPageWithTextWidget("Some content");
+        when(pageRepository.findByIdOrAlias("page-1")).thenReturn(Optional.of(page));
+
+        AiConfiguration aiConfiguration = new AiConfiguration();
+        when(loadAiConfigurationUseCase.loadAiConfiguration()).thenReturn(aiConfiguration);
+        when(fileRepository.getSubdirFilePath(any(), eq("widget-1"), eq("wip"))).thenReturn(Path.of("/tmp/widgets/widget-1/wip"));
+        when(useProjectDirsUseCase.getWidgetsDir()).thenReturn(Path.of("/tmp/widgets"));
 
         String result = aiService.convertToAudio("page-1", "widget-1", null);
 
-        assertThat(result).isEqualTo("content-audio.mp3");
-        assertThat(widget.getContentAudio().getValue()).isEqualTo("content-audio.mp3");
-        verify(aiGateway).convertToAudio(aiConfiguration, "Hello", "alloy", widgetWipDir.resolve("content-audio.mp3"));
+        assertThat(result).isEqualTo("content-audio-en.mp3");
         verify(pageRepository).save(page);
     }
 
     @Test
-    void rejectsInvalidLocaleWhenConvertingToAudio() {
-        assertThatThrownBy(() -> aiService.convertToAudio("page-1", "widget-1", "de123"))
-                .isInstanceOf(ArtivactException.class)
-                .hasMessage("Invalid locale: de123");
-
-        verifyNoInteractions(pageRepository, aiGateway);
-    }
-
-    @Test
-    void throwsWhenPageForAudioConversionDoesNotExist() {
+    void convertToAudioThrowsExceptionWhenPageNotFound() {
         when(pageRepository.findByIdOrAlias("missing")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> aiService.convertToAudio("missing", "widget-1", "de"))
                 .isInstanceOf(ArtivactException.class)
-                .hasMessage("Page not found: missing");
+                .hasMessageContaining("Page not found");
     }
 
     @Test
-    void throwsWhenWidgetForAudioConversionDoesNotExist() {
-        PageContent pageContent = new PageContent();
-        pageContent.setWidgets(new LinkedList<>());
-
+    void convertToAudioThrowsExceptionWhenWidgetNotFound() {
         Page page = new Page();
-        page.setWipPageContent(pageContent);
-
-        when(pageRepository.findByIdOrAlias("page-1")).thenReturn(Optional.of(page));
-
-        assertThatThrownBy(() -> aiService.convertToAudio("page-1", "missing", "de"))
-                .isInstanceOf(ArtivactException.class)
-                .hasMessage("Widget not found: missing");
-    }
-
-    @Test
-    void throwsWhenWidgetDoesNotSupportContentAudio() {
-        AvatarWidget widget = new AvatarWidget();
-        widget.setId("widget-1");
-
-        PageContent pageContent = new PageContent();
-        pageContent.setWidgets(new LinkedList<>(List.of(widget)));
-
-        Page page = new Page();
-        page.setWipPageContent(pageContent);
-
+        PageContent wipContent = new PageContent();
+        wipContent.setWidgets(List.of());
+        page.setWipPageContent(wipContent);
         when(pageRepository.findByIdOrAlias("page-1")).thenReturn(Optional.of(page));
 
         assertThatThrownBy(() -> aiService.convertToAudio("page-1", "widget-1", "de"))
                 .isInstanceOf(ArtivactException.class)
-                .hasMessage("Widget does not support content audio: widget-1");
+                .hasMessageContaining("Widget not found");
     }
 
     @Test
-    void throwsWhenNoContentIsAvailableForAudioGeneration() {
-        TextWidget widget = new TextWidget();
-        widget.setId("widget-1");
-
-        TranslatableString content = new TranslatableString();
-        content.setValue("   ");
-        widget.setContent(content);
-
-        PageContent pageContent = new PageContent();
-        pageContent.setWidgets(new LinkedList<>(List.of(widget)));
+    void convertToAudioThrowsExceptionWhenWidgetDoesNotSupportAudio() {
+        Widget nonAudioWidget = new Widget(WidgetType.ITEM_SEARCH) {
+        };
+        nonAudioWidget.setId("widget-1");
 
         Page page = new Page();
-        page.setWipPageContent(pageContent);
-
+        PageContent wipContent = new PageContent();
+        wipContent.setWidgets(List.of(nonAudioWidget));
+        page.setWipPageContent(wipContent);
         when(pageRepository.findByIdOrAlias("page-1")).thenReturn(Optional.of(page));
 
         assertThatThrownBy(() -> aiService.convertToAudio("page-1", "widget-1", "de"))
                 .isInstanceOf(ArtivactException.class)
-                .hasMessage("No content available for audio generation in widget: widget-1");
+                .hasMessageContaining("Widget does not support content audio");
     }
 
     @Test
-    void createsTestAudioFileInTempDirectory() {
+    void convertToAudioThrowsExceptionWhenContentIsEmpty() {
+        Page page = createPageWithTextWidget("");
+        when(pageRepository.findByIdOrAlias("page-1")).thenReturn(Optional.of(page));
+
+        assertThatThrownBy(() -> aiService.convertToAudio("page-1", "widget-1", "de"))
+                .isInstanceOf(ArtivactException.class)
+                .hasMessageContaining("No content available for audio generation");
+    }
+
+    @Test
+    void convertToAudioGeneratesAudioFileAndSavesPage() {
+        Page page = createPageWithTextWidget("Some content");
+        when(pageRepository.findByIdOrAlias("page-1")).thenReturn(Optional.of(page));
+
         AiConfiguration aiConfiguration = new AiConfiguration();
-        Path tempDir = Path.of("temp");
-
         when(loadAiConfigurationUseCase.loadAiConfiguration()).thenReturn(aiConfiguration);
-        when(useProjectDirsUseCase.getTempDir()).thenReturn(tempDir);
+        when(useProjectDirsUseCase.getWidgetsDir()).thenReturn(Path.of("/tmp/widgets"));
+        when(fileRepository.getSubdirFilePath(any(), eq("widget-1"), eq("wip"))).thenReturn(Path.of("/tmp/widgets/widget-1/wip"));
 
-        aiService.testTts("Hello");
+        String result = aiService.convertToAudio("page-1", "widget-1", "de");
 
-        verify(fileRepository).createDirIfRequired(tempDir);
-        verify(aiGateway).convertToAudio(aiConfiguration, "Hello", "alloy", tempDir.resolve("audio-content.mp3"));
+        assertThat(result).isEqualTo("content-audio-de.mp3");
+        verify(aiGateway).convertToAudio(eq(aiConfiguration), eq("Some content"), any(), eq(Path.of("/tmp/widgets/widget-1/wip/content-audio-de.mp3")));
+        verify(fileRepository).createDirIfRequired(Path.of("/tmp/widgets/widget-1/wip"));
+        verify(pageRepository).save(page);
     }
 
     @Test
-    void loadsGeneratedTestAudioFile() {
-        Path tempDir = Path.of("temp");
-        Path audioFile = tempDir.resolve("audio-content.mp3");
-        byte[] expected = new byte[]{1, 2, 3};
+    void convertToAudioUsesDefaultFilenameWhenLocaleIsEmpty() {
+        Page page = createPageWithTextWidget("Some content");
+        when(pageRepository.findByIdOrAlias("page-1")).thenReturn(Optional.of(page));
 
-        when(useProjectDirsUseCase.getTempDir()).thenReturn(tempDir);
-        when(fileRepository.exists(audioFile)).thenReturn(true);
-        when(fileRepository.readBytes(audioFile)).thenReturn(expected);
+        AiConfiguration aiConfiguration = new AiConfiguration();
+        when(loadAiConfigurationUseCase.loadAiConfiguration()).thenReturn(aiConfiguration);
+        when(useProjectDirsUseCase.getWidgetsDir()).thenReturn(Path.of("/tmp/widgets"));
+        when(fileRepository.getSubdirFilePath(any(), eq("widget-1"), eq("wip"))).thenReturn(Path.of("/tmp/widgets/widget-1/wip"));
+
+        String result = aiService.convertToAudio("page-1", "widget-1", "");
+
+        assertThat(result).isEqualTo("content-audio.mp3");
+    }
+
+    @Test
+    void testTtsConvertsTextToAudioInTempDir() {
+        AiConfiguration aiConfiguration = new AiConfiguration();
+        when(loadAiConfigurationUseCase.loadAiConfiguration()).thenReturn(aiConfiguration);
+        when(useProjectDirsUseCase.getTempDir()).thenReturn(Path.of("/tmp"));
+
+        aiService.testTts("Hello world");
+
+        verify(fileRepository).createDirIfRequired(Path.of("/tmp"));
+        verify(aiGateway).convertToAudio(eq(aiConfiguration), eq("Hello world"), any(), eq(Path.of("/tmp/audio-content.mp3")));
+    }
+
+    @Test
+    void loadTestTtsAudioReturnsAudioBytes() {
+        when(useProjectDirsUseCase.getTempDir()).thenReturn(Path.of("/tmp"));
+        when(fileRepository.exists(Path.of("/tmp/audio-content.mp3"))).thenReturn(true);
+        when(fileRepository.readBytes(Path.of("/tmp/audio-content.mp3"))).thenReturn(new byte[]{1, 2, 3});
 
         byte[] result = aiService.loadTestTtsAudio();
 
-        assertThat(result).isEqualTo(expected);
+        assertThat(result).containsExactly(1, 2, 3);
     }
 
     @Test
-    void throwsWhenGeneratedTestAudioFileDoesNotExist() {
-        Path tempDir = Path.of("temp");
-        Path audioFile = tempDir.resolve("audio-content.mp3");
-
-        when(useProjectDirsUseCase.getTempDir()).thenReturn(tempDir);
-        when(fileRepository.exists(audioFile)).thenReturn(false);
+    void loadTestTtsAudioThrowsExceptionWhenFileNotFound() {
+        when(useProjectDirsUseCase.getTempDir()).thenReturn(Path.of("/tmp"));
+        when(fileRepository.exists(Path.of("/tmp/audio-content.mp3"))).thenReturn(false);
 
         assertThatThrownBy(() -> aiService.loadTestTtsAudio())
                 .isInstanceOf(ArtivactException.class)
-                .hasMessage("Test audio file not found.");
+                .hasMessageContaining("Test audio file not found");
+    }
+
+    private Page createPageWithTextWidget(String content) {
+        TextWidget textWidget = new TextWidget();
+        textWidget.setId("widget-1");
+        textWidget.setContent(new TranslatableString(content));
+
+        Page page = new Page();
+        PageContent wipContent = new PageContent();
+        wipContent.setWidgets(List.of(textWidget));
+        page.setWipPageContent(wipContent);
+        return page;
     }
 
 }

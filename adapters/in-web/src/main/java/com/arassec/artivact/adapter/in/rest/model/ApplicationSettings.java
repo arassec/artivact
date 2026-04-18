@@ -67,11 +67,6 @@ public class ApplicationSettings {
     private boolean syncAvailable;
 
     /**
-     * Indicates whether AI features are enabled.
-     */
-    private boolean aiEnabled;
-
-    /**
      * Indicates whether AI translation is available.
      */
     private boolean translationEnabled;

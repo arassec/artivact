@@ -20,7 +20,7 @@
         dense
         flat
         color="primary"
-        icon="smart_toy"
+        icon="auto_awesome"
         class="q-ml-sm"
         :loading="generatingRef"
         @click="generateContentAudio"

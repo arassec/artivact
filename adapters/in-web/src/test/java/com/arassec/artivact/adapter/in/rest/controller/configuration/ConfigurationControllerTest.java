@@ -130,7 +130,6 @@ class ConfigurationControllerTest {
         assertThat(result.getDefaultLocale()).isEqualTo("en");
         assertThat(result.getProfiles().isDesktop()).isTrue();
         assertThat(result.getAvailableRoles()).contains(Roles.ROLE_ADMIN, Roles.ROLE_USER);
-        assertThat(result.isAiEnabled()).isTrue();
         assertThat(result.isTranslationEnabled()).isTrue();
         assertThat(result.isTtsEnabled()).isTrue();
     }

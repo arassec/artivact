@@ -254,11 +254,10 @@ export default {
       description:
         "Configure the AI provider, API key and prompt used for text translations.",
       promptInfo:
-        "The configured prompt is used for translations. Include the placeholder “{locale}” so Artivact can insert the target language.",
+        "The configured prompt is used for translations. The text to be translated is automatically appended below the prompt.",
       testHeading: "Test Translation",
       testDescription:
         "Save the current translation settings and test the configured translation provider with a sample text.",
-      testAction: "Test Translation",
     },
     tts: {
       heading: "Text-to-Speech",
@@ -267,7 +266,6 @@ export default {
       testHeading: "Test Text-to-Speech",
       testDescription:
         "Save the current text-to-speech settings and generate a sample audio file from a test text.",
-      testAction: "Test Text-to-Speech",
     },
     fields: {
       translationModel: "Translation Model",

@@ -233,7 +233,7 @@ onBeforeUnmount(() => {
   width: 100%;
   height: 100%;
   min-height: 300px;
-  background: #1d1d1d;
+  background: var(--q-info);
 }
 
 .download-div {
