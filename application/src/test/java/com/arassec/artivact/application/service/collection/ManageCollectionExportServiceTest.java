@@ -364,7 +364,7 @@ class ManageCollectionExportServiceTest {
         String result = service.generateContentAudio("test-id", "");
 
         assertThat(result).isEqualTo("test-id.mp3");
-        verify(aiGateway).convertToAudio(any(AiConfiguration.class), eq("Some content text"), any(Path.class));
+        verify(aiGateway).convertToAudio(any(AiConfiguration.class), eq("Some content text"), eq("alloy"), any(Path.class));
         verify(collectionExportRepository, never()).save(any());
     }
 

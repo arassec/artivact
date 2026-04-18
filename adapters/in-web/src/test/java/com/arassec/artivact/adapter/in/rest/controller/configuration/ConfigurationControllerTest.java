@@ -119,7 +119,8 @@ class ConfigurationControllerTest {
         when(checkRuntimeConfigurationUseCase.isDesktopProfileEnabled()).thenReturn(true);
         when(checkRuntimeConfigurationUseCase.isE2eProfileEnabled()).thenReturn(false);
         AiConfiguration aiConfig = new AiConfiguration();
-        aiConfig.setEnabled(true);
+        aiConfig.setTranslationApiKey("translation-key");
+        aiConfig.setTtsApiKey("tts-key");
         when(loadAiConfigurationUseCase.loadAiConfiguration()).thenReturn(aiConfig);
 
         ApplicationSettings result = controller.getApplicationSettings();
@@ -130,6 +131,8 @@ class ConfigurationControllerTest {
         assertThat(result.getProfiles().isDesktop()).isTrue();
         assertThat(result.getAvailableRoles()).contains(Roles.ROLE_ADMIN, Roles.ROLE_USER);
         assertThat(result.isAiEnabled()).isTrue();
+        assertThat(result.isTranslationEnabled()).isTrue();
+        assertThat(result.isTtsEnabled()).isTrue();
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})

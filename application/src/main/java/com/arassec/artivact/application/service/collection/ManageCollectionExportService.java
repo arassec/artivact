@@ -442,7 +442,8 @@ public class ManageCollectionExportService implements ContentGenerator,
         fileRepository.createDirIfRequired(targetDir);
         Path targetFile = targetDir.resolve(audioFilename);
 
-        aiGateway.convertToAudio(aiConfiguration, textContent, targetFile);
+        String voice = resolveText(aiConfiguration.getTtsVoice(), locale);
+        aiGateway.convertToAudio(aiConfiguration, textContent, voice, targetFile);
 
         return audioFilename;
     }
@@ -456,6 +457,21 @@ public class ManageCollectionExportService implements ContentGenerator,
     private Path getExportFile(String id) {
         return useProjectDirsUseCase.getExportsDir()
                 .resolve(id + COLLECTION_EXCHANGE_SUFFIX + ZIP_FILE_SUFFIX);
+    }
+
+    /**
+     * Resolves the text for the given locale from a translatable string.
+     *
+     * @param content The translatable string.
+     * @param locale  The locale to resolve.
+     * @return The resolved text.
+     */
+    private String resolveText(TranslatableString content, String locale) {
+        if (content == null) {
+            return null;
+        }
+        content.translate(locale);
+        return content.getTranslatedValue();
     }
 
     /**

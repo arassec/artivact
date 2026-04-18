@@ -26,7 +26,7 @@
         class="no-scroll column col-grow"
         :disable="disable"
       />
-      <div class="q-ml-sm" v-if="applicationSettingsStore.aiEnabled">
+      <div class="q-ml-sm" v-if="applicationSettingsStore.translationEnabled">
         <q-btn
           flat
           dense
