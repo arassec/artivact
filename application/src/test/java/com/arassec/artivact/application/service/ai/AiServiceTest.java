@@ -125,7 +125,7 @@ class AiServiceTest {
         assertThat(result).isEqualTo("content-audio-de.mp3");
         assertThat(widget.getContentAudio().getTranslations()).containsEntry("de", "content-audio-de.mp3");
         verify(fileRepository).createDirIfRequired(widgetWipDir);
-        verify(aiGateway).convertToAudio(aiConfiguration, "Hallo", widgetWipDir.resolve("content-audio-de.mp3"));
+        verify(aiGateway).convertToAudio(aiConfiguration, "Hallo", "alloy", widgetWipDir.resolve("content-audio-de.mp3"));
         verify(pageRepository).save(page);
     }
 
@@ -163,7 +163,7 @@ class AiServiceTest {
 
         assertThat(result).isEqualTo("content-audio.mp3");
         assertThat(widget.getContentAudio().getValue()).isEqualTo("content-audio.mp3");
-        verify(aiGateway).convertToAudio(aiConfiguration, "Hello", widgetWipDir.resolve("content-audio.mp3"));
+        verify(aiGateway).convertToAudio(aiConfiguration, "Hello", "alloy", widgetWipDir.resolve("content-audio.mp3"));
         verify(pageRepository).save(page);
     }
 
@@ -251,7 +251,7 @@ class AiServiceTest {
         aiService.testTts("Hello");
 
         verify(fileRepository).createDirIfRequired(tempDir);
-        verify(aiGateway).convertToAudio(aiConfiguration, "Hello", tempDir.resolve("audio-content.mp3"));
+        verify(aiGateway).convertToAudio(aiConfiguration, "Hello", "alloy", tempDir.resolve("audio-content.mp3"));
     }
 
     @Test

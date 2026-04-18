@@ -15,7 +15,7 @@
         </template>
       </q-file>
       <q-btn
-        v-if="applicationSettingsStore.aiEnabled"
+        v-if="applicationSettingsStore.ttsEnabled"
         round
         dense
         flat

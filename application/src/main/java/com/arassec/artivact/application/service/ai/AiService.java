@@ -18,6 +18,7 @@ import com.arassec.artivact.domain.model.page.Page;
 import com.arassec.artivact.domain.model.page.Widget;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -83,7 +84,7 @@ public class AiService implements ContentGenerator,
         }
 
         AiConfiguration aiConfiguration = loadAiConfigurationUseCase.loadAiConfiguration();
-        String prompt = aiConfiguration.getTranslationPrompt();
+        String prompt = resolveText(aiConfiguration.getTranslationPrompt(), resolveCurrentRequestLocale());
         if (!StringUtils.hasText(prompt)) {
             prompt = "";
         }
@@ -137,7 +138,8 @@ public class AiService implements ContentGenerator,
         fileRepository.createDirIfRequired(widgetWipDir);
         Path targetFile = widgetWipDir.resolve(audioFilename);
 
-        aiGateway.convertToAudio(aiConfiguration, textContent, targetFile);
+        String voice = resolveText(aiConfiguration.getTtsVoice(), locale);
+        aiGateway.convertToAudio(aiConfiguration, textContent, voice, targetFile);
 
         processContentAudio(locale, contentAudioProvider, audioFilename);
 
@@ -157,7 +159,8 @@ public class AiService implements ContentGenerator,
         fileRepository.createDirIfRequired(tempDir);
         Path targetFile = tempDir.resolve(TEST_AUDIO_FILENAME);
 
-        aiGateway.convertToAudio(aiConfiguration, text, targetFile);
+        String voice = resolveText(aiConfiguration.getTtsVoice(), resolveCurrentRequestLocale());
+        aiGateway.convertToAudio(aiConfiguration, text, voice, targetFile);
     }
 
     /**
@@ -185,6 +188,18 @@ public class AiService implements ContentGenerator,
         }
         content.translate(locale);
         return content.getTranslatedValue();
+    }
+
+    /**
+     * Returns the current request locale as string.
+     *
+     * @return The current request locale.
+     */
+    private String resolveCurrentRequestLocale() {
+        if (LocaleContextHolder.getLocale() == null) {
+            return null;
+        }
+        return LocaleContextHolder.getLocale().toString();
     }
 
 }

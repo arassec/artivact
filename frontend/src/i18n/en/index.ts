@@ -246,23 +246,39 @@ export default {
   AiConfigurationPage: {
     heading: "Artificial Intelligence",
     configuration: {
-      heading: "AI Configuration",
       description:
         "Here you can configure the artificial intelligence integration for features like automatic translation and text-to-speech.",
     },
+    translation: {
+      heading: "Translation",
+      description:
+        "Configure the AI provider, API key and prompt used for text translations.",
+      promptInfo:
+        "The configured prompt is used for translations. Include the placeholder “{locale}” so Artivact can insert the target language.",
+      testHeading: "Test Translation",
+      testDescription:
+        "Save the current translation settings and test the configured translation provider with a sample text.",
+      testAction: "Test Translation",
+    },
+    tts: {
+      heading: "Text-to-Speech",
+      description:
+        "Configure the AI provider, API key and voice used for text-to-speech generation.",
+      testHeading: "Test Text-to-Speech",
+      testDescription:
+        "Save the current text-to-speech settings and generate a sample audio file from a test text.",
+      testAction: "Test Text-to-Speech",
+    },
     fields: {
-      enabled: "Enable Artificial Intelligence",
-      apiKey: "API Key",
+      translationModel: "Translation Model",
+      translationApiKey: "Translation API Key",
       translationPrompt: "Translation Prompt",
-      ttsVoice: "Text-To-Speech Voice",
+      ttsModel: "Text-to-Speech Model",
+      ttsApiKey: "Text-to-Speech API Key",
+      ttsVoice: "Text-to-Speech Voice",
     },
     test: {
-      translationPrompt: "The prompt configured below is used for translating texts. The placeholder “$_locale_$” must be included. It will be replaced by Artivact with the desired target language.",
-      description:
-        "You can test the AI configuration below. Enter a text and select whether to test translation or text-to-speech. The configured prompt or voice will be used for the test.",
       textInput: "Test Text",
-      translationMode: "Translation",
-      ttsMode: "Text-to-Speech",
       translationResult: "Translation Result",
       testFailed: "AI test failed.",
     },

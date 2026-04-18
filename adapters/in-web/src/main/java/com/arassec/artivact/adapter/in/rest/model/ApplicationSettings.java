@@ -71,4 +71,14 @@ public class ApplicationSettings {
      */
     private boolean aiEnabled;
 
+    /**
+     * Indicates whether AI translation is available.
+     */
+    private boolean translationEnabled;
+
+    /**
+     * Indicates whether AI text-to-speech is available.
+     */
+    private boolean ttsEnabled;
+
 }

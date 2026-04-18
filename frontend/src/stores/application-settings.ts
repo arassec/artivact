@@ -41,6 +41,12 @@ export const useApplicationSettingsStore = defineStore('applicationSettings', {
     },
     aiEnabled(state): boolean {
       return state.data.settings.aiEnabled;
+    },
+    translationEnabled(state): boolean {
+      return state.data.settings.translationEnabled;
+    },
+    ttsEnabled(state): boolean {
+      return state.data.settings.ttsEnabled;
     }
   },
 

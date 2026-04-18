@@ -175,7 +175,15 @@ public class ConfigurationController extends BaseController {
                 && StringUtils.hasText(exchangeConfiguration.getApiToken()));
 
         AiConfiguration aiConfiguration = loadAiConfigurationUseCase.loadAiConfiguration();
-        applicationSettings.setAiEnabled(aiConfiguration.isEnabled());
+        AiModel translationModel = aiConfiguration.getTranslationModel() == null
+                ? AiModel.OpenAI
+                : aiConfiguration.getTranslationModel();
+        boolean translationEnabled = translationModel == AiModel.OpenAI
+                && StringUtils.hasText(aiConfiguration.getTranslationApiKey());
+        boolean ttsEnabled = StringUtils.hasText(aiConfiguration.getTtsApiKey());
+        applicationSettings.setTranslationEnabled(translationEnabled);
+        applicationSettings.setTtsEnabled(ttsEnabled);
+        applicationSettings.setAiEnabled(translationEnabled || ttsEnabled);
 
         return applicationSettings;
     }
