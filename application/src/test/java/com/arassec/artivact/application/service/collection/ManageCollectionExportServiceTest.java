@@ -28,10 +28,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import tools.jackson.databind.json.JsonMapper;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -149,6 +146,56 @@ class ManageCollectionExportServiceTest {
     }
 
     @Test
+    void loadAllRestrictedReturnsCollectionExportsWithDefaultMetadataWhenNoFilesExist() {
+        CollectionExport collectionExport = createCollectionExport("export-1", "menu-1", "Title");
+        collectionExport.setContent(null);
+
+        Path exportFile = exportsDir.resolve("export-1.artivact.collection.zip");
+        Path defaultAudioFile = exportsDir.resolve("export-1.mp3");
+
+        when(collectionExportRepository.findAll()).thenReturn(List.of(collectionExport));
+        when(fileRepository.exists(exportFile)).thenReturn(false);
+        when(fileRepository.exists(defaultAudioFile)).thenReturn(false);
+        when(fileRepository.list(exportsDir)).thenReturn(List.of(exportsDir.resolve("other.mp3")));
+
+        List<CollectionExport> result = service.loadAllRestricted();
+
+        CollectionExport loadedCollectionExport = result.getFirst();
+        assertThat(loadedCollectionExport.isFilePresent()).isFalse();
+        assertThat(loadedCollectionExport.getContent()).isNotNull();
+        assertThat(loadedCollectionExport.getContent().getValue()).isEmpty();
+        assertThat(loadedCollectionExport.getContentAudio().getValue()).isEmpty();
+        assertThat(loadedCollectionExport.getContentAudio().getTranslations()).isEmpty();
+    }
+
+    @Test
+    void loadReturnsCollectionExportWithResolvedFileAndAudioInformation() {
+        CollectionExport collectionExport = createCollectionExport("export-1", "menu-1", "Title");
+        collectionExport.setContent(null);
+
+        Path exportFile = exportsDir.resolve("export-1.artivact.collection.zip");
+        Path defaultAudioFile = exportsDir.resolve("export-1.mp3");
+        Path localizedAudioFile = exportsDir.resolve("export-1-de.mp3");
+
+        when(collectionExportRepository.findById("export-1")).thenReturn(Optional.of(collectionExport));
+        when(fileRepository.exists(exportFile)).thenReturn(true);
+        when(fileRepository.lastModified(exportFile)).thenReturn(Instant.ofEpochMilli(1234L));
+        when(fileRepository.size(exportFile)).thenReturn(2048L);
+        when(fileRepository.exists(defaultAudioFile)).thenReturn(true);
+        when(fileRepository.list(exportsDir)).thenReturn(List.of(localizedAudioFile));
+
+        CollectionExport loadedCollectionExport = service.load("export-1");
+
+        assertThat(loadedCollectionExport.isFilePresent()).isTrue();
+        assertThat(loadedCollectionExport.getFileLastModified()).isEqualTo(1234L);
+        assertThat(loadedCollectionExport.getFileSize()).isEqualTo(2048L);
+        assertThat(loadedCollectionExport.getContent().getValue()).isEmpty();
+        assertThat(loadedCollectionExport.getContentAudio().getValue()).isEqualTo("export-1.mp3");
+        assertThat(loadedCollectionExport.getContentAudio().getTranslations())
+                .containsEntry("de", "export-1-de.mp3");
+    }
+
+    @Test
     void readExportFileReturnsConfiguredInputStream() {
         Path exportFile = exportsDir.resolve("export-1.artivact.collection.zip");
         InputStream inputStream = new ByteArrayInputStream(new byte[]{1, 2, 3});
@@ -211,13 +258,25 @@ class ManageCollectionExportServiceTest {
 
         verify(fileRepository).createDirIfRequired(exportsDir);
         verify(fileRepository).scaleImage(
-                eq(inputStream),
-                eq(exportsDir.resolve("export-1.jpg")),
-                eq("jpg"),
-                eq(ImageSize.PAGE_TITLE.getWidth())
+                inputStream,
+                exportsDir.resolve("export-1.jpg"),
+                "jpg",
+                ImageSize.PAGE_TITLE.getWidth()
         );
         verify(collectionExportRepository).save(collectionExport);
         assertThat(collectionExport.getCoverPictureExtension()).isEqualTo("jpg");
+    }
+
+    @Test
+    void loadCoverPictureThrowsExceptionWhenNoCoverPictureIsConfigured() {
+        CollectionExport collectionExport = createCollectionExport("export-1", "menu-1", "Title");
+        collectionExport.setCoverPictureExtension(" ");
+
+        when(collectionExportRepository.findById("export-1")).thenReturn(Optional.of(collectionExport));
+
+        assertThatThrownBy(() -> service.loadCoverPicture("export-1"))
+                .isInstanceOf(ArtivactException.class)
+                .hasMessageContaining("No cover picture available for collection export: export-1");
     }
 
     @Test
@@ -232,6 +291,23 @@ class ManageCollectionExportServiceTest {
         byte[] result = service.loadCoverPicture("export-1");
 
         assertThat(result).containsExactly(4, 5, 6);
+    }
+
+    @Test
+    void deleteCoverPictureClearsConfiguredExtensionWhenFileIsMissing() {
+        CollectionExport collectionExport = createCollectionExport("export-1", "menu-1", "Title");
+        collectionExport.setCoverPictureExtension("jpg");
+
+        Path coverPicture = exportsDir.resolve("export-1.jpg");
+
+        when(collectionExportRepository.findById("export-1")).thenReturn(Optional.of(collectionExport));
+        when(fileRepository.exists(coverPicture)).thenReturn(false);
+
+        service.deleteCoverPicture("export-1");
+
+        assertThat(collectionExport.getCoverPictureExtension()).isNull();
+        verify(fileRepository, never()).delete(coverPicture);
+        verify(collectionExportRepository).save(collectionExport);
     }
 
     @Test
@@ -264,8 +340,8 @@ class ManageCollectionExportServiceTest {
                 CollectionExportInfo[].class
         );
 
-        assertThat(zipEntries).containsKeys(ExchangeDefinitions.COLLECTION_EXPORT_OVERVIEWS_JSON_FILE, "cover.jpg");
-        assertThat(zipEntries).doesNotContainKey("ignored.zip");
+        assertThat(zipEntries).containsKeys(ExchangeDefinitions.COLLECTION_EXPORT_OVERVIEWS_JSON_FILE, "cover.jpg")
+                .doesNotContainKey("ignored.zip");
         assertThat(collectionExportInfos).hasSize(1);
         assertThat(collectionExportInfos[0].getId()).isEqualTo("export-1");
         assertThat(collectionExportInfos[0].getTitle().getValue()).isEqualTo("Title");
@@ -273,17 +349,77 @@ class ManageCollectionExportServiceTest {
     }
 
     @Test
-    void saveContentAudioCopiesAudioToDefaultFilenameForLocale() {
+    void createCollectionExportInfosThrowsExceptionWhenTargetStreamCannotBeWritten() {
+        CollectionExport collectionExport = createCollectionExport("export-1", "menu-1", "Title");
+        collectionExport.setFilePresent(true);
+
+        try (OutputStream failingOutputStream = new OutputStream() {
+            @Override
+            public void write(int b) throws IOException {
+                throw new IOException("boom");
+            }
+        }) {
+            assertThatThrownBy(() -> service.createCollectionExportInfos(failingOutputStream, List.of(collectionExport)))
+                    .isInstanceOf(ArtivactException.class)
+                    .hasMessageContaining("Could not create item export file!");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void saveSortOrderPassesCollectionExportsToRepository() {
+        List<CollectionExport> collectionExports = List.of(
+                createCollectionExport("export-1", "menu-1", "Title"),
+                createCollectionExport("export-2", "menu-2", "Other")
+        );
+
+        service.saveSortOrder(collectionExports);
+
+        verify(collectionExportRepository).saveSortOrder(collectionExports);
+    }
+
+    @Test
+    void saveContentAudioCopiesAudioToLocalizedFilename() {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(new byte[]{7, 8, 9});
 
         service.saveContentAudio("export-1", "de", "audio.mp3", inputStream);
 
         verify(fileRepository).createDirIfRequired(exportsDir);
         verify(fileRepository).copy(
-                eq(inputStream),
-                eq(exportsDir.resolve("export-1-de.mp3")),
-                eq(StandardCopyOption.REPLACE_EXISTING)
+                inputStream,
+                exportsDir.resolve("export-1-de.mp3"),
+                StandardCopyOption.REPLACE_EXISTING
         );
+    }
+
+    @ParameterizedTest
+    @MethodSource("defaultLocales")
+    void saveContentAudioCopiesAudioToDefaultFilenameWhenLocaleIsBlank(String locale) {
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(new byte[]{7, 8, 9});
+
+        service.saveContentAudio("export-1", locale, "audio.mp3", inputStream);
+
+        verify(fileRepository).createDirIfRequired(exportsDir);
+        verify(fileRepository).copy(
+                inputStream,
+                exportsDir.resolve("export-1.mp3"),
+                StandardCopyOption.REPLACE_EXISTING
+        );
+    }
+
+    @Test
+    void saveContentAudioRejectsInvalidLocale() {
+        assertThatThrownBy(() -> service.saveContentAudio(
+                "export-1",
+                "../etc",
+                "audio.mp3",
+                new ByteArrayInputStream(new byte[]{7, 8, 9})
+        ))
+                .isInstanceOf(ArtivactException.class)
+                .hasMessageContaining("Invalid locale");
+
+        verifyNoInteractions(fileRepository);
     }
 
     @Test
@@ -305,6 +441,16 @@ class ManageCollectionExportServiceTest {
     }
 
     @Test
+    void loadContentAudioThrowsExceptionWhenAudioFileDoesNotExist() {
+        Path audioFile = exportsDir.resolve("export-1-de.mp3");
+        when(fileRepository.exists(audioFile)).thenReturn(false);
+
+        assertThatThrownBy(() -> service.loadContentAudio("export-1", "export-1-de.mp3"))
+                .isInstanceOf(ArtivactException.class)
+                .hasMessageContaining("Content audio file not found: export-1-de.mp3");
+    }
+
+    @Test
     void deleteContentAudioRemovesExistingAudioFile() {
         Path audioFile = exportsDir.resolve("export-1-de.mp3");
         when(fileRepository.exists(audioFile)).thenReturn(true);
@@ -315,12 +461,45 @@ class ManageCollectionExportServiceTest {
     }
 
     @Test
+    void deleteContentAudioDoesNothingWhenAudioFileDoesNotExist() {
+        Path audioFile = exportsDir.resolve("export-1.mp3");
+        when(fileRepository.exists(audioFile)).thenReturn(false);
+
+        service.deleteContentAudio("export-1", null);
+
+        verify(fileRepository, never()).delete(any(Path.class));
+    }
+
+    @Test
+    void deleteContentAudioRejectsInvalidLocale() {
+        assertThatThrownBy(() -> service.deleteContentAudio("export-1", "../etc"))
+                .isInstanceOf(ArtivactException.class)
+                .hasMessageContaining("Invalid locale");
+
+        verifyNoInteractions(fileRepository);
+    }
+
+    @Test
     void generateContentAudioRejectsInvalidLocale() {
         assertThatThrownBy(() -> service.generateContentAudio("export-1", "../etc"))
                 .isInstanceOf(ArtivactException.class)
                 .hasMessageContaining("Invalid locale");
 
         verifyNoInteractions(collectionExportRepository, loadAiConfigurationUseCase, aiGateway);
+    }
+
+    @Test
+    void generateContentAudioThrowsExceptionWhenContentIsMissing() {
+        CollectionExport collectionExport = createCollectionExport("export-1", "menu-1", "Title");
+        collectionExport.setContent(null);
+
+        when(collectionExportRepository.findById("export-1")).thenReturn(Optional.of(collectionExport));
+
+        assertThatThrownBy(() -> service.generateContentAudio("export-1", "de"))
+                .isInstanceOf(ArtivactException.class)
+                .hasMessageContaining("No content available for audio generation in collection export: export-1");
+
+        verifyNoInteractions(loadAiConfigurationUseCase, aiGateway);
     }
 
     @Test
@@ -355,10 +534,54 @@ class ManageCollectionExportServiceTest {
         assertThat(audioFilename).isEqualTo("export-1-de.mp3");
         verify(fileRepository).createDirIfRequired(exportsDir);
         verify(aiGateway).convertToAudio(
-                eq(aiConfiguration),
-                eq("Hallo"),
-                eq("voice-de"),
-                eq(exportsDir.resolve("export-1-de.mp3"))
+                aiConfiguration,
+                "Hallo",
+                "voice-de",
+                exportsDir.resolve("export-1-de.mp3")
+        );
+    }
+
+    @Test
+    void generateContentAudioUsesDefaultContentAndVoiceWhenLocaleIsBlank() {
+        CollectionExport collectionExport = createCollectionExport("export-1", "menu-1", "Title");
+        collectionExport.setContent(new TranslatableString("Hello"));
+
+        AiConfiguration aiConfiguration = new AiConfiguration();
+        aiConfiguration.setTtsVoice(new TranslatableString("voice-default"));
+
+        when(collectionExportRepository.findById("export-1")).thenReturn(Optional.of(collectionExport));
+        when(loadAiConfigurationUseCase.loadAiConfiguration()).thenReturn(aiConfiguration);
+
+        String audioFilename = service.generateContentAudio("export-1", "");
+
+        assertThat(audioFilename).isEqualTo("export-1.mp3");
+        verify(aiGateway).convertToAudio(
+                aiConfiguration,
+                "Hello",
+                "voice-default",
+                exportsDir.resolve("export-1.mp3")
+        );
+    }
+
+    @Test
+    void generateContentAudioFallsBackToOriginalContentAndVoiceWhenTranslationIsMissing() {
+        CollectionExport collectionExport = createCollectionExport("export-1", "menu-1", "Title");
+        collectionExport.setContent(new TranslatableString("Hello"));
+
+        AiConfiguration aiConfiguration = new AiConfiguration();
+        aiConfiguration.setTtsVoice(new TranslatableString("voice-default"));
+
+        when(collectionExportRepository.findById("export-1")).thenReturn(Optional.of(collectionExport));
+        when(loadAiConfigurationUseCase.loadAiConfiguration()).thenReturn(aiConfiguration);
+
+        String audioFilename = service.generateContentAudio("export-1", "fr");
+
+        assertThat(audioFilename).isEqualTo("export-1-fr.mp3");
+        verify(aiGateway).convertToAudio(
+                aiConfiguration,
+                "Hello",
+                "voice-default",
+                exportsDir.resolve("export-1-fr.mp3")
         );
     }
 
@@ -404,6 +627,14 @@ class ManageCollectionExportServiceTest {
                 Arguments.of(missingId),
                 Arguments.of(missingSourceId),
                 Arguments.of(missingTitle)
+        );
+    }
+
+    private static Stream<Arguments> defaultLocales() {
+        return Stream.of(
+                Arguments.of((String) null),
+                Arguments.of(""),
+                Arguments.of(" ")
         );
     }
 

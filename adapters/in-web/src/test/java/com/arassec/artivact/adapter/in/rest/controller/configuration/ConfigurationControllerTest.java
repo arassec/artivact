@@ -359,6 +359,7 @@ class ConfigurationControllerTest {
 
 			@Override
 			public void setWriteListener(WriteListener writeListener) {
+				// not required
 			}
 
 			@Override

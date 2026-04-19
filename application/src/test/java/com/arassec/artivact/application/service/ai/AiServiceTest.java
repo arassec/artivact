@@ -101,7 +101,7 @@ class AiServiceTest {
 
         aiService.translateText("Hello", "de");
 
-        verify(aiGateway).execute(eq(aiConfiguration), eq("Custom prompt\n\nHello"));
+        verify(aiGateway).execute(aiConfiguration, "Custom prompt\n\nHello");
     }
 
     @Test
@@ -113,7 +113,7 @@ class AiServiceTest {
 
         aiService.translateText("Hello", "de");
 
-        verify(aiGateway).execute(eq(aiConfiguration), eq("\n\nHello"));
+        verify(aiGateway).execute(aiConfiguration, "\n\nHello");
     }
 
     @Test
