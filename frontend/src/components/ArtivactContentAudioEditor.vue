@@ -15,12 +15,12 @@
         </template>
       </q-file>
       <q-btn
-        v-if="applicationSettingsStore.aiEnabled"
+        v-if="applicationSettingsStore.ttsEnabled"
         round
         dense
         flat
         color="primary"
-        icon="smart_toy"
+        icon="auto_awesome"
         class="q-ml-sm"
         :loading="generatingRef"
         @click="generateContentAudio"

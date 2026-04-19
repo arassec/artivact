@@ -175,7 +175,14 @@ public class ConfigurationController extends BaseController {
                 && StringUtils.hasText(exchangeConfiguration.getApiToken()));
 
         AiConfiguration aiConfiguration = loadAiConfigurationUseCase.loadAiConfiguration();
-        applicationSettings.setAiEnabled(aiConfiguration.isEnabled());
+        AiModel translationModel = aiConfiguration.getTranslationModel() == null
+                ? AiModel.OPEN_AI
+                : aiConfiguration.getTranslationModel();
+        boolean translationEnabled = translationModel == AiModel.OPEN_AI
+                && StringUtils.hasText(aiConfiguration.getTranslationApiKey());
+        boolean ttsEnabled = StringUtils.hasText(aiConfiguration.getTtsApiKey());
+        applicationSettings.setTranslationEnabled(translationEnabled);
+        applicationSettings.setTtsEnabled(ttsEnabled);
 
         return applicationSettings;
     }
@@ -289,7 +296,7 @@ public class ConfigurationController extends BaseController {
 
         String exportedPropertiesConfiguration = exportPropertiesConfigurationUseCase.exportPropertiesConfiguration();
 
-        StreamingResponseBody streamResponseBody = out -> {
+        StreamingResponseBody streamResponseBody = _ -> {
             response.getOutputStream().write(exportedPropertiesConfiguration.getBytes());
             response.setContentLength(exportedPropertiesConfiguration.getBytes().length);
             cleanupExportFilesUseCase.cleanupPropertiesConfigurationExport();
@@ -354,7 +361,7 @@ public class ConfigurationController extends BaseController {
     public ResponseEntity<StreamingResponseBody> exportTagsConfiguration(HttpServletResponse response) {
         String tagsConfigurationJson = exportTagsConfigurationUseCase.exportTagsConfiguration();
 
-        StreamingResponseBody streamResponseBody = out -> {
+        StreamingResponseBody streamResponseBody = _ -> {
             response.getOutputStream().write(tagsConfigurationJson.getBytes());
             response.setContentLength(tagsConfigurationJson.getBytes().length);
             cleanupExportFilesUseCase.cleanupTagsConfigurationExport();

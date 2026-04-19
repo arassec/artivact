@@ -308,7 +308,7 @@
             <q-item-section
             ><label class="menu-label">
               <q-icon
-                name="smart_toy"
+                name="auto_awesome"
                 size="xs"
                 color="primary"
                 class="q-mr-sm"
@@ -675,7 +675,7 @@
                 <q-item-section
                 ><label class="menu-label">
                   <q-icon
-                    name="smart_toy"
+                    name="auto_awesome"
                     size="xs"
                     color="primary"
                     class="q-mr-sm"

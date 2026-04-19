@@ -143,6 +143,26 @@ public class ManageItemModelsService implements ManageItemModelsUseCase {
      * {@inheritDoc}
      */
     @Override
+    public byte[] loadModelSetFile(String itemId, int modelSetIndex, String filename) {
+        Item item = loadItemUseCase.loadTranslatedRestricted(itemId);
+        CreationModelSet creationModelSet = item.getMediaCreationContent().getModelSets().get(modelSetIndex);
+        Path modelSetDir = useProjectDirsUseCase.getProjectRoot()
+                .resolve(creationModelSet.getDirectory())
+                .toAbsolutePath()
+                .normalize();
+        Path sourcePath = modelSetDir.resolve(filename).normalize();
+
+        if (!sourcePath.startsWith(modelSetDir)) {
+            throw new ArtivactException("Invalid model-set file path!");
+        }
+
+        return fileRepository.readBytes(sourcePath);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public boolean hasTransferableModel(String itemId, int modelSetIndex) {
         Item item = loadItemUseCase.loadTranslatedRestricted(itemId);
         CreationModelSet creationModelSet = item.getMediaCreationContent().getModelSets().get(modelSetIndex);

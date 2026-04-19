@@ -119,11 +119,18 @@ export interface ExchangeConfiguration {
   apiToken: string;
 }
 
+export enum AiModel {
+  OPEN_AI = 'OPEN_AI',
+  ELEVENLABS = 'ELEVENLABS',
+}
+
 export interface AiConfiguration {
-  enabled: boolean;
-  apiKey: string;
-  translationPrompt: string;
-  ttsVoice: string;
+  translationModel: AiModel;
+  translationApiKey: string;
+  translationPrompt: TranslatableString;
+  ttsModel: AiModel;
+  ttsApiKey: string;
+  ttsVoice: TranslatableString;
 }
 
 export interface ColorTheme {
@@ -165,7 +172,8 @@ export interface ApplicationSettings {
   profiles: Profiles,
   availableRoles: string[],
   syncAvailable: boolean,
-  aiEnabled: boolean
+  translationEnabled: boolean,
+  ttsEnabled: boolean
 }
 
 export enum PeripheralImplementation {

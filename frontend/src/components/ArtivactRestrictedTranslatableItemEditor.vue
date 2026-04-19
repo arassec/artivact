@@ -26,12 +26,12 @@
         class="no-scroll column col-grow"
         :disable="disable"
       />
-      <div class="q-ml-sm" v-if="applicationSettingsStore.aiEnabled">
+      <div class="q-ml-sm" v-if="applicationSettingsStore.translationEnabled">
         <q-btn
           flat
           dense
           rounded
-          icon="smart_toy"
+          icon="auto_awesome"
           :disable="disable"
           @click="translateText"
         >
@@ -178,7 +178,7 @@ const translatableStringRef = toRef(props, 'translatableString');
 const restrictedItemRef = toRef(props, 'restrictedItem');
 const showDetailsRef = ref(false);
 
-const showStandardTextRef = ref(true);
+const showStandardTextRef = ref(false);
 
 function addRestriction(value: string) {
   if (restrictedItemRef.value) {

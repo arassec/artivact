@@ -12,12 +12,12 @@ import com.arassec.artivact.application.port.out.repository.PageRepository;
 import com.arassec.artivact.application.service.ContentGenerator;
 import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.ContentAudioProvider;
-import com.arassec.artivact.domain.model.TranslatableString;
 import com.arassec.artivact.domain.model.configuration.AiConfiguration;
 import com.arassec.artivact.domain.model.page.Page;
 import com.arassec.artivact.domain.model.page.Widget;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -83,12 +83,11 @@ public class AiService implements ContentGenerator,
         }
 
         AiConfiguration aiConfiguration = loadAiConfigurationUseCase.loadAiConfiguration();
-        String prompt = aiConfiguration.getTranslationPrompt();
+        aiConfiguration.getTranslationPrompt().translate(locale);
+        String prompt = aiConfiguration.getTranslationPrompt().getTranslatedValue();
         if (!StringUtils.hasText(prompt)) {
             prompt = "";
         }
-
-        prompt = prompt.replace("{locale}", locale);
 
         String fullPrompt = prompt + "\n\n" + text;
 
@@ -120,8 +119,8 @@ public class AiService implements ContentGenerator,
             throw new ArtivactException("Widget does not support content audio: " + widgetId);
         }
 
-        TranslatableString content = contentAudioProvider.getContent();
-        String textContent = resolveText(content, locale);
+        contentAudioProvider.getContent().translate(locale);
+        String textContent = contentAudioProvider.getContent().getTranslatedValue();
 
         if (!StringUtils.hasText(textContent)) {
             throw new ArtivactException("No content available for audio generation in widget: " + widgetId);
@@ -137,7 +136,9 @@ public class AiService implements ContentGenerator,
         fileRepository.createDirIfRequired(widgetWipDir);
         Path targetFile = widgetWipDir.resolve(audioFilename);
 
-        aiGateway.convertToAudio(aiConfiguration, textContent, targetFile);
+        aiConfiguration.getTtsVoice().translate(locale);
+        String voice = aiConfiguration.getTtsVoice().getTranslatedValue();
+        aiGateway.convertToAudio(aiConfiguration, textContent, voice, targetFile);
 
         processContentAudio(locale, contentAudioProvider, audioFilename);
 
@@ -157,7 +158,9 @@ public class AiService implements ContentGenerator,
         fileRepository.createDirIfRequired(tempDir);
         Path targetFile = tempDir.resolve(TEST_AUDIO_FILENAME);
 
-        aiGateway.convertToAudio(aiConfiguration, text, targetFile);
+        aiConfiguration.getTtsVoice().translate(LocaleContextHolder.getLocale().toString());
+        String voice = aiConfiguration.getTtsVoice().getTranslatedValue();
+        aiGateway.convertToAudio(aiConfiguration, text, voice, targetFile);
     }
 
     /**
@@ -170,21 +173,6 @@ public class AiService implements ContentGenerator,
             throw new ArtivactException("Test audio file not found.");
         }
         return fileRepository.readBytes(audioFile);
-    }
-
-    /**
-     * Resolves the text for the given locale from a translatable string.
-     *
-     * @param content The translatable string.
-     * @param locale  The locale to resolve.
-     * @return The resolved text.
-     */
-    private String resolveText(TranslatableString content, String locale) {
-        if (content == null) {
-            return null;
-        }
-        content.translate(locale);
-        return content.getTranslatedValue();
     }
 
 }

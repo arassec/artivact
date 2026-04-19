@@ -238,23 +238,37 @@ export default {
   AiConfigurationPage: {
     heading: 'Künstliche Intelligenz',
     configuration: {
-      heading: 'KI-Konfiguration',
       description:
         'Hier können Sie die Integration der künstlichen Intelligenz für Funktionen wie automatische Übersetzung und Text-to-Speech konfigurieren.',
     },
+    translation: {
+      heading: 'Übersetzung',
+      description:
+        'Konfigurieren Sie den KI-Anbieter, den API-Schlüssel und den Prompt für Textübersetzungen.',
+      promptInfo:
+        "Der konfigurierte Prompt wird für Übersetzungen verwendet. Der zu übersetzende Text wird automatisch unter dem Prompt ergänzt.",
+      testHeading: 'Übersetzung testen',
+      testDescription:
+        'Speichern Sie die aktuellen Übersetzungseinstellungen und testen Sie den konfigurierten Übersetzungsanbieter mit einem Beispieltext.',
+    },
+    tts: {
+      heading: 'Text-to-Speech',
+      description:
+        'Konfigurieren Sie den KI-Anbieter, den API-Schlüssel und die Stimme für die Text-to-Speech-Erzeugung.',
+      testHeading: 'Text-to-Speech testen',
+      testDescription:
+        'Speichern Sie die aktuellen Text-to-Speech-Einstellungen und erzeugen Sie eine Beispiel-Audiodatei aus einem Testtext.',
+    },
     fields: {
-      enabled: 'Künstliche Intelligenz aktivieren',
-      apiKey: 'API-Schlüssel',
+      translationModel: 'Übersetzungsmodell',
+      translationApiKey: 'Übersetzungs-API-Schlüssel',
       translationPrompt: 'Übersetzungs-Prompt',
+      ttsModel: 'Text-to-Speech-Modell',
+      ttsApiKey: 'Text-to-Speech-API-Schlüssel',
       ttsVoice: 'Text-To-Speech-Stimme',
     },
     test: {
-      translationPrompt: "Der unten konfigurierte Prompt wird für die Übersetzung von Texten verwendet. Dabei muss der Platzhalter '$_locale_$' vorhanden sein. Dieser wird von Artivact mit der gewünschten Zielsprache ersetzt.",
-      description:
-        'Sie können die KI-Konfiguration unten testen. Geben Sie einen Text ein und wählen Sie, ob Sie die Übersetzung oder Text-to-Speech testen möchten. Der konfigurierte Prompt oder die konfigurierte Stimme werden für den Test verwendet.',
       textInput: 'Testtext',
-      translationMode: 'Übersetzung',
-      ttsMode: 'Text-to-Speech',
       translationResult: 'Übersetzungsergebnis',
       testFailed: 'KI-Test fehlgeschlagen.',
     },
@@ -1100,12 +1114,16 @@ export default {
       openModel: 'Verzeichnis mit 3D-Modell-Dateien öffnen',
       edit: '3D-Modell in Editor bearbeiten',
       editSelection: "3D-Modell mit ausgewähltem Editor bearbeiten",
+      preview: '3D-Modell anzeigen',
       delete: '3D-Modell löschen',
     },
     dialog: {
       details: {
         heading: '3D-Modell Details',
         transfer: '3D-Modell in Objekt-Medien kopieren',
+      },
+      preview: {
+        heading: '3D-Modell Vorschau',
       },
       delete: {
         heading: '3D-Modell löschen?',

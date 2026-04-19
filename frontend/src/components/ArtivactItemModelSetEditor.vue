@@ -101,6 +101,18 @@
               }}
             </q-tooltip>
           </q-btn>
+          <q-btn
+            v-if="hasPreviewableModel(index)"
+            icon="3d_rotation"
+            rounded
+            dense
+            flat
+            size="md"
+            color="primary"
+            @click="openModelViewer(index)"
+          >
+            <q-tooltip>{{ $t('ItemModelSetEditor.tooltip.preview') }}</q-tooltip>
+          </q-btn>
         </div>
         <q-space/>
         <q-btn
@@ -250,7 +262,7 @@
   <!-- MODEL-SET DETAILS -->
   <artivact-dialog
     :dialog-model="showModelSetDetailsModalRef"
-    v-if="showModelSetDetailsModalRef && modelSetFiles"
+    v-if="showModelSetDetailsModalRef && modelSetFilesRef.length > 0"
     :hide-buttons="true"
     :show-close-button="true"
     :min-width="50"
@@ -264,7 +276,7 @@
       <q-card-section>
         <div class="row">
           <q-card
-            v-for="(file, index) in modelSetFiles"
+            v-for="(file, index) in modelSetFilesRef"
             :key="index"
             class="image-set-card q-mr-md q-mb-md"
           >
@@ -279,9 +291,31 @@
     </template>
   </artivact-dialog>
 
+  <!-- MODEL PREVIEW -->
+  <artivact-dialog
+    :dialog-model="showModelViewerModalRef"
+    v-if="showModelViewerModalRef && selectedPreviewModelUrlRef"
+    :hide-buttons="true"
+    :show-close-button="true"
+    :min-width="78.6"
+    @close-dialog="closeModelViewer"
+  >
+    <template v-slot:header>
+      {{ $t('ItemModelSetEditor.dialog.preview.heading') }}
+    </template>
+
+    <template v-slot:body>
+      <artivact-item-model-viewer
+        :model-url="selectedPreviewModelUrlRef"
+        :fullscreen-allowed="true"
+        class="model-viewer-dialog-content"
+      />
+    </template>
+  </artivact-dialog>
+
   <!-- LONG-RUNNING OPERATION -->
   <artivact-operation-in-progress-dialog
-    v-if="showOperationInProgressModalRef == true"
+    v-if="showOperationInProgressModalRef"
     :dialog-model="showOperationInProgressModalRef"
     @close-dialog="operationFinished()"
   />
@@ -317,12 +351,13 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, PropType, Ref, ref} from 'vue';
+import {onMounted, PropType, Ref, ref, watch} from 'vue';
 import {Asset, CreateModelParams, ModelSet, SelectboxModel,} from './artivact-models';
 import {api} from '../boot/axios';
 import {useQuasar} from 'quasar';
 import ArtivactDialog from '../components/ArtivactDialog.vue';
 import ArtivactOperationInProgressDialog from '../components/ArtivactOperationInProgressDialog.vue';
+import ArtivactItemModelViewer from '../components/ArtivactItemModelViewer.vue';
 import {useI18n} from 'vue-i18n';
 import {usePeripheralsConfigStore} from '../stores/peripherals';
 
@@ -363,7 +398,12 @@ const selectedModelSetIndexRef = ref(null);
 
 const showEditModelParamsModalRef = ref(false);
 const showModelSetDetailsModalRef = ref(false);
-let modelSetFiles: Asset[];
+const showModelViewerModalRef = ref(false);
+const modelSetFilesRef = ref([] as Asset[]);
+const selectedPreviewModelUrlRef = ref('');
+const modelSetFilesByIndexRef = ref({} as Record<number, Asset[]>);
+const previewableModelUrlsRef = ref({} as Record<number, string>);
+const transferableModelAvailabilityRef = ref({} as Record<number, boolean>);
 
 const confirmDeleteRef = ref(false);
 
@@ -371,29 +411,81 @@ const createModelParams = ref({
   modelCreatorPeripheralConfigId: null,
 } as CreateModelParams);
 
-function showModelSetDetails(modelSetIndex: number) {
-  selectedModelSetIndexRef.value = modelSetIndex;
-  api
-    .get(
-      '/api/item/' +
-      props.itemId +
-      '/media-creation/model-set-files/' +
-      modelSetIndex,
-    )
-    .then((response) => {
-      if (response) {
-        modelSetFiles = response.data;
-        showModelSetDetailsModalRef.value = true;
-      }
-    })
-    .catch(() => {
-      quasar.notify({
-        color: 'negative',
-        position: 'bottom',
-        message: i18n.t('ItemModelSetEditor.messages.loadingFailed'),
-        icon: 'report_problem',
-      });
+function createModelSetFileUrl(modelSetIndex: number, fileName: string): string {
+  return (
+    '/api/item/' +
+    props.itemId +
+    '/media-creation/model-set-file/' +
+    modelSetIndex +
+    '/' +
+    encodeURIComponent(fileName)
+  );
+}
+
+function findPreviewableModel(files: Asset[]): Asset | undefined {
+  return files.find((file) => file.fileName.toLowerCase().endsWith('.glb')) ??
+    files.find((file) => file.fileName.toLowerCase().endsWith('.obj'));
+}
+
+function applyModelSetFiles(modelSetIndex: number, files: Asset[]) {
+  modelSetFilesByIndexRef.value[modelSetIndex] = files;
+  transferableModelAvailabilityRef.value[modelSetIndex] = files.some((file) => file.transferable);
+
+  const previewableModel = findPreviewableModel(files);
+  if (previewableModel) {
+    previewableModelUrlsRef.value[modelSetIndex] = createModelSetFileUrl(modelSetIndex, previewableModel.fileName);
+  } else {
+    delete previewableModelUrlsRef.value[modelSetIndex];
+  }
+}
+
+async function loadModelSetFiles(modelSetIndex: number): Promise<Asset[]> {
+  const response = await api.get(
+    '/api/item/' +
+    props.itemId +
+    '/media-creation/model-set-files/' +
+    modelSetIndex,
+  );
+
+  const files = response.data as Asset[];
+  applyModelSetFiles(modelSetIndex, files);
+  return files;
+}
+
+async function ensureModelSetFiles(modelSetIndex: number): Promise<Asset[]> {
+  if (modelSetFilesByIndexRef.value[modelSetIndex]) {
+    return modelSetFilesByIndexRef.value[modelSetIndex];
+  }
+
+  return loadModelSetFiles(modelSetIndex);
+}
+
+function loadModelSetMetadata() {
+  modelSetFilesByIndexRef.value = {};
+  previewableModelUrlsRef.value = {};
+  transferableModelAvailabilityRef.value = {};
+
+  props.creationModelSets.forEach((_, index) => {
+    void loadModelSetFiles(index).catch(() => {
+      transferableModelAvailabilityRef.value[index] = false;
+      delete previewableModelUrlsRef.value[index];
     });
+  });
+}
+
+async function showModelSetDetails(modelSetIndex: number) {
+  selectedModelSetIndexRef.value = modelSetIndex;
+  try {
+    modelSetFilesRef.value = await ensureModelSetFiles(modelSetIndex);
+    showModelSetDetailsModalRef.value = true;
+  } catch {
+    quasar.notify({
+      color: 'negative',
+      position: 'bottom',
+      message: i18n.t('ItemModelSetEditor.messages.loadingFailed'),
+      icon: 'report_problem',
+    });
+  }
 }
 
 function showCreateModel() {
@@ -496,30 +588,37 @@ function openModelDir(index: number) {
     });
 }
 
-async function hasTransferableModel(modelSetIndex: number): boolean {
-  await api
-    .get(
-      '/api/item/' +
-      props.itemId +
-      '/media-creation/transferable-model/' +
-      modelSetIndex
-    )
-    .then((response) => {
-      if (response) {
-        return response.data;
-      } else {
-        return false;
-      }
-    })
-    .catch(() => {
-      quasar.notify({
-        color: 'negative',
-        position: 'bottom',
-        message: i18n.t('Common.messages.loading.failed', {item: i18n.t('Common.items.model')}),
-        icon: 'report_problem',
-      });
-    });
+function hasTransferableModel(modelSetIndex: number): boolean {
+  return transferableModelAvailabilityRef.value[modelSetIndex] === true;
+}
 
+function hasPreviewableModel(modelSetIndex: number): boolean {
+  return Boolean(previewableModelUrlsRef.value[modelSetIndex]);
+}
+
+async function openModelViewer(modelSetIndex: number) {
+  try {
+    await ensureModelSetFiles(modelSetIndex);
+    const previewModelUrl = previewableModelUrlsRef.value[modelSetIndex];
+    if (!previewModelUrl) {
+      return;
+    }
+
+    selectedPreviewModelUrlRef.value = previewModelUrl;
+    showModelViewerModalRef.value = true;
+  } catch {
+    quasar.notify({
+      color: 'negative',
+      position: 'bottom',
+      message: i18n.t('ItemModelSetEditor.messages.loadingFailed'),
+      icon: 'report_problem',
+    });
+  }
+}
+
+function closeModelViewer() {
+  showModelViewerModalRef.value = false;
+  selectedPreviewModelUrlRef.value = '';
 }
 
 function transferModel(modelSetIndex: number) {
@@ -630,6 +729,10 @@ function createPeripheralsOptions() {
 onMounted(() => {
   createPeripheralsOptions();
 });
+
+watch(() => props.creationModelSets, () => {
+  loadModelSetMetadata();
+}, {deep: true, immediate: true});
 </script>
 
 <style scoped>
@@ -640,6 +743,11 @@ onMounted(() => {
 .model-set-card-img {
   width: 200px;
   height: 200px;
+}
+
+.model-viewer-dialog-content {
+  width: min(80vw, 1100px);
+  height: 70vh;
 }
 
 </style>
