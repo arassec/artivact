@@ -85,7 +85,7 @@ class AiGatewayAdapterTest {
 
         assertThatThrownBy(() -> aiGatewayAdapter.convertToAudio(aiConfiguration, "content", "alloy", targetFile))
                 .isInstanceOf(ArtivactException.class)
-                .hasMessageContaining("No API key specified for TTS with OpenAI");
+                .hasMessageContaining("No API key or voice specified for TTS with OpenAI!");
     }
 
     @Test
@@ -98,7 +98,7 @@ class AiGatewayAdapterTest {
 
         assertThatThrownBy(() -> aiGatewayAdapter.convertToAudio(aiConfiguration, "content", "alloy", targetFile))
                 .isInstanceOf(ArtivactException.class)
-                .hasMessageContaining("No API key specified for TTS with OpenAI");
+                .hasMessageContaining("No API key or voice specified for TTS with OpenAI!");
     }
 
     @Test
@@ -111,7 +111,7 @@ class AiGatewayAdapterTest {
 
         assertThatThrownBy(() -> aiGatewayAdapter.convertToAudio(aiConfiguration, "content", "voice", targetFile))
                 .isInstanceOf(ArtivactException.class)
-                .hasMessageContaining("No API key specified for TTS with Elevenlabs");
+                .hasMessageContaining("No API key or voice specified for TTS with Elevenlabs!");
     }
 
     @Test
@@ -124,7 +124,7 @@ class AiGatewayAdapterTest {
 
         assertThatThrownBy(() -> aiGatewayAdapter.convertToAudio(aiConfiguration, "content", "voice", targetFile))
                 .isInstanceOf(ArtivactException.class)
-                .hasMessageContaining("No API key specified for TTS with Elevenlabs");
+                .hasMessageContaining("No API key or voice specified for TTS with Elevenlabs!");
     }
 
     @Test
@@ -137,6 +137,7 @@ class AiGatewayAdapterTest {
 
         assertThatThrownBy(() -> aiGatewayAdapter.convertToAudio(aiConfiguration, "content", "alloy", targetFile))
                 .isInstanceOf(ArtivactException.class)
-                .hasMessageContaining("No API key specified for TTS with OpenAI");
+                .hasMessageContaining("No API key or voice specified for TTS with OpenAI!");
     }
+
 }
