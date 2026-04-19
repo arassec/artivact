@@ -10,7 +10,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -22,233 +21,217 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class ItemMediaCreationControllerTest {
 
-    @InjectMocks
-    private ItemMediaCreationController controller;
+	@Mock
+	private CaptureItemImageUseCase captureImagesUseCase;
 
-    @Mock
-    private CaptureItemImageUseCase captureImagesUseCase;
+	@Mock
+	private ManipulateItemImagesUseCase manipulateImagesUseCase;
 
-    @Mock
-    private ManipulateItemImagesUseCase manipulateImagesUseCase;
+	@Mock
+	private ManageItemImagesUseCase manageItemImagesUseCase;
 
-    @Mock
-    private ManageItemImagesUseCase manageItemImagesUseCase;
+	@Mock
+	private ManageItemModelsUseCase manageItemModelsUseCase;
 
-    @Mock
-    private ManageItemModelsUseCase manageItemModelsUseCase;
+	@Mock
+	private CreateItemModelUseCase createItemModelUseCase;
 
-    @Mock
-    private CreateItemModelUseCase createItemModelUseCase;
+	@Mock
+	private EditItemModelUseCase editItemModelUseCase;
 
-    @Mock
-    private EditItemModelUseCase editItemModelUseCase;
+	@InjectMocks
+	private ItemMediaCreationController controller;
 
-    @Test
-    void captureImageCapturesSingleImage() {
-        String itemId = "item-123";
-        CaptureImagesParams params = CaptureImagesParams.builder()
-                .cameraPeripheralConfigId("camera-1")
-                .build();
+	@Test
+	void captureImageReturnsCreatedImageName() {
+		CaptureImagesParams params = CaptureImagesParams.builder().numPhotos(1).build();
+		when(captureImagesUseCase.captureImage("item-1", params)).thenReturn("captured.png");
 
-        when(captureImagesUseCase.captureImage(itemId, params)).thenReturn("captured.jpg");
+		String result = controller.captureImage("item-1", params);
 
-        String result = controller.captureImage(itemId, params);
+		assertThat(result).isEqualTo("captured.png");
+	}
 
-        assertThat(result).isEqualTo("captured.jpg");
-        verify(captureImagesUseCase).captureImage(itemId, params);
-    }
+	@Test
+	void captureImagesStartsCapturingForProvidedItem() {
+		CaptureImagesParams params = CaptureImagesParams.builder().numPhotos(12).useTurnTable(true).build();
 
-    @Test
-    void captureImagesCapturesMultipleImages() {
-        String itemId = "item-123";
-        CaptureImagesParams params = CaptureImagesParams.builder()
-                .cameraPeripheralConfigId("camera-1")
-                .numPhotos(10)
-                .build();
+		controller.captureImages("item-1", params);
 
-        controller.captureImages(itemId, params);
+		verify(captureImagesUseCase).captureImages("item-1", params);
+	}
 
-        verify(captureImagesUseCase).captureImages(itemId, params);
-    }
+	@Test
+	void removeBackgroundsUsesConfiguredManipulatorAndImageSet() {
+		controller.removeBackgrounds("item-1", "config-1", 3);
 
-    @Test
-    void removeBackgroundsCallsManipulateImagesUseCase() {
-        String itemId = "item-123";
-        String configId = "bg-remover-1";
-        int imageSetIndex = 0;
+		verify(manipulateImagesUseCase).removeBackgrounds("item-1", "config-1", 3);
+	}
 
-        controller.removeBackgrounds(itemId, configId, imageSetIndex);
+	@Test
+	void createImageSetFromDanglingImagesDelegatesToUseCase() {
+		controller.createImageSetFromDanglingImages("item-1");
 
-        verify(manipulateImagesUseCase).removeBackgrounds(itemId, configId, imageSetIndex);
-    }
+		verify(manageItemImagesUseCase).createImageSetFromDanglingImages("item-1");
+	}
 
-    @Test
-    void createImageSetFromDanglingImagesCallsManageItemImagesUseCase() {
-        String itemId = "item-123";
+	@Test
+	void createModelSetStartsModelCreationForProvidedItem() {
+		CreateModelParams params = CreateModelParams.builder().modelCreatorPeripheralConfigId("creator-1").build();
 
-        controller.createImageSetFromDanglingImages(itemId);
+		controller.createModelSet("item-1", params);
 
-        verify(manageItemImagesUseCase).createImageSetFromDanglingImages(itemId);
-    }
+		verify(createItemModelUseCase).createModel("item-1", params);
+	}
 
-    @Test
-    void createModelSetCallsCreateItemModelUseCase() {
-        String itemId = "item-123";
-        CreateModelParams params = CreateModelParams.builder()
-                .modelCreatorPeripheralConfigId("creator-1")
-                .build();
+	@Test
+	void openModelEditorUsesRequestedModelSetAndEditor() {
+		controller.openModelEditor("item-1", 2, "editor-1");
 
-        controller.createModelSet(itemId, params);
+		verify(editItemModelUseCase).editModel("item-1", "editor-1", 2);
+	}
 
-        verify(createItemModelUseCase).createModel(itemId, params);
-    }
+	@Test
+	void getModelSetFilesReturnsAssetsOfRequestedModelSet() {
+		List<Asset> assets = List.of(
+				Asset.builder().fileName("model.glb").url("/api/item/item-1/model/model.glb").transferable(true).build()
+		);
+		when(manageItemModelsUseCase.getModelSetFiles("item-1", 1)).thenReturn(assets);
 
-    @Test
-    void openModelEditorCallsEditItemModelUseCase() {
-        String itemId = "item-123";
-        int modelSetIndex = 0;
-        String configId = "editor-1";
+		ResponseEntity<List<Asset>> result = controller.getModelSetFiles("item-1", 1);
 
-        controller.openModelEditor(itemId, modelSetIndex, configId);
+		assertThat(result.getStatusCode().is2xxSuccessful()).isTrue();
+		assertThat(result.getBody()).isEqualTo(assets);
+	}
 
-        verify(editItemModelUseCase).editModel(itemId, configId, modelSetIndex);
-    }
+	@Test
+	void getModelSetFileReturnsGlbContentWithBinaryGltfMediaType() {
+		byte[] data = "glb".getBytes();
+		when(manageItemModelsUseCase.loadModelSetFile("item-1", 1, "MODEL.GLB")).thenReturn(data);
 
-    @Test
-    void getModelSetFilesReturnsAssetList() {
-        String itemId = "item-123";
-        int modelSetIndex = 0;
-        List<Asset> assets = List.of(
-                Asset.builder().fileName("model.glb").build(),
-                Asset.builder().fileName("texture.jpg").build()
-        );
+		HttpEntity<byte[]> result = controller.getModelSetFile("item-1", 1, "MODEL.GLB");
 
-        when(manageItemModelsUseCase.getModelSetFiles(itemId, modelSetIndex)).thenReturn(assets);
+		assertThat(result.getBody()).isEqualTo(data);
+		assertThat(result.getHeaders().getContentDisposition().getFilename()).isEqualTo("MODEL.GLB");
+		assertThat(result.getHeaders().getContentType()).hasToString("model/gltf-binary");
+	}
 
-        ResponseEntity<List<Asset>> response = controller.getModelSetFiles(itemId, modelSetIndex);
+	@Test
+	void getModelSetFileReturnsGltfContentWithJsonMediaType() {
+		byte[] data = "gltf".getBytes();
+		when(manageItemModelsUseCase.loadModelSetFile("item-1", 1, "scene.gltf")).thenReturn(data);
 
-        assertThat(response.getBody()).isEqualTo(assets);
-    }
+		HttpEntity<byte[]> result = controller.getModelSetFile("item-1", 1, "scene.gltf");
 
-    @Test
-    void getModelSetFileReturnsFileContents() {
-        String itemId = "item-123";
-        int modelSetIndex = 0;
-        byte[] content = "model".getBytes();
+		assertThat(result.getBody()).isEqualTo(data);
+		assertThat(result.getHeaders().getContentType()).hasToString("model/gltf+json");
+	}
 
-        when(manageItemModelsUseCase.loadModelSetFile(itemId, modelSetIndex, "model.glb")).thenReturn(content);
+	@Test
+	void getModelSetFileReturnsObjContentAsPlainText() {
+		byte[] data = "obj".getBytes();
+		when(manageItemModelsUseCase.loadModelSetFile("item-1", 1, "mesh.obj")).thenReturn(data);
 
-        HttpEntity<byte[]> response = controller.getModelSetFile(itemId, modelSetIndex, "model.glb");
+		HttpEntity<byte[]> result = controller.getModelSetFile("item-1", 1, "mesh.obj");
 
-        assertThat(response.getBody()).isEqualTo(content);
-        assertThat(response.getHeaders().getContentDisposition().getFilename()).isEqualTo("model.glb");
-    }
+		assertThat(result.getBody()).isEqualTo(data);
+		assertThat(result.getHeaders().getContentType()).isEqualTo(org.springframework.http.MediaType.TEXT_PLAIN);
+	}
 
-    @Test
-    void getModelSetFileReturnsGlbContentType() {
-        byte[] content = "model".getBytes();
+	@Test
+	void getModelSetFileUsesGuessedContentTypeForKnownFileExtensions() {
+		byte[] data = "png".getBytes();
+		when(manageItemModelsUseCase.loadModelSetFile("item-1", 1, "preview.png")).thenReturn(data);
 
-        when(manageItemModelsUseCase.loadModelSetFile("item-123", 0, "model.glb")).thenReturn(content);
+		HttpEntity<byte[]> result = controller.getModelSetFile("item-1", 1, "preview.png");
 
-        HttpEntity<byte[]> response = controller.getModelSetFile("item-123", 0, "model.glb");
+		assertThat(result.getBody()).isEqualTo(data);
+		assertThat(result.getHeaders().getContentType()).isEqualTo(org.springframework.http.MediaType.IMAGE_PNG);
+	}
 
-        assertThat(response.getHeaders().getContentType()).isEqualTo(MediaType.valueOf("model/gltf-binary"));
-    }
+	@Test
+	void getModelSetFileFallsBackToOctetStreamForUnknownFileExtensions() {
+		byte[] data = "unknown".getBytes();
+		when(manageItemModelsUseCase.loadModelSetFile("item-1", 1, "archive.unknownext")).thenReturn(data);
 
-    @Test
-    void openImagesDirCallsManageItemImagesUseCase() {
-        String itemId = "item-123";
+		HttpEntity<byte[]> result = controller.getModelSetFile("item-1", 1, "archive.unknownext");
 
-        controller.openImagesDir(itemId);
+		assertThat(result.getBody()).isEqualTo(data);
+		assertThat(result.getHeaders().getContentType()).isEqualTo(org.springframework.http.MediaType.APPLICATION_OCTET_STREAM);
+	}
 
-        verify(manageItemImagesUseCase).openImagesDir(itemId);
-    }
+	@Test
+	void openImagesDirDelegatesToUseCase() {
+		controller.openImagesDir("item-1");
 
-    @Test
-    void openModelsDirCallsManageItemModelsUseCase() {
-        String itemId = "item-123";
+		verify(manageItemImagesUseCase).openImagesDir("item-1");
+	}
 
-        controller.openModelsDir(itemId);
+	@Test
+	void openModelsDirDelegatesToUseCase() {
+		controller.openModelsDir("item-1");
 
-        verify(manageItemModelsUseCase).openModelsDir(itemId);
-    }
+		verify(manageItemModelsUseCase).openModelsDir("item-1");
+	}
 
-    @Test
-    void openModelDirCallsManageItemModelsUseCase() {
-        String itemId = "item-123";
-        int modelSetIndex = 0;
+	@Test
+	void openModelDirDelegatesToUseCase() {
+		controller.openModelDir("item-1", 4);
 
-        controller.openModelDir(itemId, modelSetIndex);
+		verify(manageItemModelsUseCase).openModelDir("item-1", 4);
+	}
 
-        verify(manageItemModelsUseCase).openModelDir(itemId, modelSetIndex);
-    }
+	@Test
+	void transferImageDelegatesProvidedAssetToUseCase() {
+		Asset image = Asset.builder().fileName("image.png").url("/api/item/item-1/image/image.png").build();
 
-    @Test
-    void transferImageCallsManageItemImagesUseCase() {
-        String itemId = "item-123";
-        Asset image = Asset.builder().fileName("001.jpg").build();
+		controller.transferImage("item-1", image);
 
-        controller.transferImage(itemId, image);
+		verify(manageItemImagesUseCase).transferImageToMedia("item-1", image);
+	}
 
-        verify(manageItemImagesUseCase).transferImageToMedia(itemId, image);
-    }
+	@Test
+	void transferImagesDelegatesRequestedImageSetToUseCase() {
+		controller.transferImages("item-1", 5);
 
-    @Test
-    void transferImagesCallsManageItemImagesUseCase() {
-        String itemId = "item-123";
+		verify(manageItemImagesUseCase).transferImagesToMedia("item-1", 5);
+	}
 
-        controller.transferImages(itemId, 123);
+	@Test
+	void hasTransferableModelReturnsUseCaseResult() {
+		when(manageItemModelsUseCase.hasTransferableModel("item-1", 2)).thenReturn(true);
 
-        verify(manageItemImagesUseCase).transferImagesToMedia(itemId, 123);
-    }
+		boolean result = controller.hasTransferableModel("item-1", 2);
 
-    @Test
-    void hasTransferableModelCallsManageItemModelsUseCase() {
-        String itemId = "item-123";
-        int modelSetIndex = 0;
+		assertThat(result).isTrue();
+	}
 
-        controller.hasTransferableModel(itemId, modelSetIndex);
+	@Test
+	void transferModelDelegatesToUseCase() {
+		controller.transferModel("item-1", 2);
 
-        verify(manageItemModelsUseCase).hasTransferableModel(itemId, modelSetIndex);
-    }
+		verify(manageItemModelsUseCase).transferModelToMedia("item-1", 2);
+	}
 
-    @Test
-    void transferModelCallsManageItemModelsUseCase() {
-        String itemId = "item-123";
-        int modelSetIndex = 0;
+	@Test
+	void deleteImageSetDelegatesToUseCase() {
+		controller.deleteImageSet("item-1", 6);
 
-        controller.transferModel(itemId, modelSetIndex);
+		verify(manageItemImagesUseCase).deleteImageSet("item-1", 6);
+	}
 
-        verify(manageItemModelsUseCase).transferModelToMedia(itemId, modelSetIndex);
-    }
+	@Test
+	void deleteModelSetDelegatesToUseCase() {
+		controller.deleteModelSet("item-1", 7);
 
-    @Test
-    void deleteImageSetCallsManageItemImagesUseCase() {
-        String itemId = "item-123";
-        int imageSetIndex = 0;
+		verify(manageItemModelsUseCase).deleteModelSet("item-1", 7);
+	}
 
-        controller.deleteImageSet(itemId, imageSetIndex);
+	@Test
+	void toggleModelInputDelegatesToUseCase() {
+		controller.toggleModelInput("item-1", 8);
 
-        verify(manageItemImagesUseCase).deleteImageSet(itemId, imageSetIndex);
-    }
+		verify(manageItemModelsUseCase).toggleModelInput("item-1", 8);
+	}
 
-    @Test
-    void deleteModelSetCallsManageItemModelsUseCase() {
-        String itemId = "item-123";
-        int modelSetIndex = 0;
-
-        controller.deleteModelSet(itemId, modelSetIndex);
-
-        verify(manageItemModelsUseCase).deleteModelSet(itemId, modelSetIndex);
-    }
-
-    @Test
-    void toggleModelInputCallsManageItemModelsUseCase() {
-        String itemId = "item-123";
-        int imageSetIndex = 0;
-
-        controller.toggleModelInput(itemId, imageSetIndex);
-
-        verify(manageItemModelsUseCase).toggleModelInput(itemId, imageSetIndex);
-    }
 }

@@ -2,8 +2,6 @@ package com.arassec.artivact.application.service.collection;
 
 import com.arassec.artivact.application.port.in.collection.ExportCollectionUseCase;
 import com.arassec.artivact.application.port.in.configuration.LoadAiConfigurationUseCase;
-import com.arassec.artivact.application.port.in.configuration.LoadPropertiesConfigurationUseCase;
-import com.arassec.artivact.application.port.in.configuration.LoadTagsConfigurationUseCase;
 import com.arassec.artivact.application.port.in.menu.LoadMenuUseCase;
 import com.arassec.artivact.application.port.in.operation.RunBackgroundOperationUseCase;
 import com.arassec.artivact.application.port.in.project.UseProjectDirsUseCase;
@@ -14,31 +12,44 @@ import com.arassec.artivact.domain.exception.ArtivactException;
 import com.arassec.artivact.domain.model.TranslatableString;
 import com.arassec.artivact.domain.model.configuration.AiConfiguration;
 import com.arassec.artivact.domain.model.exchange.CollectionExport;
+import com.arassec.artivact.domain.model.exchange.CollectionExportInfo;
+import com.arassec.artivact.domain.model.item.ImageSize;
+import com.arassec.artivact.domain.model.menu.Menu;
+import com.arassec.artivact.domain.model.misc.ExchangeDefinitions;
 import com.arassec.artivact.domain.model.misc.ProgressMonitor;
-import com.arassec.artivact.domain.model.operation.BackgroundOperation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.InjectMocks;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-@SuppressWarnings("unused")
 @ExtendWith(MockitoExtension.class)
 class ManageCollectionExportServiceTest {
 
@@ -49,16 +60,7 @@ class ManageCollectionExportServiceTest {
     private CollectionExportRepository collectionExportRepository;
 
     @Mock
-    private LoadTagsConfigurationUseCase loadTagsConfigurationUseCase;
-
-    @Mock
-    private LoadPropertiesConfigurationUseCase loadPropertiesConfigurationUseCase;
-
-    @Mock
     private LoadMenuUseCase loadMenuUseCase;
-
-    @Mock
-    private JsonMapper jsonMapper;
 
     @Mock
     private ExportCollectionUseCase exportCollectionUseCase;
@@ -75,316 +77,357 @@ class ManageCollectionExportServiceTest {
     @Mock
     private LoadAiConfigurationUseCase loadAiConfigurationUseCase;
 
-    @InjectMocks
+    @TempDir
+    Path tempDir;
+
     private ManageCollectionExportService service;
 
-    private CollectionExport export;
+    private Path exportsDir;
 
     @BeforeEach
     void setUp() {
-        export = new CollectionExport();
-        export.setId("test-id");
-        export.setSourceId("source-1");
-        export.setTitle(new TranslatableString("title"));
+        exportsDir = Path.of("/tmp/exports");
+        lenient().when(useProjectDirsUseCase.getExportsDir()).thenReturn(exportsDir);
+
+        service = new ManageCollectionExportService(
+                fileRepository,
+                collectionExportRepository,
+                loadMenuUseCase,
+                JsonMapper.builder().build(),
+                exportCollectionUseCase,
+                useProjectDirsUseCase,
+                runBackgroundOperationUseCase,
+                aiGateway,
+                loadAiConfigurationUseCase
+        );
     }
 
     @Test
-    void testLoad() {
-        when(collectionExportRepository.findById("test-id")).thenReturn(Optional.of(export));
-        when(fileRepository.exists(any(Path.class))).thenReturn(true);
-        when(useProjectDirsUseCase.getExportsDir()).thenReturn(Path.of("exports"));
-        when(fileRepository.lastModified(any(Path.class))).thenReturn(Instant.now());
-        when(fileRepository.size(any(Path.class))).thenReturn(12345L);
-        when(fileRepository.list(Path.of("exports"))).thenReturn(List.of());
+    void saveStoresCollectionExportWithRequiredParameters() {
+        CollectionExport collectionExport = createCollectionExport("export-1", "menu-1", "Title");
 
-        CollectionExport collectionExport = service.load("test-id");
+        service.save(collectionExport);
 
-        assertThat(collectionExport).isNotNull();
-        assertThat(collectionExport.getId()).isEqualTo("test-id");
-        assertThat(collectionExport.getFileLastModified()).isGreaterThan(0L);
-        assertThat(collectionExport.getFileSize()).isEqualTo(12345L);
+        verify(collectionExportRepository).save(collectionExport);
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidCollectionExports")
+    void saveRejectsCollectionExportsWithoutRequiredParameters(CollectionExport collectionExport) {
+        assertThatThrownBy(() -> service.save(collectionExport))
+                .isInstanceOf(ArtivactException.class)
+                .hasMessageContaining("Cannot save a collection export without required parameters");
     }
 
     @Test
-    void testLoadResolvesContentAudioFromFilesystem() {
-        when(collectionExportRepository.findById("test-id")).thenReturn(Optional.of(export));
-        when(useProjectDirsUseCase.getExportsDir()).thenReturn(Path.of("exports"));
-        when(fileRepository.exists(Path.of("exports/test-id.artivact.collection.zip"))).thenReturn(false);
-        when(fileRepository.exists(Path.of("exports/test-id.mp3"))).thenReturn(true);
-        when(fileRepository.list(Path.of("exports"))).thenReturn(List.of(
-                Path.of("exports/test-id-de.mp3"),
-                Path.of("exports/test-id-fr.mp3"),
-                Path.of("exports/other-file.txt")
-        ));
+    void loadAllAddsExportFileMetadataContentAndResolvedAudio() {
+        CollectionExport collectionExport = createCollectionExport("export-1", "menu-1", "Title");
+        collectionExport.setContent(null);
 
-        CollectionExport collectionExport = service.load("test-id");
+        Path exportFile = exportsDir.resolve("export-1.artivact.collection.zip");
+        Path defaultAudioFile = exportsDir.resolve("export-1.mp3");
+        Path localizedAudioFile = exportsDir.resolve("export-1-de.mp3");
 
-        assertThat(collectionExport.getContentAudio()).isNotNull();
-        assertThat(collectionExport.getContentAudio().getValue()).isEqualTo("test-id.mp3");
-        assertThat(collectionExport.getContentAudio().getTranslations()).containsEntry("de", "test-id-de.mp3");
-        assertThat(collectionExport.getContentAudio().getTranslations()).containsEntry("fr", "test-id-fr.mp3");
-        assertThat(collectionExport.getContentAudio().getTranslations()).hasSize(2);
+        when(collectionExportRepository.findAll()).thenReturn(List.of(collectionExport));
+        when(fileRepository.exists(exportFile)).thenReturn(true);
+        when(fileRepository.lastModified(exportFile)).thenReturn(Instant.ofEpochMilli(1234L));
+        when(fileRepository.size(exportFile)).thenReturn(2048L);
+        when(fileRepository.exists(defaultAudioFile)).thenReturn(true);
+        when(fileRepository.list(exportsDir)).thenReturn(List.of(localizedAudioFile, exportsDir.resolve("other.mp3")));
+
+        List<CollectionExport> result = service.loadAll();
+
+        CollectionExport loadedCollectionExport = result.getFirst();
+        assertThat(loadedCollectionExport.isFilePresent()).isTrue();
+        assertThat(loadedCollectionExport.getFileLastModified()).isEqualTo(1234L);
+        assertThat(loadedCollectionExport.getFileSize()).isEqualTo(2048L);
+        assertThat(loadedCollectionExport.getContent()).isNotNull();
+        assertThat(loadedCollectionExport.getContent().getValue()).isEmpty();
+        assertThat(loadedCollectionExport.getContentAudio().getValue()).isEqualTo("export-1.mp3");
+        assertThat(loadedCollectionExport.getContentAudio().getTranslations())
+                .containsEntry("de", "export-1-de.mp3");
     }
 
     @Test
-    void testLoadAllRestrictedDelegatesToLoadAll() {
-        when(useProjectDirsUseCase.getExportsDir()).thenReturn(Path.of("exports"));
-        when(collectionExportRepository.findAll()).thenReturn(List.of(export));
-        when(fileRepository.list(Path.of("exports"))).thenReturn(List.of());
-        var result = service.loadAllRestricted();
-        assertThat(result).hasSize(1);
-        verify(collectionExportRepository).findAll();
-    }
+    void readExportFileReturnsConfiguredInputStream() {
+        Path exportFile = exportsDir.resolve("export-1.artivact.collection.zip");
+        InputStream inputStream = new ByteArrayInputStream(new byte[]{1, 2, 3});
 
-    @Test
-    void testSaveThrowsExceptionOnInvalidExport() {
-        assertThatThrownBy(() -> service.save(null))
-                .isInstanceOf(ArtivactException.class);
-    }
+        when(fileRepository.exists(exportFile)).thenReturn(true);
+        when(fileRepository.readStream(exportFile)).thenReturn(inputStream);
 
-    @Test
-    void testSaveStoresValidExport() {
-        service.save(export);
-        verify(collectionExportRepository).save(export);
-    }
+        InputStream result = service.readExportFile("export-1");
 
-    @Test
-    void testSaveSortOrderDelegates() {
-        service.saveSortOrder(List.of(export));
-        verify(collectionExportRepository).saveSortOrder(anyList());
-    }
-
-    @Test
-    void testDeleteRemovesFileCoverAndRepositoryEntry() {
-        when(useProjectDirsUseCase.getExportsDir()).thenReturn(Path.of("/tmp"));
-        when(fileRepository.exists(any())).thenReturn(true);
-        when(collectionExportRepository.findById("test-id")).thenReturn(Optional.of(export));
-        when(fileRepository.list(Path.of("/tmp"))).thenReturn(List.of());
-        export.setCoverPictureExtension("jpg");
-
-        service.delete("test-id");
-
-        verify(fileRepository, atLeastOnce()).delete(any());
-        verify(collectionExportRepository).delete("test-id");
+        assertThat(result).isSameAs(inputStream);
     }
 
     @SuppressWarnings("resource")
     @Test
-    void testReadExportFileThrowsWhenFileMissing() {
-        when(useProjectDirsUseCase.getExportsDir()).thenReturn(Path.of("/tmp"));
-        when(fileRepository.exists(any())).thenReturn(false);
+    void readExportFileThrowsExceptionWhenExportDoesNotExist() {
+        Path exportFile = exportsDir.resolve("export-1.artivact.collection.zip");
+        when(fileRepository.exists(exportFile)).thenReturn(false);
 
-        assertThatThrownBy(() -> service.readExportFile("id"))
-                .isInstanceOf(ArtivactException.class);
+        assertThatThrownBy(() -> service.readExportFile("export-1"))
+                .isInstanceOf(ArtivactException.class)
+                .hasMessageContaining("Cannot read export file for export with ID: export-1");
     }
 
     @Test
-    void testBuildExportFileRunsBackgroundOperation() {
-        when(collectionExportRepository.findById("test-id")).thenReturn(Optional.of(export));
-        when(useProjectDirsUseCase.getExportsDir()).thenReturn(Path.of("exports"));
-        when(fileRepository.list(Path.of("exports"))).thenReturn(List.of());
+    void deleteRemovesExportArtifactsAndRepositoryEntry() {
+        CollectionExport collectionExport = createCollectionExport("export-1", "menu-1", "Title");
+        collectionExport.setCoverPictureExtension("jpg");
 
-        doAnswer(invocation -> {
-            BackgroundOperation backgroundOperation = invocation.getArgument(2);
-            backgroundOperation.execute(new ProgressMonitor("test", "test"));
-            return null;
-        }).when(runBackgroundOperationUseCase).execute(any(), any(), any());
+        Path exportFile = exportsDir.resolve("export-1.artivact.collection.zip");
+        Path coverPicture = exportsDir.resolve("export-1.jpg");
+        Path defaultAudioFile = exportsDir.resolve("export-1.mp3");
+        Path localizedAudioFile = exportsDir.resolve("export-1-de.mp3");
 
-        service.buildExportFile("test-id");
+        when(collectionExportRepository.findById("export-1")).thenReturn(Optional.of(collectionExport));
+        when(fileRepository.exists(exportFile)).thenReturn(true);
+        when(fileRepository.exists(coverPicture)).thenReturn(true);
+        when(fileRepository.exists(defaultAudioFile)).thenReturn(true);
+        when(fileRepository.list(exportsDir)).thenReturn(List.of(localizedAudioFile, exportsDir.resolve("other.mp3")));
 
-        verify(collectionExportRepository).save(export);
+        service.delete("export-1");
+
+        verify(fileRepository).delete(exportFile);
+        verify(fileRepository).delete(coverPicture);
+        verify(fileRepository).delete(defaultAudioFile);
+        verify(fileRepository).delete(localizedAudioFile);
+        verify(collectionExportRepository).save(collectionExport);
+        verify(collectionExportRepository).delete("export-1");
+        assertThat(collectionExport.getCoverPictureExtension()).isNull();
     }
 
     @Test
-    void testSaveCoverPictureStoresFileAndUpdatesExport() {
-        when(fileRepository.getExtension("pic.jpg")).thenReturn(Optional.of("jpg"));
-        when(collectionExportRepository.findById("test-id")).thenReturn(Optional.of(export));
-        when(useProjectDirsUseCase.getExportsDir()).thenReturn(Path.of("/tmp"));
+    void saveCoverPictureScalesImageAndPersistsExtension() {
+        CollectionExport collectionExport = createCollectionExport("export-1", "menu-1", "Title");
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(new byte[]{1, 2, 3});
 
-        service.saveCoverPicture("test-id", "pic.jpg", new ByteArrayInputStream(new byte[0]));
+        when(fileRepository.getExtension("cover.jpg")).thenReturn(Optional.of("jpg"));
+        when(collectionExportRepository.findById("export-1")).thenReturn(Optional.of(collectionExport));
 
-        assertThat(export.getCoverPictureExtension()).isEqualTo("jpg");
-        verify(collectionExportRepository).save(export);
+        service.saveCoverPicture("export-1", "cover.jpg", inputStream);
+
+        verify(fileRepository).createDirIfRequired(exportsDir);
+        verify(fileRepository).scaleImage(
+                eq(inputStream),
+                eq(exportsDir.resolve("export-1.jpg")),
+                eq("jpg"),
+                eq(ImageSize.PAGE_TITLE.getWidth())
+        );
+        verify(collectionExportRepository).save(collectionExport);
+        assertThat(collectionExport.getCoverPictureExtension()).isEqualTo("jpg");
     }
 
     @Test
-    void testLoadCoverPictureThrowsIfMissing() {
-        when(collectionExportRepository.findById("test-id")).thenReturn(Optional.of(export));
-        assertThatThrownBy(() -> service.loadCoverPicture("test-id"))
-                .isInstanceOf(ArtivactException.class);
+    void loadCoverPictureReturnsStoredBytes() {
+        CollectionExport collectionExport = createCollectionExport("export-1", "menu-1", "Title");
+        collectionExport.setCoverPictureExtension("jpg");
+        byte[] coverPictureBytes = new byte[]{4, 5, 6};
+
+        when(collectionExportRepository.findById("export-1")).thenReturn(Optional.of(collectionExport));
+        when(fileRepository.readBytes(exportsDir.resolve("export-1.jpg"))).thenReturn(coverPictureBytes);
+
+        byte[] result = service.loadCoverPicture("export-1");
+
+        assertThat(result).containsExactly(4, 5, 6);
     }
 
     @Test
-    void testDeleteCoverPictureRemovesFileAndResetsExtension() {
-        export.setCoverPictureExtension("jpg");
-        when(collectionExportRepository.findById("test-id")).thenReturn(Optional.of(export));
-        when(useProjectDirsUseCase.getExportsDir()).thenReturn(Path.of("/tmp"));
-        when(fileRepository.exists(any())).thenReturn(true);
+    void createCollectionExportInfosWritesOverviewAndMediaFilesToZip() throws IOException {
+        Path coverPicture = Files.writeString(tempDir.resolve("cover.jpg"), "cover-content");
+        Path ignoredZip = Files.writeString(tempDir.resolve("ignored.zip"), "zip-content");
+        Path directory = Files.createDirectory(tempDir.resolve("subdir"));
 
-        service.deleteCoverPicture("test-id");
+        CollectionExport availableExport = createCollectionExport("export-1", "menu-1", "Title");
+        availableExport.setDescription(new TranslatableString("Description"));
+        availableExport.setFilePresent(true);
+        availableExport.setFileSize(512L);
+        availableExport.setFileLastModified(42L);
 
-        assertThat(export.getCoverPictureExtension()).isNull();
-        verify(collectionExportRepository).save(export);
-    }
+        CollectionExport unavailableExport = createCollectionExport("export-2", "menu-2", "Other");
+        unavailableExport.setFilePresent(false);
 
-    @Test
-    void testCreateCollectionExportInfosWritesToStream() {
-        export.setFilePresent(true);
-        export.setFileSize(42L);
-        export.setFileLastModified(Instant.now().toEpochMilli());
+        when(useProjectDirsUseCase.getExportsDir()).thenReturn(tempDir);
+        when(fileRepository.list(tempDir)).thenReturn(List.of(coverPicture, ignoredZip, directory));
+        when(fileRepository.isDir(coverPicture)).thenReturn(false);
+        when(fileRepository.isDir(directory)).thenReturn(true);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        when(useProjectDirsUseCase.getExportsDir()).thenReturn(Path.of("/tmp"));
-        when(fileRepository.list(any())).thenReturn(List.of());
-        when(jsonMapper.writeValueAsBytes(any())).thenReturn("data".getBytes());
 
-        service.createCollectionExportInfos(outputStream, List.of(export));
+        service.createCollectionExportInfos(outputStream, List.of(availableExport, unavailableExport));
 
-        assertThat(outputStream.toByteArray()).isNotEmpty();
+        Map<String, byte[]> zipEntries = readZipEntries(outputStream.toByteArray());
+        CollectionExportInfo[] collectionExportInfos = JsonMapper.builder().build().readValue(
+                zipEntries.get(ExchangeDefinitions.COLLECTION_EXPORT_OVERVIEWS_JSON_FILE),
+                CollectionExportInfo[].class
+        );
+
+        assertThat(zipEntries).containsKeys(ExchangeDefinitions.COLLECTION_EXPORT_OVERVIEWS_JSON_FILE, "cover.jpg");
+        assertThat(zipEntries).doesNotContainKey("ignored.zip");
+        assertThat(collectionExportInfos).hasSize(1);
+        assertThat(collectionExportInfos[0].getId()).isEqualTo("export-1");
+        assertThat(collectionExportInfos[0].getTitle().getValue()).isEqualTo("Title");
+        assertThat(zipEntries.get("cover.jpg")).containsExactly("cover-content".getBytes());
     }
 
     @Test
-    void testSaveContentAudioStoresFileAndUpdatesExport(@TempDir Path tempDir) {
-        when(useProjectDirsUseCase.getExportsDir()).thenReturn(tempDir);
+    void saveContentAudioCopiesAudioToDefaultFilenameForLocale() {
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(new byte[]{7, 8, 9});
 
-        doAnswer(invocation -> {
-            Path target = invocation.getArgument(1);
-            java.nio.file.Files.createFile(target);
-            return null;
-        }).when(fileRepository).copy(any(InputStream.class), any(Path.class), any());
+        service.saveContentAudio("export-1", "de", "audio.mp3", inputStream);
 
-        service.saveContentAudio("test-id", "de", "audio.mp3", new ByteArrayInputStream(new byte[0]));
-
-        assertThat(tempDir.resolve("test-id-de.mp3")).exists();
-        verify(collectionExportRepository, never()).save(any());
+        verify(fileRepository).createDirIfRequired(exportsDir);
+        verify(fileRepository).copy(
+                eq(inputStream),
+                eq(exportsDir.resolve("export-1-de.mp3")),
+                eq(StandardCopyOption.REPLACE_EXISTING)
+        );
     }
 
     @Test
-    void testSaveContentAudioDefaultLocale(@TempDir Path tempDir) {
-        when(useProjectDirsUseCase.getExportsDir()).thenReturn(tempDir);
+    void loadContentAudioReturnsBytesForExistingAudioFile() {
+        Path audioFile = exportsDir.resolve("export-1-de.mp3");
+        when(fileRepository.exists(audioFile)).thenReturn(true);
+        when(fileRepository.readBytes(audioFile)).thenReturn(new byte[]{1, 3, 5});
 
-        doAnswer(invocation -> {
-            Path target = invocation.getArgument(1);
-            java.nio.file.Files.createFile(target);
-            return null;
-        }).when(fileRepository).copy(any(InputStream.class), any(Path.class), any());
+        byte[] result = service.loadContentAudio("export-1", "export-1-de.mp3");
 
-        service.saveContentAudio("test-id", "", "audio.mp3", new ByteArrayInputStream(new byte[0]));
-
-        assertThat(tempDir.resolve("test-id.mp3")).exists();
-        verify(collectionExportRepository, never()).save(any());
+        assertThat(result).containsExactly(1, 3, 5);
     }
 
     @Test
-    void testDeleteContentAudioRemovesFile() {
-        when(useProjectDirsUseCase.getExportsDir()).thenReturn(Path.of("/tmp"));
-        when(fileRepository.exists(any())).thenReturn(true);
-
-        service.deleteContentAudio("test-id", "de");
-
-        verify(fileRepository).delete(Path.of("/tmp/test-id-de.mp3"));
-        verify(collectionExportRepository, never()).save(any());
-    }
-
-    @Test
-    void testDeleteContentAudioDefaultLocale() {
-        when(useProjectDirsUseCase.getExportsDir()).thenReturn(Path.of("/tmp"));
-        when(fileRepository.exists(any())).thenReturn(true);
-
-        service.deleteContentAudio("test-id", "");
-
-        verify(fileRepository).delete(Path.of("/tmp/test-id.mp3"));
-        verify(collectionExportRepository, never()).save(any());
-    }
-
-    @Test
-    void testDeleteContentAudioFileNotPresent() {
-        when(useProjectDirsUseCase.getExportsDir()).thenReturn(Path.of("/tmp"));
-        when(fileRepository.exists(any())).thenReturn(false);
-
-        service.deleteContentAudio("test-id", "de");
-
-        verify(fileRepository, never()).delete(any());
-        verify(collectionExportRepository, never()).save(any());
-    }
-
-    @Test
-    void testLoadContentAudioNotFound() {
-        when(useProjectDirsUseCase.getExportsDir()).thenReturn(Path.of("/tmp"));
-        when(fileRepository.exists(any())).thenReturn(false);
-
-        assertThatThrownBy(() -> service.loadContentAudio("test-id", "test-id.mp3"))
-                .isInstanceOf(ArtivactException.class)
-                .hasMessageContaining("Content audio file not found");
-    }
-
-    @Test
-    void testLoadContentAudioInvalidFilename() {
-        assertThatThrownBy(() -> service.loadContentAudio("test-id", "../etc/passwd"))
+    void loadContentAudioRejectsInvalidFileNames() {
+        assertThatThrownBy(() -> service.loadContentAudio("export-1", "../export-1.mp3"))
                 .isInstanceOf(ArtivactException.class)
                 .hasMessageContaining("Invalid content audio filename");
     }
 
     @Test
-    void testLoadContentAudioSuccess() {
-        when(useProjectDirsUseCase.getExportsDir()).thenReturn(Path.of("/tmp"));
-        when(fileRepository.exists(any())).thenReturn(true);
-        when(fileRepository.readBytes(any())).thenReturn(new byte[]{1, 2, 3});
+    void deleteContentAudioRemovesExistingAudioFile() {
+        Path audioFile = exportsDir.resolve("export-1-de.mp3");
+        when(fileRepository.exists(audioFile)).thenReturn(true);
 
-        byte[] result = service.loadContentAudio("test-id", "test-id.mp3");
+        service.deleteContentAudio("export-1", "de");
 
-        assertThat(result).containsExactly(1, 2, 3);
+        verify(fileRepository).delete(audioFile);
     }
 
     @Test
-    void testGenerateContentAudioInvalidLocale() {
-        assertThatThrownBy(() -> service.generateContentAudio("test-id", "../etc"))
+    void generateContentAudioRejectsInvalidLocale() {
+        assertThatThrownBy(() -> service.generateContentAudio("export-1", "../etc"))
                 .isInstanceOf(ArtivactException.class)
                 .hasMessageContaining("Invalid locale");
+
+        verifyNoInteractions(collectionExportRepository, loadAiConfigurationUseCase, aiGateway);
     }
 
     @Test
-    void testGenerateContentAudioNoContent() {
-        when(collectionExportRepository.findById("test-id")).thenReturn(Optional.of(export));
+    void generateContentAudioThrowsExceptionWhenContentIsBlank() {
+        CollectionExport collectionExport = createCollectionExport("export-1", "menu-1", "Title");
+        collectionExport.setContent(new TranslatableString(""));
 
-        assertThatThrownBy(() -> service.generateContentAudio("test-id", "de"))
+        when(collectionExportRepository.findById("export-1")).thenReturn(Optional.of(collectionExport));
+
+        assertThatThrownBy(() -> service.generateContentAudio("export-1", "de"))
                 .isInstanceOf(ArtivactException.class)
-                .hasMessageContaining("No content available");
+                .hasMessageContaining("No content available for audio generation in collection export: export-1");
     }
 
     @Test
-    void testGenerateContentAudioSuccess() {
-        TranslatableString content = new TranslatableString("Some content text");
-        export.setContent(content);
+    void generateContentAudioUsesTranslatedContentAndVoice() {
+        CollectionExport collectionExport = createCollectionExport("export-1", "menu-1", "Title");
+        TranslatableString content = new TranslatableString("Hello");
+        content.getTranslations().put("de", "Hallo");
+        collectionExport.setContent(content);
 
-        when(collectionExportRepository.findById("test-id")).thenReturn(Optional.of(export));
-        when(useProjectDirsUseCase.getExportsDir()).thenReturn(Path.of("/tmp"));
-        when(loadAiConfigurationUseCase.loadAiConfiguration()).thenReturn(new AiConfiguration());
+        AiConfiguration aiConfiguration = new AiConfiguration();
+        TranslatableString ttsVoice = new TranslatableString("voice-default");
+        ttsVoice.getTranslations().put("de", "voice-de");
+        aiConfiguration.setTtsVoice(ttsVoice);
 
-        String result = service.generateContentAudio("test-id", "");
+        when(collectionExportRepository.findById("export-1")).thenReturn(Optional.of(collectionExport));
+        when(loadAiConfigurationUseCase.loadAiConfiguration()).thenReturn(aiConfiguration);
 
-        assertThat(result).isEqualTo("test-id.mp3");
-        verify(aiGateway).convertToAudio(any(AiConfiguration.class), eq("Some content text"), eq("alloy"), any(Path.class));
-        verify(collectionExportRepository, never()).save(any());
+        String audioFilename = service.generateContentAudio("export-1", "de");
+
+        assertThat(audioFilename).isEqualTo("export-1-de.mp3");
+        verify(fileRepository).createDirIfRequired(exportsDir);
+        verify(aiGateway).convertToAudio(
+                eq(aiConfiguration),
+                eq("Hallo"),
+                eq("voice-de"),
+                eq(exportsDir.resolve("export-1-de.mp3"))
+        );
     }
 
     @Test
-    void testDeleteRemovesContentAudioFiles() {
-        when(useProjectDirsUseCase.getExportsDir()).thenReturn(Path.of("/tmp"));
-        when(fileRepository.exists(any())).thenReturn(true);
-        when(collectionExportRepository.findById("test-id")).thenReturn(Optional.of(export));
-        when(fileRepository.list(Path.of("/tmp"))).thenReturn(List.of(
-                Path.of("/tmp/test-id-de.mp3"),
-                Path.of("/tmp/test-id-fr.mp3")
-        ));
+    void buildExportFileRunsBackgroundExportAndPersistsTheUpdatedCollectionExport() {
+        CollectionExport collectionExport = createCollectionExport("export-1", "menu-1", "Title");
+        collectionExport.setContent(null);
+        Menu menu = new Menu();
+        menu.setId("menu-1");
+        Path exportFile = exportsDir.resolve("export-1.artivact.collection.zip");
 
-        export.setCoverPictureExtension("jpg");
+        when(collectionExportRepository.findById("export-1")).thenReturn(Optional.of(collectionExport));
+        when(fileRepository.exists(exportFile)).thenReturn(false);
+        when(fileRepository.list(exportsDir)).thenReturn(List.of());
+        when(loadMenuUseCase.loadMenu("menu-1")).thenReturn(menu);
+        when(exportCollectionUseCase.exportCollection(collectionExport, menu)).thenReturn(exportFile);
 
-        service.delete("test-id");
+        doAnswer(invocation -> {
+            invocation.<com.arassec.artivact.domain.model.operation.BackgroundOperation>getArgument(2)
+                    .execute(new ProgressMonitor("collectionExport", "export"));
+            return null;
+        }).when(runBackgroundOperationUseCase).execute(eq("collectionExport"), eq("export"), any());
 
-        // Deletes: export file, cover picture, default audio, 2 localized audio files = at least 4 delete calls
-        verify(fileRepository, atLeast(4)).delete(any());
-        verify(collectionExportRepository).delete("test-id");
+        service.buildExportFile("export-1");
+
+        verify(loadMenuUseCase).loadMenu("menu-1");
+        verify(exportCollectionUseCase).exportCollection(collectionExport, menu);
+        verify(collectionExportRepository).save(collectionExport);
+    }
+
+    private static Stream<Arguments> invalidCollectionExports() {
+        CollectionExport missingId = createCollectionExport("export-1", "menu-1", "Title");
+        missingId.setId(null);
+
+        CollectionExport missingSourceId = createCollectionExport("export-1", "menu-1", "Title");
+        missingSourceId.setSourceId(" ");
+
+        CollectionExport missingTitle = createCollectionExport("export-1", "menu-1", "Title");
+        missingTitle.setTitle(new TranslatableString(" "));
+
+        return Stream.of(
+                Arguments.of((CollectionExport) null),
+                Arguments.of(missingId),
+                Arguments.of(missingSourceId),
+                Arguments.of(missingTitle)
+        );
+    }
+
+    private static CollectionExport createCollectionExport(String id, String sourceId, String title) {
+        CollectionExport collectionExport = new CollectionExport();
+        collectionExport.setId(id);
+        collectionExport.setSourceId(sourceId);
+        collectionExport.setTitle(new TranslatableString(title));
+        collectionExport.setDescription(new TranslatableString("Description"));
+        return collectionExport;
+    }
+
+    private Map<String, byte[]> readZipEntries(byte[] zipContent) throws IOException {
+        Map<String, byte[]> zipEntries = new HashMap<>();
+
+        try (ZipInputStream zipInputStream = new ZipInputStream(new ByteArrayInputStream(zipContent))) {
+            ZipEntry zipEntry;
+            while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+                zipEntries.put(zipEntry.getName(), zipInputStream.readAllBytes());
+                zipInputStream.closeEntry();
+            }
+        }
+
+        return zipEntries;
     }
 
 }
