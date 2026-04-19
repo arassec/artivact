@@ -359,7 +359,8 @@ class ManageCollectionExportServiceTest {
                 throw new IOException("boom");
             }
         }) {
-            assertThatThrownBy(() -> service.createCollectionExportInfos(failingOutputStream, List.of(collectionExport)))
+            List<CollectionExport> collectionExports = List.of(collectionExport);
+            assertThatThrownBy(() -> service.createCollectionExportInfos(failingOutputStream, collectionExports))
                     .isInstanceOf(ArtivactException.class)
                     .hasMessageContaining("Could not create item export file!");
         } catch (IOException e) {
@@ -410,11 +411,12 @@ class ManageCollectionExportServiceTest {
 
     @Test
     void saveContentAudioRejectsInvalidLocale() {
+        var contentAudio = new ByteArrayInputStream(new byte[]{7, 8, 9});
         assertThatThrownBy(() -> service.saveContentAudio(
                 "export-1",
                 "../etc",
                 "audio.mp3",
-                new ByteArrayInputStream(new byte[]{7, 8, 9})
+                contentAudio
         ))
                 .isInstanceOf(ArtivactException.class)
                 .hasMessageContaining("Invalid locale");

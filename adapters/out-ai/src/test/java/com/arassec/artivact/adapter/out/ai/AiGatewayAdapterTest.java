@@ -227,7 +227,7 @@ class AiGatewayAdapterTest {
 
         Path targetFile = tempDir.resolve("output.mp3");
 
-        try (MockedConstruction<OpenAiAudioSpeechModel> ignored = Mockito.mockConstruction(
+        try (var _ = Mockito.mockConstruction(
                 OpenAiAudioSpeechModel.class,
                 (mock, ignoredContext) -> when(mock.call("content")).thenReturn(new byte[0]))) {
 
