@@ -7,19 +7,18 @@ import com.arassec.artivact.domain.model.configuration.AiConfiguration;
 import com.arassec.artivact.domain.model.configuration.AiModel;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockedConstruction;
-import org.mockito.Mockito;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.ai.elevenlabs.ElevenLabsTextToSpeechModel;
 import org.springframework.ai.openai.OpenAiAudioSpeechModel;
 import org.springframework.ai.openai.OpenAiChatModel;
 
+import java.io.IOException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,202 +38,184 @@ class AiGatewayAdapterTest {
     @InjectMocks
     private AiGatewayAdapter aiGatewayAdapter;
 
+    @Test
+    void executeReturnsChatModelResponseWhenTranslationModelIsNotConfigured() {
+        AiConfiguration aiConfiguration = translationConfiguration(null, "api-key");
+
+        try (MockedConstruction<OpenAiChatModel> mockedConstruction = Mockito.mockConstruction(
+                OpenAiChatModel.class,
+                (mock, _) -> when(mock.call("prompt")).thenReturn("response")
+        )) {
+            String result = aiGatewayAdapter.execute(aiConfiguration, "prompt");
+
+            assertThat(result).isEqualTo("response");
+            assertThat(mockedConstruction.constructed()).hasSize(1);
+        }
+    }
+
+    @Test
+    void executeThrowsExceptionWhenTranslationModelIsUnsupported() {
+        AiConfiguration aiConfiguration = translationConfiguration(AiModel.ELEVENLABS, "api-key");
+
+        assertThatThrownBy(() -> aiGatewayAdapter.execute(aiConfiguration, "prompt"))
+                .isInstanceOf(ArtivactException.class)
+                .hasMessage("Unsupported translation model: ELEVENLABS");
+    }
 
     @ParameterizedTest
     @NullAndEmptySource
-    @ValueSource(strings = {"   "})
-    void executeReturnsNullIfApiKeyIsNotConfigured(String apiKey) {
-        AiConfiguration aiConfiguration = new AiConfiguration();
-        aiConfiguration.setTranslationApiKey(apiKey);
+    @ValueSource(strings = {" "})
+    void executeThrowsExceptionWhenTranslationApiKeyIsMissing(String apiKey) {
+        AiConfiguration aiConfiguration = translationConfiguration(AiModel.OPEN_AI, apiKey);
 
-        String result = aiGatewayAdapter.execute(aiConfiguration, "test prompt");
-
-        assertThat(result).isNull();
-    }
-
-    @Test
-    void executeReturnsAiResponseIfOpenAiTranslationIsConfigured() {
-        AiConfiguration aiConfiguration = new AiConfiguration();
-        aiConfiguration.setTranslationModel(AiModel.OPEN_AI);
-        aiConfiguration.setTranslationApiKey("api-key");
-
-        try (MockedConstruction<OpenAiChatModel> openAiChatModelMockedConstruction = Mockito.mockConstruction(
-                OpenAiChatModel.class,
-                (mock, ignored) -> when(mock.call("test prompt")).thenReturn("translated text"))) {
-
-            String result = aiGatewayAdapter.execute(aiConfiguration, "test prompt");
-
-            assertThat(result).isEqualTo("translated text");
-            assertThat(openAiChatModelMockedConstruction.constructed()).hasSize(1);
-        }
-    }
-
-    @Test
-    void executeDefaultsToOpenAiIfTranslationModelIsNull() {
-        AiConfiguration aiConfiguration = new AiConfiguration();
-        aiConfiguration.setTranslationModel(null);
-        aiConfiguration.setTranslationApiKey(null);
-
-        String result = aiGatewayAdapter.execute(aiConfiguration, "test prompt");
-
-        assertThat(result).isNull();
-    }
-
-    @Test
-    void executeDefaultsToOpenAiAndReturnsResponseIfTranslationModelIsNull() {
-        AiConfiguration aiConfiguration = new AiConfiguration();
-        aiConfiguration.setTranslationModel(null);
-        aiConfiguration.setTranslationApiKey("api-key");
-
-        try (MockedConstruction<OpenAiChatModel> openAiChatModelMockedConstruction = Mockito.mockConstruction(
-                OpenAiChatModel.class,
-                (mock, ignored) -> when(mock.call("test prompt")).thenReturn("translated text"))) {
-
-            String result = aiGatewayAdapter.execute(aiConfiguration, "test prompt");
-
-            assertThat(result).isEqualTo("translated text");
-            assertThat(openAiChatModelMockedConstruction.constructed()).hasSize(1);
-        }
-    }
-
-    @Test
-    void executeThrowsExceptionForUnsupportedTranslationModel() {
-        AiConfiguration aiConfiguration = new AiConfiguration();
-        aiConfiguration.setTranslationModel(AiModel.ELEVENLABS);
-
-        assertThatThrownBy(() -> aiGatewayAdapter.execute(aiConfiguration, "test prompt"))
+        assertThatThrownBy(() -> aiGatewayAdapter.execute(aiConfiguration, "prompt"))
                 .isInstanceOf(ArtivactException.class)
-                .hasMessageContaining("Unsupported translation model");
+                .hasMessage("Missing API key for translation model!");
     }
 
     @Test
-    void convertToAudioThrowsExceptionIfOpenAiApiKeyMissing(@TempDir Path tempDir) {
-        AiConfiguration aiConfiguration = new AiConfiguration();
-        aiConfiguration.setTtsModel(AiModel.OPEN_AI);
-        aiConfiguration.setTtsApiKey(null);
-
-        Path targetFile = tempDir.resolve("output.mp3");
-
-        assertThatThrownBy(() -> aiGatewayAdapter.convertToAudio(aiConfiguration, "content", "alloy", targetFile))
-                .isInstanceOf(ArtivactException.class)
-                .hasMessageContaining("No API key or voice specified for TTS with OpenAI!");
-    }
-
-    @Test
-    void convertToAudioThrowsExceptionIfOpenAiApiKeyIsEmpty(@TempDir Path tempDir) {
-        AiConfiguration aiConfiguration = new AiConfiguration();
-        aiConfiguration.setTtsModel(AiModel.OPEN_AI);
-        aiConfiguration.setTtsApiKey("");
-
-        Path targetFile = tempDir.resolve("output.mp3");
-
-        assertThatThrownBy(() -> aiGatewayAdapter.convertToAudio(aiConfiguration, "content", "alloy", targetFile))
-                .isInstanceOf(ArtivactException.class)
-                .hasMessageContaining("No API key or voice specified for TTS with OpenAI!");
-    }
-
-    @Test
-    void convertToAudioThrowsExceptionIfElevenlabsApiKeyMissing(@TempDir Path tempDir) {
-        AiConfiguration aiConfiguration = new AiConfiguration();
-        aiConfiguration.setTtsModel(AiModel.ELEVENLABS);
-        aiConfiguration.setTtsApiKey(null);
-
-        Path targetFile = tempDir.resolve("output.mp3");
-
-        assertThatThrownBy(() -> aiGatewayAdapter.convertToAudio(aiConfiguration, "content", "voice", targetFile))
-                .isInstanceOf(ArtivactException.class)
-                .hasMessageContaining("No API key or voice specified for TTS with Elevenlabs!");
-    }
-
-    @Test
-    void convertToAudioThrowsExceptionIfElevenlabsApiKeyIsEmpty(@TempDir Path tempDir) {
-        AiConfiguration aiConfiguration = new AiConfiguration();
-        aiConfiguration.setTtsModel(AiModel.ELEVENLABS);
-        aiConfiguration.setTtsApiKey("   ");
-
-        Path targetFile = tempDir.resolve("output.mp3");
-
-        assertThatThrownBy(() -> aiGatewayAdapter.convertToAudio(aiConfiguration, "content", "voice", targetFile))
-                .isInstanceOf(ArtivactException.class)
-                .hasMessageContaining("No API key or voice specified for TTS with Elevenlabs!");
-    }
-
-    @Test
-    void convertToAudioWritesOpenAiAudioToTargetFile(@TempDir Path tempDir) {
-        AiConfiguration aiConfiguration = new AiConfiguration();
-        aiConfiguration.setTtsModel(AiModel.OPEN_AI);
-        aiConfiguration.setTtsApiKey("api-key");
-
-        Path targetFile = tempDir.resolve("output.mp3");
+    void convertToAudioWritesOpenAiAudioToTargetFileWhenTtsModelIsNotConfigured() {
+        AiConfiguration aiConfiguration = ttsConfiguration(null, "api-key");
+        Path targetFile = Path.of("audio.mp3");
         byte[] audioBytes = new byte[]{1, 2, 3};
 
-        try (MockedConstruction<OpenAiAudioSpeechModel> openAiAudioSpeechModelMockedConstruction = Mockito.mockConstruction(
+        try (MockedConstruction<OpenAiAudioSpeechModel> mockedConstruction = Mockito.mockConstruction(
                 OpenAiAudioSpeechModel.class,
-                (mock, ignored) -> when(mock.call("content")).thenReturn(audioBytes))) {
-
-            aiGatewayAdapter.convertToAudio(aiConfiguration, "content", "alloy", targetFile);
+                (mock, _) -> when(mock.call("prompt")).thenReturn(audioBytes)
+        )) {
+            aiGatewayAdapter.convertToAudio(aiConfiguration, "prompt", "alloy", targetFile);
 
             verify(fileRepository).write(targetFile, audioBytes);
-            assertThat(openAiAudioSpeechModelMockedConstruction.constructed()).hasSize(1);
+            assertThat(mockedConstruction.constructed()).hasSize(1);
         }
     }
 
     @Test
-    void convertToAudioDefaultsToOpenAiAndWritesAudioToTargetFile(@TempDir Path tempDir) {
-        AiConfiguration aiConfiguration = new AiConfiguration();
-        aiConfiguration.setTtsModel(null);
-        aiConfiguration.setTtsApiKey("api-key");
+    void convertToAudioDoesNotWriteFileWhenOpenAiReturnsNoAudio() {
+        AiConfiguration aiConfiguration = ttsConfiguration(AiModel.OPEN_AI, "api-key");
+        Path targetFile = Path.of("audio.mp3");
 
-        Path targetFile = tempDir.resolve("output.mp3");
-        byte[] audioBytes = new byte[]{1, 2, 3};
-
-        try (MockedConstruction<OpenAiAudioSpeechModel> openAiAudioSpeechModelMockedConstruction = Mockito.mockConstruction(
+        try (MockedConstruction<OpenAiAudioSpeechModel> mockedConstruction = Mockito.mockConstruction(
                 OpenAiAudioSpeechModel.class,
-                (mock, ignored) -> when(mock.call("content")).thenReturn(audioBytes))) {
-
-            aiGatewayAdapter.convertToAudio(aiConfiguration, "content", "alloy", targetFile);
-
-            verify(fileRepository).write(targetFile, audioBytes);
-            assertThat(openAiAudioSpeechModelMockedConstruction.constructed()).hasSize(1);
-        }
-    }
-
-    @Test
-    void convertToAudioWritesElevenlabsAudioToTargetFile(@TempDir Path tempDir) {
-        AiConfiguration aiConfiguration = new AiConfiguration();
-        aiConfiguration.setTtsModel(AiModel.ELEVENLABS);
-        aiConfiguration.setTtsApiKey("api-key");
-
-        Path targetFile = tempDir.resolve("output.mp3");
-        byte[] audioBytes = new byte[]{4, 5, 6};
-
-        try (MockedConstruction<ElevenLabsTextToSpeechModel> elevenLabsTextToSpeechModelMockedConstruction = Mockito.mockConstruction(
-                ElevenLabsTextToSpeechModel.class,
-                (mock, ignored) -> when(mock.call("content")).thenReturn(audioBytes))) {
-
-            aiGatewayAdapter.convertToAudio(aiConfiguration, "content", "voice", targetFile);
-
-            verify(fileRepository).write(targetFile, audioBytes);
-            assertThat(elevenLabsTextToSpeechModelMockedConstruction.constructed()).hasSize(1);
-        }
-    }
-
-    @Test
-    void convertToAudioDoesNotWriteFileIfNoAudioWasGenerated(@TempDir Path tempDir) {
-        AiConfiguration aiConfiguration = new AiConfiguration();
-        aiConfiguration.setTtsModel(AiModel.OPEN_AI);
-        aiConfiguration.setTtsApiKey("api-key");
-
-        Path targetFile = tempDir.resolve("output.mp3");
-
-        try (var _ = Mockito.mockConstruction(
-                OpenAiAudioSpeechModel.class,
-                (mock, ignoredContext) -> when(mock.call("content")).thenReturn(new byte[0]))) {
-
-            aiGatewayAdapter.convertToAudio(aiConfiguration, "content", "alloy", targetFile);
+                (mock, _) -> when(mock.call("prompt")).thenReturn(new byte[0])
+        )) {
+            aiGatewayAdapter.convertToAudio(aiConfiguration, "prompt", "alloy", targetFile);
 
             verify(fileRepository, never()).write(any(Path.class), any(byte[].class));
+            assertThat(mockedConstruction.constructed()).hasSize(1);
         }
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {" "})
+    void convertToAudioThrowsExceptionWhenOpenAiApiKeyIsMissing(String apiKey) {
+        AiConfiguration aiConfiguration = ttsConfiguration(AiModel.OPEN_AI, apiKey);
+
+        var audioMp3 = Path.of("audio.mp3");
+        assertThatThrownBy(() -> aiGatewayAdapter.convertToAudio(aiConfiguration, "prompt", "alloy", audioMp3))
+                .isInstanceOf(ArtivactException.class)
+                .hasMessage("Missing API key or voice for TTS model!");
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {" "})
+    void convertToAudioThrowsExceptionWhenOpenAiVoiceIsMissing(String voice) {
+        AiConfiguration aiConfiguration = ttsConfiguration(AiModel.OPEN_AI, "api-key");
+
+        var audioMp3 = Path.of("audio.mp3");
+        assertThatThrownBy(() -> aiGatewayAdapter.convertToAudio(aiConfiguration, "prompt", voice, audioMp3))
+                .isInstanceOf(ArtivactException.class)
+                .hasMessage("Missing API key or voice for TTS model!");
+    }
+
+    @Test
+    void convertToAudioWritesElevenlabsAudioToTargetFile() throws Exception {
+        AiConfiguration aiConfiguration = ttsConfiguration(AiModel.ELEVENLABS, "api-key");
+        Path targetFile = Path.of("audio.mp3");
+        byte[] audioBytes = new byte[]{4, 5, 6};
+
+        HttpClient httpClient = mock(HttpClient.class);
+        @SuppressWarnings("unchecked")
+        HttpResponse<byte[]> response = mock(HttpResponse.class);
+
+        when(response.statusCode()).thenReturn(200);
+        when(response.body()).thenReturn(audioBytes);
+        when(httpClient.send(any(HttpRequest.class), ArgumentMatchers.<HttpResponse.BodyHandler<byte[]>>any()))
+                .thenReturn(response);
+
+        try (MockedStatic<HttpClient> mockedStatic = Mockito.mockStatic(HttpClient.class)) {
+            mockedStatic.when(HttpClient::newHttpClient).thenReturn(httpClient);
+
+            aiGatewayAdapter.convertToAudio(aiConfiguration, "prompt", "voice-id", targetFile);
+
+            verify(fileRepository).write(targetFile, audioBytes);
+        }
+    }
+
+    @Test
+    void convertToAudioThrowsExceptionWhenElevenlabsReturnsErrorStatus() throws Exception {
+        AiConfiguration aiConfiguration = ttsConfiguration(AiModel.ELEVENLABS, "api-key");
+
+        HttpClient httpClient = mock(HttpClient.class);
+        @SuppressWarnings("unchecked")
+        HttpResponse<byte[]> response = mock(HttpResponse.class);
+
+        when(response.statusCode()).thenReturn(500);
+        when(httpClient.send(any(HttpRequest.class), ArgumentMatchers.<HttpResponse.BodyHandler<byte[]>>any()))
+                .thenReturn(response);
+
+        try (MockedStatic<HttpClient> mockedStatic = Mockito.mockStatic(HttpClient.class)) {
+            mockedStatic.when(HttpClient::newHttpClient).thenReturn(httpClient);
+
+            var audioMp3 = Path.of("audio.mp3");
+            assertThatThrownBy(() -> aiGatewayAdapter.convertToAudio(
+                    aiConfiguration,
+                    "prompt",
+                    "voice-id",
+                    audioMp3
+            ))
+                    .isInstanceOf(ArtivactException.class)
+                    .hasMessage("Elevenlabs TTS request failed with status: 500");
+        }
+    }
+
+    @Test
+    void convertToAudioThrowsExceptionWhenElevenlabsRequestFails() throws Exception {
+        AiConfiguration aiConfiguration = ttsConfiguration(AiModel.ELEVENLABS, "api-key");
+
+        HttpClient httpClient = mock(HttpClient.class);
+        when(httpClient.send(any(HttpRequest.class), ArgumentMatchers.<HttpResponse.BodyHandler<byte[]>>any()))
+                .thenThrow(new IOException("boom"));
+
+        try (MockedStatic<HttpClient> mockedStatic = Mockito.mockStatic(HttpClient.class)) {
+            mockedStatic.when(HttpClient::newHttpClient).thenReturn(httpClient);
+
+            var audioMp3 = Path.of("audio.mp3");
+            assertThatThrownBy(() -> aiGatewayAdapter.convertToAudio(
+                    aiConfiguration,
+                    "prompt",
+                    "voice-id",
+                    audioMp3
+            ))
+                    .isInstanceOf(ArtivactException.class)
+                    .hasMessage("Elevenlabs TTS request failed!");
+        }
+    }
+
+    private AiConfiguration translationConfiguration(AiModel translationModel, String apiKey) {
+        AiConfiguration aiConfiguration = new AiConfiguration();
+        aiConfiguration.setTranslationModel(translationModel);
+        aiConfiguration.setTranslationApiKey(apiKey);
+        return aiConfiguration;
+    }
+
+    private AiConfiguration ttsConfiguration(AiModel ttsModel, String apiKey) {
+        AiConfiguration aiConfiguration = new AiConfiguration();
+        aiConfiguration.setTtsModel(ttsModel);
+        aiConfiguration.setTtsApiKey(apiKey);
+        return aiConfiguration;
     }
 
 }
