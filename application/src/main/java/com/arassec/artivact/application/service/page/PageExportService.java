@@ -8,6 +8,7 @@ import com.arassec.artivact.application.port.out.repository.FileRepository;
 import com.arassec.artivact.application.service.BaseExportService;
 import com.arassec.artivact.domain.model.ContentAudioProvider;
 import com.arassec.artivact.domain.model.exchange.ExportContext;
+import com.arassec.artivact.domain.model.item.ImageSize;
 import com.arassec.artivact.domain.model.item.Item;
 import com.arassec.artivact.domain.model.misc.DirectoryDefinitions;
 import com.arassec.artivact.domain.model.page.PageContent;
@@ -98,7 +99,7 @@ public class PageExportService extends BaseExportService implements ExportPageUs
         switch (widget) {
             case AvatarWidget avatarWidget -> {
                 cleanupTranslations(avatarWidget.getAvatarSubtext());
-                copyWidgetFile(exportContext, avatarWidget, avatarWidget.getAvatarImage());
+                copyWidgetFile(exportContext, avatarWidget, avatarWidget.getAvatarImage(), true);
             }
             case InfoBoxWidget infoBoxWidget -> {
                 cleanupTranslations(infoBoxWidget.getHeading());
@@ -106,7 +107,7 @@ public class PageExportService extends BaseExportService implements ExportPageUs
             }
             case PageTitleWidget pageTitleWidget -> {
                 cleanupTranslations(pageTitleWidget.getTitle());
-                copyWidgetFile(exportContext, pageTitleWidget, pageTitleWidget.getBackgroundImage());
+                copyWidgetFile(exportContext, pageTitleWidget, pageTitleWidget.getBackgroundImage(), true);
             }
             case ItemSearchWidget itemSearchWidget -> {
                 cleanupTranslations(itemSearchWidget.getHeading());
@@ -126,7 +127,7 @@ public class PageExportService extends BaseExportService implements ExportPageUs
                 cleanupTranslations(imageGalleryWidget.getContent());
                 copyContentAudioFiles(exportContext, widget, imageGalleryWidget);
                 cleanupTranslations(imageGalleryWidget.getContentAudio());
-                imageGalleryWidget.getImages().forEach(image -> copyWidgetFile(exportContext, imageGalleryWidget, image));
+                imageGalleryWidget.getImages().forEach(image -> copyWidgetFile(exportContext, imageGalleryWidget, image, true));
             }
             default -> log.warn("Unknown widget type for export: {}", widget.getType());
         }
@@ -172,10 +173,10 @@ public class PageExportService extends BaseExportService implements ExportPageUs
      */
     private void copyContentAudioFiles(ExportContext exportContext, Widget widget, ContentAudioProvider contentAudioProvider) {
         if (contentAudioProvider.getContentAudio() != null) {
-            copyWidgetFile(exportContext, widget, contentAudioProvider.getContentAudio().getValue());
+            copyWidgetFile(exportContext, widget, contentAudioProvider.getContentAudio().getValue(), false);
             if (contentAudioProvider.getContentAudio().getTranslations() != null) {
                 contentAudioProvider.getContentAudio().getTranslations().values()
-                        .forEach(audioFile -> copyWidgetFile(exportContext, widget, audioFile));
+                        .forEach(audioFile -> copyWidgetFile(exportContext, widget, audioFile, false));
             }
         }
     }
@@ -186,13 +187,18 @@ public class PageExportService extends BaseExportService implements ExportPageUs
      * @param exportContext Export context.
      * @param widget        The widget to copy files from.
      * @param file          The file to copy.
+     * @param isImage       Indicates whether the widget file is an image or not.
      */
-    private void copyWidgetFile(ExportContext exportContext, Widget widget, String file) {
+    private void copyWidgetFile(ExportContext exportContext, Widget widget, String file, boolean isImage) {
         if (StringUtils.hasText(file)) {
             Path sourceDir = fileRepository.getDirFromId(useProjectDirsUseCase.getProjectRoot().resolve(DirectoryDefinitions.WIDGETS_DIR), widget.getId());
             Path targetDir = fileRepository.getDirFromId(exportContext.getExportDir().resolve(DirectoryDefinitions.WIDGETS_DIR), widget.getId());
             fileRepository.createDirIfRequired(targetDir);
-            fileRepository.copy(sourceDir.resolve(file), targetDir.resolve(file));
+            if (isImage && exportContext.getExportConfiguration().isXrExport()) {
+                fileRepository.scaleImage(sourceDir.resolve(file), targetDir.resolve(file), ImageSize.XR_EXPORT.getWidth());
+            } else {
+                fileRepository.copy(sourceDir.resolve(file), targetDir.resolve(file));
+            }
         }
     }
 

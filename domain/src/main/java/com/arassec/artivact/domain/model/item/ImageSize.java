@@ -31,7 +31,12 @@ public enum ImageSize {
     /**
      * Size for favorite item thumbnails.
      */
-    FAVORITE(50);
+    FAVORITE(50),
+
+    /**
+     * Size of images exported for XR.
+     */
+    XR_EXPORT(1280);
 
     /**
      * The image's width.
