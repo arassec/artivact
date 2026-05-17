@@ -216,7 +216,10 @@ const props = defineProps({
 });
 
 const emit = defineEmits<{
-  (e: 'save-widget-before-upload', payload: { resolve: (value?: unknown) => void; reject: (reason?: unknown) => void }): void;
+  (e: 'save-widget-before-upload', payload: {
+    resolve: (value?: unknown) => void;
+    reject: (reason?: unknown) => void
+  }): void;
 }>();
 
 const editingRef = ref(false);
@@ -298,7 +301,10 @@ function search(page: number) {
     });
 }
 
-async function saveWidgetBeforeUpload({resolve, reject}: { resolve: (value?: unknown) => void; reject: (reason?: unknown) => void }) {
+async function saveWidgetBeforeUpload({resolve, reject}: {
+  resolve: (value?: unknown) => void;
+  reject: (reason?: unknown) => void
+}) {
   emit('save-widget-before-upload', {resolve, reject});
 }
 

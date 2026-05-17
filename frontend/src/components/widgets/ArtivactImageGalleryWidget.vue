@@ -119,7 +119,7 @@
           :content-audio="widgetDataRef.contentAudio"
           :label="$t('ImageGalleryWidget.label.contentAudio')"
           :delete-label="$t('ImageGalleryWidget.label.deleteContentAudio')"
-          @save-widget-before-upload="saveWidgetBeforeUpload"
+          @save-widget-before-upload="saveWidget"
         />
         <div class="q-gutter-sm q-mb-md">
           <q-radio
@@ -327,6 +327,13 @@ function getContentClasses(): string {
   }
   // Text-Position 'TOP' or undefined:
   return 'col-grow';
+}
+
+async function saveWidget({resolve, reject}: {
+  resolve: (value?: unknown) => void;
+  reject: (reason?: unknown) => void
+}) {
+  emit('save-widget-before-upload', {resolve, reject});
 }
 
 async function saveWidgetBeforeUpload() {

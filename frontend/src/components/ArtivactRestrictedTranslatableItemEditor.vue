@@ -32,7 +32,12 @@
           dense
           rounded
           icon="auto_awesome"
-          :disable="disable"
+          :disable="!(applicationSettingsStore.translationEnabled &&
+                        (
+                          !!translatableStringRef.translations[localeStore.selectedLocale]?.trim()
+                          !==
+                          !!translatableStringRef.value?.trim()
+                        ))"
           @click="translateText"
         >
           <q-tooltip>{{
