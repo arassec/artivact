@@ -389,7 +389,7 @@ public class ItemController extends BaseImportController {
      * @return The (relative) URL as string.
      */
     private String createModelSetImageUrl(Path modelSetDir) {
-        List<String> availableExtensions = fileRepository.listNamesWithoutScaledImages(modelSetDir).stream()
+        List<String> availableExtensions = fileRepository.listImageFilesWithoutScaledImages(modelSetDir).stream()
                 .filter(f -> f.contains("."))
                 .map(fileName -> fileName.substring(fileName.lastIndexOf(".") + 1))
                 .toList();

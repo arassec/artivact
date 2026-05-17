@@ -161,12 +161,12 @@ class ManageItemServiceTest {
 
         // Mock images: img1.jpg is in item, img2.jpg is dangling, img3.jpg is missing in the filesystem
         when(fileRepository.getDirFromId(any(), any())).thenReturn(Path.of("items/id1"));
-        when(fileRepository.listNamesWithoutScaledImages(Path.of("items/id1/images"))).thenReturn(new ArrayList<>(List.of("img1.jpg", "img2.jpg")));
+        when(fileRepository.listImageFilesWithoutScaledImages(Path.of("items/id1/images"))).thenReturn(new ArrayList<>(List.of("img1.jpg", "img2.jpg")));
         lenient().when(fileRepository.exists(Path.of("items/id1/images/img1.jpg"))).thenReturn(true);
         when(fileRepository.getSubdirFilePath(any(), any(), eq(DirectoryDefinitions.IMAGES_DIR))).thenReturn(Path.of("items/id1/images"));
 
         // Mock models: model1.glb is in item, model2.glb is dangling, model3.glb is missing in the filesystem
-        when(fileRepository.listNamesWithoutScaledImages(Path.of("items/id1/models"))).thenReturn(new ArrayList<>(List.of("model1.glb", "model2.glb")));
+        when(fileRepository.listImageFilesWithoutScaledImages(Path.of("items/id1/models"))).thenReturn(new ArrayList<>(List.of("model1.glb", "model2.glb")));
         lenient().when(fileRepository.exists(Path.of("items/id1/models/model1.glb"))).thenReturn(true);
         when(fileRepository.getSubdirFilePath(any(), any(), eq(DirectoryDefinitions.MODELS_DIR))).thenReturn(Path.of("items/id1/models"));
 

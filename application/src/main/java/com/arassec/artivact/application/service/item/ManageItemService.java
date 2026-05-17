@@ -191,7 +191,7 @@ public class ManageItemService extends BaseItemService implements CreateItemUseC
 
         List<String> modelsInItem = item.getMediaContent().getModels();
 
-        List<String> modelsToDelete = fileRepository.listNamesWithoutScaledImages(fileRepository.getDirFromId(itemsDir, itemId).resolve(DirectoryDefinitions.MODELS_DIR));
+        List<String> modelsToDelete = fileRepository.listImageFilesWithoutScaledImages(fileRepository.getDirFromId(itemsDir, itemId).resolve(DirectoryDefinitions.MODELS_DIR));
         modelsToDelete.removeAll(modelsInItem);
         modelsToDelete.forEach(modelToDelete ->
                 fileRepository.delete(fileRepository.getSubdirFilePath(itemsDir, itemId, DirectoryDefinitions.MODELS_DIR).resolve(modelToDelete))

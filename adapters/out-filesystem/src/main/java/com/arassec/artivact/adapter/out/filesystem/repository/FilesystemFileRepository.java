@@ -311,11 +311,12 @@ public class FilesystemFileRepository implements FileRepository {
      */
     @SuppressWarnings("java:S6204") // Result list needs to be mutable!
     @Override
-    public List<String> listNamesWithoutScaledImages(Path path) {
+    public List<String> listImageFilesWithoutScaledImages(Path path) {
         validatePath(path);
         if (exists(path)) {
             return list(path).stream()
                     .filter(filePath -> !isDir(filePath))
+                    .filter(filePath -> !filePath.toString().endsWith(".mp3"))
                     .map(filePath -> filePath.getFileName().toString())
                     .filter(file -> {
                         for (ImageSize imageSize : ImageSize.values()) {

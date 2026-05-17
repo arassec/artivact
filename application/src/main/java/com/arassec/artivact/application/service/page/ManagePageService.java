@@ -567,7 +567,7 @@ public class ManagePageService
     private List<String> getDanglingImages(Widget widget) {
         if (widget instanceof FileProcessingWidget fileProcessingWidget) {
             List<String> imagesInWidget = fileProcessingWidget.usedFiles();
-            List<String> allImagesInFolder = fileRepository.listNamesWithoutScaledImages(
+            List<String> allImagesInFolder = fileRepository.listImageFilesWithoutScaledImages(
                     fileRepository.getSubdirFilePath(useProjectDirsUseCase.getWidgetsDir(), widget.getId(), WIDGET_WIP_DIR));
             allImagesInFolder.removeAll(imagesInWidget);
             return allImagesInFolder;

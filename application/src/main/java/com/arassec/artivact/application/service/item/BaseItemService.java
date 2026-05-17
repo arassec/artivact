@@ -38,7 +38,7 @@ public abstract class BaseItemService {
         List<String> imagesInItem = new LinkedList<>(item.getMediaContent().getImages());
         item.getMediaCreationContent().getImageSets().forEach(creationImageSet -> imagesInItem.addAll(creationImageSet.getFiles()));
 
-        List<String> allImagesInFolder = getFileRepository().listNamesWithoutScaledImages(
+        List<String> allImagesInFolder = getFileRepository().listImageFilesWithoutScaledImages(
                 getFileRepository().getDirFromId(getUseProjectDirsUseCase().getItemsDir(), item.getId())
                         .resolve(DirectoryDefinitions.IMAGES_DIR)
         );

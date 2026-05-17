@@ -119,7 +119,7 @@ class ManageItemImagesServiceTest {
 
         List<String> danglingImages = new LinkedList<>();
         danglingImages.add("dangling.png");
-        when(fileRepository.listNamesWithoutScaledImages(any())).thenReturn(danglingImages);
+        when(fileRepository.listImageFilesWithoutScaledImages(any())).thenReturn(danglingImages);
 
         when(item.getId()).thenReturn("id");
         when(item.getMediaContent().getImages()).thenReturn(new java.util.LinkedList<>());

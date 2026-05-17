@@ -406,11 +406,11 @@ class FilesystemFileRepositoryTest {
      * Tests listing file names, excluding images scaled by Artivact.
      */
     @Test
-    void testListNamesWithoutScaledImages() {
-        List<String> filenames = filesystemFileRepository.listNamesWithoutScaledImages(sourceDir);
+    void testListImageFilesWithoutScaledImages() {
+        List<String> filenames = filesystemFileRepository.listImageFilesWithoutScaledImages(sourceDir);
         assertThat(filenames).isNotEmpty().doesNotContain("ITEM_CARD-test-image.png");
 
-        assertThat(filesystemFileRepository.listNamesWithoutScaledImages(Path.of("invalid-non-existing-path"))).isEmpty();
+        assertThat(filesystemFileRepository.listImageFilesWithoutScaledImages(Path.of("invalid-non-existing-path"))).isEmpty();
     }
 
     /**

@@ -164,7 +164,7 @@ public interface FileRepository {
      * @param dir The directory to list files of.
      * @return List of filenames.
      */
-    List<String> listNamesWithoutScaledImages(Path dir);
+    List<String> listImageFilesWithoutScaledImages(Path dir);
 
     /**
      * Returns the last modification time of a file or directory.
